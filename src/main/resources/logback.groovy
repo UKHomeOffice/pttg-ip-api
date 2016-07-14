@@ -29,6 +29,7 @@ appender("FILE", FileAppender) {
 logger("org.eclipse.jetty", INFO)
 logger("org.mongodb.driver.cluster", INFO)
 logger("org.springframework", INFO)
+logger("org.mongodb.driver.connection", INFO)
 
 root(DEBUG, ["STDOUT","FILE"])
 
