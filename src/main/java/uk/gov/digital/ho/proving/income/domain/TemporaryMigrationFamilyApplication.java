@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.proving.income.domain;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class TemporaryMigrationFamilyApplication implements Application {
     private Individual individual;
