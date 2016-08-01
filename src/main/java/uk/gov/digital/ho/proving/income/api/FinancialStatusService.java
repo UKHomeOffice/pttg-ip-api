@@ -100,16 +100,16 @@ public class FinancialStatusService extends AbstractIncomeProvingController {
         } // TODO All this below is a mess of exceptions and needs to be refactored
         catch (EarningsServiceFailedToMapDataToDomainClass | EarningsServiceNoUniqueMatch e) {
             LOGGER.error("Could not retrieve earning details.", e);
-            return buildErrorResponse(headers, "0004", "Resource not found", HttpStatus.NOT_FOUND);
+            return buildErrorResponse(headers, "0009", "Resource not found", HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException iae) {
             LOGGER.error(iae.getMessage(), iae);
             return buildErrorResponse(headers, "0004", "Parameter error: " + iae.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
         } catch (UnknownPaymentFrequencyType upte) {
             LOGGER.error("Unknown payment frequency type " + upte);
-            return buildErrorResponse(headers, "0004", "Unknown payment frequency type", HttpStatus.INTERNAL_SERVER_ERROR);
+            return buildErrorResponse(headers, "0005", "Unknown payment frequency type", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (RuntimeException e) {
             LOGGER.error("NINO is not valid", e);
-            return buildErrorResponse(headers, "0001", "Parameter error: NINO is invalid", HttpStatus.BAD_REQUEST);
+            return buildErrorResponse(headers, "0004", "Parameter error: NINO is invalid", HttpStatus.BAD_REQUEST);
         }
     }
 

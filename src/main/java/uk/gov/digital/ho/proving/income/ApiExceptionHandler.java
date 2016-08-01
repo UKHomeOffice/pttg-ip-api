@@ -27,7 +27,7 @@ public class ApiExceptionHandler {
         LOGGER.debug(exception.getMessage());
         HttpHeaders headers = new HttpHeaders();
         headers.set(CONTENT_TYPE, APPLICATION_JSON);
-        return buildErrorResponse(headers, "0008", "Missing parameter: " + exception.getParameterName(), HttpStatus.BAD_REQUEST);
+        return buildErrorResponse(headers, "0001", "Missing parameter: " + exception.getParameterName(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
@@ -35,7 +35,7 @@ public class ApiExceptionHandler {
         LOGGER.debug(exception.getMessage());
         HttpHeaders headers = new HttpHeaders();
         headers.set(CONTENT_TYPE, APPLICATION_JSON);
-        return buildErrorResponse(headers, "0008", "Resource not found: " + exception.getRequestURL(), HttpStatus.NOT_FOUND);
+        return buildErrorResponse(headers, "0009", "Resource not found: " + exception.getRequestURL(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

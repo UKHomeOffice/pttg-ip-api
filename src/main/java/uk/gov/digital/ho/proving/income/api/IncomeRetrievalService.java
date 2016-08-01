@@ -41,14 +41,14 @@ public class IncomeRetrievalService extends AbstractIncomeProvingController {
 
             Optional<LocalDate> fromDate = parseIsoDate(fromDateAsString);
             if (!fromDate.isPresent()) {
-                return buildErrorResponse(headers, "0002", "Parameter error: From date is invalid", HttpStatus.BAD_REQUEST);
+                return buildErrorResponse(headers, "0001", "Parameter error: From date is invalid", HttpStatus.BAD_REQUEST);
             } else if(fromDate.get().isAfter(now())){
                 return buildErrorResponse(headers, "0004", "Parameter error: fromDate", HttpStatus.BAD_REQUEST);
             }
 
             Optional<LocalDate> toDate = parseIsoDate(toDateAsString);
             if (!toDate.isPresent()) {
-                return buildErrorResponse(headers, "0002", "Parameter error: To date is invalid", HttpStatus.BAD_REQUEST);
+                return buildErrorResponse(headers, "0001", "Parameter error: To date is invalid", HttpStatus.BAD_REQUEST);
             } else if(toDate.get().isAfter(now())){
                 return buildErrorResponse(headers, "0004", "Parameter error: toDate", HttpStatus.BAD_REQUEST);
             }
@@ -65,20 +65,20 @@ public class IncomeRetrievalService extends AbstractIncomeProvingController {
                     incomeRetrievalResponse.setIncomes(ips.getIncomes());
                     return new ResponseEntity<>(incomeRetrievalResponse, headers, HttpStatus.OK);
                 }
-            ).orElse(buildErrorResponse(headers, "0002", "Invalid NINO", HttpStatus.NOT_FOUND));
+            ).orElse(buildErrorResponse(headers, "0004", "Invalid NINO", HttpStatus.NOT_FOUND));
 
         } catch (EarningsServiceFailedToMapDataToDomainClass | EarningsServiceNoUniqueMatch e) {
             LOGGER.error("Could not retrieve earning details.", e);
-            return buildErrorResponse(headers, "0004", "Resource not found", HttpStatus.NOT_FOUND);
+            return buildErrorResponse(headers, "0009", "Resource not found", HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException iae) {
             LOGGER.error(iae.getMessage(), iae);
             return buildErrorResponse(headers, "0004", "Parameter error: " + iae.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
         } catch (UnknownPaymentFrequencyType upte) {
             LOGGER.error("Unknown payment frequency type " + upte);
-            return buildErrorResponse(headers, "0004", "Unknown payment frequency type", HttpStatus.INTERNAL_SERVER_ERROR);
+            return buildErrorResponse(headers, "0005", "Unknown payment frequency type", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (RuntimeException e) {
             LOGGER.error("NINO is not valid", e);
-            return buildErrorResponse(headers, "0001", "Parameter error: NINO is invalid", HttpStatus.BAD_REQUEST);
+            return buildErrorResponse(headers, "0004", "Parameter error: NINO is invalid", HttpStatus.BAD_REQUEST);
         }
     }
 
