@@ -9,7 +9,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
       | To Date   | 2015-06-30 |
     Then The API provides the following Individual details:
       | HTTP Status    | 404                                                      |
-      | Status code    | 0008                                                     |
+      | Status code    | 0009                                                     |
       | Status message | Resource not found: /incomeproving/v1/individual//income |
 
 
@@ -32,7 +32,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
       | To Date   | 2015-06-30 |
     Then The API provides the following Individual details:
       | HTTP Status    | 400                                   |
-      | Status code    | 0002                                  |
+      | Status code    | 0001                                  |
       | Status message | Parameter error: From date is invalid |
 
   Scenario: Robert is unable to obtain the NINOs income details due to NOT providing the To Date field
@@ -43,7 +43,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
       | To Date   |            |
     Then The API provides the following Individual details:
       | HTTP Status    | 400                                 |
-      | Status code    | 0002                                |
+      | Status code    | 0001                                |
       | Status message | Parameter error: To date is invalid |
 
   Scenario: Robert is unable to obtain the NINOs income details due to NINO does not exist being held by the HMRC for the give NINO
@@ -54,7 +54,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
       | To Date   | 2015-06-30 |
     Then The API provides the following Individual details:
       | HTTP Status    | 404                |
-      | Status code    | 0004               |
+      | Status code    | 0009               |
       | Status message | Resource not found |
 
   Scenario: Robert is unable to obtain the NINOs income details due to no income records being held by the HMRC for the give NINO

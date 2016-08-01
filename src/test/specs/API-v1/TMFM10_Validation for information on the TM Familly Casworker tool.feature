@@ -12,7 +12,7 @@ Feature: Validation of the API fields and data
       | Application Raised Date | 2015-01-01 |
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 404                |
-      | Status code    | 0008               |
+      | Status code    | 0009               |
       | Status message | Resource not found: /incomeproving/v1/individual//financialstatus |
 
   Scenario: The API provides incorrect National Insurance Number prefixed with two digits
@@ -164,7 +164,7 @@ Feature: Validation of the API fields and data
       | Dependants               | 3          |
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 404                |
-      | Status code    | 0004               |
+      | Status code    | 0009               |
       | Status message | Resource not found |
 
   Scenario: The API is provided with a valid NINO and a future application raised date
