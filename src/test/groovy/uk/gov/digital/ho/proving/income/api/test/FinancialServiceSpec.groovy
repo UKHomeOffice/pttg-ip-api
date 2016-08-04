@@ -1,17 +1,23 @@
 import groovy.json.JsonSlurper
+import org.springframework.boot.actuate.audit.AuditEvent
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch
 import uk.gov.digital.ho.proving.income.acl.MongodbBackedApplicantService
 import uk.gov.digital.ho.proving.income.acl.MongodbBackedEarningsService
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
+import uk.gov.digital.ho.proving.income.audit.AuditEventType
+import uk.gov.digital.ho.proving.income.domain.Income
 import uk.gov.digital.ho.proving.income.domain.IncomeProvingResponse
+import uk.gov.digital.ho.proving.income.domain.Individual
 import uk.gov.digital.ho.proving.income.domain.TemporaryMigrationFamilyApplication
 
 import java.time.LocalDate
 
 import static java.time.LocalDate.now
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
+import static java.util.Arrays.asList
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
@@ -24,11 +30,16 @@ class FinancialServiceSpec extends Specification {
     def financialStatusController = new FinancialStatusService()
     def earningsService = Mock(MongodbBackedEarningsService)
     def individualService = Mock(MongodbBackedApplicantService)
+
     MockMvc mockMvc = standaloneSetup(financialStatusController).build()
+
+    ApplicationEventPublisher auditor = Mock()
 
     def setup() {
         financialStatusController.setEarningsService(earningsService)
         financialStatusController.setIndividualService(individualService)
+
+        financialStatusController.auditor = auditor
     }
 
     def "valid NINO is looked up on the earnings service"() {
@@ -148,6 +159,43 @@ class FinancialServiceSpec extends Specification {
         response.andExpect(status().isOk())
         jsonContent.categoryCheck.assessmentStartDate == "2015-03-25"
 
+    }
+
+    def 'audits search inputs and response'() {
+
+        given:
+        def nino = 'AA123456A'
+        def applicationRaisedDate = "2015-09-23"
+        def dependants = "1"
+        def category = 'A'
+
+        individualService.lookup(_, _, _) >> new IncomeProvingResponse(getIndividual(), getConsecutiveIncomes(), "9600", "M1")
+        earningsService.lookup(_, _) >> new TemporaryMigrationFamilyApplication(getIndividual(), LocalDate.now(), category, true)
+
+        AuditEvent event1
+        AuditEvent event2
+        1 * auditor.publishEvent(_) >> {args -> event1 = args[0].auditEvent}
+        1 * auditor.publishEvent(_) >> {args -> event2 = args[0].auditEvent}
+
+        when:
+        mockMvc.perform(
+            get("/incomeproving/v1/individual/$nino/financialstatus")
+                .param("applicationRaisedDate", applicationRaisedDate)
+                .param("dependants", dependants)
+        )
+
+        then:
+
+        event1.type == AuditEventType.SEARCH.name()
+        event2.type == AuditEventType.SEARCH_RESULT.name()
+
+        event1.data['eventId'] == event2.data['eventId']
+
+        event1.data['nino'] == nino
+        event1.data['applicationRaisedDate'] == applicationRaisedDate
+        event1.data['dependants'] == Integer.parseInt(dependants)
+
+        event2.data['response'].categoryCheck.category == category
     }
 
 }

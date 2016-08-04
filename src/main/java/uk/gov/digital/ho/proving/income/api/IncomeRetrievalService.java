@@ -1,17 +1,25 @@
 package uk.gov.digital.ho.proving.income.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.proving.income.acl.*;
+import uk.gov.digital.ho.proving.income.audit.AuditActions;
 import uk.gov.digital.ho.proving.income.domain.IncomeProvingResponse;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
+import static uk.gov.digital.ho.proving.income.audit.AuditActions.auditEvent;
+import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH;
+import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH_RESULT;
 import static uk.gov.digital.ho.proving.income.util.DateUtils.parseIsoDate;
 
 @RestController
@@ -24,6 +32,9 @@ public class IncomeRetrievalService extends AbstractIncomeProvingController {
     @Autowired
     private IndividualService individualService;
 
+    @Autowired
+    private ApplicationEventPublisher auditor;
+
     @RequestMapping(value = "/incomeproving/v1/individual/{nino}/income", method = RequestMethod.GET)
     public ResponseEntity<IncomeRetrievalResponse> getIncome(
         @PathVariable(value = "nino") String nino,
@@ -31,6 +42,9 @@ public class IncomeRetrievalService extends AbstractIncomeProvingController {
         @RequestParam(value = "toDate") String toDateAsString) {
 
         LOGGER.info(String.format("Income Proving Service API for Income Retrieval invoked for %s nino between %s and %s", nino, fromDateAsString, toDateAsString));
+
+        UUID eventId = AuditActions.nextId();
+        auditor.publishEvent(auditEvent(SEARCH, eventId, auditData(nino, fromDateAsString, toDateAsString)));
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(CONTENT_TYPE, APPLICATION_JSON);
@@ -63,6 +77,9 @@ public class IncomeRetrievalService extends AbstractIncomeProvingController {
                     IncomeRetrievalResponse incomeRetrievalResponse = new IncomeRetrievalResponse();
                     incomeRetrievalResponse.setIndividual(ips.getindividual());
                     incomeRetrievalResponse.setIncomes(ips.getIncomes());
+
+                    auditor.publishEvent(auditEvent(SEARCH_RESULT, eventId, auditData(incomeRetrievalResponse)));
+
                     return new ResponseEntity<>(incomeRetrievalResponse, headers, HttpStatus.OK);
                 }
             ).orElse(buildErrorResponse(headers, "0004", "Invalid NINO", HttpStatus.NOT_FOUND));
@@ -96,5 +113,27 @@ public class IncomeRetrievalService extends AbstractIncomeProvingController {
 
     public void setIndividualService(IndividualService individualService) {
         this.individualService = individualService;
+    }
+
+    private Map<String, Object> auditData(String nino, String fromDate, String toDate) {
+
+        Map<String, Object> auditData = new HashMap<>();
+
+        auditData.put("method", "get-income");
+        auditData.put("nino", nino);
+        auditData.put("fromDate", fromDate);
+        auditData.put("toDate", toDate);
+
+        return auditData;
+    }
+
+    private Map<String, Object> auditData(IncomeRetrievalResponse response) {
+
+        Map<String, Object> auditData = new HashMap<>();
+
+        auditData.put("method", "get-income");
+        auditData.put("response", response);
+
+        return auditData;
     }
 }
