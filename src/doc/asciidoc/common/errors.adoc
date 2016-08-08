@@ -25,6 +25,24 @@ cause of the error.
 |===
 | Code | Meaning
 
-| `to do`
-| to do - Pending details of Home Office standard error codes
+| `0001`
+| Missing parameter
+| `0002`
+| Invalid parameter type
+| `0003`
+| Invalid parameter format
+| `0004`
+| Invalid parameter value
+| `0005`
+| Internal server error
+| `0006`
+| Error inside an external service
+| `0007`
+| Bad request made to an external service
+| `0008`
+| Error connecting to an external service
+| `0009`
+| Resource not found
+
 |===
+
