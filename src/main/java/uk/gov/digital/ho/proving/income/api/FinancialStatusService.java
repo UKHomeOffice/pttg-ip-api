@@ -47,7 +47,7 @@ public class FinancialStatusService extends AbstractIncomeProvingController {
         @RequestParam(value = "applicationRaisedDate") String applicationDateAsString,
         @RequestParam(value = "dependants", required = false) Integer dependants) {
 
-        LOGGER.info(String.format("Income Proving Service API for Temporary Migration Family Application invoked for %s application received on %s.", nino, applicationDateAsString));
+        LOGGER.debug("Get financial status invoked for {} application received on {}.", nino, applicationDateAsString);
 
         UUID eventId = AuditActions.nextId();
         auditor.publishEvent(auditEvent(SEARCH, eventId, auditData(nino, applicationDateAsString, dependants)));

@@ -41,7 +41,7 @@ public class IncomeRetrievalService extends AbstractIncomeProvingController {
         @RequestParam(value = "fromDate") String fromDateAsString,
         @RequestParam(value = "toDate") String toDateAsString) {
 
-        LOGGER.info(String.format("Income Proving Service API for Income Retrieval invoked for %s nino between %s and %s", nino, fromDateAsString, toDateAsString));
+        LOGGER.debug("Get income details invoked for {} nino between {} and {}", nino, fromDateAsString, toDateAsString);
 
         UUID eventId = AuditActions.nextId();
         auditor.publishEvent(auditEvent(SEARCH, eventId, auditData(nino, fromDateAsString, toDateAsString)));

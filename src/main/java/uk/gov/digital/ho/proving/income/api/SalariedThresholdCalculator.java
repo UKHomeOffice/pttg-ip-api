@@ -32,9 +32,9 @@ public class SalariedThresholdCalculator {
             yearlyThreshold =calcThreshold();
             monthlyThreshold = yearlyThreshold.divide(MONTHS, 2, BigDecimal.ROUND_HALF_UP);
             weeklyThreshold = yearlyThreshold.divide(WEEKS, 2, BigDecimal.ROUND_HALF_UP);
-            LOGGER.debug("yearlyThreshold: " + yearlyThreshold);
-            LOGGER.debug("monthlyThreshold: " + monthlyThreshold);
-            LOGGER.debug("weeklyThreshold: " + weeklyThreshold);
+            LOGGER.debug("yearlyThreshold: {}", yearlyThreshold);
+            LOGGER.debug("monthlyThreshold: {}", monthlyThreshold);
+            LOGGER.debug("weeklyThreshold: {}", weeklyThreshold);
         }
     }
 
