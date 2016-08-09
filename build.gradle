@@ -38,6 +38,8 @@ dependencies {
     compile libraries.springboot
     compile 'com.google.guava:guava:19.0'
     compile 'org.apache.httpcomponents:httpclient:4.5.2'
+//    compile 'org.springframework.boot:spring-boot-starter-hateoas:1.4.0.RELEASE'
+
 
     testCompile libraries.cucumber
     testCompile libraries.groovy
@@ -82,28 +84,18 @@ if (System.getenv('GIT_COMMIT')) {
     version = version + '.' + System.getenv('GIT_COMMIT')
 }
 
-ext.sharedManifest = manifest {
-    attributes(
-        'Implementation-Title': "${jar.baseName}",
-        'Implementation-Version': version
-    )
-}
-
-jar {
-    manifest = project.manifest {
-        from sharedManifest
+tasks.withType(Jar) {
+    manifest {
+        attributes(
+            'Implementation-Title': "${jar.baseName}",
+            'Implementation-Version': version
+        )
     }
 }
 
 apidocs {
     jarDocsDir = 'static'
     jarAppendix = 'docs'
-}
-
-buildWithApiDocs{
-    manifest = project.manifest {
-        from sharedManifest
-    }
 }
 
 task buildSpringBootWithApiDocs(type: BootRepackage, dependsOn: buildWithApiDocs) {
