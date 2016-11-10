@@ -23,6 +23,8 @@ apply plugin: 'pttgSpringBootGradle'
 apply plugin: 'pttgApiDocsGradle'
 apply plugin: 'net.serenity-bdd.aggregator'
 
+apply plugin: 'org.ajoberstar.github-pages'
+
 group 'pttg-ip-api'
 version = '0.1.0'
 
@@ -126,4 +128,20 @@ tasks.withType(ScalaCompile) {
 test {
     exclude 'acceptance/**'
     maxHeapSize = "256m"
+}
+
+githubPages {
+    repoUri = 'git@github.com:UKHomeOffice/pttg-ip-api.git'
+    targetBranch = 'gh-pages'
+    pages {
+        from ('docs') {
+            into '/'
+        }
+        from ('build/reports/test') {
+            into 'test'
+        }
+        from ('build/asciidoc/html5/index.html') {
+            into 'api'
+        }
+    }
 }
