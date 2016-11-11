@@ -134,10 +134,10 @@ githubPages {
     repoUri = 'git@github.com:UKHomeOffice/pttg-ip-api.git'
     targetBranch = 'gh-pages'
 
-    credentials {
-        username = System.getenv('PTTG_GH_TOKEN')
-       password = ''
-    }
+//    credentials {
+//       username = System.getenv('PTTG_GH_TOKEN')
+//       password = ''
+//    }
 
     pages {
         from ('docs') {
