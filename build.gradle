@@ -149,5 +149,8 @@ githubPages {
         from ('build/asciidoc/html5/index.html') {
             into 'api'
         }
+        from ('target/site/serenity') {
+            into 'cucumber'
+        }
     }
 }
