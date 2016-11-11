@@ -135,8 +135,8 @@ githubPages {
     targetBranch = 'gh-pages'
 
     credentials {
-        username = 'ci-proving-things' //System.getenv('PTTG_GH_TOKEN')
-       // password = ''
+        username = System.getenv('PTTG_GH_TOKEN')
+       password = ''
     }
 
     pages {
