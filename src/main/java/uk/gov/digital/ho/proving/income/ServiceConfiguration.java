@@ -8,7 +8,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,19 +75,13 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     @Bean(name = "applicationsCollection")
     public DBCollection getApplicationsCollection() {
         MongoClient mongoClient = getMongoClient();
-        MongoDatabase db = mongoClient.getDatabase("test");
-        DBCollection coll = mongoClient.getDB("test").getCollection("applications");
-
-        return coll;
+        return mongoClient.getDB("test").getCollection("applications");
     }
 
     @Bean(name = "applicantCollection")
     public DBCollection getApplicantCollection() {
         MongoClient mongoClient = getMongoClient();
-        MongoDatabase db = mongoClient.getDatabase("test");
-        DBCollection coll = mongoClient.getDB("test").getCollection("applicants");
-
-        return coll;
+        return mongoClient.getDB("test").getCollection("applicants");
     }
 
     private MongoClient getMongoClient() {

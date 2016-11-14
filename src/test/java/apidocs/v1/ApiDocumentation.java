@@ -8,20 +8,33 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.restassured.RestDocumentationFilter;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.digital.ho.proving.income.ServiceRunner;
+import uk.gov.digital.ho.proving.income.acl.EarningsService;
+import uk.gov.digital.ho.proving.income.acl.IndividualService;
+import uk.gov.digital.ho.proving.income.domain.Income;
+import uk.gov.digital.ho.proving.income.domain.IncomeProvingResponse;
+import uk.gov.digital.ho.proving.income.domain.Individual;
+
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -31,18 +44,28 @@ import static org.springframework.restdocs.restassured.RestAssuredRestDocumentat
 import static org.springframework.restdocs.restassured.operation.preprocess.RestAssuredPreprocessors.modifyUris;
 import static org.springframework.restdocs.snippet.Attributes.key;
 
-@SpringApplicationConfiguration(classes = ServiceRunner.class)
+@SpringApplicationConfiguration(classes = {ServiceRunner.class, TestServiceConfiguration.class})
 @WebIntegrationTest("server.port=0")
 @RunWith(SpringJUnit4ClassRunner.class)
+@ActiveProfiles("test")
 public class ApiDocumentation {
 
-    public static final String BASEPATH = "/incomeproving/v1";
+    private static final String BASEPATH = "/incomeproving/v1";
+
+    private static final String EMPLOYER_ONE = "Pizza Hut";
+    private static final String EMPLOYER_TWO = "Burger King";
 
     @Rule
     public JUnitRestDocumentation restDocumentationRule = new JUnitRestDocumentation("build/generated-snippets");
 
     @Value("${local.server.port}")
     private int port;
+
+    @Autowired
+    private EarningsService earningsService;
+
+    @Autowired
+    private IndividualService individualService;
 
     private RequestSpecification documentationSpec;
 
@@ -101,8 +124,11 @@ public class ApiDocumentation {
         fieldWithPath("payDate").description("Date of this income payment in the format yyyy-mm-dd"),
     };
 
+
     @Before
     public void setUp() {
+
+        MockitoAnnotations.initMocks(this);
 
         RestAssured.port = this.port;
         RestAssured.basePath = BASEPATH;
@@ -116,6 +142,32 @@ public class ApiDocumentation {
                 .addFilter(documentationConfiguration(this.restDocumentationRule))
                 .addFilter(document)
                 .build();
+
+
+        // Will need something smarter if new tests require different responses
+        Individual anIndividual = new Individual("Mr", "Duncan", "Sinclair", "AA123456A");
+        String aTotal = "9600";
+        String aPayFrequency = "M1";
+
+        when(individualService.lookup(any(String.class), any(LocalDate.class), any(LocalDate.class)))
+            .thenReturn(new IncomeProvingResponse(anIndividual, someIncomes(), aTotal, aPayFrequency));
+
+        when(earningsService.lookup(any(String.class), any(LocalDate.class)))
+            .thenReturn(() -> anIndividual);
+    }
+
+
+    private List<Income> someIncomes() {
+        List<Income> incomes = new ArrayList<>();
+        incomes.add(new Income(LocalDate.of(2015, Month.JANUARY, 15), EMPLOYER_ONE, "1400"));
+        incomes.add(new Income(LocalDate.of(2015, Month.MAY, 15), EMPLOYER_ONE, "1600"));
+        incomes.add(new Income(LocalDate.of(2015, Month.JUNE, 15), EMPLOYER_ONE, "1600"));
+        incomes.add(new Income(LocalDate.of(2015, Month.APRIL, 15), EMPLOYER_ONE, "1600"));
+        incomes.add(new Income(LocalDate.of(2015, Month.JULY, 15), EMPLOYER_ONE, "1600"));
+        incomes.add(new Income(LocalDate.of(2015, Month.FEBRUARY, 15), EMPLOYER_TWO, "1600"));
+        incomes.add(new Income(LocalDate.of(2015, Month.AUGUST, 15), EMPLOYER_ONE, "1600"));
+        incomes.add(new Income(LocalDate.of(2015, Month.SEPTEMBER, 15), EMPLOYER_ONE, "1600"));
+        return incomes;
     }
 
     @Test
