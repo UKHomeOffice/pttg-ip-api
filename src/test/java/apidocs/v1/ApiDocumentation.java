@@ -8,15 +8,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.restassured.RestDocumentationFilter;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.digital.ho.proving.income.ServiceRunner;
 import uk.gov.digital.ho.proving.income.acl.EarningsService;
@@ -34,6 +31,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -44,10 +42,9 @@ import static org.springframework.restdocs.restassured.RestAssuredRestDocumentat
 import static org.springframework.restdocs.restassured.operation.preprocess.RestAssuredPreprocessors.modifyUris;
 import static org.springframework.restdocs.snippet.Attributes.key;
 
-@SpringApplicationConfiguration(classes = {ServiceRunner.class, TestServiceConfiguration.class})
-@WebIntegrationTest("server.port=0")
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles("test")
+@SpringBootTest(webEnvironment= RANDOM_PORT, classes = {ServiceRunner.class})
 public class ApiDocumentation {
 
     private static final String BASEPATH = "/incomeproving/v1";
@@ -61,10 +58,10 @@ public class ApiDocumentation {
     @Value("${local.server.port}")
     private int port;
 
-    @Autowired
+    @MockBean
     private EarningsService earningsService;
 
-    @Autowired
+    @MockBean
     private IndividualService individualService;
 
     private RequestSpecification documentationSpec;
@@ -127,8 +124,6 @@ public class ApiDocumentation {
 
     @Before
     public void setUp() {
-
-        MockitoAnnotations.initMocks(this);
 
         RestAssured.port = this.port;
         RestAssured.basePath = BASEPATH;
