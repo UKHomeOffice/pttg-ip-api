@@ -1,7 +1,10 @@
 package uk.gov.digital.ho.proving.income.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDate;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TemporaryMigrationFamilyApplication implements Application {
     private Individual individual;
     //    @JsonFormat(pattern="dd MMM yyyy")

@@ -1,8 +1,11 @@
 package uk.gov.digital.ho.proving.income.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
 // TODO rename this class
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IncomeProvingResponse {
     private Individual individual;
     private List<Income> incomes;
