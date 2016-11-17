@@ -6,46 +6,38 @@ import ch.qos.logback.classic.spi.LoggingEvent
 import ch.qos.logback.core.Appender
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.audit.AuditEventRepository
-import org.springframework.boot.test.IntegrationTest
-import org.springframework.boot.test.SpringApplicationConfiguration
-import org.springframework.boot.test.TestRestTemplate
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.web.WebAppConfiguration
-import org.springframework.web.client.RestTemplate
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.client.TestRestTemplate
 import spock.lang.Specification
 
 import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 import static java.time.LocalDateTime.now
-import static java.time.LocalDateTime.parse
 import static java.time.temporal.ChronoUnit.MINUTES
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 /**
  * @Author Home Office Digital
  */
-@SpringApplicationConfiguration(classes = ServiceRunner.class)
-@WebAppConfiguration
-@IntegrationTest("server.port:0")
-@TestPropertySource(properties = [
-    "mongodb.service=unknownhost",  // Don't rely on pre-loaded data in a real mongo
-    "mongodb.connect.timeout.millis=100", // Don't hang around trying to connect to a mongo that isn't there
-    "apidocs.dir=static"
-])
+@SpringBootTest(
+    webEnvironment = RANDOM_PORT,
+    classes = [ServiceRunner.class],
+    properties = [
+        "mongodb.service=unknownhost",  // Don't rely on pre-loaded data in a real mongo
+        "mongodb.connect.timeout.millis=100", // Don't hang around trying to connect to a mongo that isn't there
+        "apidocs.dir=static"
+    ])
 class AuditIntegrationSpec extends Specification {
-
-    @Value('${local.server.port}')
-    def port
 
     def path = "/incomeproving/v1/individual/AA123456A/income?"
     def params = "fromDate=2014-12-01&toDate=2015-01-01"
     def url
 
-    RestTemplate restTemplate
+    @Autowired
+    TestRestTemplate restTemplate
 
     @Autowired
     AuditEventRepository auditEventRepository
@@ -53,8 +45,7 @@ class AuditIntegrationSpec extends Specification {
     Appender logAppender = Mock()
 
     def setup() {
-        restTemplate = new TestRestTemplate()
-        url = "http://localhost:" + port + path + params
+        url = path + params
 
         withMockLogAppender()
     }
