@@ -2,11 +2,56 @@ pipeline:
 
   my-build:
     privileged: true
+    image: quay.io/ukhomeofficedigital/openjdk8:v1.0.0
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - ./gradlew build
+    when:
+      event: [push, pull_request]
+
+  my-docker-build:
+    privileged: true
     image: docker:1.11
     environment:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
-      - docker build -t pttg-ip-api .
+      - docker build -t quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA} .
+    when:
+      branch: master
+      event: push
+
+  image_to_quay:
+    image: docker:1.11
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA}
+    when:
+      branch: master
+      event: push
+
+  predeploy_to_dev:
+    image: plugins/git
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+    when:
+      branch: master
+      event: push
+
+  deploy_to_dev:
+    image: quay.io/ukhomeofficedigital/kd:v0.2.2
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - KUBE_NAMESPACE=pt-i-dev
+      - ENVIRONMENT=dev
+      - VERSION=${DRONE_COMMIT_SHA}
+      - KUBE_SERVER_DEV=https://kube-dev.dsp.notprod.homeoffice.gov.uk
+    commands:
+      - cd kube-pttg-ip-api
+      - ./deploy.sh
     when:
       branch: master
       event: push
