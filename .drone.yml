@@ -8,6 +8,7 @@ pipeline:
     commands:
       - ./gradlew build
     when:
+      branch: drone
       event: [push, pull_request]
 
   my-docker-build:
@@ -18,7 +19,7 @@ pipeline:
     commands:
       - docker build -t quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA} .
     when:
-      branch: master
+      branch: drone
       event: push
 
   image_to_quay:
@@ -28,7 +29,7 @@ pipeline:
     commands:
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA}
     when:
-      branch: master
+      branch: drone
       event: push
 
   predeploy_to_dev:
@@ -38,7 +39,7 @@ pipeline:
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
     when:
-      branch: master
+      branch: drone
       event: push
 
   deploy_to_dev:
@@ -53,7 +54,7 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-      branch: master
+      branch: drone
       event: push
 
 services:
