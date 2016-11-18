@@ -2,6 +2,7 @@ Income Proving API
 =
 
 [![Build Status](https://drone.digital.homeoffice.gov.uk/api/badges/UKHomeOffice/pttg-ip-api/status.svg)](https://drone.digital.homeoffice.gov.uk/UKHomeOffice/pttg-ip-api)
+
 [![Docker Repository on Quay](https://quay.io/repository/ukhomeofficedigital/pttg-ip-api/status "Docker Repository on Quay")](https://quay.io/repository/ukhomeofficedigital/pttg-ip-api)
 
 Overview
