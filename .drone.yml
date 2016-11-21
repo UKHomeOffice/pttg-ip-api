@@ -43,8 +43,8 @@ pipeline:
       - ls
       - cat deploy.sh
     when:
-      environment: dev
-      event: deployment
+      branch: drone
+      event: push
 
   deploy_to_dev:
     image: quay.io/ukhomeofficedigital/kd:v0.2.2
@@ -58,7 +58,8 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-      event: deployment
+      branch: drone
+      event: push
 
     deploy_to_test:
       image: quay.io/ukhomeofficedigital/kd:v0.2.2
