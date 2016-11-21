@@ -8,8 +8,7 @@ pipeline:
     commands:
       - ./gradlew build
     when:
-      branch: drone
-      event: [push, pull_request]
+      event: push
 
   my-docker-build:
     privileged: true
@@ -19,7 +18,6 @@ pipeline:
     commands:
       - docker build -t quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA} .
     when:
-      branch: drone
       event: push
 
   image_to_quay:
@@ -30,7 +28,6 @@ pipeline:
       - docker login -u="ukhomeofficedigital+pttg" -p=${DOCKER_PASSWORD} quay.io
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA}
     when:
-      branch: drone
       event: push
 
   predeploy:
@@ -43,7 +40,6 @@ pipeline:
       - ls
       - cat deploy.sh
     when:
-      branch: drone
       event: push
 
   deploy_to_dev:
@@ -58,23 +54,23 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-      branch: drone
       event: push
 
-    deploy_to_test:
-      image: quay.io/ukhomeofficedigital/kd:v0.2.2
-      environment:
-        - DOCKER_HOST=tcp://127.0.0.1:2375
-        - KUBE_NAMESPACE=pt-i-test
-        - ENVIRONMENT=test
-        - VERSION=${DRONE_COMMIT_SHA}
-        - KUBE_SERVER_DEV=https://kube-dev.dsp.notprod.homeoffice.gov.uk
-      commands:
-        - cd kube-pttg-ip-api
-        - ./deploy.sh
-      when:
-        environment: test
-        event: deployment
+  deploy_to_test:
+    image: quay.io/ukhomeofficedigital/kd:v0.2.2
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - KUBE_NAMESPACE=pt-i-test
+      - ENVIRONMENT=test
+      - VERSION=${DRONE_COMMIT_SHA}
+      - KUBE_SERVER_DEV=https://kube-dev.dsp.notprod.homeoffice.gov.uk
+    commands:
+      - cd kube-pttg-ip-api
+      - ./deploy.sh
+    when:
+      event: deploy
+      environment: test
+
 
 services:
   dind:
