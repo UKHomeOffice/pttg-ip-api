@@ -54,6 +54,7 @@ pipeline:
       - VERSION=${DRONE_COMMIT_SHA}
       - KUBE_SERVER_DEV=https://kube-dev.dsp.notprod.homeoffice.gov.uk
     commands:
+      - ls
       - cd kube-pttg-ip-api
       - pwd
       - ls
