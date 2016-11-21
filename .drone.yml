@@ -61,6 +61,21 @@ pipeline:
       branch: drone
       event: push
 
+    deploy_to_test:
+      image: quay.io/ukhomeofficedigital/kd:v0.2.2
+      environment:
+        - DOCKER_HOST=tcp://127.0.0.1:2375
+        - KUBE_NAMESPACE=pt-i-test
+        - ENVIRONMENT=test
+        - VERSION=${DRONE_COMMIT_SHA}
+        - KUBE_SERVER_DEV=https://kube-dev.dsp.notprod.homeoffice.gov.uk
+      commands:
+        - cd kube-pttg-ip-api
+        - ./deploy.sh
+      when:
+        environment: test
+        event: deployment
+
 services:
   dind:
     image: docker:1.11-dind
