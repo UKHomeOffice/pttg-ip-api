@@ -41,11 +41,12 @@ pipeline:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
       - cd kube-pttg-ip-api
       - ls
+      - cat deploy.sh
     when:
       environment: dev
       event: deployment
 
-  deploy_to_dev:
+  really_deploy_to_dev:
     image: quay.io/ukhomeofficedigital/kd:v0.2.2
     environment:
       - DOCKER_HOST=tcp://127.0.0.1:2375
