@@ -40,7 +40,7 @@ pipeline:
       - ls
       - cat deploy.sh
     when:
-      event: push
+      event: [push, deployment]
 
   deploy_to_dev:
     image: quay.io/ukhomeofficedigital/kd:v0.2.2
