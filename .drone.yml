@@ -68,7 +68,7 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-      event: deploy
+      event: deployment
       environment: test
 
 
