@@ -39,6 +39,7 @@ pipeline:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+      - ls
     when:
       environment: dev
       event: deployment
@@ -53,6 +54,8 @@ pipeline:
       - KUBE_SERVER_DEV=https://kube-dev.dsp.notprod.homeoffice.gov.uk
     commands:
       - cd kube-pttg-ip-api
+      - pwd
+      - ls
       - ./deploy.sh
     when:
       environment: dev
