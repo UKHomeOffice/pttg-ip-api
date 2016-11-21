@@ -58,7 +58,7 @@ pipeline:
       - cd kube-pttg-ip-api
       - pwd
       - ls
-      - ./deploy.sh
+      - ./dontdeploy.sh
     when:
       environment: dev
       event: deployment
