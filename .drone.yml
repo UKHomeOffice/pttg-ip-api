@@ -40,8 +40,8 @@ pipeline:
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
     when:
-      branch: drone
-      event: [push, deployment]
+      environment: dev
+      event: deployment
 
   deploy_to_dev:
     image: quay.io/ukhomeofficedigital/kd:v0.2.2
