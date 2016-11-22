@@ -10,6 +10,8 @@ Overview
 
 This is the Income Proving API.
 
+Latest test reports and API documentation can be viewed at https://ukhomeoffice.github.io/pttg-ip-api/
+
 Technical Notes
 -
 
