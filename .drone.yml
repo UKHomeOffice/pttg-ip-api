@@ -2,7 +2,7 @@ pipeline:
 
   my-build:
     privileged: true
-    image: quay.io/ukhomeofficedigital/openjdk8:v1.0.0
+    image: quay.io/ukhomeofficedigital/openjdk8:v1.1.0
     environment:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
@@ -36,9 +36,6 @@ pipeline:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
-      - cd kube-pttg-ip-api
-      - ls
-      - cat deploy.sh
     when:
       event: [push, deployment]
 
