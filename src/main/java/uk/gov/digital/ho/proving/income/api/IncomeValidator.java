@@ -21,16 +21,16 @@ public class IncomeValidator {
     private IncomeValidator() {
     }
 
-    public static FinancialCheckValues validateCategoryAMonthlySalaried(List<Income> incomes, LocalDate lower, LocalDate upper, int dependants) {
+    public static FinancialCheckResult validateCategoryAMonthlySalaried(List<Income> incomes, LocalDate lower, LocalDate upper, int dependants) {
         SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(dependants);
         BigDecimal monthlyThreshold = thresholdCalculator.getMonthlyThreshold();
-        return financialCheckForMonthlySalaried(incomes, NUMBER_OF_MONTHS, monthlyThreshold, lower, upper);
+        return new FinancialCheckResult(financialCheckForMonthlySalaried(incomes, NUMBER_OF_MONTHS, monthlyThreshold, lower, upper), monthlyThreshold);
     }
 
-    public static FinancialCheckValues validateCategoryAWeeklySalaried(List<Income> incomes, LocalDate lower, LocalDate upper, int dependants) {
+    public static FinancialCheckResult validateCategoryAWeeklySalaried(List<Income> incomes, LocalDate lower, LocalDate upper, int dependants) {
         SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(dependants);
         BigDecimal weeklyThreshold = thresholdCalculator.getWeeklyThreshold();
-        return financialCheckForWeeklySalaried(incomes, NUMBER_OF_WEEKS, weeklyThreshold, lower, upper);
+        return new FinancialCheckResult(financialCheckForWeeklySalaried(incomes, NUMBER_OF_WEEKS, weeklyThreshold, lower, upper), weeklyThreshold);
     }
 
     //TODO Refactor date handling once we know more about the back end and test env

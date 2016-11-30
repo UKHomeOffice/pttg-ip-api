@@ -2,6 +2,7 @@ package uk.gov.digital.ho.proving.income.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -19,14 +20,17 @@ public class CategoryCheck {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private FinancialCheckValues failureReason;
 
+    private BigDecimal threshold;
+
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public CategoryCheck(String category, boolean passed, FinancialCheckValues failureReason, LocalDate applicationRaisedDate, LocalDate assessmentStartDate) {
+    public CategoryCheck(String category, boolean passed, FinancialCheckValues failureReason, LocalDate applicationRaisedDate, LocalDate assessmentStartDate, BigDecimal threshold) {
         this.category = category;
         this.passed = passed;
         this.applicationRaisedDate = applicationRaisedDate;
         this.assessmentStartDate = assessmentStartDate;
         this.failureReason = failureReason;
+        this.threshold = threshold;
     }
 
     private String formatDate(LocalDate date){
@@ -73,6 +77,14 @@ public class CategoryCheck {
         this.failureReason = failureReason;
     }
 
+    public BigDecimal getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(BigDecimal threshold) {
+        this.threshold = threshold;
+    }
+
     @Override
     public String toString() {
         return "CategoryCheck{" +
@@ -81,7 +93,7 @@ public class CategoryCheck {
             ", applicationRaisedDate=" + applicationRaisedDate +
             ", assessmentStartDate=" + assessmentStartDate +
             ", failureReason=" + failureReason +
-            ", formatter=" + formatter +
+            ", threshold=" + threshold +
             '}';
     }
 }

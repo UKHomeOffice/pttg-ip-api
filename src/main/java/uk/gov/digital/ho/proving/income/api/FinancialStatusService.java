@@ -11,6 +11,7 @@ import uk.gov.digital.ho.proving.income.audit.AuditActions;
 import uk.gov.digital.ho.proving.income.domain.Application;
 import uk.gov.digital.ho.proving.income.domain.IncomeProvingResponse;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,19 +93,19 @@ public class FinancialStatusService extends AbstractIncomeProvingController {
 
             switch (incomeProvingResponse.getPayFreq().toUpperCase()) {
                 case "M1":
-                    FinancialCheckValues categoryAMonthlySalaried = IncomeValidator.validateCategoryAMonthlySalaried(incomeProvingResponse.getIncomes(), startSearchDate, applicationRaisedDate, dependants);
-                    if (categoryAMonthlySalaried.equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)) {
-                        response.setCategoryCheck(new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate));
+                    FinancialCheckResult categoryAMonthlySalaried = IncomeValidator.validateCategoryAMonthlySalaried(incomeProvingResponse.getIncomes(), startSearchDate, applicationRaisedDate, dependants);
+                    if (categoryAMonthlySalaried.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)) {
+                        response.setCategoryCheck(new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate,  categoryAMonthlySalaried.getThreshold()));
                     } else {
-                        response.setCategoryCheck(new CategoryCheck("A", false, categoryAMonthlySalaried, applicationRaisedDate, startSearchDate));
+                        response.setCategoryCheck(new CategoryCheck("A", false, categoryAMonthlySalaried.getFinancialCheckValue(), applicationRaisedDate, startSearchDate, categoryAMonthlySalaried.getThreshold()));
                     }
                     break;
                 case "W1":
-                    FinancialCheckValues categoryAWeeklySalaried = IncomeValidator.validateCategoryAWeeklySalaried(incomeProvingResponse.getIncomes(), startSearchDate, applicationRaisedDate, dependants);
-                    if (categoryAWeeklySalaried.equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)) {
-                        response.setCategoryCheck(new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate));
+                    FinancialCheckResult categoryAWeeklySalaried = IncomeValidator.validateCategoryAWeeklySalaried(incomeProvingResponse.getIncomes(), startSearchDate, applicationRaisedDate, dependants);
+                    if (categoryAWeeklySalaried.getFinancialCheckValue().equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)) {
+                        response.setCategoryCheck(new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate, categoryAWeeklySalaried.getThreshold()));
                     } else {
-                        response.setCategoryCheck(new CategoryCheck("A", false, categoryAWeeklySalaried, applicationRaisedDate, startSearchDate));
+                        response.setCategoryCheck(new CategoryCheck("A", false, categoryAWeeklySalaried.getFinancialCheckValue(), applicationRaisedDate, startSearchDate, categoryAWeeklySalaried.getThreshold()));
                     }
                     break;
                 default:
