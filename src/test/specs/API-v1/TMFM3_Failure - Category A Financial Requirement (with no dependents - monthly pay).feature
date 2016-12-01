@@ -20,16 +20,17 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Application Raised Date | 2015-01-15 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200                           |
-            | Financial requirement met  | false                         |
-            | Failure reason             | MONTHLY_VALUE_BELOW_THRESHOLD |
-            | Individual title           | Mrs                           |
-            | Individual forename        | Jill                          |
-            | Individual surname         | Lewondoski                    |
-            | Application Raised to date | 2014-07-17                    |
-            | Application Raised date    | 2015-01-15                    |
-            | National Insurance Number  | JL123456A                     |
-            | Threshold                  | 1550.0                        |
+            | HTTP Status               | 200                           |
+            | Financial requirement met | false                         |
+            | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
+            | Individual title          | Mrs                           |
+            | Individual forename       | Jill                          |
+            | Individual surname        | Lewondoski                    |
+            | Assessment start date     | 2014-07-17                    |
+            | Application Raised date   | 2015-01-15                    |
+            | National Insurance Number | JL123456A                     |
+            | Threshold                 | 1550.0                        |
+            | Employer Name             | Flying Pizza Ltd              |
 
 #New Scenario -
     Scenario: Francois does not meet the Category A Financial Requirement (He has earned < the Cat A financial threshold)
@@ -44,16 +45,17 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Application Raised Date | 2015-03-28 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200                           |
-            | Financial requirement met  | false                         |
-            | Failure reason             | MONTHLY_VALUE_BELOW_THRESHOLD |
-            | Individual title           | Mr                            |
-            | Individual forename        | Francois                      |
-            | Individual surname         | Leblanc                       |
-            | Application Raised to date | 2014-09-27                    |
-            | Application Raised date    | 2015-03-28                    |
-            | National Insurance Number  | FL123456B                     |
-            | Threshold                  | 1550.0                        |
+            | HTTP Status               | 200                           |
+            | Financial requirement met | false                         |
+            | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
+            | Individual title          | Mr                            |
+            | Individual forename       | Francois                      |
+            | Individual surname        | Leblanc                       |
+            | Assessment start date     | 2014-09-27                    |
+            | Application Raised date   | 2015-03-28                    |
+            | National Insurance Number | FL123456B                     |
+            | Threshold                 | 1550.0                        |
+            | Employer Name             | Flying Pizza Ltd              |
 
 #New Scenario -
     Scenario: Kumar does not meet the Category A employment duration Requirement (He has worked for his current employer for only 3 months)
@@ -69,13 +71,14 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Application Raised Date | 2015-07-03 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200                |
-            | Financial requirement met  | false              |
-            | Failure reason             | NOT_ENOUGH_RECORDS |
-            | Individual title           | Mr                 |
-            | Individual forename        | Kumar Sangakkara   |
-            | Individual surname         | Dilshan            |
-            | Application Raised to date | 2015-01-02         |
-            | Application Raised date    | 2015-07-03         |
-            | National Insurance Number  | KS123456C          |
-            | Threshold                  | 1550.0             |
+            | HTTP Status               | 200                |
+            | Financial requirement met | false              |
+            | Failure reason            | NOT_ENOUGH_RECORDS |
+            | Individual title          | Mr                 |
+            | Individual forename       | Kumar Sangakkara   |
+            | Individual surname        | Dilshan            |
+            | Assessment start date     | 2015-01-02         |
+            | Application Raised date   | 2015-07-03         |
+            | National Insurance Number | KS123456C          |
+            | Threshold                 | 1550.0             |
+            | Employer Name             | Flying Pizza Ltd   |

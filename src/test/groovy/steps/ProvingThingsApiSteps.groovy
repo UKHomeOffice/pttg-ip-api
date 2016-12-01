@@ -140,6 +140,16 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
                 case "HTTP Status":
                     assert entries.get(key) == resp.getStatusCode().toString();
                     break;
+                case "Employer Name":
+                    String jsonPath = FeatureKeyMapper.buildJsonPath(key).toString();
+                    String[] employers = entries.get(key).split(',')
+
+                    for(String t : employers) {
+
+                        assert read(jsonAsString, jsonPath).toString().contains(t)
+                    }
+
+                    break;
                 default:
                     String jsonPath = FeatureKeyMapper.buildJsonPath(key);
                     assert entries.get(key) == read(jsonAsString, jsonPath).toString();

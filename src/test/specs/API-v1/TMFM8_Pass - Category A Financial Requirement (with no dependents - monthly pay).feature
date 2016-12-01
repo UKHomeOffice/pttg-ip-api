@@ -19,15 +19,16 @@ Feature: Pass - Category A Financial Requirement (with no dependents - monthly p
             | Application Raised Date | 2015-01-23 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | Jon        |
-            | Individual surname         | Taylor     |
-            | Application Raised to date | 2014-07-25 |
-            | Application Raised date    | 2015-01-23 |
-            | National Insurance Number  | AA345678A  |
-            | Threshold                  | 1550.0     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | Jon              |
+            | Individual surname        | Taylor           |
+            | Assessment start date     | 2014-07-25       |
+            | Application Raised date   | 2015-01-23       |
+            | National Insurance Number | AA345678A        |
+            | Threshold                 | 1550.0           |
+            | Employer Name             | Flying Pizza Ltd |
 
 #New Scenario -
     Scenario: Jon meets the Category A Financial Requirement (Caseworker enters the National Insurance Number with spaces)
@@ -42,15 +43,17 @@ Feature: Pass - Category A Financial Requirement (with no dependents - monthly p
             | Application Raised Date | 2015-01-10    |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | Jon        |
-            | Individual surname         | Taylor     |
-            | Application Raised to date | 2014-07-12 |
-            | Application Raised date    | 2015-01-10 |
-            | National Insurance Number  | AA123456B  |
-            | Threshold                  | 1550.0     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | Jon              |
+            | Individual surname        | Taylor           |
+            | Assessment start date     | 2014-07-12       |
+            | Application Raised date   | 2015-01-10       |
+            | National Insurance Number | AA123456B        |
+            | Threshold                 | 1550.0           |
+            | Employer Name             | Flying Pizza Ltd |
+
 
 #New Scenario -
     Scenario: Jon meets the Category A Financial Requirement (2)
@@ -65,15 +68,16 @@ Feature: Pass - Category A Financial Requirement (with no dependents - monthly p
             | Application Raised Date | 2015-01-23 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | Jon        |
-            | Individual surname         | Taylor     |
-            | Application Raised to date | 2014-07-25 |
-            | Application Raised date    | 2015-01-23 |
-            | National Insurance Number  | BB123456B  |
-            | Threshold                  | 1550.0     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | Jon              |
+            | Individual surname        | Taylor           |
+            | Assessment start date     | 2014-07-25       |
+            | Application Raised date   | 2015-01-23       |
+            | National Insurance Number | BB123456B        |
+            | Threshold                 | 1550.0           |
+            | Employer Name             | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -89,15 +93,16 @@ Feature: Pass - Category A Financial Requirement (with no dependents - monthly p
             | Application Raised Date | 2015-01-23 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | Jon        |
-            | Individual surname         | Taylor     |
-            | Application Raised to date | 2014-07-25 |
-            | Application Raised date    | 2015-01-23 |
-            | National Insurance Number  | CC123456C  |
-            | Threshold                  | 1550.0     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | Jon              |
+            | Individual surname        | Taylor           |
+            | Assessment start date     | 2014-07-25       |
+            | Application Raised date   | 2015-01-23       |
+            | National Insurance Number | CC123456C        |
+            | Threshold                 | 1550.0           |
+            | Employer Name             | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -113,15 +118,16 @@ Feature: Pass - Category A Financial Requirement (with no dependents - monthly p
             | Application Raised Date | 2015-01-09 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | Jon        |
-            | Individual surname         | Taylor     |
-            | Application Raised to date | 2014-07-11 |
-            | Application Raised date    | 2015-01-09 |
-            | National Insurance Number  | CC123456B  |
-            | Threshold                  | 1550.0     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | Jon              |
+            | Individual surname        | Taylor           |
+            | Assessment start date     | 2014-07-11       |
+            | Application Raised date   | 2015-01-09       |
+            | National Insurance Number | CC123456B        |
+            | Threshold                 | 1550.0           |
+            | Employer Name             | Flying Pizza Ltd |
 
 #New Scenario -
     Scenario: Mark meets the Category A Financial Requirement
@@ -138,12 +144,13 @@ Feature: Pass - Category A Financial Requirement (with no dependents - monthly p
             | Application Raised Date | 2015-01-23 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | Mark       |
-            | Individual surname         | Jones      |
-            | Application Raised to date | 2014-07-25 |
-            | Application Raised date    | 2015-01-23 |
-            | National Insurance Number  | AA123456A  |
-            | Threshold                  | 1550.0     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | Mark             |
+            | Individual surname        | Jones            |
+            | Assessment start date     | 2014-07-25       |
+            | Application Raised date   | 2015-01-23       |
+            | National Insurance Number | AA123456A        |
+            | Threshold                 | 1550.0           |
+            | Employer Name             | Flying Pizza Ltd |

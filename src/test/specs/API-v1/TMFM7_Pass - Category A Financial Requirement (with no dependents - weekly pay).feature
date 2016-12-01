@@ -16,15 +16,16 @@ Feature: Pass - Category A Financial Requirement (with no dependents - weekly pa
             | NINO                    | MH123456A  |
             | Application raised date | 2015-11-29 |
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Ms         |
-            | Individual forename        | Molly      |
-            | Individual surname         | Henry      |
-            | Application Raised to date | 2015-05-31 |
-            | Application Raised date    | 2015-11-29 |
-            | National Insurance Number  | MH123456A  |
-            | Threshold                  | 357.69     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Ms               |
+            | Individual forename       | Molly            |
+            | Individual surname        | Henry            |
+            | Assessment start date     | 2015-05-31       |
+            | Application Raised date   | 2015-11-29       |
+            | National Insurance Number | MH123456A        |
+            | Threshold                 | 357.69           |
+            | Employer Name             | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -37,15 +38,16 @@ Feature: Pass - Category A Financial Requirement (with no dependents - weekly pa
             | NINO                    | FS123456C  |
             | Application raised date | 2015-04-10 |
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | Fernando   |
-            | Individual surname         | Sanchez    |
-            | Application Raised to date | 2014-10-10 |
-            | Application Raised date    | 2015-04-10 |
-            | National Insurance Number  | FS123456C  |
-            | Threshold                  | 357.69     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | Fernando         |
+            | Individual surname        | Sanchez          |
+            | Assessment start date     | 2014-10-10       |
+            | Application Raised date   | 2015-04-10       |
+            | National Insurance Number | FS123456C        |
+            | Threshold                 | 357.69           |
+            | Employer Name             | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -58,13 +60,14 @@ Feature: Pass - Category A Financial Requirement (with no dependents - weekly pa
             | NINO                    | JO123456A  |
             | Application raised date | 2015-06-28 |
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | John       |
-            | Individual surname         | Odometey   |
-            | Application Raised to date | 2014-12-28 |
-            | Application Raised date    | 2015-06-28 |
-            | National Insurance Number  | JO123456A  |
-            | Threshold                  | 357.69     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | John             |
+            | Individual surname        | Odometey         |
+            | Assessment start date     | 2014-12-28       |
+            | Application Raised date   | 2015-06-28       |
+            | National Insurance Number | JO123456A        |
+            | Threshold                 | 357.69           |
+            | Employer Name             | Flying Pizza Ltd |
 

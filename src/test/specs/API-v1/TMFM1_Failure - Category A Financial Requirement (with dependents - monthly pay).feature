@@ -34,16 +34,17 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
             | Dependants              | 4          |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200                           |
-            | Financial requirement met  | false                         |
-            | Failure reason             | MONTHLY_VALUE_BELOW_THRESHOLD |
-            | Individual title           | Ms                            |
-            | Individual forename        | Shelly                        |
-            | Individual surname         | Patel                         |
-            | Application Raised to date | 2014-08-05                    |
-            | Application Raised date    | 2015-02-03                    |
-            | National Insurance Number  | SP123456B                     |
-            | Threshold                  | 2466.67                       |
+            | HTTP Status               | 200                           |
+            | Financial requirement met | false                         |
+            | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
+            | Individual title          | Ms                            |
+            | Individual forename       | Shelly                        |
+            | Individual surname        | Patel                         |
+            | Assessment start date     | 2014-08-05                    |
+            | Application Raised date   | 2015-02-03                    |
+            | National Insurance Number | SP123456B                     |
+            | Threshold                 | 2466.67                       |
+            | Employer Name             | Flying Pizza Ltd              |
 
 #New scenario - Added in
     Scenario: Brian does not meet the Category A Financial Requirement (He has earned < the Cat A financial threshold)
@@ -60,16 +61,17 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
             | Dependants              | 2          |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200                           |
-            | Financial requirement met  | false                         |
-            | Failure reason             | MONTHLY_VALUE_BELOW_THRESHOLD |
-            | Individual title           | Mr                            |
-            | Individual forename        | Brian                         |
-            | Individual surname         | Sinclair                      |
-            | Application Raised to date | 2014-08-12                    |
-            | Application Raised date    | 2015-02-10                    |
-            | National Insurance Number  | BS123456B                     |
-            | Threshold                  | 2066.67                       |
+            | HTTP Status               | 200                           |
+            | Financial requirement met | false                         |
+            | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
+            | Individual title          | Mr                            |
+            | Individual forename       | Brian                         |
+            | Individual surname        | Sinclair                      |
+            | Assessment start date     | 2014-08-12                    |
+            | Application Raised date   | 2015-02-10                    |
+            | National Insurance Number | BS123456B                     |
+            | Threshold                 | 2066.67                       |
+            | Employer Name             | Flying Pizza Ltd              |
 
 
 #New scenario - Added in SD102
@@ -88,15 +90,16 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
             | Dependants              | 3          |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200                |
-            | Financial requirement met  | false              |
-            | Failure reason             | NOT_ENOUGH_RECORDS |
-            | Individual title           | Mr                 |
-            | Individual forename        | Steve              |
-            | Individual surname         | Yu                 |
-            | Application Raised to date | 2015-03-05         |
-            | Application Raised date    | 2015-09-03         |
-            | National Insurance Number  | SY987654C          |
-            | Threshold                  | 2266.67            |
+            | HTTP Status               | 200                |
+            | Financial requirement met | false              |
+            | Failure reason            | NOT_ENOUGH_RECORDS |
+            | Individual title          | Mr                 |
+            | Individual forename       | Steve              |
+            | Individual surname        | Yu                 |
+            | Assessment start date     | 2015-03-05         |
+            | Application Raised date   | 2015-09-03         |
+            | National Insurance Number | SY987654C          |
+            | Threshold                 | 2266.67            |
+            | Employer Name             | Flying Pizza Ltd   |
 
 

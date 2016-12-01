@@ -30,17 +30,18 @@ Feature: Pass - Category A Financial Requirement (with dependants - monthly)
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | TL123456A  |
             | Application raised date | 2015-01-23 |
-            | Dependants               | 1          |
+            | Dependants              | 1          |
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | Tony       |
-            | Individual surname         | Ledo       |
-            | Application Raised to date | 2014-07-25 |
-            | Application Raised date    | 2015-01-23 |
-            | National Insurance Number  | TL123456A  |
-            | Threshold                  | 1866.67    |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | Tony             |
+            | Individual surname        | Ledo             |
+            | Assessment start date     | 2014-07-25       |
+            | Application Raised date   | 2015-01-23       |
+            | National Insurance Number | TL123456A        |
+            | Threshold                 | 1866.67          |
+            | Employer Name             | Flying Pizza Ltd |
 
 
 #New scenario -
@@ -55,17 +56,18 @@ Feature: Pass - Category A Financial Requirement (with dependants - monthly)
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | SJ123456C  |
             | Application raised date | 2015-12-08 |
-            | Dependants               | 3          |
+            | Dependants              | 3          |
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Ms         |
-            | Individual forename        | Scarlett   |
-            | Individual surname         | Jones      |
-            | Application Raised to date | 2015-06-09 |
-            | Application Raised date    | 2015-12-08 |
-            | National Insurance Number  | SJ123456C  |
-            | Threshold                  | 2266.67    |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Ms               |
+            | Individual forename       | Scarlett         |
+            | Individual surname        | Jones            |
+            | Assessment start date     | 2015-06-09       |
+            | Application Raised date   | 2015-12-08       |
+            | National Insurance Number | SJ123456C        |
+            | Threshold                 | 2266.67          |
+            | Employer Name             | Flying Pizza Ltd |
 
 #New scenario -
     Scenario: Wasim Mohammed meets the Category A Financial Requirement with 5 dependants
@@ -79,14 +81,15 @@ Feature: Pass - Category A Financial Requirement (with dependants - monthly)
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | WA987654B  |
             | Application raised date | 2015-02-28 |
-            | Dependants               | 5          |
+            | Dependants              | 5          |
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | Wasim      |
-            | Individual surname         | Mohammed   |
-            | Application Raised to date | 2014-08-30 |
-            | Application Raised date    | 2015-02-28 |
-            | National Insurance Number  | WA987654B  |
-            | Threshold                  | 2666.67    |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | Wasim            |
+            | Individual surname        | Mohammed         |
+            | Assessment start date     | 2014-08-30       |
+            | Application Raised date   | 2015-02-28       |
+            | National Insurance Number | WA987654B        |
+            | Threshold                 | 2666.67          |
+            | Employer Name             | Flying Pizza Ltd |

@@ -28,20 +28,21 @@ Feature: Failure - Category A Financial Requirement (with Dependantss - weekly p
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | DS123456C  |
             | Application Raised Date | 2015-11-03 |
-            | dependants               | 3          |
+            | dependants              | 3          |
 
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200                          |
-            | Financial requirement met  | false                        |
-            | Failure reason             | WEEKLY_VALUE_BELOW_THRESHOLD |
-            | Individual title           | Mr                           |
-            | Individual forename        | Donald                       |
-            | Individual surname         | Sweet                        |
-            | Application Raised to date | 2015-05-05                   |
-            | Application Raised date    | 2015-11-03                   |
-            | National Insurance Number  | DS123456C                    |
-            | Threshold                  | 523.08                       |
+            | HTTP Status               | 200                          |
+            | Financial requirement met | false                        |
+            | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
+            | Individual title          | Mr                           |
+            | Individual forename       | Donald                       |
+            | Individual surname        | Sweet                        |
+            | Assessment start date     | 2015-05-05                   |
+            | Application Raised date   | 2015-11-03                   |
+            | National Insurance Number | DS123456C                    |
+            | Threshold                 | 523.08                       |
+            | Employer Name             | Flying Pizza Ltd             |
 
 
 #New scenario - Added in SD126
@@ -54,19 +55,20 @@ Feature: Failure - Category A Financial Requirement (with Dependantss - weekly p
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | JL123456D  |
             | Application Raised Date | 2015-01-09 |
-            | Dependants               | 2          |
+            | Dependants              | 2          |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200                |
-            | Financial requirement met  | false              |
-            | Failure reason             | NOT_ENOUGH_RECORDS |
-            | Individual title           | Mr                 |
-            | Individual forename        | John               |
-            | Individual surname         | Lister             |
-            | Application Raised to date | 2014-07-11         |
-            | Application Raised date    | 2015-01-09         |
-            | National Insurance Number  | JL123456D          |
-            | Threshold                  | 476.92             |
+            | HTTP Status               | 200                |
+            | Financial requirement met | false              |
+            | Failure reason            | NOT_ENOUGH_RECORDS |
+            | Individual title          | Mr                 |
+            | Individual forename       | John               |
+            | Individual surname        | Lister             |
+            | Assessment start date     | 2014-07-11         |
+            | Application Raised date   | 2015-01-09         |
+            | National Insurance Number | JL123456D          |
+            | Threshold                 | 476.92             |
+            | Employer Name             | Flying Pizza Ltd   |
 
 #New scenario - Added in
     Scenario: Gary Goldstein does not meet the Category A employment duration Requirement (He has worked for his current employer for only 20 weeks)
@@ -79,16 +81,17 @@ Feature: Failure - Category A Financial Requirement (with Dependantss - weekly p
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | GG987654A  |
             | Application Raised Date | 2015-09-03 |
-            | Dependants               | 3          |
+            | Dependants              | 3          |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200                |
-            | Financial requirement met  | false              |
-            | Failure reason             | NOT_ENOUGH_RECORDS |
-            | Individual title           | Mr                 |
-            | Individual forename        | Gary               |
-            | Individual surname         | Goldstein          |
-            | Application Raised to date | 2015-03-05         |
-            | Application Raised date    | 2015-09-03         |
-            | National Insurance Number  | GG987654A          |
-            | Threshold                  | 523.08             |
+            | HTTP Status               | 200                |
+            | Financial requirement met | false              |
+            | Failure reason            | NOT_ENOUGH_RECORDS |
+            | Individual title          | Mr                 |
+            | Individual forename       | Gary               |
+            | Individual surname        | Goldstein          |
+            | Assessment start date     | 2015-03-05         |
+            | Application Raised date   | 2015-09-03         |
+            | National Insurance Number | GG987654A          |
+            | Threshold                 | 523.08             |
+            | Employer Name             | Flying Pizza Ltd   |

@@ -30,15 +30,16 @@ Feature: Pass - Category A Financial Requirement (with Dependants - weekly pay)
             | Application raised date | 2015-02-23 |
             | Dependants              | 1          |
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mr         |
-            | Individual forename        | Tony       |
-            | Individual surname         | Singh      |
-            | Application Raised to date | 2014-08-25 |
-            | Application Raised date    | 2015-02-23 |
-            | National Insurance Number  | TS123456A  |
-            | Threshold                  | 430.77     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mr               |
+            | Individual forename       | Tony             |
+            | Individual surname        | Singh            |
+            | Assessment start date     | 2014-08-25       |
+            | Application Raised date   | 2015-02-23       |
+            | National Insurance Number | TS123456A        |
+            | Threshold                 | 430.77           |
+            | Employer Name             | Flying Pizza Ltd |
 
 
 #New scenario - Added in SD126
@@ -53,15 +54,16 @@ Feature: Pass - Category A Financial Requirement (with Dependants - weekly pay)
             | Application raised date | 2015-12-04 |
             | Dependants              | 3          |
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Miss       |
-            | Individual forename        | Jennifer   |
-            | Individual surname         | Toure      |
-            | Application Raised to date | 2015-06-05 |
-            | Application Raised date    | 2015-12-04 |
-            | National Insurance Number  | JT123456C  |
-            | Threshold                  | 523.08     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Miss             |
+            | Individual forename       | Jennifer         |
+            | Individual surname        | Toure            |
+            | Assessment start date     | 2015-06-05       |
+            | Application Raised date   | 2015-12-04       |
+            | National Insurance Number | JT123456C        |
+            | Threshold                 | 523.08           |
+            | Employer Name             | Flying Pizza Ltd |
 
 
 #New scenario - Added in
@@ -76,13 +78,14 @@ Feature: Pass - Category A Financial Requirement (with Dependants - weekly pay)
             | Application raised date | 2015-07-22 |
             | Dependants              | 5          |
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status                | 200        |
-            | Financial requirement met  | true       |
-            | Individual title           | Mrs        |
-            | Individual forename        | Lela       |
-            | Individual surname         | Vasquez    |
-            | Application Raised to date | 2015-01-21 |
-            | Application Raised date    | 2015-07-22 |
-            | National Insurance Number  | LV987654B  |
-            | Threshold                  | 615.38     |
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Individual title          | Mrs              |
+            | Individual forename       | Lela             |
+            | Individual surname        | Vasquez          |
+            | Assessment start date     | 2015-01-21       |
+            | Application Raised date   | 2015-07-22       |
+            | National Insurance Number | LV987654B        |
+            | Threshold                 | 615.38           |
+            | Employer Name             | Flying Pizza Ltd |
 
