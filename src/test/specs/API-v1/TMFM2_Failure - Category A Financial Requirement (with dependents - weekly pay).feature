@@ -28,7 +28,7 @@ Feature: Failure - Category A Financial Requirement (with Dependantss - weekly p
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | DS123456C  |
             | Application Raised Date | 2015-11-03 |
-            | Dependant               | 3          |
+            | dependants               | 3          |
 
 
         Then The Income Proving TM Family API provides the following result:
@@ -52,9 +52,9 @@ Feature: Failure - Category A Financial Requirement (with Dependantss - weekly p
 
         Given A service is consuming the Income Proving TM Family API
         When the Income Proving TM Family API is invoked with the following:
-            | NINO                    | JL123456B  |
-            | Application Raised Date | 2015-07-10 |
-            | Dependant               | 2          |
+            | NINO                    | JL123456D  |
+            | Application Raised Date | 2015-01-09 |
+            | Dependants               | 2          |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status                | 200                |
@@ -63,9 +63,9 @@ Feature: Failure - Category A Financial Requirement (with Dependantss - weekly p
             | Individual title           | Mr                 |
             | Individual forename        | John               |
             | Individual surname         | Lister             |
-            | Application Raised to date | 2015-01-09         |
-            | Application Raised date    | 2015-07-10         |
-            | National Insurance Number  | JL123456B          |
+            | Application Raised to date | 2014-07-11         |
+            | Application Raised date    | 2015-01-09         |
+            | National Insurance Number  | JL123456D          |
             | Threshold                  | 476.92             |
 
 #New scenario - Added in
@@ -79,7 +79,7 @@ Feature: Failure - Category A Financial Requirement (with Dependantss - weekly p
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | GG987654A  |
             | Application Raised Date | 2015-09-03 |
-            | Dependant               | 3          |
+            | Dependants               | 3          |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status                | 200                |

@@ -6,7 +6,6 @@ import cucumber.api.java.en.Given
 import cucumber.api.java.en.Then
 import cucumber.api.java.en.When
 import net.thucydides.core.annotations.Managed
-import org.json.JSONObject
 import org.springframework.beans.BeansException
 import org.springframework.boot.test.IntegrationTest
 import org.springframework.boot.test.SpringApplicationConfiguration
@@ -14,15 +13,12 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.web.servlet.DispatcherServlet
+import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.ServiceConfiguration
 import uk.gov.digital.ho.proving.income.ServiceRunner
-import uk.gov.digital.ho.proving.income.ApiExceptionHandler
-
-import java.text.DecimalFormat
 
 import static com.jayway.jsonpath.JsonPath.read
 import static com.jayway.restassured.RestAssured.get
-
 
 @SpringApplicationConfiguration(classes = [ServiceConfiguration.class, ServiceRunner.class, ApiExceptionHandler.class])
 @WebAppConfiguration
@@ -45,70 +41,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
     String fromDate = ""
     String toDate =""
 
-    public void validateResult(DataTable arg) {
-        Map<String, String> entries = arg.asMap(String.class, String.class);
-        String[] tableKey = entries.keySet()
-        List<String> allKeys = new ArrayList()
-        List<String> allJsonValue = new ArrayList()
-        List<String> tableFieldValue = new ArrayList()
-        List<String> tableFieldCamelCase = new ArrayList()
-        JSONObject json = new JSONObject(jsonAsString);
-        DecimalFormat df = new DecimalFormat("#.00")
-        double value
-        String innerJsonValue
-        String jsonValue
 
-        Iterator<String> jasonKey = json.keys()
-
-        while (jasonKey.hasNext()) {
-            String key = (String) jasonKey.next();
-
-            if (json.get(key) instanceof JSONObject) {
-
-                String innerValue = json.get(key)
-                println "AAAAAAAAAAA" + innerValue
-                JSONObject json2 = new JSONObject(innerValue)
-                Iterator<String> feild = json2.keys()
-
-                while (feild.hasNext()) {
-                    String key2 = (String) feild.next()
-                    allKeys.add(key2)
-                    println "BBBBBBBBB" + key2
-                    if (!(json2.get(key2) instanceof String)) {
-                        boolean values = json2.get(key2)
-                       // innerJsonValue = String.valueOf(df.format(values))
-                        allJsonValue.add(values)
-                        println "DDDDDDDDDDD" + innerJsonValue
-                    }
-                    innerJsonValue = json2.get(key2)
-                    if ((key2 != "code") && (key2 != "message")) {
-                        allJsonValue.add(innerJsonValue)
-                    }
-                }
-            }
-            if (!(json.get(key) instanceof JSONObject)) {
-
-                jsonValue = json.get(key)
-                if ((key == "minimum") || (key == "threshold")) {
-                    value = json.getDouble(key)
-                    jsonValue = String.valueOf(df.format(value))
-                    allJsonValue.add(jsonValue)
-                }
-                allKeys.add(key)
-                if (!(allJsonValue.contains(jsonValue))) {
-                    allJsonValue.add(jsonValue)
-                }
-            }
-        }
-        for (String s : tableKey) {
-            if (s != "HTTP Status") {
-                tableFieldCamelCase.add(tocamelcase(s))
-                tableFieldValue.add(entries.get(s))
-            }
-        }
-        assert allKeys.containsAll(tableFieldCamelCase)
-        assert allJsonValue.containsAll(tableFieldValue)
-    }
 
     public String tocamelcase(String g) {
         StringBuilder sbl = new StringBuilder()
