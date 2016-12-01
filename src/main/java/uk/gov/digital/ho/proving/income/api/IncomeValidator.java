@@ -7,6 +7,7 @@ import uk.gov.digital.ho.proving.income.domain.Income;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,16 +22,16 @@ public class IncomeValidator {
     private IncomeValidator() {
     }
 
-    public static FinancialCheckResult validateCategoryAMonthlySalaried(List<Income> incomes, LocalDate lower, LocalDate upper, int dependants) {
+    public static FinancialCheckResult validateCategoryAMonthlySalaried(List<Income> incomes, LocalDate lower, LocalDate upper, int dependants, List<String> employers) {
         SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(dependants);
         BigDecimal monthlyThreshold = thresholdCalculator.getMonthlyThreshold();
-        return new FinancialCheckResult(financialCheckForMonthlySalaried(incomes, NUMBER_OF_MONTHS, monthlyThreshold, lower, upper), monthlyThreshold);
+        return new FinancialCheckResult(financialCheckForMonthlySalaried(incomes, NUMBER_OF_MONTHS, monthlyThreshold, lower, upper), monthlyThreshold,employers);
     }
 
-    public static FinancialCheckResult validateCategoryAWeeklySalaried(List<Income> incomes, LocalDate lower, LocalDate upper, int dependants) {
+    public static FinancialCheckResult validateCategoryAWeeklySalaried(List<Income> incomes, LocalDate lower, LocalDate upper, int dependants, List<String> employers) {
         SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(dependants);
         BigDecimal weeklyThreshold = thresholdCalculator.getWeeklyThreshold();
-        return new FinancialCheckResult(financialCheckForWeeklySalaried(incomes, NUMBER_OF_WEEKS, weeklyThreshold, lower, upper), weeklyThreshold);
+        return new FinancialCheckResult(financialCheckForWeeklySalaried(incomes, NUMBER_OF_WEEKS, weeklyThreshold, lower, upper), weeklyThreshold, employers);
     }
 
     //TODO Refactor date handling once we know more about the back end and test env

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CategoryCheck {
 
@@ -22,15 +24,18 @@ public class CategoryCheck {
 
     private BigDecimal threshold;
 
+    private List<String> employers;
+
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public CategoryCheck(String category, boolean passed, FinancialCheckValues failureReason, LocalDate applicationRaisedDate, LocalDate assessmentStartDate, BigDecimal threshold) {
+    public CategoryCheck(String category, boolean passed, FinancialCheckValues failureReason, LocalDate applicationRaisedDate, LocalDate assessmentStartDate, BigDecimal threshold, List<String> employers) {
         this.category = category;
         this.passed = passed;
         this.applicationRaisedDate = applicationRaisedDate;
         this.assessmentStartDate = assessmentStartDate;
         this.failureReason = failureReason;
         this.threshold = threshold;
+        this.employers = employers;
     }
 
     private String formatDate(LocalDate date){
@@ -83,6 +88,14 @@ public class CategoryCheck {
 
     public void setThreshold(BigDecimal threshold) {
         this.threshold = threshold;
+    }
+
+    public List<String> getEmployers() {
+        return new ArrayList(employers);
+    }
+
+    public void setEmployers(List<String> employers) {
+        this.employers = new ArrayList(employers);
     }
 
     @Override
