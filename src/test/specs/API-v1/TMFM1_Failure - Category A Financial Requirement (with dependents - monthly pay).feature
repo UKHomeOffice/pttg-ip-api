@@ -97,5 +97,6 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
             | Application Raised to date | 2015-03-05         |
             | Application Raised date    | 2015-09-03         |
             | National Insurance Number  | SY987654C          |
+            | Threshold                  | 2266.67            |
 
 

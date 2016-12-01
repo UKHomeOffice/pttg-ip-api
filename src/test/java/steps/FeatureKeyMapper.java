@@ -21,6 +21,9 @@ public class FeatureKeyMapper {
         KEY_MAP.put("Financial requirement met", "categoryCheck passed");
         KEY_MAP.put("Employment requirement met", "categoryCheck passed");
         KEY_MAP.put("Failure reason", "categoryCheck failureReason");
+        KEY_MAP.put("Threshold", "categoryCheck threshold");
+        KEY_MAP.put("Individual forename", "individual forename");
+        KEY_MAP.put("Individual surname", "individual surname");
     }
 
     public static String buildJsonPath(final String key) {
