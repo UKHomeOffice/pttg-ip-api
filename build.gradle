@@ -165,6 +165,9 @@ test {
 }
 
 githubPages {
+
+    System.setProperty("StrictHostKeyChecking", "no")
+
     repoUri = 'git@github.com:UKHomeOffice/pttg-ip-api.git'
     targetBranch = 'gh-pages'
 
