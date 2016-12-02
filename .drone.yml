@@ -7,6 +7,7 @@ pipeline:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
       - export PTTG_GH_TOKEN=${PTTG_GH_TOKEN}
+      - cd /
       - pwd
       - ls
       - touch /etc/ssh/ssh_config
