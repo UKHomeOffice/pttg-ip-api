@@ -7,6 +7,7 @@ pipeline:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
       - export PTTG_GH_TOKEN=${PTTG_GH_TOKEN}
+      - ssh -o "StrictHostKeyChecking no" git@github.com:UKHomeOffice/pttg-ip-api.git
       - ./gradlew build publishGhPages
     when:
       event: push
