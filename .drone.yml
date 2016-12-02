@@ -1,16 +1,5 @@
 pipeline:
 
-  pre-build:
-    privileged: true
-    image: docker:1.11
-    environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
-    commands:
-      - ssh -o "StrictHostKeyChecking no" git@github.com:UKHomeOffice/pttg-ip-api.git
-    when:
-      event: push
-      branch: master
-
   my-build:
     privileged: true
     image: quay.io/ukhomeofficedigital/openjdk8:v1.1.0
@@ -18,6 +7,7 @@ pipeline:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
       - export PTTG_GH_TOKEN=${PTTG_GH_TOKEN}
+      - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
       - ./gradlew build publishGhPages
     when:
       event: push
