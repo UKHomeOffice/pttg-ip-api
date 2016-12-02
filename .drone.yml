@@ -7,7 +7,7 @@ pipeline:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
       - export PTTG_GH_TOKEN=${PTTG_GH_TOKEN}
-      - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+      - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /etc/ssh/ssh_config
       - ./gradlew build publishGhPages
     when:
       event: push
