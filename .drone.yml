@@ -7,6 +7,7 @@ pipeline:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
       - export PTTG_GH_TOKEN=${PTTG_GH_TOKEN}
+      - ssh-keyscan github.com > known_hosts
       - ./gradlew build publishGhPages --stacktrace
     when:
       event: push
