@@ -7,7 +7,9 @@ pipeline:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
       - export PTTG_GH_TOKEN=${PTTG_GH_TOKEN}
-      - ./gradlew build
+      - echo $PTTG_GH_TOKEN >> token.txt
+      - ./gradlew build publishGhPages --stacktrace --info
+      - rm token.txt
     when:
       event: push
       branch: master
