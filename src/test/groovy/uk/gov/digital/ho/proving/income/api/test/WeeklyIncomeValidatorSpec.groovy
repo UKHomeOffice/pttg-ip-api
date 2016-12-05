@@ -3,9 +3,12 @@ package uk.gov.digital.ho.proving.income.api.test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
+import uk.gov.digital.ho.proving.income.api.FinancialCheckResult
 import uk.gov.digital.ho.proving.income.api.FinancialCheckValues
 import uk.gov.digital.ho.proving.income.api.IncomeValidator
 import uk.gov.digital.ho.proving.income.domain.Income
+import uk.gov.digital.ho.proving.income.domain.IncomeProvingResponse
+import uk.gov.digital.ho.proving.income.domain.Individual
 
 import java.time.LocalDate
 import java.time.Month
@@ -25,12 +28,11 @@ class WeeklyIncomeValidatorSpec extends Specification {
         LocalDate raisedDate = getDate(2015, Month.AUGUST, 16)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
-
         when:
-        FinancialCheckValues categoryAIndividual = IncomeValidator.validateCategoryAWeeklySalaried(incomes, pastDate, raisedDate, 0)
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAWeeklySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
-        categoryAIndividual.equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)
+        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)
 
     }
 
@@ -44,10 +46,10 @@ class WeeklyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckValues categoryAIndividual = IncomeValidator.validateCategoryAWeeklySalaried(incomes, pastDate, raisedDate, 0)
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAWeeklySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
-        categoryAIndividual.equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)
+        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)
 
     }
 
@@ -58,12 +60,11 @@ class WeeklyIncomeValidatorSpec extends Specification {
         LocalDate raisedDate = getDate(2015, Month.AUGUST, 10)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
-
         when:
-        FinancialCheckValues categoryAIndividual = IncomeValidator.validateCategoryAWeeklySalaried(incomes, pastDate, raisedDate, 0)
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAWeeklySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
-        categoryAIndividual.equals(FinancialCheckValues.NOT_ENOUGH_RECORDS)
+        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NOT_ENOUGH_RECORDS)
 
     }
 
@@ -71,34 +72,39 @@ class WeeklyIncomeValidatorSpec extends Specification {
     def "invalid category A not enough weekly data"() {
 
         given:
-        List<Income> incomes = getIncomesNotEnoughWeeks();
+        List<Income> incomes = getIncomesNotEnoughWeeks()
         LocalDate raisedDate = getDate(2015, Month.AUGUST, 16)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
-
         when:
-        FinancialCheckValues categoryAIndividual = IncomeValidator.validateCategoryAWeeklySalaried(incomes, pastDate, raisedDate, 0)
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAWeeklySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
-        categoryAIndividual.equals(FinancialCheckValues.NOT_ENOUGH_RECORDS)
+        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NOT_ENOUGH_RECORDS)
 
     }
 
     def "invalid category A some weeks below threshold"() {
 
         given:
-        List<Income> incomes = getIncomesSomeBelowThreshold();
+        List<Income> incomes = getIncomesSomeBelowThreshold()
         LocalDate raisedDate = getDate(2015, Month.AUGUST, 16)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
-
         when:
-        FinancialCheckValues categoryAIndividual = IncomeValidator.validateCategoryAWeeklySalaried(incomes, pastDate, raisedDate, 0)
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAWeeklySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
-        categoryAIndividual.equals(FinancialCheckValues.WEEKLY_VALUE_BELOW_THRESHOLD)
+        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.WEEKLY_VALUE_BELOW_THRESHOLD)
 
     }
 
+    List<String> getEmployers(List<Income> incomes) {
+        Map<String, String> employers = new HashMap<>()
+        for (Income income : incomes) {
+            employers.put(income.getEmployer(), income.getEmployer())
+        }
+        return new ArrayList(employers.values())
+    }
 
 }

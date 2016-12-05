@@ -2,7 +2,7 @@ package uk.gov.digital.ho.proving.income.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.List;
+import java.util.*;
 
 // TODO rename this class
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -53,6 +53,14 @@ public class IncomeProvingResponse {
 
     public void setPayFreq(String payFreq) {
         this.payFreq = payFreq;
+    }
+
+    public List<String> getEmployers() {
+        Map<String, String> employers = new HashMap<>();
+        for (Income income : incomes) {
+            employers.put(income.getEmployer(), income.getEmployer());
+        }
+        return new ArrayList(employers.values());
     }
 
     @Override

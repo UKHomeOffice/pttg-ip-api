@@ -16,13 +16,15 @@ public class FeatureKeyMapper {
     static {
         KEY_MAP = new HashMap<>();
         KEY_MAP.put("National Insurance Number", "individual nino");
-        KEY_MAP.put("Application Raised to date", "categoryCheck assessmentStartDate");
+        KEY_MAP.put("Assessment start date", "categoryCheck assessmentStartDate");
         KEY_MAP.put("Application Raised date", "categoryCheck applicationRaisedDate");
         KEY_MAP.put("Financial requirement met", "categoryCheck passed");
         KEY_MAP.put("Employment requirement met", "categoryCheck passed");
         KEY_MAP.put("Failure reason", "categoryCheck failureReason");
-    }
+        KEY_MAP.put("Threshold", "categoryCheck threshold");
+        KEY_MAP.put("Employer Name", "categoryCheck employers");
 
+    }
     public static String buildJsonPath(final String key) {
         String resolvedKey = KEY_MAP.getOrDefault(key, key);
         StringBuilder sb = new StringBuilder(resolvedKey.replaceAll(" ", "."));
