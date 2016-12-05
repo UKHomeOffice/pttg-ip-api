@@ -13,13 +13,12 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.web.servlet.DispatcherServlet
+import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.ServiceConfiguration
 import uk.gov.digital.ho.proving.income.ServiceRunner
-import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 
 import static com.jayway.jsonpath.JsonPath.read
 import static com.jayway.restassured.RestAssured.get
-
 
 @SpringApplicationConfiguration(classes = [ServiceConfiguration.class, ServiceRunner.class, ApiExceptionHandler.class])
 @WebAppConfiguration
@@ -41,6 +40,8 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
     String applicationRaisedDate
     String fromDate = ""
     String toDate =""
+
+
 
     public String tocamelcase(String g) {
         StringBuilder sbl = new StringBuilder()
@@ -139,9 +140,23 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
                 case "HTTP Status":
                     assert entries.get(key) == resp.getStatusCode().toString();
                     break;
+                case "Employer Name":
+                    String jsonPath = FeatureKeyMapper.buildJsonPath(key).toString();
+                    String[] employers = entries.get(key).split(',')
+
+                    for(String t : employers) {
+
+                        assert read(jsonAsString, jsonPath).toString().contains(t)
+                    }
+
+                    break;
                 default:
                     String jsonPath = FeatureKeyMapper.buildJsonPath(key);
                     assert entries.get(key) == read(jsonAsString, jsonPath).toString();
+                    println " :" + jsonPath
+                    println " :" + jsonAsString
+                    println " :" + entries.get(key)
+
             }
         }
     }
