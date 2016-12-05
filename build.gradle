@@ -166,9 +166,8 @@ test {
 
 githubPages {
 
-    com.jcraft.jsch.JSch.setConfig("StrictHostKeyChecking", "no")
-    System.setProperty("org.ajoberstar.grgit.auth.force", "sshagent")
-    System.setProperty("org.ajoberstar.grgit.auth.ssh.private", "token.txt")
+    //com.jcraft.jsch.JSch.setConfig("StrictHostKeyChecking", "no")
+    //System.setProperty("org.ajoberstar.grgit.auth.force", "sshagent")
 
     repoUri = 'git@github.com:UKHomeOffice/pttg-ip-api.git'
     targetBranch = 'gh-pages'
