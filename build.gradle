@@ -166,17 +166,17 @@ test {
 
 githubPages {
 
-    println "username " + System.env.PTTG_GH_TOKEN
-
     com.jcraft.jsch.JSch.setConfig("StrictHostKeyChecking", "no")
+    System.setProperty("org.ajoberstar.grgit.auth.force", "sshagent")
+  //  System.setProperty("org.ajoberstar.grgit.auth.ssh.private", "token.txt")
 
     repoUri = 'git@github.com:UKHomeOffice/pttg-ip-api.git'
     targetBranch = 'gh-pages'
 
-    credentials {
-       username = System.env.PTTG_GH_TOKEN
-       password = ''
-    }
+//    credentials {
+//       username = System.env.PTTG_GH_TOKEN
+//       password = ''
+//    }
 
     pages {
         from ('docs') {
