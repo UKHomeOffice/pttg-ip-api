@@ -8,7 +8,7 @@ pipeline:
     commands:
       - export PTTG_GH_TOKEN=${PTTG_GH_TOKEN}
       - echo $PTTG_GH_TOKEN >> token.txt
-      - ./gradlew build publishGhPages
+      - ./gradlew build publishGhPages --stacktrace
       - rm token.txt
     when:
       event: push
