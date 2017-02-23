@@ -112,7 +112,7 @@ Feature: Validation of the API fields and data
         Given A service is consuming the Income Proving TM Family API
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | QQ125556A |
-            | Application Raised Date | 2017-01-01 |
+            | Application Raised Date | 2027-01-01 |
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status    | 400                                                |
             | Status code    | 0004                                               |
@@ -171,7 +171,7 @@ Feature: Validation of the API fields and data
     Given A service is consuming the Income Proving TM Family API
     When the Income Proving TM Family API is invoked with the following:
       | NINO                    | QQ987654A  |
-      | Application Raised Date | 2016-12-21 |
+      | Application Raised Date | 2026-12-21 |
       | Dependants               | 3          |
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                |
