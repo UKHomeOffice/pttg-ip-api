@@ -22,8 +22,6 @@ the API previously built using Spark Java.
 
 ### Infrastructure
 
-Builds are triggered by Jenkins.
-
 Apps are packaged as Docker images and stored on quay.io.
 
 Apps are run on AWS managed by kubernetes.
@@ -39,11 +37,6 @@ No dependence on Jenkins for plugins, etc.
 ## Building
 
 ### Everything in Docker
-
-There is a requirement to not use any non-vanilla feature in Jenkins nor to use any plugins.  This is
-seen as polluting Jenkins.  This will allow Jenkins to be replaced at any time without difficulty.
-
-Jenkins runs in a Docker container on AWS.
 
 Following this approach Jobs execute a shell script that carries out the build within a Docker Container.  This
 is implemented by the build.sh script which does the following:
