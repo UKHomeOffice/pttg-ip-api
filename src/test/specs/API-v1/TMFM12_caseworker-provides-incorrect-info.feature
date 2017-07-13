@@ -71,8 +71,8 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
     Given A service is consuming the Income Proving TM Family API
     When the Income Proving API is invoked with the following:
       | nino      | QQ129856A  |
-      | From Date | 2017-06-30 |
-      | To Date   | 2017-12-30 |
+      | From Date | 2019-06-30 |
+      | To Date   | 2019-12-30 |
     Then The API provides the following Individual details:
       | HTTP Status    | 400                       |
       | Status code    | 0004                      |
@@ -82,7 +82,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
     Given A service is consuming the Income Proving TM Family API
     When the Income Proving API is invoked with the following:
       | nino      | QQ129856A  |
-      | From Date | 2017-06-30 |
+      | From Date | 2019-06-30 |
       | To Date   | 2015-12-30 |
     Then The API provides the following Individual details:
       | HTTP Status    | 400                       |
@@ -94,7 +94,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
     When the Income Proving API is invoked with the following:
       | nino      | QQ129856A  |
       | From Date | 2015-06-30 |
-      | To Date   | 2017-12-30 |
+      | To Date   | 2019-12-30 |
     Then The API provides the following Individual details:
       | HTTP Status    | 400                     |
       | Status code    | 0004                    |
