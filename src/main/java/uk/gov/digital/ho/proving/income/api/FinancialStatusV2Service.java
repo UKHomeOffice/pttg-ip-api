@@ -115,7 +115,7 @@ public class FinancialStatusV2Service {
         }
     }
 
-    private void validateDependents(@RequestParam(value = "dependants", required = false, defaultValue = "0") Integer dependants) {
+    private void validateDependents(Integer dependants) {
         if (dependants < MINIMUM_DEPENDANTS) {
             throw new IllegalArgumentException("Dependants cannot be less than " + MINIMUM_DEPENDANTS);
         } else if (dependants > MAXIMUM_DEPENDANTS) {
