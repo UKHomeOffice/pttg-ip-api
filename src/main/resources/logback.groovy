@@ -1,7 +1,4 @@
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
-import ch.qos.logback.core.ConsoleAppender
-import ch.qos.logback.core.FileAppender
-import ch.qos.logback.core.status.OnConsoleStatusListener
 import net.logstash.logback.composite.loggingevent.*
 import net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder
 
@@ -30,6 +27,9 @@ appender("STDOUT", ConsoleAppender) {
             stackTrace(StackTraceJsonProvider)
         }
     }
+    filter(ch.qos.logback.classic.filter.ThresholdFilter) {
+        level = INFO
+    }
 }
 
 appender("FILE", FileAppender) {
@@ -48,7 +48,7 @@ appender("FILE", FileAppender) {
 // Define logging levels for specific packages
 logger("org.eclipse.jetty", INFO)
 logger("org.mongodb.driver.cluster", INFO)
-logger("org.springframework", DEBUG)
+logger("org.springframework", INFO)
 logger("org.mongodb.driver.connection", INFO)
 
 root(DEBUG, ["STDOUT", "FILE"])
