@@ -5,12 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.proving.income.acl.EarningsService;
-import uk.gov.digital.ho.proving.income.acl.IndividualService;
 import uk.gov.digital.ho.proving.income.acl.UnknownPaymentFrequencyType;
 import uk.gov.digital.ho.proving.income.audit.AuditActions;
-import uk.gov.digital.ho.proving.income.domain.Application;
-import uk.gov.digital.ho.proving.income.domain.IncomeProvingResponse;
+import uk.gov.digital.ho.proving.income.domain.Individual;
+import uk.gov.digital.ho.proving.income.domain.hmrc.Identity;
+import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
+import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -31,9 +31,7 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH_RESUL
 public class FinancialStatusV2Service {
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-    private final EarningsService earningsService;
-
-    private final IndividualService individualService;
+    private final IncomeRecordService incomeRecordService;
 
     private final ApplicationEventPublisher auditor;
 
@@ -42,9 +40,8 @@ public class FinancialStatusV2Service {
 
     private static final int NUMBER_OF_DAYS = 182;
 
-    public FinancialStatusV2Service(EarningsService earningsService, IndividualService individualService, ApplicationEventPublisher auditor) {
-        this.earningsService = earningsService;
-        this.individualService = individualService;
+    public FinancialStatusV2Service(IncomeRecordService incomeRecordService, ApplicationEventPublisher auditor) {
+        this.incomeRecordService = incomeRecordService;
         this.auditor = auditor;
     }
 
@@ -69,11 +66,12 @@ public class FinancialStatusV2Service {
 
         LocalDate startSearchDate = applicationRaisedDate.minusDays(NUMBER_OF_DAYS);
 
-        IncomeProvingResponse incomeProvingResponse = individualService.lookup(sanitiseNino(nino), startSearchDate, applicationRaisedDate);
+        IncomeRecord incomeRecord = incomeRecordService.getIncomeRecord(
+            new Identity(forename, surname, dateOfBirth, sanitiseNino(nino)),
+            startSearchDate,
+            applicationRaisedDate);
 
-        Application application = earningsService.lookup(sanitiseNino(nino), applicationRaisedDate);
-
-        FinancialStatusCheckResponse response = calculateResponse(applicationRaisedDate, dependants, startSearchDate, incomeProvingResponse, application);
+        FinancialStatusCheckResponse response = calculateResponse(applicationRaisedDate, dependants, startSearchDate, incomeRecord, new Individual("", forename, surname, sanitiseNino(nino)));
 
         LOGGER.debug("Financial status check result: {}", value("financialStatusCheckResponse", response));
         auditor.publishEvent(auditEvent(SEARCH_RESULT, eventId, auditData(response)));
@@ -81,13 +79,13 @@ public class FinancialStatusV2Service {
         return response;
     }
 
-    private FinancialStatusCheckResponse calculateResponse(@RequestParam(value = "applicationRaisedDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate applicationRaisedDate, @RequestParam(value = "dependants", required = false, defaultValue = "0") Integer dependants, LocalDate startSearchDate, IncomeProvingResponse incomeProvingResponse, Application application) {
+    private FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
         FinancialStatusCheckResponse response = new FinancialStatusCheckResponse();
-        response.setIndividual(application.getIndividual());
+        response.setIndividual(individual);
 
-        switch (incomeProvingResponse.getPayFreq().toUpperCase()) {
+        switch (calculateFrequency(incomeRecord)) {
             case "M1":
-                FinancialCheckResult categoryAMonthlySalaried = IncomeValidator.validateCategoryAMonthlySalaried(incomeProvingResponse.getIncomes(), startSearchDate, applicationRaisedDate, dependants, incomeProvingResponse.getEmployers());
+                FinancialCheckResult categoryAMonthlySalaried = IncomeValidator.validateCategoryAMonthlySalaried2(incomeRecord.getIncome(), startSearchDate, applicationRaisedDate, dependants, incomeRecord.getEmployments());
                 if (categoryAMonthlySalaried.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)) {
                     response.setCategoryCheck(new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate,  categoryAMonthlySalaried.getThreshold(), categoryAMonthlySalaried.getEmployers()));
                 } else {
@@ -95,7 +93,7 @@ public class FinancialStatusV2Service {
                 }
                 break;
             case "W1":
-                FinancialCheckResult categoryAWeeklySalaried = IncomeValidator.validateCategoryAWeeklySalaried(incomeProvingResponse.getIncomes(), startSearchDate, applicationRaisedDate, dependants, incomeProvingResponse.getEmployers());
+                FinancialCheckResult categoryAWeeklySalaried = IncomeValidator.validateCategoryAWeeklySalaried2(incomeRecord.getIncome(), startSearchDate, applicationRaisedDate, dependants, incomeRecord.getEmployments());
                 if (categoryAWeeklySalaried.getFinancialCheckValue().equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)) {
                     response.setCategoryCheck(new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate, categoryAWeeklySalaried.getThreshold(), categoryAWeeklySalaried.getEmployers()));
                 } else {
@@ -107,6 +105,10 @@ public class FinancialStatusV2Service {
         }
         response.setStatus(new ResponseStatus("100", "OK"));
         return response;
+    }
+
+    private String calculateFrequency(IncomeRecord incomeRecord) {
+        return "M1";
     }
 
     private void validateApplicationRaisedDate(LocalDate applicationRaisedDate) {
