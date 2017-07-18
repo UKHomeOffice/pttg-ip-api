@@ -113,15 +113,15 @@ public class FinancialStatusV2Service {
 
     private void validateApplicationRaisedDate(LocalDate applicationRaisedDate) {
         if (applicationRaisedDate.isAfter(now())) {
-            throw new IllegalArgumentException("applicationRaisedDate");
+            throw new IllegalArgumentException("Parameter error: applicationRaisedDate");
         }
     }
 
     private void validateDependents(Integer dependants) {
         if (dependants < MINIMUM_DEPENDANTS) {
-            throw new IllegalArgumentException("Dependants cannot be less than " + MINIMUM_DEPENDANTS);
+            throw new IllegalArgumentException("Parameter error: Dependants cannot be less than " + MINIMUM_DEPENDANTS);
         } else if (dependants > MAXIMUM_DEPENDANTS) {
-            throw new IllegalArgumentException("Dependants cannot be more than " + MAXIMUM_DEPENDANTS);
+            throw new IllegalArgumentException("Parameter error: Dependants cannot be more than " + MAXIMUM_DEPENDANTS);
         }
     }
 
@@ -132,7 +132,7 @@ public class FinancialStatusV2Service {
     private void validateNino(String nino) {
         final Pattern pattern = Pattern.compile("^[a-zA-Z]{2}[0-9]{6}[a-dA-D]{1}$");
         if (!pattern.matcher(nino).matches()) {
-            throw new IllegalArgumentException("Invalid NINO");
+            throw new IllegalArgumentException("Parameter error: NINO is invalid");
         }
     }
 

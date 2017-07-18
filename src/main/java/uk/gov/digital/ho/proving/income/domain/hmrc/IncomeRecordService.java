@@ -2,12 +2,11 @@ package uk.gov.digital.ho.proving.income.domain.hmrc;
 
 import jersey.repackaged.com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,6 +24,7 @@ public class IncomeRecordService {
     }
 
     public IncomeRecord getIncomeRecord(Identity identity, LocalDate fromDate, LocalDate toDate) {
+        try {
         ResponseEntity<IncomeRecord> responseEntity = restTemplate.exchange(
             String.format("%s?firstName={firstName}&lastName={lastName}&nino={nino}&dateOfBirth={dateOfBirth}&fromDate={fromDate}&toDate={toDate}", hmrcServiceEndpoint),
             HttpMethod.GET,
@@ -40,6 +40,16 @@ public class IncomeRecordService {
                 put("toDate", toDate.format(DateTimeFormatter.ISO_DATE)).
                 build());
         return responseEntity.getBody();
+        } catch (HttpStatusCodeException e) {
+            if (isNotFound(e)) {
+                throw new EarningsServiceNoUniqueMatch();
+            }
+            throw e;
+        }
+    }
+
+    private static boolean isNotFound(HttpStatusCodeException e) {
+        return e.getStatusCode() != null && e.getStatusCode() == HttpStatus.NOT_FOUND;
     }
 
 
