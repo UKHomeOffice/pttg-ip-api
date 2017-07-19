@@ -1,12 +1,19 @@
 package steps
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.WireMock
 import com.jayway.restassured.response.Response
 import cucumber.api.DataTable
+import cucumber.api.java.After
+import cucumber.api.java.Before
 import cucumber.api.java.en.Given
 import cucumber.api.java.en.Then
 import cucumber.api.java.en.When
 import net.thucydides.core.annotations.Managed
+import org.apache.commons.lang.StringUtils
 import org.springframework.beans.BeansException
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.IntegrationTest
 import org.springframework.boot.test.SpringApplicationConfiguration
 import org.springframework.context.ApplicationContext
@@ -16,7 +23,15 @@ import org.springframework.web.servlet.DispatcherServlet
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.ServiceConfiguration
 import uk.gov.digital.ho.proving.income.ServiceRunner
+import uk.gov.digital.ho.proving.income.domain.hmrc.Employer
+import uk.gov.digital.ho.proving.income.domain.hmrc.Employments
+import uk.gov.digital.ho.proving.income.domain.hmrc.Income
+import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 
+import java.time.LocalDate
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static com.jayway.jsonpath.JsonPath.read
 import static com.jayway.restassured.RestAssured.get
 
@@ -24,6 +39,22 @@ import static com.jayway.restassured.RestAssured.get
 @WebAppConfiguration
 @IntegrationTest()
 class ProvingThingsApiSteps implements ApplicationContextAware{
+    private WireMockServer wireMockServer = new WireMockServer(options().port(8083));
+
+    @Autowired
+    private ObjectMapper objectMapper
+
+    @Before
+    public void before() throws Exception {
+        configureFor(8083);
+        wireMockServer.start();
+    }
+
+    @After
+    public void after() throws Exception {
+        wireMockServer.stop();
+    }
+
 
     @Override
     void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -176,6 +207,15 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
         println "Generic Tool Json" + jsonAsString
     }
 
+    @When("^the Income Proving v2 TM Family API is invoked with the following:\$")
+    public void theIncomeProvingVTMFamilyAPIIsInvokedWithTheFollowing(DataTable params) throws Throwable {
+        getTableData(params)
+        resp = get("http://localhost:8081/incomeproving/v2/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, applicationRaisedDate, dependants);
+        jsonAsString = resp.asString();
+        println "HMRC Json" + jsonAsString
+    }
+
+
     @Then("^The Income Proving TM Family API provides the following result:\$")
     public void the_Income_Proving_TM_Family_API_provides_the_following_result(DataTable arg1) {
         validateJsonResult(arg1)
@@ -204,8 +244,44 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
     }
 
 
+    @Given("^HMRC has the following income records:\$")
+    public void hmrcHasTheFollowingIncomeRecords(DataTable incomeRecords) throws Throwable {
+        List<Income> income = incomeRecords.
+            raw().
+            stream().
+            skip(1).
+            map({row -> toIncome(row)}).
+            collect();
 
+        List<Employments> employments = incomeRecords.
+            raw().
+            stream().
+            skip(1).
+            map({row -> toEmployment(row)}).
+            collect().
+            unique {e1, e2 -> e1.employer.payeReference <=> e2.employer.payeReference};
 
+        IncomeRecord incomeRecord = new IncomeRecord(income, employments);
+        String data = objectMapper.writeValueAsString(incomeRecord)
+        stubFor(WireMock.get(urlMatching("/income.*")).
+            willReturn(aResponse().
+                withHeader("Content-Type", "application/json").
+                withBody(data)));
+        incomeRecords.raw();
+    }
 
+    def toIncome(row) {
+        BigDecimal payment = new BigDecimal(row.get(1))
+        LocalDate paymentDate = LocalDate.parse(row.get(0))
+        Integer monthPayNumber = StringUtils.isBlank(row.get(3)) ? null : new Integer(row.get(3))
+        Integer weekPayNumber = StringUtils.isBlank(row.get(2)) ? null : new Integer(row.get(2))
+        String employerPayeReference = row.get(4)
+        new Income(payment, paymentDate, monthPayNumber, weekPayNumber, employerPayeReference)
+    }
 
+    def toEmployment(row) {
+        String employerPayeReference = row.get(4)
+        String employerName = row.get(5)
+        new Employments(new Employer(employerName, employerPayeReference))
+    }
 }

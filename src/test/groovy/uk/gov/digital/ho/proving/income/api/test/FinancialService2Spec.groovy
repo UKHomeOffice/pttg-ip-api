@@ -70,7 +70,7 @@ class FinancialService2Spec extends Specification {
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
 
         response.andExpect(status().isBadRequest())
-        jsonContent.status.message == "Parameter error: NINO is invalid"
+        jsonContent.status.message == "Parameter error: Invalid NINO"
 
     }
 

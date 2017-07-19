@@ -112,6 +112,9 @@ public class FinancialStatusV2Service {
     }
 
     private void validateApplicationRaisedDate(LocalDate applicationRaisedDate) {
+        if (applicationRaisedDate == null) {
+            throw new IllegalArgumentException("Parameter error: applicationRaisedDate");
+        }
         if (applicationRaisedDate.isAfter(now())) {
             throw new IllegalArgumentException("Parameter error: applicationRaisedDate");
         }
@@ -132,7 +135,7 @@ public class FinancialStatusV2Service {
     private void validateNino(String nino) {
         final Pattern pattern = Pattern.compile("^[a-zA-Z]{2}[0-9]{6}[a-dA-D]{1}$");
         if (!pattern.matcher(nino).matches()) {
-            throw new IllegalArgumentException("Parameter error: NINO is invalid");
+            throw new IllegalArgumentException("Parameter error: Invalid NINO");
         }
     }
 
@@ -144,8 +147,8 @@ public class FinancialStatusV2Service {
         auditData.put("nino", nino);
         auditData.put("forename", forename);
         auditData.put("surname", surname);
-        auditData.put("dateOfBirth", dateOfBirth.format(DateTimeFormatter.ISO_DATE));
-        auditData.put("applicationRaisedDate", applicationRaisedDate.format(DateTimeFormatter.ISO_DATE));
+        auditData.put("dateOfBirth", dateOfBirth == null ? null : dateOfBirth.format(DateTimeFormatter.ISO_DATE));
+        auditData.put("applicationRaisedDate", applicationRaisedDate == null ? null : applicationRaisedDate.format(DateTimeFormatter.ISO_DATE));
         auditData.put("dependants", dependants);
 
         return auditData;

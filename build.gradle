@@ -117,7 +117,7 @@ dependencies {
     testCompile "net.serenity-bdd:serenity-junit:1.1.31"
     testCompile "net.serenity-bdd:serenity-spring:1.1.31"
     testCompile "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1"
-    testCompile "com.github.tomakehurst:wiremock:1.58"
+    testCompile "com.github.tomakehurst:wiremock:2.4.1"
     testCompile 'com.github.fakemongo:fongo:2.0.6'
 
     testCompile 'org.scala-lang:scala-library:2.11.8'
@@ -139,6 +139,14 @@ task accept(type: Test) {
     finalizedBy aggregate
     outputs.upToDateWhen { false }
 }
+
+task testCucumber(type: Test) {
+    include 'acceptance/AcceptanceV2Tests*'
+    finalizedBy aggregate
+    outputs.upToDateWhen { false }
+}
+
+build.dependsOn(testCucumber)
 
 task acceptanceTest(type: Test) {
     description 'Runs the acceptance tests.'

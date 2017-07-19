@@ -62,8 +62,8 @@ class MockDataUtils {
 
     static def getEmployments() {
         List<Employments> employments = new ArrayList()
-        employments.add(new Employments(new Employer(PIZZA_HUT)));
-        employments.add(new Employments(new Employer(BURGER_KING)));
+        employments.add(new Employments(new Employer(PIZZA_HUT, PIZZA_HUT_PAYE_REF)));
+        employments.add(new Employments(new Employer(BURGER_KING, BURGER_KING_PAYE_REF)));
         employments
 
     }
