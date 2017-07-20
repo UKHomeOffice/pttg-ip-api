@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import static java.time.LocalDate.now;
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.*;
 import static uk.gov.digital.ho.proving.income.audit.AuditActions.auditEvent;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH_RESULT;
@@ -84,7 +85,7 @@ public class FinancialStatusV2Service {
         response.setIndividual(individual);
 
         switch (calculateFrequency(incomeRecord)) {
-            case "M1":
+            case CALENDAR_MONTHLY:
                 FinancialCheckResult categoryAMonthlySalaried = IncomeValidator.validateCategoryAMonthlySalaried2(incomeRecord.getIncome(), startSearchDate, applicationRaisedDate, dependants, incomeRecord.getEmployments());
                 if (categoryAMonthlySalaried.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)) {
                     response.setCategoryCheck(new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate,  categoryAMonthlySalaried.getThreshold(), categoryAMonthlySalaried.getEmployers()));
@@ -92,7 +93,7 @@ public class FinancialStatusV2Service {
                     response.setCategoryCheck(new CategoryCheck("A", false, categoryAMonthlySalaried.getFinancialCheckValue(), applicationRaisedDate, startSearchDate, categoryAMonthlySalaried.getThreshold(), categoryAMonthlySalaried.getEmployers()));
                 }
                 break;
-            case "W1":
+            case WEEKLY:
                 FinancialCheckResult categoryAWeeklySalaried = IncomeValidator.validateCategoryAWeeklySalaried2(incomeRecord.getIncome(), startSearchDate, applicationRaisedDate, dependants, incomeRecord.getEmployments());
                 if (categoryAWeeklySalaried.getFinancialCheckValue().equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)) {
                     response.setCategoryCheck(new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate, categoryAWeeklySalaried.getThreshold(), categoryAWeeklySalaried.getEmployers()));
@@ -107,8 +108,8 @@ public class FinancialStatusV2Service {
         return response;
     }
 
-    private String calculateFrequency(IncomeRecord incomeRecord) {
-        return "M1";
+    private Frequency calculateFrequency(IncomeRecord incomeRecord) {
+        return calculate(incomeRecord);
     }
 
     private void validateApplicationRaisedDate(LocalDate applicationRaisedDate) {

@@ -29,6 +29,7 @@ import uk.gov.digital.ho.proving.income.domain.hmrc.Income
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
@@ -272,7 +273,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
 
     def toIncome(row) {
         BigDecimal payment = new BigDecimal(row.get(1))
-        LocalDate paymentDate = LocalDate.parse(row.get(0))
+        LocalDate paymentDate = LocalDate.parse(row.get(0), DateTimeFormatter.ofPattern("yyyy-M-d"))
         Integer monthPayNumber = StringUtils.isBlank(row.get(3)) ? null : new Integer(row.get(3))
         Integer weekPayNumber = StringUtils.isBlank(row.get(2)) ? null : new Integer(row.get(2))
         String employerPayeReference = row.get(4)

@@ -8,16 +8,13 @@ import uk.gov.digital.ho.proving.income.acl.MongodbBackedApplicantService
 import uk.gov.digital.ho.proving.income.acl.MongodbBackedEarningsService
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
 import uk.gov.digital.ho.proving.income.audit.AuditEventType
-import uk.gov.digital.ho.proving.income.domain.Income
 import uk.gov.digital.ho.proving.income.domain.IncomeProvingResponse
-import uk.gov.digital.ho.proving.income.domain.Individual
 import uk.gov.digital.ho.proving.income.domain.TemporaryMigrationFamilyApplication
 
 import java.time.LocalDate
 
 import static java.time.LocalDate.now
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
-import static java.util.Arrays.asList
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
