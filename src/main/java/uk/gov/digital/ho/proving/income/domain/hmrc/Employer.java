@@ -7,4 +7,5 @@ import lombok.Getter;
 @Getter
 public class Employer {
     private final String name;
+    private final String payeReference;
 }

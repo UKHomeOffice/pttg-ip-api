@@ -2,6 +2,9 @@ package uk.gov.digital.ho.proving.income.api.test
 
 import uk.gov.digital.ho.proving.income.domain.Income
 import uk.gov.digital.ho.proving.income.domain.Individual
+import uk.gov.digital.ho.proving.income.domain.hmrc.Employer
+import uk.gov.digital.ho.proving.income.domain.hmrc.Employments
+import uk.gov.digital.ho.proving.income.domain.hmrc.Identity
 
 import java.time.LocalDate
 import java.time.Month
@@ -10,6 +13,8 @@ class MockDataUtils {
 
     final static String PIZZA_HUT = "Pizza Hut"
     final static String BURGER_KING = "Burger King"
+    final static String PIZZA_HUT_PAYE_REF = "Pizza Hut/ref"
+    final static String BURGER_KING_PAYE_REF = "Burger King/ref"
 
     final static String weeklyThreshold = "357.69"
     final static String aboveThreshold = "357.70"
@@ -22,6 +27,11 @@ class MockDataUtils {
         individual.surname = "Sinclair"
         individual.nino = "AA123456A"
         individual
+    }
+
+    static def getIdentity() {
+        Identity identity = new Identity("Duncan", "Sinclair", LocalDate.of(1945, 4, 19), "AA123456A")
+        identity
     }
 
     static def getConsecutiveIncomes() {
@@ -37,6 +47,26 @@ class MockDataUtils {
         incomes
     }
 
+    static def getConsecutiveIncomes2() {
+        List<uk.gov.digital.ho.proving.income.domain.hmrc.Income> incomes = new ArrayList()
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1400"), getDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF ))
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.JUNE, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.JULY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.FEBRUARY, 15), 1, null, BURGER_KING_PAYE_REF ))
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes
+    }
+
+    static def getEmployments() {
+        List<Employments> employments = new ArrayList()
+        employments.add(new Employments(new Employer(PIZZA_HUT, PIZZA_HUT_PAYE_REF)));
+        employments.add(new Employments(new Employer(BURGER_KING, BURGER_KING_PAYE_REF)));
+        employments
+
+    }
     static def getNotEnoughConsecutiveIncomes() {
         List<Income> incomes = new ArrayList()
         incomes.add(new Income(getDate(2015, Month.MAY, 15), PIZZA_HUT, "1600"))
