@@ -50,11 +50,12 @@ class MockDataUtils {
     static def getConsecutiveIncomes2() {
         List<uk.gov.digital.ho.proving.income.domain.hmrc.Income> incomes = new ArrayList()
         incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1400"), getDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF ))
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.FEBRUARY, 15), 1, null, BURGER_KING_PAYE_REF ))
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.MARCH, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF))
         incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF))
         incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.JUNE, 15), 1, null, PIZZA_HUT_PAYE_REF))
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF))
         incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.JULY, 15), 1, null, PIZZA_HUT_PAYE_REF))
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.FEBRUARY, 15), 1, null, BURGER_KING_PAYE_REF ))
         incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF))
         incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF))
         incomes
