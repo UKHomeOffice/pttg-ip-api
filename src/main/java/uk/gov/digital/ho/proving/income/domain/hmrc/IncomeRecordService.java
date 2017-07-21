@@ -49,7 +49,7 @@ public class IncomeRecordService {
     }
 
     private static boolean isNotFound(HttpStatusCodeException e) {
-        return e.getStatusCode() != null && e.getStatusCode() == HttpStatus.NOT_FOUND;
+        return e.getStatusCode() != null && e.getStatusCode() == HttpStatus.FORBIDDEN;
     }
 
 

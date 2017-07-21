@@ -44,16 +44,15 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
 
     @Autowired
     private ObjectMapper objectMapper
+    private static boolean SuiteSetupDone = false;
 
     @Before
     public void before() throws Exception {
-        configureFor(8083);
-        wireMockServer.start();
-    }
-
-    @After
-    public void after() throws Exception {
-        wireMockServer.stop();
+        if (!SuiteSetupDone) {
+            configureFor(8083);
+            wireMockServer.start();
+            SuiteSetupDone = true
+        }
     }
 
 
