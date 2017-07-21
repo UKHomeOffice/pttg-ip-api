@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.jayway.restassured.response.Response
 import cucumber.api.DataTable
-import cucumber.api.java.After
 import cucumber.api.java.Before
 import cucumber.api.java.en.Given
 import cucumber.api.java.en.Then
@@ -44,16 +43,15 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
 
     @Autowired
     private ObjectMapper objectMapper
+    private static boolean SuiteSetupDone = false;
 
     @Before
     public void before() throws Exception {
-        configureFor(8083);
-        wireMockServer.start();
-    }
-
-    @After
-    public void after() throws Exception {
-        wireMockServer.stop();
+        if (!SuiteSetupDone) {
+            configureFor(8083);
+            wireMockServer.start();
+            SuiteSetupDone = true
+        }
     }
 
 
@@ -284,5 +282,13 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
         String employerPayeReference = row.get(4)
         String employerName = row.get(5)
         new Employments(new Employer(employerName, employerPayeReference))
+    }
+
+    @Given("^HMRC has no matching record\$")
+    public void hmrcHasNoMatchingRecord() throws Throwable {
+        stubFor(WireMock.get(urlMatching("/income.*")).
+            willReturn(aResponse().
+                withHeader("Content-Type", "application/json").
+                withStatus(403)))
     }
 }

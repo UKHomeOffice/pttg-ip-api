@@ -157,7 +157,7 @@ Feature: Validation of the API fields and data
 ###################################### Section - NINO does not exist ######################################
 
   Scenario: The API provides a NINO that does not exist in the system
-    Given A service is consuming the Income Proving TM Family API
+    Given HMRC has no matching record
     When the Income Proving v2 TM Family API is invoked with the following:
       | NINO                    | QQ128856A  |
       | Application Raised Date | 2015-01-01 |

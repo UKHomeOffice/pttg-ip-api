@@ -12,7 +12,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -101,6 +103,21 @@ public class IncomeRecordServiceTest {
 
         assertThat(variablesCaptor.getValue()).containsEntry("toDate", "2017-07-01");
         assertThat(urlTemplate.getValue()).contains("toDate={toDate}");
+    }
+
+    @Test(expected = EarningsServiceNoUniqueMatch.class)
+    public void forbiddenShouldBeMappedToNoMatch() {
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
+            .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
+
+        service.getIncomeRecord(
+            new Identity(
+                "John",
+                "Smith",
+                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+            LocalDate.of(2017, Month.JANUARY, 1),
+            LocalDate.of(2017, Month.JULY, 1)
+        );
     }
 
 }
