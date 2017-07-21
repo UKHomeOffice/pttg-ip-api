@@ -35,8 +35,7 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
             | 2014-10-15 | 2750.00 |            | 4           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-09-15 | 2600.00 |            | 5           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-15 | 2600.00 |            | 6           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-07-15 | 2600.00 |            | 7           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-06-15 | 1600.00 |            | 8           | FP/Ref1       | Flying Pizza Ltd |
+
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | SP123456B  |
@@ -69,8 +68,6 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
             | 2014-10-15 | 2066.80 |            | 4           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-09-15 | 2066.67 |            | 5           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-15 | 2490.00 |            | 6           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-07-15 | 1112700.00 |            | 7           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-06-15 | 1600.00 |            | 8           | FP/Ref1       | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | BS123456B  |
@@ -95,7 +92,7 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
     On same day of Application Raised Date
     He has 3 Thai dependants
     He earns £2916.67 Monthly Gross Income BUT for only 5 months prior to the Application Raised Date
-    He worked for a different employer before his current employer
+    He worked for a different employer before his current employer (Same company under new management, i.e - different company code)
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number| Month Number| PAYE Reference| Employer         |
@@ -114,7 +111,7 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                |
             | Financial requirement met | false              |
-            | Failure reason            | NOT_ENOUGH_RECORDS |
+            | Failure reason            | EMPLOYER_CHANGED   |
             | Assessment start date     | 2015-03-05         |
             | Application Raised date   | 2015-09-03         |
             | National Insurance Number | SY987654C          |
