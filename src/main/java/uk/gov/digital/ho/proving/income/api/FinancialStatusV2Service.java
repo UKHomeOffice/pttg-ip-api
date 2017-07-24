@@ -17,12 +17,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import static java.time.LocalDate.now;
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.*;
+import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.Frequency;
+import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.calculate;
+import static uk.gov.digital.ho.proving.income.api.NinoUtils.sanitiseNino;
+import static uk.gov.digital.ho.proving.income.api.NinoUtils.validateNino;
 import static uk.gov.digital.ho.proving.income.audit.AuditActions.auditEvent;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH_RESULT;
@@ -126,17 +128,6 @@ public class FinancialStatusV2Service {
             throw new IllegalArgumentException("Parameter error: Dependants cannot be less than " + MINIMUM_DEPENDANTS);
         } else if (dependants > MAXIMUM_DEPENDANTS) {
             throw new IllegalArgumentException("Parameter error: Dependants cannot be more than " + MAXIMUM_DEPENDANTS);
-        }
-    }
-
-    private String sanitiseNino(String nino) {
-        return nino.replaceAll("\\s", "").toUpperCase();
-    }
-
-    private void validateNino(String nino) {
-        final Pattern pattern = Pattern.compile("^[a-zA-Z]{2}[0-9]{6}[a-dA-D]{1}$");
-        if (!pattern.matcher(nino).matches()) {
-            throw new IllegalArgumentException("Parameter error: Invalid NINO");
         }
     }
 

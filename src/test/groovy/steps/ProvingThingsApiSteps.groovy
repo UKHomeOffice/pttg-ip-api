@@ -231,6 +231,16 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
         println "" + jsonAsString
     }
 
+    //For generic Tool
+    @When("^the Income Proving v2 API is invoked with the following:\$")
+    public void the_Income_Proving_v2_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
+        getTableData(arg1)
+        resp = get("http://localhost:8081/incomeproving/v2/individual/{nino}/income?fromDate={fromDate}&toDate={toDate}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, fromDate, toDate)
+
+        jsonAsString = resp.asString();
+        println "" + jsonAsString
+    }
+
     @Then("^The API provides the following Individual details:\$")
     public void the_API_provides_the_following_Individual_details(DataTable arg1) throws Throwable {
         validateJsonResult(arg1)
