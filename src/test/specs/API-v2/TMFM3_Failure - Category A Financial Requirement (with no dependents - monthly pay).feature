@@ -16,12 +16,12 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number| Month Number| PAYE Reference| Employer         |
-            | 2014-12-15 | 1000.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-15 | 1000.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-15 | 1000.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-15 | 1000.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-15 | 1000.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-07-15 | 1000.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-12-15 | 1000.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-11-15 | 1000.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-10-15 | 1000.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-09-15 | 1000.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-08-15 | 1000.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-07-15 | 1000.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
