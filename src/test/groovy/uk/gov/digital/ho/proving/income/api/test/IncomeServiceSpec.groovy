@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
-import uk.gov.digital.ho.proving.income.api.IncomeRetrievalV2Service
+import uk.gov.digital.ho.proving.income.api.IncomeRetrievalService
 import uk.gov.digital.ho.proving.income.audit.AuditEventType
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
@@ -24,7 +24,7 @@ import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getIndivid
  * @Author Home Office Digital
  */
 
-class IncomeService2Spec extends Specification {
+class IncomeServiceSpec extends Specification {
 
     String yesterday = now().minusDays(1).format(ISO_LOCAL_DATE);
     String today = now().format(ISO_LOCAL_DATE);
@@ -32,7 +32,7 @@ class IncomeService2Spec extends Specification {
 
     def incomeRecordService = Mock(IncomeRecordService)
     ApplicationEventPublisher auditor = Mock()
-    def controller = new IncomeRetrievalV2Service(incomeRecordService, auditor)
+    def controller = new IncomeRetrievalService(incomeRecordService, auditor)
 
     MockMvc mockMvc = standaloneSetup(controller).setControllerAdvice(new ApiExceptionHandler()).build()
 

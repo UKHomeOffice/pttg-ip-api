@@ -8,5 +8,5 @@ import org.junit.runner.RunWith;
 @CucumberOptions(features={"src/test/specs/API-v2"}
         , glue={"steps"})
 
-public class AcceptanceV2Tests {
+public class AcceptanceTests {
 }

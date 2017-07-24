@@ -32,14 +32,14 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH_RESUL
 
 @RestController
 @ControllerAdvice
-public class IncomeRetrievalV2Service{
+public class IncomeRetrievalService {
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private final IncomeRecordService incomeRecordService;
 
     private final ApplicationEventPublisher auditor;
 
-    public IncomeRetrievalV2Service(IncomeRecordService incomeRecordService, ApplicationEventPublisher auditor) {
+    public IncomeRetrievalService(IncomeRecordService incomeRecordService, ApplicationEventPublisher auditor) {
         this.incomeRecordService = incomeRecordService;
         this.auditor = auditor;
     }

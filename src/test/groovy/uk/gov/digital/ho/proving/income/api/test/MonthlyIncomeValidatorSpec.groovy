@@ -19,9 +19,9 @@ import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.BURGER_KIN
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.PIZZA_HUT
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.PIZZA_HUT_PAYE_REF
 
-class MonthlyIncomeValidator2Spec extends Specification {
+class MonthlyIncomeValidatorSpec extends Specification {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyIncomeValidator2Spec.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyIncomeValidatorSpec.class);
 
     int days = 182
 
@@ -33,7 +33,7 @@ class MonthlyIncomeValidator2Spec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
@@ -48,7 +48,7 @@ class MonthlyIncomeValidator2Spec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NON_CONSECUTIVE_MONTHS)
@@ -63,7 +63,7 @@ class MonthlyIncomeValidator2Spec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NOT_ENOUGH_RECORDS)
@@ -78,7 +78,7 @@ class MonthlyIncomeValidator2Spec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NON_CONSECUTIVE_MONTHS)
@@ -95,7 +95,7 @@ class MonthlyIncomeValidator2Spec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD)
@@ -110,7 +110,7 @@ class MonthlyIncomeValidator2Spec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
@@ -125,7 +125,7 @@ class MonthlyIncomeValidator2Spec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
