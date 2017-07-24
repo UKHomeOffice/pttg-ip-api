@@ -15,7 +15,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
     She earns £1000 Monthly Gross Income EVERY of the 6 months
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference| Employer         |
+            | Date       | Amount  | Week Number| Month Number | PAYE Reference | Employer        |
             | 2014-12-15 | 1000.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-11-15 | 1000.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-10-15 | 1000.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
@@ -37,7 +37,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Threshold                 | 1550.0                        |
             | Employer Name             | Flying Pizza Ltd              |
 
-#New Scenario -
+###New Scenario -
     Scenario: Francois does not meet the Category A Financial Requirement (He has earned < the Cat A financial threshold)
 
     Pay date 28th of the month
