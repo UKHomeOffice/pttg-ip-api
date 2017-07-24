@@ -138,7 +138,7 @@ task accept(type: Test) {
 }
 
 task testCucumber(type: Test) {
-    include 'acceptance/AcceptanceV2Tests*'
+    include 'acceptance/AcceptanceTests*'
     finalizedBy aggregate
     outputs.upToDateWhen { false }
 }

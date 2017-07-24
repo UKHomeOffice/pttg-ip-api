@@ -22,16 +22,16 @@ public class IncomeValidator {
     private IncomeValidator() {
     }
 
-    public static FinancialCheckResult validateCategoryAMonthlySalaried2(List<Income> income, LocalDate lower, LocalDate upper, Integer dependants, List<Employments> employments) {
+    public static FinancialCheckResult validateCategoryAMonthlySalaried(List<Income> income, LocalDate lower, LocalDate upper, Integer dependants, List<Employments> employments) {
         SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(dependants);
         BigDecimal monthlyThreshold = thresholdCalculator.getMonthlyThreshold();
-        return new FinancialCheckResult(financialCheckForMonthlySalaried2(income, NUMBER_OF_MONTHS, monthlyThreshold, lower, upper), monthlyThreshold, toEmployerNames(employments));
+        return new FinancialCheckResult(financialCheckForMonthlySalaried(income, NUMBER_OF_MONTHS, monthlyThreshold, lower, upper), monthlyThreshold, toEmployerNames(employments));
     }
 
-    public static FinancialCheckResult validateCategoryAWeeklySalaried2(List<Income> income, LocalDate lower, LocalDate upper, Integer dependants, List<Employments> employments) {
+    public static FinancialCheckResult validateCategoryAWeeklySalaried(List<Income> income, LocalDate lower, LocalDate upper, Integer dependants, List<Employments> employments) {
         SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(dependants);
         BigDecimal weeklyThreshold = thresholdCalculator.getWeeklyThreshold();
-        return new FinancialCheckResult(financialCheckForWeeklySalaried2(income, NUMBER_OF_WEEKS, weeklyThreshold, lower, upper), weeklyThreshold, toEmployerNames(employments));
+        return new FinancialCheckResult(financialCheckForWeeklySalaried(income, NUMBER_OF_WEEKS, weeklyThreshold, lower, upper), weeklyThreshold, toEmployerNames(employments));
     }
 
     private static List<String> toEmployerNames(List<Employments> employments) {
@@ -39,8 +39,8 @@ public class IncomeValidator {
     }
 
 
-    private static FinancialCheckValues financialCheckForMonthlySalaried2(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate lower, LocalDate upper) {
-        Stream<Income> individualIncome = filterIncomesByDates2(incomes, lower, upper);
+    private static FinancialCheckValues financialCheckForMonthlySalaried(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate lower, LocalDate upper) {
+        Stream<Income> individualIncome = filterIncomesByDates(incomes, lower, upper);
         List<Income> lastXMonths = individualIncome.limit(numOfMonths).collect(Collectors.toList());
         if (lastXMonths.size() >= numOfMonths) {
 
@@ -52,7 +52,7 @@ public class IncomeValidator {
                 }
             }
 
-            EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer2(lastXMonths, threshold);
+            EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXMonths, threshold);
             if (employmentCheck.equals(EmploymentCheck.PASS)) {
                 return FinancialCheckValues.MONTHLY_SALARIED_PASSED;
             } else {
@@ -65,12 +65,12 @@ public class IncomeValidator {
     }
 
 
-    private static FinancialCheckValues financialCheckForWeeklySalaried2(List<Income> incomes, int numOfWeeks, BigDecimal threshold, LocalDate lower, LocalDate upper) {
-        Stream<Income> individualIncome = filterIncomesByDates2(incomes, lower, upper);
+    private static FinancialCheckValues financialCheckForWeeklySalaried(List<Income> incomes, int numOfWeeks, BigDecimal threshold, LocalDate lower, LocalDate upper) {
+        Stream<Income> individualIncome = filterIncomesByDates(incomes, lower, upper);
         List<Income> lastXWeeks = individualIncome.collect(Collectors.toList());
 
         if (lastXWeeks.size() >= numOfWeeks) {
-            EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer2(lastXWeeks, threshold);
+            EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXWeeks, threshold);
             if (employmentCheck.equals(EmploymentCheck.PASS)) {
                 return FinancialCheckValues.WEEKLY_SALARIED_PASSED;
             } else {
@@ -82,7 +82,7 @@ public class IncomeValidator {
 
     }
 
-    private static EmploymentCheck checkIncomesPassThresholdWithSameEmployer2(List<Income> incomes, BigDecimal threshold) {
+    private static EmploymentCheck checkIncomesPassThresholdWithSameEmployer(List<Income> incomes, BigDecimal threshold) {
         String employerPayeReference = incomes.get(0).getEmployerPayeReference();
         for (Income income : incomes) {
             if (!checkValuePassesThreshold(income.getPayment(), threshold)) {
@@ -104,7 +104,7 @@ public class IncomeValidator {
     }
 
 
-    private static Stream<Income> filterIncomesByDates2(List<Income> incomes, LocalDate lower, LocalDate upper) {
+    private static Stream<Income> filterIncomesByDates(List<Income> incomes, LocalDate lower, LocalDate upper) {
         return incomes.stream()
             .sorted((income1, income2) -> income2.getPaymentDate().compareTo(income1.getPaymentDate()))
             .filter(income -> isDateInRange(income.getPaymentDate(), lower, upper));

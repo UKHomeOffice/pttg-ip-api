@@ -31,7 +31,7 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH_RESUL
 
 @RestController
 @ControllerAdvice
-public class FinancialStatusV2Service {
+public class FinancialStatusService {
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private final IncomeRecordService incomeRecordService;
@@ -43,7 +43,7 @@ public class FinancialStatusV2Service {
 
     private static final int NUMBER_OF_DAYS = 182;
 
-    public FinancialStatusV2Service(IncomeRecordService incomeRecordService, ApplicationEventPublisher auditor) {
+    public FinancialStatusService(IncomeRecordService incomeRecordService, ApplicationEventPublisher auditor) {
         this.incomeRecordService = incomeRecordService;
         this.auditor = auditor;
     }
@@ -88,7 +88,7 @@ public class FinancialStatusV2Service {
 
         switch (calculateFrequency(incomeRecord)) {
             case CALENDAR_MONTHLY:
-                FinancialCheckResult categoryAMonthlySalaried = IncomeValidator.validateCategoryAMonthlySalaried2(incomeRecord.getIncome(), startSearchDate, applicationRaisedDate, dependants, incomeRecord.getEmployments());
+                FinancialCheckResult categoryAMonthlySalaried = IncomeValidator.validateCategoryAMonthlySalaried(incomeRecord.getIncome(), startSearchDate, applicationRaisedDate, dependants, incomeRecord.getEmployments());
                 if (categoryAMonthlySalaried.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)) {
                     response.setCategoryCheck(new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate,  categoryAMonthlySalaried.getThreshold(), categoryAMonthlySalaried.getEmployers()));
                 } else {
@@ -96,7 +96,7 @@ public class FinancialStatusV2Service {
                 }
                 break;
             case WEEKLY:
-                FinancialCheckResult categoryAWeeklySalaried = IncomeValidator.validateCategoryAWeeklySalaried2(incomeRecord.getIncome(), startSearchDate, applicationRaisedDate, dependants, incomeRecord.getEmployments());
+                FinancialCheckResult categoryAWeeklySalaried = IncomeValidator.validateCategoryAWeeklySalaried(incomeRecord.getIncome(), startSearchDate, applicationRaisedDate, dependants, incomeRecord.getEmployments());
                 if (categoryAWeeklySalaried.getFinancialCheckValue().equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)) {
                     response.setCategoryCheck(new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate, categoryAWeeklySalaried.getThreshold(), categoryAWeeklySalaried.getEmployers()));
                 } else {
