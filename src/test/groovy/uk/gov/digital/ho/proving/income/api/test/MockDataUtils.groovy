@@ -1,6 +1,6 @@
 package uk.gov.digital.ho.proving.income.api.test
 
-import uk.gov.digital.ho.proving.income.domain.Income
+import uk.gov.digital.ho.proving.income.domain.hmrc.Income
 import uk.gov.digital.ho.proving.income.domain.Individual
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employer
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments
@@ -29,37 +29,226 @@ class MockDataUtils {
         individual
     }
 
-    static def getIdentity() {
-        Identity identity = new Identity("Duncan", "Sinclair", LocalDate.of(1945, 4, 19), "AA123456A")
-        identity
-    }
-
-    static def getConsecutiveIncomes() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 15),PIZZA_HUT , "1400" ))
-        incomes.add(new Income(getDate(2015, Month.MAY, 15),PIZZA_HUT , "1600" ))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 15),PIZZA_HUT , "1600" ))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 15),PIZZA_HUT , "1600" ))
-        incomes.add(new Income(getDate(2015, Month.JULY, 15),PIZZA_HUT , "1600" ))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 15),BURGER_KING , "1600" ))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 15),PIZZA_HUT , "1600" ))
-        incomes.add(new Income(getDate(2015, Month.SEPTEMBER, 15),PIZZA_HUT , "1600" ))
-        incomes
-    }
-
     static def getConsecutiveIncomes2() {
-        List<uk.gov.digital.ho.proving.income.domain.hmrc.Income> incomes = new ArrayList()
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1400"), getDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF ))
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.FEBRUARY, 15), 1, null, BURGER_KING_PAYE_REF ))
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.MARCH, 15), 1, null, PIZZA_HUT_PAYE_REF))
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF))
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF))
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.JUNE, 15), 1, null, PIZZA_HUT_PAYE_REF))
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.JULY, 15), 1, null, PIZZA_HUT_PAYE_REF))
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF))
-        incomes.add(new uk.gov.digital.ho.proving.income.domain.hmrc.Income(new BigDecimal("1600"), getDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal("1400"), getDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF ))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.FEBRUARY, 15), 1, null, BURGER_KING_PAYE_REF ))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.MARCH, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JUNE, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JULY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF))
         incomes
     }
+
+    static def getNoneConsecutiveIncomes2() {
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.FEBRUARY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.APRIL, 16), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JUNE, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes
+    }
+
+    static def getNotEnoughConsecutiveIncomes2() {
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal("1600"),getDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"),getDate(2015, Month.JUNE, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"),getDate(2015, Month.APRIL, 15),1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"),getDate(2015, Month.JULY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"),getDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes
+    }
+
+    static def getConsecutiveIncomesButDifferentEmployers2() {
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JUNE, 15), 1, null, BURGER_KING_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JULY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes
+    }
+
+
+    static def getConsecutiveIncomesButLowAmounts2() {
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JANUARY, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.MAY, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JUNE, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.APRIL, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1400"), getDate(2015, Month.JULY, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1400"), getDate(2015, Month.AUGUST, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.SEPTEMBER, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes
+    }
+
+    static def getConsecutiveIncomesWithDifferentMonthlyPayDay2() {
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal("1400"), getDate(2015, Month.JANUARY, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.MAY, 16),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JUNE, 17),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.APRIL, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.JULY, 14),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.FEBRUARY, 15),  1, null, BURGER_KING_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.AUGUST, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1600"), getDate(2015, Month.SEPTEMBER, 15),  1, null, PIZZA_HUT_PAYE_REF))
+        incomes
+    }
+
+
+    static def getConsecutiveIncomesWithExactlyTheAmount2() {
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal("1550"), getDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1550"), getDate(2015, Month.MAY, 16), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1550"), getDate(2015, Month.JUNE, 17), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1550"), getDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1550"), getDate(2015, Month.JULY, 14), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1550"), getDate(2015, Month.FEBRUARY, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1550"), getDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal("1550"), getDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF))
+        incomes
+    }
+
+
+    static def getIncomesAboveThreshold2() {
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.AUGUST, 11), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.AUGUST, 4), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 28), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 21), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 14), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 7), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 30), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 23), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 16), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 9), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 2), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 26), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 19), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 12), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 5), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 28), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 21), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 14), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 7), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 31), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 24), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 17), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 10), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 3), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 24), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 17), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 10), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 3), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JANUARY, 27), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JANUARY, 20), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes
+    }
+
+    static def getIncomesExactly26AboveThreshold2() {
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.AUGUST, 11), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.AUGUST, 4), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 28), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 21), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 14), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 7), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 30), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 23), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 16), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 9), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 2), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 26), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 19), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 12), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 5), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 28), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 21), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 14), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 7), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 31), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 24), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 17), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 10), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 3), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 24), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 17), null, 1, PIZZA_HUT_PAYE_REF))
+
+        incomes
+    }
+
+    static def getIncomesNotEnoughWeeks2() {
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.AUGUST, 11), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.AUGUST, 4), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 28), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 21), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 14), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 7), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 30), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 23), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 16), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 9), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 7), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 31), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 24), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 17), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 10), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 3), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 24), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 17), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 10), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 3), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JANUARY, 27), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JANUARY, 20), null, 1, PIZZA_HUT_PAYE_REF))
+
+        incomes
+    }
+
+    static def getIncomesSomeBelowThreshold2() {
+        List<Income> incomes = new ArrayList()
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.AUGUST, 11), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.AUGUST, 4), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 28), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 21), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 14), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JULY, 7), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 30), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(belowThreshold), getDate(2015, Month.JUNE, 23), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 16), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 9), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JUNE, 2), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 26), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 19), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 12), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MAY, 5), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 28), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 21), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 14), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.APRIL, 7), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 31), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 24), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 17), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.MARCH, 10), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(belowThreshold), getDate(2015, Month.MARCH, 3), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 24), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 17), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 10), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.FEBRUARY, 3), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JANUARY, 27), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes.add(new Income(new BigDecimal(aboveThreshold), getDate(2015, Month.JANUARY, 20), null, 1, PIZZA_HUT_PAYE_REF))
+        incomes
+    }
+
 
     static def getEmployments() {
         List<Employments> employments = new ArrayList()
@@ -67,290 +256,6 @@ class MockDataUtils {
         employments.add(new Employments(new Employer(BURGER_KING, BURGER_KING_PAYE_REF)));
         employments
 
-    }
-    static def getNotEnoughConsecutiveIncomes() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.MAY, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.JULY, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 15), PIZZA_HUT, "1600"))
-        incomes
-    }
-
-    static def getNoneConsecutiveIncomes() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 16), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.MAY, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.SEPTEMBER, 15), PIZZA_HUT, "1600"))
-        incomes
-    }
-
-    static def getConsecutiveIncomesButDifferentEmployers() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.MAY, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 15), BURGER_KING, "1600"))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.JULY, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.SEPTEMBER, 15), PIZZA_HUT, "1600"))
-        incomes
-    }
-
-    static def getConsecutiveIncomesButLowAmounts() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.MAY, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.JULY, 15), PIZZA_HUT, "1400"))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 15), PIZZA_HUT, "1400"))
-        incomes.add(new Income(getDate(2015, Month.SEPTEMBER, 15), PIZZA_HUT, "1600"))
-        incomes
-    }
-
-    static def getConsecutiveIncomesWithDifferentMonthlyPayDay() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 15), PIZZA_HUT, "1400"))
-        incomes.add(new Income(getDate(2015, Month.MAY, 16), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 17), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.JULY, 14), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 15), BURGER_KING, "1600"))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 15), PIZZA_HUT, "1600"))
-        incomes.add(new Income(getDate(2015, Month.SEPTEMBER, 15), PIZZA_HUT, "1600"))
-        incomes
-    }
-
-    static def getConsecutiveIncomesWithExactlyTheAmount() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 15), PIZZA_HUT, "1550"))
-        incomes.add(new Income(getDate(2015, Month.MAY, 16), PIZZA_HUT, "1550"))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 17), PIZZA_HUT, "1550"))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 15), PIZZA_HUT, "1550"))
-        incomes.add(new Income(getDate(2015, Month.JULY, 14), PIZZA_HUT, "1550"))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 15), BURGER_KING, "1550"))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 15), PIZZA_HUT, "1550"))
-        incomes.add(new Income(getDate(2015, Month.SEPTEMBER, 15), PIZZA_HUT, "1550"))
-        incomes
-    }
-
-    static def getIncomesAboveThreshold() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 11), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 4), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 28), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 21), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 14), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 7), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 30), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 23), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 16), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 9), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 2), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 26), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 19), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 12), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 5), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 28), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 21), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 14), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 7), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 31), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 24), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 17), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 10), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 3), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 24), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 17), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 10), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 3), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 27), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 20), PIZZA_HUT, aboveThreshold))
-        incomes
-    }
-
-    static def getIncomesOnTheThreshold() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 11), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 4), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 28), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 21), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 14), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 7), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 30), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 23), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 16), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 9), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 2), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 26), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 19), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 12), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 5), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 28), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 21), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 14), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 7), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 31), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 24), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 17), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 10), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 3), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 24), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 17), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 10), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 3), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 27), PIZZA_HUT, weeklyThreshold))
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 20), PIZZA_HUT, weeklyThreshold))
-        incomes
-    }
-
-
-    static def getIncomesBelowThreshold() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 11), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 4), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 28), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 21), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 14), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 7), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 30), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 23), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 16), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 9), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 2), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 26), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 19), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 12), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 5), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 28), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 21), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 14), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 7), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 31), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 24), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 17), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 10), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 3), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 24), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 17), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 10), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 3), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 27), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 20), PIZZA_HUT, aboveThreshold))
-        incomes
-    }
-
-
-    static def getIncomesExactly26AboveThreshold() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 11), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 4), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 28), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 21), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 14), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 7), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 30), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 23), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 16), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 9), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 2), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 26), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 19), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 12), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 5), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 28), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 21), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 14), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 7), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 31), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 24), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 17), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 10), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 3), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 24), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 17), PIZZA_HUT, aboveThreshold))
-
-        incomes
-    }
-
-
-    static def getIncomesNotEnoughWeeks() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 11), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 4), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 28), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 21), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 14), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 7), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 30), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 23), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 16), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 9), PIZZA_HUT, aboveThreshold))
-//        incomes.add(new Income(getDate(2015,Month.JUNE,2), PIZZA_HUT, aboveThreshold))
-//        incomes.add(new Income(getDate(2015,Month.MAY,26), PIZZA_HUT, aboveThreshold))
-//        incomes.add(new Income(getDate(2015,Month.MAY,19), PIZZA_HUT, aboveThreshold))
-//        incomes.add(new Income(getDate(2015,Month.MAY,12), PIZZA_HUT, aboveThreshold))
-//        incomes.add(new Income(getDate(2015,Month.MAY,5), PIZZA_HUT, aboveThreshold))
-//        incomes.add(new Income(getDate(2015,Month.APRIL,28), PIZZA_HUT, aboveThreshold))
-//        incomes.add(new Income(getDate(2015,Month.APRIL,21), PIZZA_HUT, aboveThreshold))
-//        incomes.add(new Income(getDate(2015,Month.APRIL,14), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 7), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 31), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 24), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 17), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 10), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 3), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 24), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 17), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 10), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 3), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 27), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 20), PIZZA_HUT, aboveThreshold))
-
-        incomes
-    }
-
-
-    static def getIncomesSomeBelowThreshold() {
-        List<Income> incomes = new ArrayList()
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 11), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.AUGUST, 4), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 28), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 21), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 14), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JULY, 7), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 30), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 23), PIZZA_HUT, belowThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 16), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 9), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JUNE, 2), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 26), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 19), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 12), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MAY, 5), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 28), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 21), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 14), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.APRIL, 7), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 31), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 24), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 17), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 10), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.MARCH, 3), PIZZA_HUT, belowThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 24), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 17), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 10), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.FEBRUARY, 3), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 27), PIZZA_HUT, aboveThreshold))
-        incomes.add(new Income(getDate(2015, Month.JANUARY, 20), PIZZA_HUT, aboveThreshold))
-        incomes
     }
 
 

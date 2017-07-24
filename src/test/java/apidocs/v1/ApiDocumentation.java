@@ -16,12 +16,9 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.restassured.RestDocumentationFilter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.digital.ho.proving.income.ServiceRunner;
-import uk.gov.digital.ho.proving.income.acl.EarningsService;
-import uk.gov.digital.ho.proving.income.acl.IndividualService;
-import uk.gov.digital.ho.proving.income.domain.Income;
-import uk.gov.digital.ho.proving.income.domain.IncomeProvingResponse;
-import uk.gov.digital.ho.proving.income.domain.Individual;
+import uk.gov.digital.ho.proving.income.domain.hmrc.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -47,10 +44,12 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 @SpringBootTest(webEnvironment= RANDOM_PORT, classes = {ServiceRunner.class})
 public class ApiDocumentation {
 
-    private static final String BASEPATH = "/incomeproving/v1";
+    private static final String BASEPATH = "/incomeproving/v2";
 
     private static final String EMPLOYER_ONE = "Pizza Hut";
     private static final String EMPLOYER_TWO = "Burger King";
+    private static final String EMPLOYER_ONE_REF = "Ref/Pizza Hut";
+    private static final String EMPLOYER_TWO_REF = "Ref/Burger King";
 
     @Rule
     public JUnitRestDocumentation restDocumentationRule = new JUnitRestDocumentation("build/generated-snippets");
@@ -59,11 +58,7 @@ public class ApiDocumentation {
     private int port;
 
     @MockBean
-    private EarningsService earningsService;
-
-    @MockBean
-    private IndividualService individualService;
-
+    private IncomeRecordService incomeRecordService;
     private RequestSpecification documentationSpec;
 
     private RequestSpecification requestSpec;
@@ -85,7 +80,6 @@ public class ApiDocumentation {
 
     private FieldDescriptor[] individualModelFields = new FieldDescriptor[]{
         fieldWithPath("individual").description("The individual corresponding to this request"),
-        fieldWithPath("individual.title").description("The individual's title eg Mrs"),
         fieldWithPath("individual.forename").description("The individual's forename"),
         fieldWithPath("individual.surname").description("The individual's surname"),
         fieldWithPath("individual.nino").description("The individual's NINO")
@@ -139,40 +133,39 @@ public class ApiDocumentation {
                 .addFilter(documentationConfiguration(this.restDocumentationRule))
                 .addFilter(document)
                 .build();
-
-
-        // Will need something smarter if new tests require different responses
-        Individual anIndividual = new Individual("Mr", "Duncan", "Sinclair", "AA123456A");
-        String aTotal = "9600";
-        String aPayFrequency = "M1";
-
-        when(individualService.lookup(any(String.class), any(LocalDate.class), any(LocalDate.class)))
-            .thenReturn(new IncomeProvingResponse(anIndividual, someIncomes(), aTotal, aPayFrequency));
-
-        when(earningsService.lookup(any(String.class), any(LocalDate.class)))
-            .thenReturn(() -> anIndividual);
+        when(incomeRecordService.getIncomeRecord(any(Identity.class), any(LocalDate.class), any(LocalDate.class)))
+            .thenReturn(new IncomeRecord(someIncomes(), someEmployments()));
     }
 
 
     private List<Income> someIncomes() {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(LocalDate.of(2015, Month.JANUARY, 15), EMPLOYER_ONE, "1400"));
-        incomes.add(new Income(LocalDate.of(2015, Month.MAY, 15), EMPLOYER_ONE, "1600"));
-        incomes.add(new Income(LocalDate.of(2015, Month.JUNE, 15), EMPLOYER_ONE, "1600"));
-        incomes.add(new Income(LocalDate.of(2015, Month.APRIL, 15), EMPLOYER_ONE, "1600"));
-        incomes.add(new Income(LocalDate.of(2015, Month.JULY, 15), EMPLOYER_ONE, "1600"));
-        incomes.add(new Income(LocalDate.of(2015, Month.FEBRUARY, 15), EMPLOYER_TWO, "1600"));
-        incomes.add(new Income(LocalDate.of(2015, Month.AUGUST, 15), EMPLOYER_ONE, "1600"));
-        incomes.add(new Income(LocalDate.of(2015, Month.SEPTEMBER, 15), EMPLOYER_ONE, "1600"));
+        incomes.add(new Income(new BigDecimal("1600"), LocalDate.of(2015, Month.FEBRUARY, 15), null, 1, EMPLOYER_TWO_REF));
+        incomes.add(new Income(new BigDecimal("1400"), LocalDate.of(2015, Month.MARCH, 15), null, 1, EMPLOYER_ONE_REF));
+        incomes.add(new Income(new BigDecimal("1600"), LocalDate.of(2015, Month.APRIL, 15), null, 1, EMPLOYER_ONE_REF));
+        incomes.add(new Income(new BigDecimal("1600"), LocalDate.of(2015, Month.MAY, 15), null, 1, EMPLOYER_ONE_REF));
+        incomes.add(new Income(new BigDecimal("1600"), LocalDate.of(2015, Month.JUNE, 15), null, 1, EMPLOYER_ONE_REF));
+        incomes.add(new Income(new BigDecimal("1600"), LocalDate.of(2015, Month.JULY, 15), null, 1, EMPLOYER_ONE_REF));
+        incomes.add(new Income(new BigDecimal("1600"), LocalDate.of(2015, Month.AUGUST, 15), null, 1, EMPLOYER_ONE_REF));
+        incomes.add(new Income(new BigDecimal("1600"), LocalDate.of(2015, Month.SEPTEMBER, 15), null, 1, EMPLOYER_ONE_REF));
         return incomes;
     }
 
+    private List<Employments> someEmployments() {
+        List<Employments> employments = new ArrayList<>();
+        employments.add(new Employments(new Employer(EMPLOYER_ONE, EMPLOYER_ONE_REF)));
+        employments.add(new Employments(new Employer(EMPLOYER_TWO, EMPLOYER_TWO_REF)));
+        return employments;
+    }
     @Test
     public void commonHeaders() throws Exception {
 
         given(documentationSpec)
             .spec(requestSpec)
             .param("applicationRaisedDate", "2015-09-23")
+            .param("forename", "Tiny")
+            .param("surname", "Johnson")
+            .param("dateOfBirth", "1980-03-28")
             .filter(document.snippets(
                 requestHeaders(
                     headerWithName("Accept").description("The requested media type eg application/json. See <<Schema>> for supported media types.")
@@ -209,6 +202,9 @@ public class ApiDocumentation {
             .spec(requestSpec)
             .param("applicationRaisedDate", "2015-09-23")
             .param("dependants", "2")
+            .param("forename", "Tiny")
+            .param("surname", "Johnson")
+            .param("dateOfBirth", "1980-03-28")
             .filter(document.snippets(
                 responseFields(individualModelFields)
                     .and(categoryCheckModelFields)
@@ -221,7 +217,16 @@ public class ApiDocumentation {
                         .description("Number of dependants. Optional. Minimum 0, maximum 99.")
 //                                        .optional()
 //                                         to do - remove following when springrestdocs fixes support for documenting optional
-                        .attributes(key("optional").value(true))
+                        .attributes(key("optional").value(true)),
+                    parameterWithName("forename")
+                        .description("Given name of the individual")
+                        .attributes(key("optional").value(false)),
+                    parameterWithName("surname")
+                        .description("Family name of the individual")
+                        .attributes(key("optional").value(false)),
+                    parameterWithName("dateOfBirth")
+                        .description("Date of birth of the individual. . Formatted as `yyyy-mm-dd` eg `1965-09-23`")
+                        .attributes(key("optional").value(false))
                 ),
                 pathParameters(
                     parameterWithName("nino")
@@ -240,6 +245,9 @@ public class ApiDocumentation {
             .spec(requestSpec)
             .param("fromDate", "2015-01-01")
             .param("toDate", "2016-01-15")
+            .param("forename", "Tiny")
+            .param("surname", "Johnson")
+            .param("dateOfBirth", "1980-03-28")
             .filter(document.snippets(
                 responseFields(
                     fieldWithPath("individual").ignored(),
@@ -258,6 +266,9 @@ public class ApiDocumentation {
             .spec(requestSpec)
             .param("fromDate", "2015-01-01")
             .param("toDate", "2016-01-15")
+            .param("forename", "Tiny")
+            .param("surname", "Johnson")
+            .param("dateOfBirth", "1980-03-28")
             .filter(document.snippets(
                 responseFields(individualModelFields)
                     .and(incomeModelFields),
@@ -267,6 +278,15 @@ public class ApiDocumentation {
                         .attributes(key("optional").value(false)),
                     parameterWithName("toDate")
                         .description("Latest date for income details (inclusive). Formatted as `yyyy-mm-dd` eg `2015-09-23`")
+                        .attributes(key("optional").value(false)),
+                    parameterWithName("forename")
+                        .description("Given name of the individual")
+                        .attributes(key("optional").value(false)),
+                    parameterWithName("surname")
+                        .description("Family name of the individual")
+                        .attributes(key("optional").value(false)),
+                    parameterWithName("dateOfBirth")
+                        .description("Date of birth of the individual. . Formatted as `yyyy-mm-dd` eg `1965-09-23`")
                         .attributes(key("optional").value(false))
                 ),
                 pathParameters(
@@ -285,6 +305,9 @@ public class ApiDocumentation {
             .spec(requestSpec)
             .param("fromDate", "2015-01-01")
             .param("toDate", "2015-01-01")
+            .param("forename", "Tiny")
+            .param("surname", "Johnson")
+            .param("dateOfBirth", "1980-03-28")
             .filter(document.snippets(
                 responseFields(individualModelFields)
                     .and(fieldWithPath("incomes").description("Zero matching income details entries"),

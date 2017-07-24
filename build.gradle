@@ -81,8 +81,6 @@ dependencies {
     compile 'org.apache.httpcomponents:httpclient:4.5.2'
     compile 'org.scala-lang:scala-library:2.11.8'
 
-    compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
-
     compile "org.springframework.boot:spring-boot:$springBootVersion"
     compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
     compile "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion"
@@ -118,7 +116,6 @@ dependencies {
     testCompile "net.serenity-bdd:serenity-spring:1.1.31"
     testCompile "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1"
     testCompile "com.github.tomakehurst:wiremock:2.4.1"
-    testCompile 'com.github.fakemongo:fongo:2.0.6'
 
     testCompile 'org.scala-lang:scala-library:2.11.8'
 
