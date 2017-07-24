@@ -32,8 +32,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
     ])
 class AuditIntegrationSpec extends Specification {
 
-    def path = "/incomeproving/v1/individual/AA123456A/income?"
-    def params = "fromDate=2014-12-01&toDate=2015-01-01"
+    def path = "/incomeproving/v2/individual/AA123456A/income?"
+    def params = "fromDate=2014-12-01&toDate=2015-01-01&forename=tommy&surname=Biggs&dateOfBirth=1953-12-06"
     def url
 
     @Autowired

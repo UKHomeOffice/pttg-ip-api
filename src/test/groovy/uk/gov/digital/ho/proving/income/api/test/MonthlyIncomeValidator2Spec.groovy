@@ -6,38 +6,34 @@ import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.FinancialCheckResult
 import uk.gov.digital.ho.proving.income.api.FinancialCheckValues
 import uk.gov.digital.ho.proving.income.api.IncomeValidator
-import uk.gov.digital.ho.proving.income.domain.Income
+import uk.gov.digital.ho.proving.income.domain.hmrc.Employer
+import uk.gov.digital.ho.proving.income.domain.hmrc.Employments
+import uk.gov.digital.ho.proving.income.domain.hmrc.Income
 
 import java.time.LocalDate
 import java.time.Month
 
-import static MockDataUtils.getDate
-import static MockDataUtils.getConsecutiveIncomes
-import static MockDataUtils.getConsecutiveIncomesButDifferentEmployers
-import static MockDataUtils.getConsecutiveIncomesButLowAmounts
-import static MockDataUtils.getConsecutiveIncomesWithDifferentMonthlyPayDay
-import static MockDataUtils.getConsecutiveIncomesWithExactlyTheAmount
-import static MockDataUtils.getNoneConsecutiveIncomes
-import static MockDataUtils.getNotEnoughConsecutiveIncomes
-import static MockDataUtils.subtractDaysFromDate
+import static MockDataUtils.*
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.BURGER_KING
+import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.BURGER_KING_PAYE_REF
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.PIZZA_HUT
+import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.PIZZA_HUT_PAYE_REF
 
-class MonthlyIncomeValidatorSpec extends Specification {
+class MonthlyIncomeValidator2Spec extends Specification {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyIncomeValidatorSpec.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyIncomeValidator2Spec.class);
 
     int days = 182
 
     def "valid category A individual is accepted"() {
 
         given:
-        List<Income> incomes = getConsecutiveIncomes()
+        List<Income> incomes = getConsecutiveIncomes2()
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
@@ -47,12 +43,12 @@ class MonthlyIncomeValidatorSpec extends Specification {
     def "invalid category A individual is rejected (non consecutive)"() {
 
         given:
-        List<Income> incomes = getNoneConsecutiveIncomes()
+        List<Income> incomes = getNoneConsecutiveIncomes2()
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NON_CONSECUTIVE_MONTHS)
@@ -62,12 +58,12 @@ class MonthlyIncomeValidatorSpec extends Specification {
     def "invalid category A individual is rejected (not enough records)"() {
 
         given:
-        List<Income> incomes = getNotEnoughConsecutiveIncomes()
+        List<Income> incomes = getNotEnoughConsecutiveIncomes2()
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NOT_ENOUGH_RECORDS)
@@ -77,12 +73,12 @@ class MonthlyIncomeValidatorSpec extends Specification {
     def "invalid category A individual is rejected (consecutive but not same employer)"() {
 
         given:
-        List<Income> incomes = getConsecutiveIncomesButDifferentEmployers()
+        List<Income> incomes = getConsecutiveIncomesButDifferentEmployers2()
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NON_CONSECUTIVE_MONTHS)
@@ -94,12 +90,12 @@ class MonthlyIncomeValidatorSpec extends Specification {
     def "invalid category A individual is rejected (consecutive but not enough earnings)"() {
 
         given:
-        List<Income> incomes = getConsecutiveIncomesButLowAmounts()
+        List<Income> incomes = getConsecutiveIncomesButLowAmounts2()
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD)
@@ -109,12 +105,12 @@ class MonthlyIncomeValidatorSpec extends Specification {
     def "valid category A individual is accepted with different monthly payLocalDates"() {
 
         given:
-        List<Income> incomes = getConsecutiveIncomesWithDifferentMonthlyPayDay()
+        List<Income> incomes = getConsecutiveIncomesWithDifferentMonthlyPayDay2()
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
@@ -124,24 +120,34 @@ class MonthlyIncomeValidatorSpec extends Specification {
     def "valid category A individual is accepted with exactly the threshold values"() {
 
         given:
-        List<Income> incomes = getConsecutiveIncomesWithExactlyTheAmount()
+        List<Income> incomes = getConsecutiveIncomesWithExactlyTheAmount2()
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried2(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
         categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
 
     }
 
-    List<String> getEmployers(List<Income> incomes) {
-        Map<String, String> employers = new HashMap<>()
+    List<Employments> getEmployers(List<Income> incomes) {
+        Set<String> employeRef = new HashSet<>()
         for (Income income : incomes) {
-            employers.put(income.getEmployer(), income.getEmployer())
+            employeRef.add(income.getEmployerPayeReference())
         }
-        return new ArrayList(employers.values())
+        return employeRef.stream().map({ref -> new Employments(new Employer(employerRefToName(ref), ref))}).collect();
     }
 
+    String employerRefToName(ref) {
+        if (ref == PIZZA_HUT_PAYE_REF) {
+            return PIZZA_HUT
+        }
+        if (ref == BURGER_KING_PAYE_REF) {
+            return BURGER_KING
+        }
+
+        ref
+    }
 }

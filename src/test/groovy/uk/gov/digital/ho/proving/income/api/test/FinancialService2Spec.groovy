@@ -8,24 +8,17 @@ import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch
 import uk.gov.digital.ho.proving.income.api.FinancialStatusV2Service
-
 import uk.gov.digital.ho.proving.income.audit.AuditEventType
-import uk.gov.digital.ho.proving.income.domain.IncomeProvingResponse
-import uk.gov.digital.ho.proving.income.domain.TemporaryMigrationFamilyApplication
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
-
-import java.time.LocalDate
 
 import static java.time.LocalDate.now
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getConsecutiveIncomes
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getConsecutiveIncomes2
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getEmployments
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getIndividual
 
 class FinancialService2Spec extends Specification {
 

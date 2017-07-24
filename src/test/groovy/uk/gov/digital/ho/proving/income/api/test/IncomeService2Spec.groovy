@@ -6,13 +6,8 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
-import uk.gov.digital.ho.proving.income.acl.MongodbBackedApplicantService
-import uk.gov.digital.ho.proving.income.acl.MongodbBackedEarningsService
-import uk.gov.digital.ho.proving.income.api.FinancialStatusV2Service
-import uk.gov.digital.ho.proving.income.api.IncomeRetrievalService
 import uk.gov.digital.ho.proving.income.api.IncomeRetrievalV2Service
 import uk.gov.digital.ho.proving.income.audit.AuditEventType
-import uk.gov.digital.ho.proving.income.domain.IncomeProvingResponse
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
 
@@ -21,7 +16,6 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getConsecutiveIncomes
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getConsecutiveIncomes2
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getEmployments
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getIndividual
