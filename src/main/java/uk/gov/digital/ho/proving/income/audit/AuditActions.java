@@ -1,5 +1,7 @@
 package uk.gov.digital.ho.proving.income.audit;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 
 import java.util.HashMap;
@@ -25,6 +27,9 @@ public class AuditActions {
     }
 
     private static String getPrincipal() {
-        return "anonymous";
+        if (StringUtils.isBlank(MDC.get(UserHeaderFilter.USER_ID_HEADER))) {
+            return "anonymous";
+        }
+        return MDC.get(UserHeaderFilter.USER_ID_HEADER);
     }
 }
