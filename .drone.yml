@@ -96,7 +96,7 @@ pipeline:
       - KUBE_SERVER=https://kube.dsp.digital.homeoffice.gov.uk
     commands:
       - cd kube-pttg-ip-api
-      - ./deploy-prod.sh
+      - ./deploy.sh
     when:
       event: deployment
       environment: prod
