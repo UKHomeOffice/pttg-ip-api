@@ -118,7 +118,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                |
             | Financial requirement met | false              |
-            | Failure reason            | NOT_ENOUGH_RECORDS, WEEKLY_VALUE_BELOW_THRESHOLD  |##########
+            | Failure reason            | NOT_ENOUGH_RECORDS |(Also WEEKLY_VALUE_BELOW_THRESHOLD)
             | Individual title          | Mr                 |
             | Individual forename       | John               |
             | Individual surname        | Lister             |
