@@ -27,9 +27,9 @@ public class AuditActions {
     }
 
     private static String getPrincipal() {
-        if (StringUtils.isBlank(MDC.get(UserHeaderFilter.USER_ID_HEADER))) {
+        if (StringUtils.isBlank(MDC.get("userId"))) {
             return "anonymous";
         }
-        return MDC.get(UserHeaderFilter.USER_ID_HEADER);
+        return MDC.get("userId");
     }
 }
