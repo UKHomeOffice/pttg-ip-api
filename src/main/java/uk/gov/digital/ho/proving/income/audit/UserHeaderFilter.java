@@ -25,6 +25,7 @@ public class UserHeaderFilter implements Filter {
 
         final HttpServletRequest req = (HttpServletRequest) request;
         String userId = req.getHeader(USER_ID_HEADER);
+        log.info("Found userId in header =  " + userId);
         try {
             // Setup MDC data:
             MDC.put(USER_ID_HEADER, StringUtils.isNotBlank(userId) ? userId : "anonymous");
