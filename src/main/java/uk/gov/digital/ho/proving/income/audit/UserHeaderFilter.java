@@ -8,12 +8,11 @@ import org.springframework.stereotype.Component;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Enumeration;
 
 @Component
 @Slf4j
 public class UserHeaderFilter implements Filter {
-    public static final String USER_ID_HEADER = " x-auth-userid";
+    public static final String USER_ID_HEADER = "x-auth-userid";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -26,11 +25,6 @@ public class UserHeaderFilter implements Filter {
 
         final HttpServletRequest req = (HttpServletRequest) request;
         String userId = req.getHeader(USER_ID_HEADER);
-        Enumeration<String> headerNames = req.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String name = headerNames.nextElement();
-            log.info("header := " + name +  " = " + req.getHeader(name));
-        }
         try {
             // Setup MDC data:
             MDC.put(USER_ID_HEADER, StringUtils.isNotBlank(userId) ? userId : "anonymous");
