@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class UserHeaderFilter implements Filter {
     public static final String USER_ID_HEADER = " x-auth-userid";
 
@@ -23,7 +25,7 @@ public class UserHeaderFilter implements Filter {
 
         final HttpServletRequest req = (HttpServletRequest) request;
         String userId = req.getHeader(USER_ID_HEADER);
-
+        log.info("userId found = " + userId);
         try {
             // Setup MDC data:
             MDC.put(USER_ID_HEADER, StringUtils.isNotBlank(userId) ? userId : "anonymous");
