@@ -219,7 +219,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - weekly
             | Employer Name             | Flying Pizza Ltd   |
 
 
-Scenario: Jonjo Shelvy does not meet the Category A Employment Requirement (He currently works for two employers)
+Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He currently works for two employers)
 
     He has received 26 Weekly Gross Income payments of £260.60 and £300.00 in the 182 day period from two active employers.  Combined the totals are above the threshold, however this will trigger a failed result.
 
@@ -287,8 +287,8 @@ Scenario: Jonjo Shelvy does not meet the Category A Employment Requirement (He c
             | Financial requirement met | false                                |
             | Failure reason            | MULTIPLE_EMPLOYERS                   | ###### payments from multiple employers (both active)
             | Individual title          | Mr                                   |
-            | Individual forename       | Shelvy                               |
-            | Individual surname        | Jonjo                                |
+            | Individual forename       | Gary                                 |
+            | Individual surname        | Goldstein                            |
             | Assessment start date     | 2015-03-05                           |
             | Application Raised date   | 2015-09-03                           |
             | National Insurance Number | GG987654A                            |
@@ -305,10 +305,39 @@ Scenario: Jonjo Shelvy does not meet the Category A Employment Requirement (He c
     He earns £658.50 a Week Gross Income BUT for 25 weeks
     He worked for a different employer before his current employer on week 26 and earned £357
 
-        Given A service is consuming the Income Proving TM Family API
-        When the Income Proving TM Family API is invoked with the following:
+        Given HMRC has the following income records:
+                    | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
+                    | 2015-10-30 | 658.50 |    26       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-23 | 658.50 |    25       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-16 | 658.50 |    24       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-09 | 658.50 |    23       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-02 | 658.50 |    22       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-25 | 658.50 |    21       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-18 | 658.50 |    20       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-11 | 658.50 |    19       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-04 | 658.50 |    18       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-28 | 658.50 |    17       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-21 | 658.50 |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-14 | 658.50 |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-07 | 658.50 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-31 | 658.50 |    13       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-24 | 658.50 |    12       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-17 | 658.50 |    11       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-10 | 658.50 |    10       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-03 | 658.50 |    09       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-26 | 658.50 |    08       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-19 | 658.50 |    07       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-12 | 658.50 |    06       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-05 | 658.50 |    05       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-29 | 658.50 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-22 | 658.50 |    03       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-15 | 658.50 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-08 | 357.00 |    01       |            | MP/Ref1       | Mambo Pizza Ltd  |
+
+
+        When the Income Proving TM Family API v2 is invoked with the following:
             | NINO                    | PJ123456A  |
-            | Application Raised Date | 2015-07-03 |
+            | Application Raised Date | 2015-11-03 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                |
@@ -317,8 +346,8 @@ Scenario: Jonjo Shelvy does not meet the Category A Employment Requirement (He c
             | Individual title          | Mr                 |
             | Individual forename       | Peter              |
             | Individual surname        | Jones              |
-            | Assessment start date     | 2015-01-02         |
-            | Application Raised date   | 2015-07-03         |
+            | Assessment start date     | 2015-05-05         |
+            | Application Raised date   | 2015-11-03         |
             | National Insurance Number | PJ123456A          |
             | Threshold                 | 357.69             |
             | Employer Name             | Flying Pizza Ltd   |
@@ -328,7 +357,35 @@ Scenario: Jonjo Shelvy does not meet the Category A Employment Requirement (He c
 
     She earns £658.50 a Week Gross Income BUT for 23 weeks
 
-        Given A service is consuming the Income Proving TM Family API
+        Given
+                    | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
+                    | 2015-10-30 | 658.50 |    26       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-23 | 658.50 |    25       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-16 | 658.50 |    24       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-09 | 658.50 |    23       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-02 | 658.50 |    22       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-25 | 658.50 |    21       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-18 | 658.50 |    20       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-11 | 658.50 |    19       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-04 | 658.50 |    18       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-28 | 658.50 |    17       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-21 | 658.50 |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-14 | 658.50 |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-07 | 658.50 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-31 | 658.50 |    13       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-24 | 658.50 |    12       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-17 | 658.50 |    11       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-10 | 658.50 |    10       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-03 | 658.50 |    09       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-26 | 658.50 |    08       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-19 | 658.50 |    07       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-12 | 658.50 |    06       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-05 | 658.50 |    05       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-29 | 658.50 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-22 |        |    03       |            |               |                  |
+                    | 2015-05-15 |        |    02       |            |               |                  |
+                    | 2015-05-08 |        |    01       |            |               |                  |
+
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | JF123456A  |
             | Application Raised Date | 2015-05-12 |
@@ -340,8 +397,54 @@ Scenario: Jonjo Shelvy does not meet the Category A Employment Requirement (He c
             | Individual title          | Mrs                |
             | Individual forename       | Jenny              |
             | Individual surname        | Francis            |
-            | Assessment start date     | 2014-11-11         |
-            | Application Raised date   | 2015-05-12         |
+            | Assessment start date     | 2015-05-05         |
+            | Application Raised date   | 2015-11-03         |
             | National Insurance Number | JF123456A          |
             | Threshold                 | 357.69             |
             | Employer Name             | Flying Pizza Ltd   |
+
+
+    Scenario: Jenny Francis does not meet the Category A Employment Payment Frequency Requirement
+    (She passes the Cat A financial threshold & She has worked for the same employer but her payment frequency has changed)
+
+    She has 3 Canadian dependants
+    She was received 18 Weekly Gross income payments of £525.00 and then 2 Monthly Gross income payments of £2266.68 in the 182 period from the same employer
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | Week Number | Month Number| PAYE Reference| Employer        |
+            | 2015-04-24 | 2266.68 |             |     02     | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-03-27 | 2266.68 |             |     01     | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-02-27 | 525.00  |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-02-20 | 525.00  |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-02-13 | 525.00  |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-02-06 | 525.00  |    13       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-30 | 525.00  |    12       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-23 | 525.00  |    11       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-16 | 525.00  |    10       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-09 | 525.00  |    09       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-02 | 525.00  |    08       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-12-26 | 525.00  |    07       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-12-19 | 525.00  |    06       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-12-12 | 525.00  |    05       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-12-05 | 525.00  |    04       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-11-28 | 525.00  |    03       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-11-21 | 525.00  |    02       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-11-14 | 525.00  |    01       |            | FP/Ref1       | Flying Pizza Ltd |
+
+        When the Income Proving TM Family V2 API is invoked with the following:
+            | NINO                    | JF123456A  |
+            | Application Raised Date | 2015-11-22 |
+
+
+        Then The Income Proving TM Family API provides the following result:
+                    | HTTP Status               | 200                   |
+                    | Financial requirement met | false                 |
+                    | Failure reason            | PAY_FREQUENCY_CHANGE  |
+                    | Individual title          | Mrs                   |
+                    | Individual forename       | Jenny                 |
+                    | Individual surname        | Francis               |
+                    | Assessment start date     | 2014-11-12            |
+                    | Application Raised date   | 2015-05-12            |
+                    | National Insurance Number | JF123456A             |
+                    | Threshold                 | 357.69                |
+                    | Employer Name             | Flying Pizza Ltd      |
