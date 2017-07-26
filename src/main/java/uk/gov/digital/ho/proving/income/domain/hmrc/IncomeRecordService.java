@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch;
+import org.slf4j.MDC;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -56,6 +57,8 @@ public class IncomeRecordService {
     private static HttpHeaders generateRestHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", APPLICATION_JSON_VALUE);
+        headers.add("x-auth-userid", MDC.get("userId"));
+        headers.add("x-correlation-id", MDC.get("correlationId"));
         return headers;
     }
 
