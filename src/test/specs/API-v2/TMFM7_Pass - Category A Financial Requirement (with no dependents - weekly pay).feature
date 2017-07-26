@@ -110,6 +110,7 @@ Feature: Pass - Category A Financial Requirement (with no dependents - weekly pa
 
 
 #New Scenario -
+
     Scenario: Jonathan Odometey meets the Category A Financial Requirement
 
     He has received 26 Weekly Gross Income payments of £1000.00
