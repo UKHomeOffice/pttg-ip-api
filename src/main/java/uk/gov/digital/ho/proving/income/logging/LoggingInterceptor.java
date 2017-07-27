@@ -13,15 +13,15 @@ import java.util.UUID;
  * @Author Home Office Digital
  */
 public class LoggingInterceptor implements HandlerInterceptor {
-    private static final String USER_ID_HEADER = "x-auth-userid";
-    private static final String CORRELATION_ID_HEADER = "x-correlation-id";
+    public static final String USER_ID_HEADER = "x-auth-userid";
+    public static final String CORRELATION_ID_HEADER = "x-correlation-id";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         MDC.clear();
-        MDC.put("userId", getUserName(request)); // or e.g. request.getRemoteUser()
-        MDC.put("correlationId", getCorrelationId(request)); // or e.g. request.getRemoteUser()
+        MDC.put(USER_ID_HEADER, getUserName(request)); // or e.g. request.getRemoteUser()
+        MDC.put(CORRELATION_ID_HEADER, getCorrelationId(request)); // or e.g. request.getRemoteUser()
         MDC.put("userHost", request.getRemoteHost());
 
         return true;
