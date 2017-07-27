@@ -110,9 +110,10 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | 2015-05-22 |        |    03       |            |               |                  |
             | 2015-05-15 |        |    02       |            |               |                  |
             | 2015-05-08 |        |    01       |            |               |                  |
+
         When the Income Proving TM V2 Family API is invoked with the following:
             | NINO                    | JL123456D  |
-            | Application Raised Date | 2015-01-09 |
+            | Application Raised Date | 2015-11-03 |
             | Dependants              | 2          |
 
         Then The Income Proving TM Family API provides the following result:
@@ -298,7 +299,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | Individual title          | Mr                   |
             | Individual forename       | Benedict             |
             | Individual surname        | Smythe               |
-            | Assessment start date     | 2015-03-05           |
+            | Assessment start date     | 2015-05-24           |
             | Application Raised date   | 2015-11-22           |
             | National Insurance Number | GG987654A            |
             | Threshold                 | 523.08               |
