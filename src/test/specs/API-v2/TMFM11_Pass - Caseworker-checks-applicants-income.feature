@@ -322,7 +322,7 @@ New Scenario######### 26th July 2017
       | Individual surname        | Callahan  |
       | National Insurance Number | QQ987654A |
 
-###### New Scenario 27th July
+####### New Scenario 27th July
 
   Scenario: Robert obtains NINO income details to understand how much he has earned within 6 months
     Given A service is consuming the Income Proving TM Family API v2
