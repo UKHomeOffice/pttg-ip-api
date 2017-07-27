@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static uk.gov.digital.ho.proving.income.logging.LoggingInterceptor.USER_ID_HEADER;
+
 /**
  * @Author Home Office Digital
  */
@@ -27,9 +29,9 @@ public class AuditActions {
     }
 
     private static String getPrincipal() {
-        if (StringUtils.isBlank(MDC.get("userId"))) {
+        if (StringUtils.isBlank(MDC.get(USER_ID_HEADER))) {
             return "anonymous";
         }
-        return MDC.get("userId");
+        return MDC.get(USER_ID_HEADER);
     }
 }
