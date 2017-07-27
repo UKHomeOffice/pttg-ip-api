@@ -184,3 +184,34 @@ Feature: Pass - Category A Financial Requirement (with no dependents - monthly p
             | National Insurance Number | AA123456A        |
             | Threshold                 | 1550.0           |
             | Employer Name             | Flying Pizza Ltd |
+
+
+    ###### New scenario - 27th July
+
+    Scenario: Jon meets the Category A Financial Requirement and has a fluctuating income(Caseworker enters the National Insurance Number with spaces)
+
+    Pay date 1st of the month
+    Before day of Application Raised Date
+    He earns £1550 Monthly Gross Income EVERY of the 6 months
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
+            | 2014-12-01 | 1550.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-11-01 | 1650.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-10-01 | 1550.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-09-01 | 1950.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-08-01 | 1550.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-07-01 | 1750.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+
+        When the Income Proving v2 TM Family API is invoked with the following:
+            | NINO                    | AA 12 34 56 B |
+            | Application Raised Date | 2015-01-10    |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200              |
+            | Financial requirement met | true             |
+            | Assessment start date     | 2014-07-12       |
+            | Application Raised date   | 2015-01-10       |
+            | National Insurance Number | AA123456B        |
+            | Threshold                 | 1550.0           |
+            | Employer Name             | Flying Pizza Ltd |
