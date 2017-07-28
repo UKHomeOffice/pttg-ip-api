@@ -326,6 +326,7 @@ New Scenario######### 26th July 2017
 
   Scenario: Robert obtains NINO income details to understand how much he has earned within 6 months
     Given A service is consuming the Income Proving TM Family API v2
+
     When the Income Proving API is invoked with the following:
       | NINO      | QQ987654A  |
       | From Date | 2014-11-12 |
@@ -350,7 +351,8 @@ New Scenario######### 26th July 2017
             | 2014-11-21 | 525.00  |    02       |            | FP/Ref1       | Flying Pizza Ltd |
             | 2014-11-14 | 525.00  |    01       |            | FP/Ref1       | Flying Pizza Ltd |
 
-      | Total:     |                  | 12933,36 |
+              | Total:     |                  | 12933,36 |
+
     And The API provides the following Individual details:
       | HTTP Status               | 200       |
       | Individual title          | Mr        |
