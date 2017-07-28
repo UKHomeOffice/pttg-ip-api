@@ -105,7 +105,50 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | Individual surname        | Callahan  |
       | National Insurance Number | QQ654321A |
 
+######## New scenario July 28th
 
+  Scenario: Robert obtains NINO income details to understand how much they have earned within 12 months (multiple jobs over year period)
+    Given A service is consuming the Income Proving TM Family API v2
+    When the Income Proving API is invoked with the following:
+      | NINO      | QQ654321A  |
+      | From Date | 2015-02-11 |
+      | To Date   | 2016-01-15 |
+
+    Then The API provides the following result:
+            | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
+            | 2015-10-30 | 387.50 |    26       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-10-23 | 387.50 |    25       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-10-16 | 387.50 |    24       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-10-09 | 387.50 |    23       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-10-02 | 387.50 |    22       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-09-25 | 387.50 |    21       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-09-18 | 387.50 |    20       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-09-11 | 387.50 |    19       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-09-04 | 387.50 |    18       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-08-28 | 387.50 |    17       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-08-21 | 387.50 |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-08-14 | 387.50 |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-08-07 | 387.50 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-07-31 | 387.50 |    13       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-07-24 | 387.50 |    12       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-07-17 | 387.50 |    11       |            | FP/Ref1       | Sheffield Spice  |
+            | 2015-07-10 | 387.50 |    10       |            | FP/Ref1       | Sheffield Spice  |
+            | 2015-07-03 | 387.50 |    09       |            | FP/Ref1       | Sheffield Spice  |
+            | 2015-06-26 | 387.50 |    08       |            | FP/Ref1       | Sheffield SPice  |
+            | 2015-06-19 | 387.50 |    07       |            | FP/Ref1       | Sheffield Spice  |
+            | 2015-06-12 | 387.50 |    06       |            | FP/Ref1       | Sheffield Spice  |
+            | 2015-06-05 | 387.50 |    05       |            | FP/Ref1       | Sheffield Spice  |
+            | 2015-05-29 | 387.50 |    04       |            | FP/Ref1       | Sheffield Spice  |
+            | 2015-05-22 | 387.50 |    03       |            | FP/Ref1       | Sheffield Spice  |
+            | 2015-05-15 | 387.50 |    02       |            | FP/Ref1       | Sheffield Spice  |
+            | 2015-05-08 | 387.50 |    01       |            | FP/Ref1       | Sheffield Spice  |
+      | Total:     |                  | 18830.00 |
+    And The API provides the following Individual details:
+      | HTTP Status               | 200       |
+      | Individual title          | Mr        |
+      | Individual forename       | Harry     |
+      | Individual surname        | Callahan  |
+      | National Insurance Number | QQ654321A |
 
 
 #@ Changed scenario, added Your search box
