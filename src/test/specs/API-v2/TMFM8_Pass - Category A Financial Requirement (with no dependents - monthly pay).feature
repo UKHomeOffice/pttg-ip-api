@@ -196,12 +196,12 @@ Feature: Pass - Category A Financial Requirement (with no dependents - monthly p
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
-            | 2014-12-01 | 1550.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-01 | 1650.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-01 | 1550.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-01 | 1950.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-01 | 1550.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-07-01 | 1750.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-01 | 1550.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-12-01 | 1650.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-11-01 | 1550.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-10-01 | 1950.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-09-01 | 1550.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-08-01 | 1750.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | AA 12 34 56 B |
