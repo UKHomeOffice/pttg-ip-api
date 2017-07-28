@@ -82,8 +82,8 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
     Given A service is consuming the Income Proving TM Family API v2
     When the Income Proving API is invoked with the following:
       | NINO      | QQ654321A  |
-      | From Date | 2015-02-11 | (Application Raised Date)
-      | To Date   | 2016-01-15 | (Assesment start date)
+      | From Date | 2016-01-11 | (Application Raised Date)
+      | To Date   | 2015-02-11 | (Assesment start date)
     Then The API provides the following result:
       | Date       | Amount    | Week Number | Month Number| PAYE Reference| Employer          |
       | 2015-02-11 |  1000.00  |             |  12         |    SP/Ref1    |  Sheffield Spice  |
@@ -112,8 +112,8 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
     Given A service is consuming the Income Proving TM Family API v2
     When the Income Proving API is invoked with the following:
       | NINO      | QQ654321A  |
-      | From Date | 2015-01-01 |
-      | To Date   | 2016-01-01 |
+      | From Date | 2016-01-01 |
+      | To Date   | 2015-01-01 |
 
     Then The API provides the following result:
             | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
@@ -158,7 +158,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
             | 2015-04-10 | 387.50 |    15       |            | SP/Ref1       | Sheffield Spice  |
             | 2015-04-03 | 387.50 |    14       |            | SP/Ref1       | Sheffield Spice  |
             | 2015-03-27 | 387.50 |    13       |            | SP/Ref1       | Sheffield Spice  |
-            | 2015-03-20 | 387.50 |    12       |            | SP/Ref1       | Sheffield Spicec |
+            | 2015-03-20 | 387.50 |    12       |            | SP/Ref1       | Sheffield Spice  |
             | 2015-03-13 | 387.50 |    11       |            | SP/Ref1       | Sheffield Spice  |
             | 2015-03-06 | 387.50 |    10       |            | SP/Ref1       | Sheffield Spice  |
             | 2015-02-27 | 387.50 |    09       |            | SP/Ref1       | Sheffield Spice  |
@@ -205,6 +205,80 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | Individual forename       | Harry     |
       | Individual surname        | Callahan  |
       | National Insurance Number | QQ023987A |
+
+#### New Scenario 28th August
+
+  Scenario: Robert obtains NINO income details to understand how much they have earned within 6 months (multiple jobs per month)
+    Given A service is consuming the Income Proving TM Family API
+    When the Income Proving API is invoked with the following:
+      | NINO      | QQ023987A  |
+      | From Date | 2015-11-03 |
+      | To Date   | 2015-05-05 |
+    Then The API provides the following result:
+            | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer         |
+            | 2015-08-27 | 300.00 |    26       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-08-27 | 260.60 |    26       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-08-20 | 300.00 |    25       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-08-20 | 260.60 |    25       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-08-14 | 300.00 |    24       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-08-14 | 260.60 |    24       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-08-07 | 300.00 |    23       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-08-07 | 260.60 |    23       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-07-31 | 300.00 |    22       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-07-31 | 260.60 |    22       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-07-24 | 300.00 |    21       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-07-24 | 260.60 |    21       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-07-17 | 300.00 |    20       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-07-17 | 260.60 |    20       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-07-10 | 300.00 |    19       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-07-10 | 260.60 |    19       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-07-03 | 300.00 |    18       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-07-03 | 260.60 |    18       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-06-26 | 300.00 |    17       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-06-26 | 260.60 |    17       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-06-19 | 300.00 |    16       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-06-19 | 260.60 |    16       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-06-12 | 300.00 |    15       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-06-12 | 260.60 |    15       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-06-05 | 300.00 |    14       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-06-05 | 260.60 |    14       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-05-29 | 300.00 |    13       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-05-29 | 260.60 |    13       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-05-22 | 300.00 |    12       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-05-22 | 260.60 |    12       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-05-15 | 300.00 |    11       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-05-15 | 260.60 |    11       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-05-08 | 300.00 |    10       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-05-08 | 260.60 |    10       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-05-01 | 300.00 |    09       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-05-01 | 260.60 |    09       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-04-24 | 300.00 |    08       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-04-24 | 260.60 |    08       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-04-17 | 300.00 |    07       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-04-17 | 260.60 |    07       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-04-10 | 300.00 |    06       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-04-10 | 260.60 |    06       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-04-03 | 300.00 |    05       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-04-03 | 260.60 |    05       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-03-27 | 300.00 |    04       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-03-27 | 260.60 |    04       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-03-20 | 300.00 |    03       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-03-20 | 260.60 |    03       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-03-13 | 300.00 |    02       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-03-13 | 260.60 |    02       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-03-06 | 300.00 |    01       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-03-06 | 260.60 |    01       |             | FP/Ref1       | Curry House Ltd  |
+            | Total:     |                  | 14575.60 |
+    And The API provides the following Individual details:
+      | HTTP Status               | 200       |
+      | Individual title          | Mr        |
+      | Individual forename       | Harry     |
+      | Individual surname        | Callahan  |
+      | National Insurance Number | QQ023987A |
+
+
+
+
 
 
 
@@ -293,8 +367,8 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
 
     When the Income Proving API is invoked with the following:
       | NINO      | QQ987654A  |
-      | From Date | 2014-11-12 |
-      | To Date   | 2015-05-12 |
+      | From Date | 2015-05-12 |
+      | To Date   | 2014-11-12 |
     Then The API provides the following result:
             | Date       | Amount  | Week Number |Month Number| PAYE Reference  | Employer         |
             | 2015-04-24 | 2266.68 |             |     02     | FP/Ref1         | Flying Pizza Ltd |
@@ -316,7 +390,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
             | 2014-11-21 | 525.00  |    02       |            | FP/Ref1         | Flying Pizza Ltd |
             | 2014-11-14 | 525.00  |    01       |            | FP/Ref1         | Flying Pizza Ltd |
 
-              | Total:     |                  | 12933,36 |
+            | Total:     |12933.36 |
 
     And The API provides the following Individual details:
       | HTTP Status               | 200       |
