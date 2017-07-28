@@ -133,7 +133,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - weekly
               | 2015-08-28 | 600.00 |    17       |            | FP/Ref1       | Flying Pizza Ltd |
               | 2015-08-21 | 600.00 |    16       |            | FP/Ref1       | Flying Pizza Ltd |
               | 2015-08-14 | 600.00 |    15       |            | FP/Ref1       | Flying Pizza Ltd |
-              | 2015-08-07 | 600.00 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-08-07 | 400.00 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
               | 2015-07-31 | 400.99 |    13       |            | FP/Ref2       | Crazy Pizza  Ltd |
               | 2015-07-24 | 400.99 |    12       |            | FP/Ref2       | Crazy Pizza  Ltd |
               | 2015-07-17 | 400.99 |    11       |            | FP/Ref2       | Crazy Pizza  Ltd |
@@ -167,7 +167,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - weekly
 
 
 #New Scenario -
-    Scenario: John James does not meet the Category A employment duration Requirement (He has worked for his current employer for 6 months)
+    Scenario: John James does not meet the Category A employment duration Requirement (He has worked for his current employer for slightly less than 6 months)
 
     He earns £357.70 a Week Gross Income BUT for 25 weeks
 
@@ -303,7 +303,7 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
     Scenario: Peter Jones does not meet the Category A employment duration Requirement (He has worked for his current employer for 6 months)
 
     He earns £658.50 a Week Gross Income BUT for 25 weeks
-    He worked for a different employer before his current employer on week 26 and earned £357
+    He worked for a different employer before his current employer on week 1 and earned £357
 
         Given HMRC has the following income records:
                     | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
@@ -353,7 +353,7 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
             | Employer Name             | Flying Pizza Ltd   |
 
 #New Scenario -
-    Scenario: Jenny Francis does not meet the Category A employment duration Requirement (He has worked for his current employer for 6 months)
+    Scenario: Jenny Francis does not meet the Category A employment duration Requirement (He has worked for his current employer for less than 6 months)
 
     She earns £658.50 a Week Gross Income BUT for 23 weeks
 
@@ -388,7 +388,7 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
 
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | JF123456A  |
-            | Application Raised Date | 2015-05-12 |
+            | Application Raised Date | 2015-11-03 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                |
@@ -433,7 +433,7 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
 
         When the Income Proving TM Family V2 API is invoked with the following:
             | NINO                    | JF123456A  |
-            | Application Raised Date | 2015-11-22 |
+            | Application Raised Date | 2015-05-12 |
 
 
         Then The Income Proving TM Family API provides the following result:

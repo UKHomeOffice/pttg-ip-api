@@ -16,12 +16,12 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number| Month Number | PAYE Reference | Employer        |
-            | 2014-12-15 | 1000.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-15 | 1000.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-15 | 1000.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-15 | 1000.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-15 | 1000.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-07-15 | 1000.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-15 | 1000.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-12-15 | 1000.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-11-15 | 1000.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-10-15 | 1000.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-09-15 | 1000.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-08-15 | 1000.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
@@ -100,7 +100,8 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
 #New scenario - Added on 25th July 2017
     Scenario: Alan Partridge does not meet the Category A employment duration Requirement (Despite passing the financial threshold he has only worked for his current employer for 2 months)
 
-    He has received 6 Monthly Gross Income payments of £525.30 in the 182 day period from two employers
+    Pay date 28th of the month
+    He has received 6 Monthly Gross Income payments of £1600.00 in the 182 day period from two employers
     He worked for a different employer before his current employer
 
         Given HMRC has the following income records:
@@ -127,12 +128,13 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Application Raised date   | 2015-09-03         |
             | National Insurance Number | GG987654A          |
             | Threshold                 | 1550.00            |
-            | Employer Name             | Curry House  Ltd   | (Shows current employer)
+            | Employer Name             | Curry House Ltd    | (Shows current employer)
 
 #New scenario - Added on 25th July 2017
     Scenario: David Jones does not meet the Category A employment duration Requirement (Despite passing the financial threshold he has two current active employers)
 
-    He has received 12 Monthly Gross Income payments of £300.00 and £350.00 in the 182 day period from two employers
+    Pay date is 28th of the month
+    He has received 12 Monthly Gross Income payments of £900.00 and £1200.00 in the 182 day period from two employers
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number   | PAYE Reference | Employer            |
@@ -169,7 +171,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
 #New scenario - Added on 24th July 2017
     Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement (He passes the Cat A financial threshold & he has worked for the same employer but his payment frequency has changed)
 
-    He was received 4 Monthly Gross income payments of £.xx and then 2 Weekly Gross income payments of £xxx.xx in the 182 period from the same employer
+    He was received 5 Monthly Gross income payments of £1400.00 and then 4 Weekly Gross income payments of £200.00 in the 182 period from the same employer
 
         Given HMRC has the following income records:
             | Date       | Amount   | Week Number | Month Number | PAYE Reference| Employer         |
@@ -194,7 +196,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Individual title          | Mr                   |
             | Individual forename       | Benedict             |
             | Individual surname        | Smythe               |
-            | Assessment start date     | 2015-03-05           |
+            | Assessment start date     | 2015-05-24           |
             | Application Raised date   | 2015-11-22           |
             | National Insurance Number | GG987654A            |
             | Threshold                 | 1550.00              |
