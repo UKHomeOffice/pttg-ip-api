@@ -75,9 +75,7 @@ public class ApiExceptionHandler {
 
 
     private ResponseEntity<Object> buildErrorResponse(HttpHeaders headers, String statusCode, String statusMessage, HttpStatus status) {
-        ResponseStatus error = new ResponseStatus(statusCode, statusMessage);
-        BaseResponse response = new BaseResponse();
-        response.setStatus(error);
+        BaseResponse response = new BaseResponse(new ResponseStatus(statusCode, statusMessage));
         return new ResponseEntity<>(response, headers, status);
     }
 

@@ -7,26 +7,26 @@ import uk.gov.digital.ho.proving.income.domain.Individual;
 public class FinancialStatusCheckResponse extends BaseResponse{
 
     @JsonInclude(Include.NON_NULL)
-    private Individual individual;
+    private final Individual individual;
 
     @JsonInclude(Include.NON_NULL)
-    private CategoryCheck categoryCheck;
+    private final CategoryCheck categoryCheck;
+
+    public FinancialStatusCheckResponse(ResponseStatus status, Individual individual, CategoryCheck categoryCheck) {
+        super(status);
+        this.individual = individual;
+        this.categoryCheck = categoryCheck;
+    }
 
     public Individual getIndividual() {
         return individual;
     }
 
-    public void setIndividual(Individual individual) {
-        this.individual = individual;
-    }
 
     public CategoryCheck getCategoryCheck() {
         return categoryCheck;
     }
 
-    public void setCategoryCheck(CategoryCheck categoryCheck) {
-        this.categoryCheck = categoryCheck;
-    }
 
     @Override
     public String toString() {
