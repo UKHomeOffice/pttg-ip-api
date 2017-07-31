@@ -77,7 +77,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
 
 
 #New scenario - Added in SD126
-    Scenario: John Lister does not meet the Category A Financial Requirement (He has earned < the Cat A financial threshold)
+    Scenario: John Lister does not meet the Category A Financial Requirement (He has earned < the Cat A financial threshold also does not have enough records)
 
     He has 2 Chinese dependants
     He has received 23 Weekly Gross Income payments of £475.67 in the 182 day period from the same employer
@@ -187,7 +187,8 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
     Scenario: Terry Pilchard does not meet the Category A Employment Requirement (He currently works for two employers)
 
     He has 3 Isreali dependants
-    He has received 26 Weekly Gross Income payments of £260.60 and £300.00 in the 182 day period from two active employers.  Combined the totals are above the threshold, however this will trigger a failed result.
+    He has received 26 Weekly Gross Income payments of £260.60 and £300.00 in the 182 day period from two active employers.
+    Combined the totals are above the threshold, however this will trigger a failed result.
 
         Given HMRC has the following income records:
             | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer         |
@@ -263,7 +264,8 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | Employer Name             | Flying Pizza Ltd / Curry House Ltd   | (Shows both employer)
 
 #New scenario - Added on 24th July 2017
-    Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement (He passes the Cat A financial threshold & he has worked for the same employer but his payment frequency has changed)
+    Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement
+    (He passes the Cat A financial threshold & he has worked for the same employer but his payment frequency has changed)
 
     He has 3 Canadian dependants
     He was received 18 Weekly Gross income payments of £525.00 and then 2 Monthly Gross income payments of £2266.68 in the 182 period from the same employer

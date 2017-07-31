@@ -98,7 +98,8 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Employer Name             | Flying Pizza Ltd   |
 
 #New scenario - Added on 25th July 2017
-    Scenario: Alan Partridge does not meet the Category A employment duration Requirement (Despite passing the financial threshold he has only worked for his current employer for 2 months)
+    Scenario: Alan Partridge does not meet the Category A employment duration Requirement
+    (Despite passing the financial threshold he has only worked for his current employer for 2 months)
 
     Pay date 28th of the month
     He has received 6 Monthly Gross Income payments of £1600.00 in the 182 day period from two employers
@@ -166,10 +167,11 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Application Raised date   | 2015-09-03                         |
             | National Insurance Number | AA987654A                          |
             | Threshold                 | 1550.00                            |
-            | Employer Name             | Curry House  Ltd / Curry House Ltd | (Shows both employer)
+            | Employer Name             | Curry House  Ltd / Johns Chippy    | (Shows both employer)
 
 #New scenario - Added on 24th July 2017
-    Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement (He passes the Cat A financial threshold & he has worked for the same employer but his payment frequency has changed)
+    Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement
+    (He passes the Cat A financial threshold & he has worked for the same employer but his payment frequency has changed)
 
     He was received 5 Monthly Gross income payments of £1400.00 and then 4 Weekly Gross income payments of £200.00 in the 182 period from the same employer
 

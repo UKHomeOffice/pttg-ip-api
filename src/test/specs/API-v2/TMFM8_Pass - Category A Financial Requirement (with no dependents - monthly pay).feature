@@ -100,7 +100,7 @@ Feature: Pass - Category A Financial Requirement (with no dependents - monthly p
 
     Pay date 23rd of the month
     On same day of Application Raised Date
-    He earns £1551 Monthly Gross Income EVERY of the 6
+    He earns £1551 Monthly Gross Income EVERY 23rd of the month
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |

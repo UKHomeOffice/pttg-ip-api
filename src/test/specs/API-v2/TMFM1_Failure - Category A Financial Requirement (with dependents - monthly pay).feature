@@ -118,4 +118,36 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
             | Threshold                 | 2266.67            |
             | Employer Name             | Flying Pizza Ltd   |
 
+###### New scenario 31st July
 
+    Scenario: Steve does not meet the Category A employment duration Requirement (He does not have enough records)
+
+    Pay date 3rd of the month
+    On same day of Application Raised Date
+    He has 3 Thai dependants
+    He earns £2916.67 Monthly Gross Income BUT for only 5 months prior to the Application Raised Date
+    HMRC does not show enough records
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
+            | 2015-09-03 | 2916.67 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-08-03 | 2916.67 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-07-03 | 2916.67 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-06-03 | 2916.67 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-05-03 | 2916.67 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-04-03 |         |            |              |               |                  |
+
+        When the Income Proving v2 TM Family API is invoked with the following:
+            | NINO                    | SY987654C  |
+            | Application Raised Date | 2015-09-03 |
+            | Dependants              | 3          |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200                |
+            | Financial requirement met | false              |
+            | Failure reason            | NOT_ENOUGH_RECORDS |
+            | Assessment start date     | 2015-03-05         |
+            | Application Raised date   | 2015-09-03         |
+            | National Insurance Number | SY987654C          |
+            | Threshold                 | 2266.67            |
+            | Employer Name             | Flying Pizza Ltd   |
