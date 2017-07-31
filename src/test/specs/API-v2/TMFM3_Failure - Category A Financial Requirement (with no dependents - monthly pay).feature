@@ -79,9 +79,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | 2015-06-03 | 1600.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
             | 2015-05-03 | 1600.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2015-04-03 | 1600.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
-            |            |         |            |              |               |                  |
-            |            |         |            |              |               |                  |
-            |            |         |            |              |               |                  |
+
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | KS123456C  |
@@ -216,12 +214,9 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number| Month Number | PAYE Reference | Employer        |
-            | 2015-01-15 |         |            | 06           |               | Flying Pizza Ltd |
-            | 2014-12-15 |         |            | 05           |               | Flying Pizza Ltd |
+
             | 2014-11-15 | 9600.00 |            | 04           |               | Flying Pizza Ltd |
-            | 2014-10-15 |         |            | 03           |               | Flying Pizza Ltd |
-            | 2014-09-15 |         |            | 02           |               | Flying Pizza Ltd |
-            | 2014-08-15 |         |            | 01           |               | Flying Pizza Ltd |
+
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
@@ -230,7 +225,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                           |
             | Financial requirement met | false                         |
-            | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
+            | Failure reason            | NOT_ENOUGH_RECORDS            |
             | Assessment start date     | 2014-07-17                    |
             | Application Raised date   | 2015-01-15                    |
             | National Insurance Number | JL123456A                     |
