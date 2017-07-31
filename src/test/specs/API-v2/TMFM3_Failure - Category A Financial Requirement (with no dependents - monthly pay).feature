@@ -231,3 +231,29 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | National Insurance Number | JL123456A                     |
             | Threshold                 | 1550.0                        |
             | Employer Name             | Flying Pizza Ltd              |
+
+
+####### New scenario - 31st July
+
+    Scenario: Jill does not meet the Category A Financial Requirement.
+    No records could be found for Jill
+
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | Week Number| Month Number | PAYE Reference | Employer        |
+
+
+
+        When the Income Proving v2 TM Family API is invoked with the following:
+            | NINO                    | JL123456A  |
+            | Application Raised Date | 2015-01-15 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200                           |
+            | Financial requirement met | false                         |
+            | Failure reason            | RECORD_NOT_FOUND              |
+            | Assessment start date     | 2014-07-17                    |
+            | Application Raised date   | 2015-01-15                    |
+            | National Insurance Number | JL123456A                     |
+            | Threshold                 | 1550.0                        |
+            | Employer Name             | Flying Pizza Ltd              |
