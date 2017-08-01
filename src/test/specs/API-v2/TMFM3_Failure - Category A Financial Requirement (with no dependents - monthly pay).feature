@@ -112,22 +112,19 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | 2015-04-28 | 1600.00 |             |      02        | FP/Ref1        | Office Supplies Ltd |
             | 2015-03-28 | 1600.00 |             |      01        | FP/Ref1        | Office Supplies Ltd |
 
-    When the Income Proving TM Family V2 API is invoked with the following:
+    When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | GG987654A  |
             | Application Raised Date | 2015-09-03 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                |
             | Financial requirement met | false              |
-            | Failure reason            | MULTIPLE_EMPLOYERS | ###### payments from multiple employers (only 1 active)
-            | Individual title          | Mr                 |
-            | Individual forename       | Alan               |
-            | Individual surname        | Partridge          |
+            | Failure reason            | MULTIPLE_EMPLOYERS |
             | Assessment start date     | 2015-03-05         |
             | Application Raised date   | 2015-09-03         |
             | National Insurance Number | GG987654A          |
             | Threshold                 | 1550.00            |
-            | Employer Name             | Curry House Ltd    | (Shows current employer)
+            | Employer Name             | Curry House Ltd    |
 
 #New scenario - Added on 25th July 2017
     Scenario: David Jones does not meet the Category A employment duration Requirement (Despite passing the financial threshold he has two current active employers)
@@ -150,14 +147,14 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | 2015-03-28 | 1200.00 |             |      01        | FP/Ref2        | Curry House Ltd     |
             | 2015-03-28 |  900.00 |             |      01        | FP/Ref1        | Johns Chippy        |
 
-    When the Income Proving TM Family V2 API is invoked with the following:
+    When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | AA987654A  |
             | Application Raised Date | 2015-09-03 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                                |
             | Financial requirement met | false                              |
-            | Failure reason            | MULTIPLE_EMPLOYERS                 | ###### payments from multiple employers (both active)
+            | Failure reason            | MULTIPLE_EMPLOYERS                 |
             | Individual title          | Mr                                 |
             | Individual forename       | Alan                               |
             | Individual surname        | Partridge                          |
@@ -165,7 +162,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Application Raised date   | 2015-09-03                         |
             | National Insurance Number | AA987654A                          |
             | Threshold                 | 1550.00                            |
-            | Employer Name             | Curry House  Ltd / Johns Chippy    | (Shows both employer)
+            | Employer Name             | Curry House  Ltd / Johns Chippy    |
 
 #New scenario - Added on 24th July 2017
     Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement
@@ -185,17 +182,14 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | 2015-06-29 | 1400.00  |             |     02       | FP/Ref1       | Flying Pizza Ltd |
             | 2015-05-29 | 1400.00  |             |     01       | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving TM Family V2 API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JW984624A  |
             | Application Raised Date | 2015-11-22 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                  |
             | Financial requirement met | false                |
-            | Failure reason            | PAY_FREQUENCY_CHANGE | ###### (Change in payment frequency)
-            | Individual title          | Mr                   |
-            | Individual forename       | Benedict             |
-            | Individual surname        | Smythe               |
+            | Failure reason            | PAY_FREQUENCY_CHANGE |
             | Assessment start date     | 2015-05-24           |
             | Application Raised date   | 2015-11-22           |
             | National Insurance Number | GG987654A            |

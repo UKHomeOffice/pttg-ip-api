@@ -63,7 +63,7 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
             | 2015-02-10 | 1416.67 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-01-10 | 1416.67 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-10 | 1416.67 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-12-10 | 1416.67 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-11-10 | 1416.67 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-10-10 | 1416.67 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
@@ -111,7 +111,7 @@ Feature: Failure - Category A Financial Requirement (with dependents - monthly p
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                |
             | Financial requirement met | false              |
-            | Failure reason            | EMPLOYER_CHANGED   |
+            | Failure reason            | MULTIPLE_EMPLOYERS   |
             | Assessment start date     | 2015-03-05         |
             | Application Raised date   | 2015-09-03         |
             | National Insurance Number | SY987654C          |

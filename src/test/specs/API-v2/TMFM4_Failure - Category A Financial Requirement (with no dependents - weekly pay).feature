@@ -190,7 +190,6 @@ Feature: Failure - Category A Financial Requirement (with no dependents - weekly
                     | 2015-05-29 | 357.70 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
                     | 2015-05-22 | 357.70 |    03       |            | FP/Ref1       | Flying Pizza Ltd |
                     | 2015-05-15 | 357.70 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
-                    | 2015-05-08 |        |    01       |            |               |                  |
 
         When the Income Proving TM Family API is invoked with the following:
             | NINO                    | JJ123456A  |

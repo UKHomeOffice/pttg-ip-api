@@ -74,7 +74,7 @@ public class IncomeValidator {
             if (employmentCheck.equals(EmploymentCheck.PASS)) {
                 return FinancialCheckValues.WEEKLY_SALARIED_PASSED;
             } else {
-                return employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD) ? FinancialCheckValues.WEEKLY_VALUE_BELOW_THRESHOLD : FinancialCheckValues.NON_CONSECUTIVE_MONTHS;
+                return employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD) ? FinancialCheckValues.WEEKLY_VALUE_BELOW_THRESHOLD : FinancialCheckValues.MULTIPLE_EMPLOYERS;
             }
         } else {
             return FinancialCheckValues.NOT_ENOUGH_RECORDS;

@@ -56,7 +56,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
 
 
 
-        When the Income Proving TM v2 Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | DS123456C  |
             | Application Raised Date | 2015-11-03 |
             | dependants              | 3          |
@@ -106,7 +106,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | 2015-05-29 | 475.67 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
 
 
-        When the Income Proving TM V2 Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JL123456D  |
             | Application Raised Date | 2015-11-03 |
             | Dependants              | 2          |
@@ -157,7 +157,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | 2015-03-13 | 525.30 |    02       |             | FP/Ref1       | Curry House Ltd  |
             | 2015-03-06 | 525.30 |    01       |             | FP/Ref1       | Curry House Ltd  |
 
-        When the Income Proving TM Family V2 API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | GG987654A  |
             | Application Raised Date | 2015-09-03 |
             | Dependants              | 3          |
@@ -166,7 +166,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | HTTP Status               | 200                |
             | Financial requirement met | false              |
             | Failure reason            | MULTIPLE_EMPLOYERS |
-            | Assessment start date     | 2015-03-05         |
+            | Assessment start date     | 2015-02-26         |
             | Application Raised date   | 2015-09-03         |
             | National Insurance Number | GG987654A          |
             | Threshold                 | 523.08             |
@@ -234,7 +234,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | 2015-03-06 | 300.00 |    01       |             | FP/Ref2       | Flying Pizza Ltd |
             | 2015-03-06 | 260.60 |    01       |             | FP/Ref1       | Curry House Ltd  |
 
-        When the Income Proving TM Family V2 API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | GG987654A  |
             | Application Raised Date | 2015-09-03 |
             | Dependants              | 3          |
@@ -242,15 +242,12 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                                  |
             | Financial requirement met | false                                |
-            | Failure reason            | MULTIPLE_EMPLOYERS                   | ###### payments from multiple employers (both active)
-            | Individual title          | Mr                                   |
-            | Individual forename       | Pilchard                             |
-            | Individual surname        | Terry                                |
+            | Failure reason            | MULTIPLE_EMPLOYERS                   |
             | Assessment start date     | 2015-03-05                           |
             | Application Raised date   | 2015-09-03                           |
             | National Insurance Number | GG987654A                            |
             | Threshold                 | 523.08                               |
-            | Employer Name             | Flying Pizza Ltd / Curry House Ltd   | (Shows both employer)
+            | Employer Name             | Flying Pizza Ltd / Curry House Ltd   |
 
 #New scenario - Added on 24th July 2017
     Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement
@@ -278,7 +275,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | 2015-06-05 | 525.00  |    02       |            | FP/Ref1       | Flying Pizza Ltd |
             | 2015-05-29 | 525.00  |    01       |            | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving TM Family V2 API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JW984624A  |
             | Application Raised Date | 2015-11-22 |
             | Dependants              | 3          |
@@ -287,9 +284,6 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | HTTP Status               | 200                  |
             | Financial requirement met | false                |
             | Failure reason            | PAY_FREQUENCY_CHANGE |
-            | Individual title          | Mr                   |
-            | Individual forename       | Benedict             |
-            | Individual surname        | Smythe               |
             | Assessment start date     | 2015-05-24           |
             | Application Raised date   | 2015-11-22           |
             | National Insurance Number | GG987654A            |
@@ -315,7 +309,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                           |
             | Financial requirement met | false                         |
-            | Failure reason            | RECORD_NOT_FOUND              |
+            | Failure reason            | NOT_ENOUGH_RECORDS              |
             | Assessment start date     | 2014-07-17                    |
             | Application Raised date   | 2015-01-15                    |
             | National Insurance Number | JL123456A                     |
