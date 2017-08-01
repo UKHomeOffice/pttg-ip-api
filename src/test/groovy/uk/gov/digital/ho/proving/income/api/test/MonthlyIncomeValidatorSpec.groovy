@@ -81,7 +81,7 @@ class MonthlyIncomeValidatorSpec extends Specification {
         FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
 
         then:
-        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NON_CONSECUTIVE_MONTHS)
+        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MULTIPLE_EMPLOYERS)
         categoryAIndividual.getEmployers().contains(BURGER_KING)
         categoryAIndividual.getEmployers().contains(PIZZA_HUT)
 
