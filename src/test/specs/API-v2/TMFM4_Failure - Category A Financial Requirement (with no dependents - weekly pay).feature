@@ -142,7 +142,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - weekly
               | 2015-05-15 | 400.99 |    02       |            | FP/Ref2       | Crazy Pizza  Ltd |
               | 2015-05-08 | 400.99 |    01       |            | FP/Ref2       | Crazy Pizza  Ltd |
 
-        When the Income Proving TM Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | RP123456C  |
             | Application Raised Date | 2015-11-03 |
 
@@ -191,7 +191,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - weekly
                     | 2015-05-22 | 357.70 |    03       |            | FP/Ref1       | Flying Pizza Ltd |
                     | 2015-05-15 | 357.70 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving TM Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JJ123456A  |
             | Application Raised Date | 2015-11-03 |
 
@@ -367,7 +367,7 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
                     | 2015-05-15 |        |    02       |            |               |                  |
                     | 2015-05-08 |        |    01       |            |               |                  |
 
-        When the Income Proving TM Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JF123456A  |
             | Application Raised Date | 2015-11-03 |
 
