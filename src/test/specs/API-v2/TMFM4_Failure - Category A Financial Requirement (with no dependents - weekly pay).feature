@@ -12,146 +12,49 @@ Feature: Failure - Category A Financial Requirement (with no dependents - weekly
     She earns £300.11 weekly Gross Income EVERY of the 26 weeks
 
         Given HMRC has the following income records:
-            | Date       | Amount     | Week Number | Month Number| PAYE Reference   | Employer         |
-            | 2015-1-15 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-01-08 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-01-01 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-25 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-18 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-11 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-04 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-27 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-20 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-13 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-06 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-31 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-24 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-17 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-10 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-03 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-09-29 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-09-22 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-09-15 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-09-08 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-09-01 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-08-25 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-08-18 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-08-11 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-08-04 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-7-27 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-7-20 |     300.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-        When the Income Proving v2 TM Family API is invoked with the following:
+                    | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
+                    | 2015-10-30 | 300.11 |    26       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-23 | 300.11 |    25       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-16 | 300.11 |    24       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-09 | 300.11 |    23       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-02 | 300.11 |    22       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-25 | 300.11 |    21       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-18 | 300.11 |    20       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-11 | 300.11 |    19       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-04 | 300.11 |    18       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-28 | 300.11 |    17       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-21 | 300.11 |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-14 | 300.11 |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-07 | 300.11 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-31 | 300.11 |    13       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-24 | 300.11 |    12       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-17 | 300.11 |    11       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-10 | 300.11 |    10       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-03 | 300.11 |    09       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-26 | 300.11 |    08       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-19 | 300.11 |    07       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-12 | 300.11 |    06       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-05 | 300.11 |    05       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-29 | 300.11 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-22 | 300.11 |    03       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-15 | 300.11 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-08 | 300.11 |    01       |            | FP/Ref1       | Flying Pizza Ltd |
+
+        When the Income Proving TM Family API V2 is invoked with the following:
             | NINO                    | DV123456A  |
-            | Application Raised Date | 2015-01-15 |
+            | Application Raised Date | 2015-11-03 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                          |
             | Financial requirement met | false                        |
             | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
-            | Assessment start date     | 2014-07-17                   |
-            | Application Raised date   | 2015-01-15                   |
+            | Assessment start date     | 2015-05-05                   |
+            | Application Raised date   | 2015-11-03                   |
             | National Insurance Number | DV123456A                    |
             | Threshold                 | 357.69                       |
             | Employer Name             | Flying Pizza Ltd             |
 
-#New Scenario -
-    Scenario: Xavier Snow does not meet the Category A Financial Requirement (She has earned < the Cat A financial threshold)
 
-    He earns £30.99 weekly Gross Income EVERY of the 26 weeks
-
-        Given HMRC has the following income records:
-            | Date       | Amount     | Week Number | Month Number| PAYE Reference   | Employer         |
-            | 2015-12-22 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-12-15 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-12-08 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-12-01 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-11-24 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-11-17 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-11-10 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-11-3 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-10-26 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-10-19 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-10-12 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-10-5 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-9-28 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-9-21 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-9-14 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-9-7 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-8-31 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-8-24 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-8-17 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-8-10 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-8-3 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-7-26 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-7-19 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-7-12 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-7-5 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-6-29 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-6-22 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-6-15 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-6-8 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-6-1 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-5-24 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-5-22 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-5-15 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-5-08 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-5-01 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-4-24 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-4-17 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-4-10 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-4-3 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-3-26 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-3-19 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-3-12 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-3-5 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-2-28 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-2-21 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-2-14 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-2-7 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-1-31 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-1-24 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-1-17 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-1-10 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-1-3 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-26 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-19 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-12 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-12 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-7 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-30 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-23 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-16 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-9 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-2 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-25 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-18 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-11 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-4 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-9-27 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-9-20 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-9-13 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-9-6 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-8-29 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-8-22 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-8-15 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-8-8 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-8-1 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-7-25 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-7-18 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-7-10 |      30.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-        When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | XS123456B  |
-            | Application Raised Date | 2015-12-15 |
-
-        Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200                          |
-            | Financial requirement met | false                        |
-            | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
-            | Assessment start date     | 2015-06-16                   |
-            | Application Raised date   | 2015-12-15                   |
-            | National Insurance Number | XS123456B                    |
-            | Threshold                 | 357.69                       |
-            | Employer Name             | Flying Pizza Ltd             |
 
 
 #New Scenario -
@@ -160,44 +63,45 @@ Feature: Failure - Category A Financial Requirement (with no dependents - weekly
     He earns £400.99 weekly Gross Income EVERY of the 24 weeks
     and he earns £300.99 weekly Gross Income for the LAST 2 weeks (total 26 weeks with the same employer)
 
-        Given HMRC has the following income records:
-            | Date       | Amount     | Week Number | Month Number| PAYE Reference   | Employer         |
-            | 2015-01-15 |     300.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-24 |     300.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-18 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-11 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-12-04 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-27 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-20 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-13 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-11-06 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-30 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-23 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-16 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-09 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-10-02 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-09-25 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-09-18 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-09-11 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-09-04 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-08-28 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-08-21 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-08-14 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-08-07 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-07-31 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-07-24 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-07-20 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2014-07-17 |     400.99 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-        When the Income Proving v2 TM Family API is invoked with the following:
+       Given HMRC has the following income records:
+                    | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
+                    | 2015-10-30 | 300.99 |    26       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-23 | 300.99 |    25       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-16 | 400.99 |    24       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-09 | 400.99 |    23       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-02 | 400.99 |    22       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-25 | 400.99 |    21       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-18 | 400.99 |    20       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-11 | 400.99 |    19       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-04 | 400.99 |    18       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-28 | 400.99 |    17       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-21 | 400.99 |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-14 | 400.99 |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-07 | 400.99 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-31 | 400.99 |    13       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-24 | 400.99 |    12       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-17 | 400.99 |    11       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-10 | 400.99 |    10       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-03 | 400.99 |    09       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-26 | 400.99 |    08       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-19 | 400.99 |    07       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-12 | 400.99 |    06       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-05 | 400.99 |    05       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-29 | 400.99 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-22 | 400.99 |    03       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-15 | 400.99 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-08 | 400.99 |    01       |            | FP/Ref1       | Flying Pizza Ltd |
+
+        When the Income Proving TM Family API v2 is invoked with the following:
             | NINO                    | PY123456B  |
-            | Application Raised Date | 2015-01-15 |
+            | Application Raised Date | 2015-11-03 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                          |
             | Financial requirement met | false                        |
             | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
-            | Assessment start date     | 2014-07-17                   |
-            | Application Raised date   | 2015-01-15                   |
+            | Assessment start date     | 2015-05-05                   |
+            | Application Raised date   | 2015-11-03                   |
             | National Insurance Number | PY123456B                    |
             | Threshold                 | 357.69                       |
             | Employer Name             | Flying Pizza Ltd             |
@@ -208,186 +112,315 @@ Feature: Failure - Category A Financial Requirement (with no dependents - weekly
     He earns £600 a Week Gross Income BUT for only 12 weeks
     He worked for a different employer before his current employer
 
+
         Given HMRC has the following income records:
-            | Date       | Amount     | Week Number | Month Number| PAYE Reference   | Employer         |
-            | 2015-07-03 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-26 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-19 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-12 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-05 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-29 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-22 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-15 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-08 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-01 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-24 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-17 |     600.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-10 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-04-3 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-03-26 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-03-19 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-03-12 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-03-5 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-03-26 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-02-19 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-02-12 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-02-5 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-01-29 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-01-22 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-01-15 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-01-8 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-            | 2015-01-1 |     600.00 | 1           |            | 123/PD45678       | Pizza Ltd |
-        When the Income Proving v2 TM Family API is invoked with the following:
+              | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
+              | 2015-10-30 | 600.00 |    26       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-10-23 | 600.00 |    25       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-10-16 | 600.00 |    24       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-10-09 | 600.00 |    23       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-10-02 | 600.00 |    22       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-09-25 | 600.00 |    21       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-09-18 | 600.00 |    20       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-09-11 | 600.00 |    19       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-09-04 | 600.00 |    18       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-08-28 | 600.00 |    17       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-08-21 | 600.00 |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-08-14 | 600.00 |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-08-07 | 400.00 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+              | 2015-07-31 | 400.99 |    13       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-07-24 | 400.99 |    12       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-07-17 | 400.99 |    11       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-07-10 | 400.99 |    10       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-07-03 | 400.99 |    09       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-06-26 | 400.99 |    08       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-06-19 | 400.99 |    07       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-06-12 | 400.99 |    06       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-06-05 | 400.99 |    05       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-05-29 | 400.99 |    04       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-05-22 | 400.99 |    03       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-05-15 | 400.99 |    02       |            | FP/Ref2       | Crazy Pizza  Ltd |
+              | 2015-05-08 | 400.99 |    01       |            | FP/Ref2       | Crazy Pizza  Ltd |
+
+        When the Income Proving TM Family API is invoked with the following:
             | NINO                    | RP123456C  |
-            | Application Raised Date | 2015-07-03 |
+            | Application Raised Date | 2015-11-03 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                        |
             | Financial requirement met | false                      |
-            | Failure reason            | NON_CONSECUTIVE_MONTHS         |
-            | Assessment start date     | 2015-01-02                 |
-            | Application Raised date   | 2015-07-03                 |
+            | Failure reason            | MULTIPLE_EMPLOYERS         |
+            | Assessment start date     | 2015-05-05                 |
+            | Application Raised date   | 2015-11-03                 |
             | National Insurance Number | RP123456C                  |
             | Threshold                 | 357.69                     |
-            | Employer Name             | Flying Pizza Ltd,Pizza Ltd |
+            | Employer Name             | Flying Pizza Ltd           |
 
 
 #New Scenario -
-    Scenario: John James does not meet the Category A employment duration Requirement (He has worked for his current employer for 6 months)
+    Scenario: John James does not meet the Category A employment duration Requirement (He has worked for his current employer for slightly less than 6 months)
 
     He earns £357.70 a Week Gross Income BUT for 25 weeks
-    He worked for a different employer before his current employer on week 26 and earned £357
+
 
         Given HMRC has the following income records:
-            | Date       | Amount     | Week Number | Month Number| PAYE Reference   | Employer         |
-            | 2015-07-03 |     357.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-26 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-19 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-12 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-05 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-29 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-22 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-15 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-08 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-01 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-24 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-17 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-10 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-03 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-03-27 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-03-20 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-03-13 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-03-06 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-02-27 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-02-20 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-02-13 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-02-06 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-01-30 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-01-23 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-01-16 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-01-09 |     357.70 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-        When the Income Proving v2 TM Family API is invoked with the following:
+                    | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
+                    | 2015-10-30 | 357.70 |    26       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-23 | 357.70 |    25       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-16 | 357.70 |    24       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-09 | 357.70 |    23       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-02 | 357.70 |    22       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-25 | 357.70 |    21       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-18 | 357.70 |    20       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-11 | 357.70 |    19       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-04 | 357.70 |    18       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-28 | 357.70 |    17       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-21 | 357.70 |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-14 | 357.70 |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-07 | 357.70 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-31 | 357.70 |    13       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-24 | 357.70 |    12       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-17 | 357.70 |    11       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-10 | 357.70 |    10       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-03 | 357.70 |    09       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-26 | 357.70 |    08       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-19 | 357.70 |    07       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-12 | 357.70 |    06       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-05 | 357.70 |    05       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-29 | 357.70 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-22 | 357.70 |    03       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-15 | 357.70 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-08 |        |    01       |            |               |                  |
+
+        When the Income Proving TM Family API is invoked with the following:
             | NINO                    | JJ123456A  |
-            | Application Raised Date | 2015-07-03 |
-
-        Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200                |
-            | Financial requirement met | false              |
-            | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
-            | Assessment start date     | 2015-01-02         |
-            | Application Raised date   | 2015-07-03         |
-            | National Insurance Number | JJ123456A          |
-            | Threshold                 | 357.69             |
-            | Employer Name             | Flying Pizza Ltd   |
-
-#New Scenario -
-    Scenario: Peter Jones does not meet the Category A employment duration Requirement (He has worked for his current employer for 6 months)
-
-    He earns £658.50 a Week Gross Income BUT for 25 weeks
-    He worked for a different employer before his current employer on week 26 and earned £357
-
-        Given HMRC has the following income records:
-            | Date       | Amount     | Week Number | Month Number| PAYE Reference   | Employer         |
-            | 2015-07-03 |     357.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-26 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-19 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-12 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-05 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-29 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-22 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-15 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-08 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-01 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-24 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-17 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-10 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-03 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-03-27 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-03-20 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-03-13 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-03-06 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-02-27 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-02-20 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-02-13 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-02-06 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-01-30 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-01-23 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-01-16 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-01-09 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-        When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | PJ123456A  |
-            | Application Raised Date | 2015-07-03 |
-
-        Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200                |
-            | Financial requirement met | false              |
-            | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
-            | Assessment start date     | 2015-01-02         |
-            | Application Raised date   | 2015-07-03         |
-            | National Insurance Number | PJ123456A          |
-            | Threshold                 | 357.69             |
-            | Employer Name             | Flying Pizza Ltd   |
-
-#New Scenario -
-    Scenario: Jenny Francis does not meet the Category A employment duration Requirement (He has worked for his current employer for 6 months)
-
-    She earns £658.50 a Week Gross Income BUT for 23 weeks
-
-        Given HMRC has the following income records:
-            | Date       | Amount     | Week Number | Month Number| PAYE Reference   | Employer         |
-            | 2015-05-12 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-06-5 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-28 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-21 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-14 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-05-7 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-30 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-24 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-17 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-10 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-04-03 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-03-24 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-3-17 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-3-10 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-3-03 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-2-27 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-2-20 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-2-13 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-2-6 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-1-30 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-1-23 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-1-16 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-            | 2015-1-9 |     658.50 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
-        When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | JF123456A  |
-            | Application Raised Date | 2015-05-12 |
+            | Application Raised Date | 2015-11-03 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                |
             | Financial requirement met | false              |
             | Failure reason            | NOT_ENOUGH_RECORDS |
-            | Assessment start date     | 2014-11-11         |
-            | Application Raised date   | 2015-05-12         |
+            | Assessment start date     | 2015-05-05         |
+            | Application Raised date   | 2015-11-03         |
+            | National Insurance Number | JJ123456A          |
+            | Threshold                 | 357.69             |
+            | Employer Name             | Flying Pizza Ltd   |
+
+
+Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He currently works for two employers)
+
+    He has received 26 Weekly Gross Income payments of £260.60 and £300.00 in the 182 day period from two active employers.  Combined the totals are above the threshold, however this will trigger a failed result.
+
+        Given HMRC has the following income records:
+            | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer         |
+            | 2015-08-27 | 300.00 |    26       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-08-27 | 260.60 |    26       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-08-20 | 300.00 |    25       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-08-20 | 260.60 |    25       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-08-14 | 300.00 |    24       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-08-14 | 260.60 |    24       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-08-07 | 300.00 |    23       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-08-07 | 260.60 |    23       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-07-31 | 300.00 |    22       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-07-31 | 260.60 |    22       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-07-24 | 300.00 |    21       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-07-24 | 260.60 |    21       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-07-17 | 300.00 |    20       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-07-17 | 260.60 |    20       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-07-10 | 300.00 |    19       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-07-10 | 260.60 |    19       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-07-03 | 300.00 |    18       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-07-03 | 260.60 |    18       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-06-26 | 300.00 |    17       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-06-26 | 260.60 |    17       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-06-19 | 300.00 |    16       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-06-19 | 260.60 |    16       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-06-12 | 300.00 |    15       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-06-12 | 260.60 |    15       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-06-05 | 300.00 |    14       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-06-05 | 260.60 |    14       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-05-29 | 300.00 |    13       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-05-29 | 260.60 |    13       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-05-22 | 300.00 |    12       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-05-22 | 260.60 |    12       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-05-15 | 300.00 |    11       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-05-15 | 260.60 |    11       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-05-08 | 300.00 |    10       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-05-08 | 260.60 |    10       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-05-01 | 300.00 |    09       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-05-01 | 260.60 |    09       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-04-24 | 300.00 |    08       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-04-24 | 260.60 |    08       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-04-17 | 300.00 |    07       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-04-17 | 260.60 |    07       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-04-10 | 300.00 |    06       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-04-10 | 260.60 |    06       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-04-03 | 300.00 |    05       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-04-03 | 260.60 |    05       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-03-27 | 300.00 |    04       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-03-27 | 260.60 |    04       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-03-20 | 300.00 |    03       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-03-20 | 260.60 |    03       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-03-13 | 300.00 |    02       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-03-13 | 260.60 |    02       |             | FP/Ref1       | Curry House Ltd  |
+            | 2015-03-06 | 300.00 |    01       |             | FP/Ref2       | Flying Pizza Ltd |
+            | 2015-03-06 | 260.60 |    01       |             | FP/Ref1       | Curry House Ltd  |
+
+        When the Income Proving TM Family V2 API is invoked with the following:
+            | NINO                    | GG987654A  |
+            | Application Raised Date | 2015-09-03 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200                                  |
+            | Financial requirement met | false                                |
+            | Failure reason            | MULTIPLE_EMPLOYERS                   |
+            | Assessment start date     | 2015-03-05                           |
+            | Application Raised date   | 2015-09-03                           |
+            | National Insurance Number | GG987654A                            |
+            | Threshold                 | 357.69                               |
+            | Employer Name             | Flying Pizza Ltd / Curry House Ltd   |
+
+
+
+
+#New Scenario -
+
+    Scenario: Peter Jones does not meet the Category A employment duration Requirement (He has worked for his current employer for 6 months)
+
+    He earns £658.50 a Week Gross Income BUT for 25 weeks
+    He worked for a different employer before his current employer on week 1 and earned £357
+
+        Given HMRC has the following income records:
+                    | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
+                    | 2015-10-30 | 658.50 |    26       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-23 | 658.50 |    25       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-16 | 658.50 |    24       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-09 | 658.50 |    23       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-02 | 658.50 |    22       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-25 | 658.50 |    21       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-18 | 658.50 |    20       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-11 | 658.50 |    19       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-04 | 658.50 |    18       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-28 | 658.50 |    17       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-21 | 658.50 |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-14 | 658.50 |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-07 | 658.50 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-31 | 658.50 |    13       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-24 | 658.50 |    12       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-17 | 658.50 |    11       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-10 | 658.50 |    10       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-03 | 658.50 |    09       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-26 | 658.50 |    08       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-19 | 658.50 |    07       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-12 | 658.50 |    06       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-05 | 658.50 |    05       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-29 | 658.50 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-22 | 658.50 |    03       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-15 | 658.50 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-08 | 357.00 |    01       |            | MP/Ref1       | Mambo Pizza Ltd  |
+
+
+        When the Income Proving TM Family API v2 is invoked with the following:
+            | NINO                    | PJ123456A  |
+            | Application Raised Date | 2015-11-03 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200                |
+            | Financial requirement met | false              |
+            | Failure reason            | NOT_ENOUGH_RECORDS |
+            | Assessment start date     | 2015-05-05         |
+            | Application Raised date   | 2015-11-03         |
+            | National Insurance Number | PJ123456A          |
+            | Threshold                 | 357.69             |
+            | Employer Name             | Flying Pizza Ltd   |
+
+#New Scenario -
+    Scenario: Jenny Francis does not meet the Category A employment duration Requirement (He has worked for his current employer for less than 6 months)
+
+    She earns £658.50 a Week Gross Income BUT for 23 weeks
+
+        Given
+                    | Date       | Amount | Week Number | Month Number| PAYE Reference| Employer        |
+                    | 2015-10-30 | 658.50 |    26       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-23 | 658.50 |    25       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-16 | 658.50 |    24       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-09 | 658.50 |    23       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-10-02 | 658.50 |    22       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-25 | 658.50 |    21       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-18 | 658.50 |    20       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-11 | 658.50 |    19       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-09-04 | 658.50 |    18       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-28 | 658.50 |    17       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-21 | 658.50 |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-14 | 658.50 |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-08-07 | 658.50 |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-31 | 658.50 |    13       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-24 | 658.50 |    12       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-17 | 658.50 |    11       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-10 | 658.50 |    10       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-07-03 | 658.50 |    09       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-26 | 658.50 |    08       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-19 | 658.50 |    07       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-12 | 658.50 |    06       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-06-05 | 658.50 |    05       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-29 | 658.50 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
+                    | 2015-05-22 |        |    03       |            |               |                  |
+                    | 2015-05-15 |        |    02       |            |               |                  |
+                    | 2015-05-08 |        |    01       |            |               |                  |
+
+        When the Income Proving TM Family API is invoked with the following:
+            | NINO                    | JF123456A  |
+            | Application Raised Date | 2015-11-03 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200                |
+            | Financial requirement met | false              |
+            | Failure reason            | NOT_ENOUGH_RECORDS |
+            | Assessment start date     | 2015-05-05         |
+            | Application Raised date   | 2015-11-03         |
             | National Insurance Number | JF123456A          |
             | Threshold                 | 357.69             |
             | Employer Name             | Flying Pizza Ltd   |
+
+
+    Scenario: Jenny Francis does not meet the Category A Employment Payment Frequency Requirement
+    (She passes the Cat A financial threshold & She has worked for the same employer but her payment frequency has changed)
+
+    She has 3 Canadian dependants
+    She was received 18 Weekly Gross income payments of £525.00 and then 2 Monthly Gross income payments of £2266.68 in the 182 period from the same employer
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | Week Number | Month Number| PAYE Reference| Employer        |
+            | 2015-04-24 | 2266.68 |             |     02     | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-03-27 | 2266.68 |             |     01     | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-02-27 | 525.00  |    16       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-02-20 | 525.00  |    15       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-02-13 | 525.00  |    14       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-02-06 | 525.00  |    13       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-30 | 525.00  |    12       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-23 | 525.00  |    11       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-16 | 525.00  |    10       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-09 | 525.00  |    09       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-01-02 | 525.00  |    08       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-12-26 | 525.00  |    07       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-12-19 | 525.00  |    06       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-12-12 | 525.00  |    05       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-12-05 | 525.00  |    04       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-11-28 | 525.00  |    03       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-11-21 | 525.00  |    02       |            | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-11-14 | 525.00  |    01       |            | FP/Ref1       | Flying Pizza Ltd |
+
+        When the Income Proving v2 TM Family API is invoked with the following:
+            | NINO                    | JF123456A  |
+            | Application Raised Date | 2015-05-12 |
+
+
+        Then The Income Proving TM Family API provides the following result:
+                    | HTTP Status               | 200                   |
+                    | Financial requirement met | false                 |
+                    | Failure reason            | PAY_FREQUENCY_CHANGE  |
+                    | Assessment start date     | 2014-11-12            |
+                    | Application Raised date   | 2015-05-12            |
+                    | National Insurance Number | JF123456A             |
+                    | Threshold                 | 357.69                |
+                    | Employer Name             | Flying Pizza Ltd      |

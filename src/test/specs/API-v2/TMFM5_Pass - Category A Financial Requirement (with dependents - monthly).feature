@@ -27,19 +27,19 @@ Feature: Pass - Category A Financial Requirement (with dependants - monthly)
     He has 1 dependant child
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference| Employer         |
-            | 2015-01-15 | 4600.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-12-17 | 4168.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-15 | 4200.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-15 | 4166.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-15 | 4190.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-15 | 4300.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-07-15 | 4200.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-06-15 | 4200.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
+            | 2015-01-15 | 4166.67 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-12-15 | 4166.67 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-11-15 | 4166.67 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-10-15 | 4166.67 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-09-15 | 4166.67 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-08-15 | 4166.67 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | TL123456A  |
             | Application raised date | 2015-01-23 |
             | Dependants              | 1          |
+
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200              |
             | Financial requirement met | true             |
@@ -59,20 +59,19 @@ Feature: Pass - Category A Financial Requirement (with dependants - monthly)
     He has 3 dependant child
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference| Employer         |
-            | 2015-12-02 | 2266.67 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-11-02 | 2266.67 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-10-02 | 2266.68 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-09-02 | 2267.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-08-02 | 2268.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-07-02 | 2270.00 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-06-02 | 2266.69 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-05-02 | 2600.67 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-04-02 | 1600.67 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number| Month Number| PAYE Reference| Employer          |
+            | 2015-12-02 | 3333.33 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-11-02 | 3333.33 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-10-02 | 3333.33 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-09-02 | 3333.33 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-08-02 | 3333.33 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
+            | 2015-07-02 | 3333.33 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | SJ123456C  |
             | Application raised date | 2015-12-08 |
             | Dependants              | 3          |
+
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200              |
             | Financial requirement met | true             |
@@ -88,22 +87,22 @@ Feature: Pass - Category A Financial Requirement (with dependants - monthly)
     Pay date 30th of the month
     On the same day of Application Raised Date
     He earns £5833.33 Monthly Gross Income EVERY of the 6 months
-    He has 5 dependant child23/07/
+    He has 5 dependant child
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference| Employer         |
-            | 2015-01-30 | 5833.33 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-12-30 | 5833.33 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-30 | 5833.33 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-30 | 5833.33 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-30 | 5833.33 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-30 | 5833.33 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-07-30 | 5833.33 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-06-30 | 5833.33 |            | 1           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
+            | 2015-01-30 | 5833.33 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-12-30 | 5833.33 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-11-30 | 5833.33 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-10-30 | 5833.33 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-09-30 | 5833.33 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
+            | 2014-08-30 | 5833.33 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | WA987654B  |
             | Application raised date | 2015-02-28 |
             | Dependants              | 5          |
+
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200              |
             | Financial requirement met | true             |
