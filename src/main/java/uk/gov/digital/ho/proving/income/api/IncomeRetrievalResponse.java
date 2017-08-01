@@ -12,17 +12,23 @@ import java.util.stream.Stream;
 public class IncomeRetrievalResponse extends BaseResponse {
 
     @JsonInclude(Include.NON_NULL)
-    private Individual individual;
+    private final Individual individual;
 
     @JsonInclude(Include.NON_NULL)
-    List<Income> incomes;
+    private final List<Income> incomes;
 
     @JsonInclude(Include.NON_NULL)
-    public String total;
+    private final String total;
 
-    private String getTotal() {
+    public IncomeRetrievalResponse(Individual individual, List<Income> incomes) {
+        this.individual = individual;
+        this.incomes = incomes;
+        total = calculateTotal();
+    }
+
+    private String calculateTotal() {
         Stream<BigDecimal> decimalValues = incomes.stream().map (income -> new BigDecimal(income.getIncome()));
-        BigDecimal total = decimalValues.reduce(BigDecimal.ZERO, ( sum, value ) -> sum.add(value));
+        BigDecimal total = decimalValues.reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return total.toString();
     }
@@ -31,17 +37,11 @@ public class IncomeRetrievalResponse extends BaseResponse {
         return individual;
     }
 
-    public void setIndividual(Individual individual) {
-        this.individual = individual;
-    }
-
     public List<Income> getIncomes() {
         return incomes;
     }
 
-    public void setIncomes(List<Income> incomes) {
-        this.incomes = incomes;
-        total = getTotal();
+    public String getTotal() {
+        return total;
     }
-
 }

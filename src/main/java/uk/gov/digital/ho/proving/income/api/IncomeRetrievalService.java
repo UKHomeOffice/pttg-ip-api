@@ -80,17 +80,18 @@ public class IncomeRetrievalService {
             toDate);
 
 
-        IncomeRetrievalResponse incomeRetrievalResponse = new IncomeRetrievalResponse();
-        incomeRetrievalResponse.setIndividual(new Individual("", forename, surname, sanitiseNino(nino)));
-        incomeRetrievalResponse.setIncomes(incomeRecord.getIncome().
-            stream().
-            map(
-                income -> new Income(income.getPaymentDate(), getEmployer(income.getEmployerPayeReference(), incomeRecord.getEmployments()), income.getPayment().toString())
-            ).
-            filter( income ->
-                !(income.getPayDate().isBefore(fromDate)) && !(income.getPayDate().isAfter(toDate))
-            ).
-            collect(Collectors.toList()));
+        IncomeRetrievalResponse incomeRetrievalResponse = new IncomeRetrievalResponse(
+            new Individual("", forename, surname, sanitiseNino(nino)),
+            incomeRecord.getIncome().
+                stream().
+                map(
+                    income -> new Income(income.getPaymentDate(), getEmployer(income.getEmployerPayeReference(), incomeRecord.getEmployments()), income.getPayment().toString())
+                ).
+                filter( income ->
+                    !(income.getPayDate().isBefore(fromDate)) && !(income.getPayDate().isAfter(toDate))
+                ).
+                collect(Collectors.toList())
+        );
 
         LOGGER.debug("Income check result: {}", value("incomeCheckResponse", incomeRetrievalResponse));
         auditor.publishEvent(auditEvent(SEARCH_RESULT, eventId, auditData(incomeRetrievalResponse)));

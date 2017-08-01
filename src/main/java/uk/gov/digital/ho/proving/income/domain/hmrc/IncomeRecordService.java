@@ -48,10 +48,11 @@ public class IncomeRecordService {
             log.info(String.format("Received %d incomes and %d employments ", responseEntity.getBody().getIncome().size(), responseEntity.getBody().getEmployments().size()));
             return responseEntity.getBody();
         } catch (HttpStatusCodeException e) {
-            log.error("Income service failed", e);
             if (isNotFound(e)) {
+                log.info("No match found for {} {} {} {}", identity.getNino(), identity.getFirstname(), identity.getLastname(), identity.getDateOfBirth());
                 throw new EarningsServiceNoUniqueMatch();
             }
+            log.error("Income service failed", e);
             throw e;
         }
     }
