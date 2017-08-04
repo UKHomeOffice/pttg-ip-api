@@ -1,11 +1,10 @@
 package uk.gov.digital.ho.proving.income.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.proving.income.audit.AuditActions;
+import uk.gov.digital.ho.proving.income.audit.jpa.AuditRepository;
 import uk.gov.digital.ho.proving.income.domain.Individual;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Identity;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
@@ -27,16 +26,16 @@ import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.calculate
 import static uk.gov.digital.ho.proving.income.api.NinoUtils.sanitiseNino;
 import static uk.gov.digital.ho.proving.income.api.NinoUtils.validateNino;
 import static uk.gov.digital.ho.proving.income.audit.AuditActions.auditEvent;
-import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH;
-import static uk.gov.digital.ho.proving.income.audit.AuditEventType.SEARCH_RESULT;
+import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
+import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
 @RestController
 @ControllerAdvice
+@Slf4j
 public class FinancialStatusService {
-    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private final IncomeRecordService incomeRecordService;
-
+    private final AuditRepository auditRepository;
     private final ApplicationEventPublisher auditor;
 
     private static final int MINIMUM_DEPENDANTS = 0;
@@ -44,8 +43,9 @@ public class FinancialStatusService {
 
     private static final int NUMBER_OF_DAYS = 182;
 
-    public FinancialStatusService(IncomeRecordService incomeRecordService, ApplicationEventPublisher auditor) {
+    public FinancialStatusService(IncomeRecordService incomeRecordService, AuditRepository auditRepository, ApplicationEventPublisher auditor) {
         this.incomeRecordService = incomeRecordService;
+        this.auditRepository = auditRepository;
         this.auditor = auditor;
     }
 
@@ -58,11 +58,14 @@ public class FinancialStatusService {
         @RequestParam(value = "applicationRaisedDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate applicationRaisedDate,
         @RequestParam(value = "dependants", required = false, defaultValue = "0") Integer dependants) {
 
-        LOGGER.info("Get financial status invoked for {} application received on {}.", value("nino", nino), applicationRaisedDate);
-        LOGGER.debug("Get financial status invoked for {}, {} {} {} application received on {}.", value("nino", nino), forename, surname, dateOfBirth, applicationRaisedDate);
+        log.info("Get financial status invoked for {} application received on {}.", value("nino", nino), applicationRaisedDate);
+        log.debug("Get financial status invoked for {}, {} {} {} application received on {}.", value("nino", nino), forename, surname, dateOfBirth, applicationRaisedDate);
 
-        UUID eventId = AuditActions.nextId();
-        auditor.publishEvent(auditEvent(SEARCH, eventId, auditData(nino, forename, surname, dateOfBirth, applicationRaisedDate, dependants)));
+        UUID eventId = UUID.randomUUID();
+
+        auditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, eventId, auditData(nino, forename, surname, dateOfBirth, applicationRaisedDate, dependants));
+
+        auditor.publishEvent(auditEvent(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, eventId, auditData(nino, forename, surname, dateOfBirth, applicationRaisedDate, dependants)));
 
         validateNino(sanitiseNino(nino));
         validateDependents(dependants);
@@ -77,8 +80,11 @@ public class FinancialStatusService {
 
         FinancialStatusCheckResponse response = calculateResponse(applicationRaisedDate, dependants, startSearchDate, incomeRecord, new Individual("", forename, surname, sanitiseNino(nino)));
 
-        LOGGER.debug("Financial status check result: {}", value("financialStatusCheckResponse", response));
-        auditor.publishEvent(auditEvent(SEARCH_RESULT, eventId, auditData(response)));
+        log.debug("Financial status check result: {}", value("financialStatusCheckResponse", response));
+
+        auditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
+
+        auditor.publishEvent(auditEvent(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response)));
 
         return response;
     }

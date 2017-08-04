@@ -15,20 +15,16 @@ import static uk.gov.digital.ho.proving.income.logging.LoggingInterceptor.USER_I
  */
 public class AuditActions {
 
-    public static UUID nextId() {
-        return UUID.randomUUID();
-    }
-
     public static AuditApplicationEvent auditEvent(AuditEventType type, UUID id, Map<String, Object> data) {
 
-        if (data == null) data = new HashMap<String, Object>();
+        if (data == null) data = new HashMap<>();
 
         data.put("eventId", id);
 
         return new AuditApplicationEvent(getPrincipal(), type.name(), data);
     }
 
-    private static String getPrincipal() {
+    public static String getPrincipal() {
         if (StringUtils.isBlank(MDC.get(USER_ID_HEADER))) {
             return "anonymous";
         }

@@ -56,6 +56,4 @@ public class JsonLoggingNonPersistentAuditEventRepository implements AuditEventR
     public List<AuditEvent> find(String principal, Date after, String type) {
         return Collections.EMPTY_LIST;
     }
-
-
 }

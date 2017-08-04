@@ -51,8 +51,8 @@ class AuditIntegrationSpec extends Specification {
     }
 
     def withMockLogAppender() {
-        Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        root.addAppender(logAppender);
+        Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)
+        root.addAppender(logAppender)
     }
 
     def "Searches are audited as INFO level log output with AUDIT prefix and SEARCH type with a timestamp"() {
@@ -79,13 +79,13 @@ class AuditIntegrationSpec extends Specification {
         // We can capture the SEARCH event log even though the search fails because there is no mongo
 
         logEntry.formattedMessage.contains("principal=anonymous")
-        logEntry.formattedMessage.contains("type=SEARCH")
+        logEntry.formattedMessage.contains("type=INCOME_PROVING_INCOME_CHECK_REQUEST")
         logEntry.formattedMessage.contains("method=get-income")
 
         LocalDateTime timestamp =
-            Instant.ofEpochMilli(logEntry.timeStamp).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            Instant.ofEpochMilli(logEntry.timeStamp).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
-        MINUTES.between(timestamp, now()) < 1;
+        MINUTES.between(timestamp, now()) < 1
     }
 
 
