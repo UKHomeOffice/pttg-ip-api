@@ -1,8 +1,6 @@
 package uk.gov.digital.ho.proving.income.api.test
 
 import groovy.json.JsonSlurper
-import org.springframework.boot.actuate.audit.AuditEvent
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
@@ -28,9 +26,8 @@ class FinancialServiceSpec extends Specification {
 
     def mockIncomeRecordService = Mock(IncomeRecordService)
     def mockAuditRepository = Mock(AuditRepository)
-    def mockAuditor = Mock(ApplicationEventPublisher)
 
-    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditRepository, mockAuditor)
+    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditRepository)
 
     MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ApiExceptionHandler()).build()
 
@@ -192,7 +189,6 @@ class FinancialServiceSpec extends Specification {
 
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
 
-
         String requestType
         String requestEventId
         Map<String, Object> requestEvent
@@ -203,11 +199,6 @@ class FinancialServiceSpec extends Specification {
 
         1 * mockAuditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, _, _) >> { args -> requestType = args[0]; requestEventId = args[1]; requestEvent = args[2]}
         1 * mockAuditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, _, _) >> { args -> responseType = args[0]; responseEventId = args[1]; responseEvent = args[2]}
-
-        AuditEvent event1
-        AuditEvent event2
-        1 * mockAuditor.publishEvent(_) >> { args -> event1 = args[0].auditEvent}
-        1 * mockAuditor.publishEvent(_) >> { args -> event2 = args[0].auditEvent}
 
         when:
         mockMvc.perform(get("/incomeproving/v2/individual/$nino/financialstatus").
@@ -248,17 +239,6 @@ class FinancialServiceSpec extends Specification {
         responseEvent['response'].categoryCheck.employers[1] == "Burger King"
         responseEvent['response'].status.code == "100"
         responseEvent['response'].status.message == "OK"
-
-        event1.type == INCOME_PROVING_FINANCIAL_STATUS_REQUEST.name()
-        event2.type == INCOME_PROVING_FINANCIAL_STATUS_RESPONSE.name()
-
-        event1.data['eventId'] == event2.data['eventId']
-
-        event1.data['nino'] == nino
-        event1.data['applicationRaisedDate'] == applicationRaisedDate
-        event1.data['dependants'] == Integer.parseInt(dependants)
-
-        event2.data['response'].categoryCheck.category == category
     }
 
 }

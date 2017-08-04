@@ -1,8 +1,6 @@
 package uk.gov.digital.ho.proving.income.api.test
 
 import groovy.json.JsonSlurper
-import org.springframework.boot.actuate.audit.AuditEvent
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
@@ -32,9 +30,8 @@ class IncomeServiceSpec extends Specification {
 
     def mockIncomeRecordService = Mock(IncomeRecordService)
     def mockAuditRepository = Mock(AuditRepository)
-    def mockAuditor = Mock(ApplicationEventPublisher)
 
-    def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditRepository, mockAuditor)
+    def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditRepository)
 
     MockMvc mockMvc = standaloneSetup(controller).setControllerAdvice(new ApiExceptionHandler()).build()
 
@@ -160,11 +157,6 @@ class IncomeServiceSpec extends Specification {
         1 * mockAuditRepository.add(INCOME_PROVING_INCOME_CHECK_REQUEST, _, _) >> { args -> requestType = args[0]; requestEventId = args[1]; requestEvent = args[2]}
         1 * mockAuditRepository.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, _, _) >> { args -> responseType = args[0]; responseEventId = args[1]; responseEvent = args[2]}
 
-        AuditEvent event1
-        AuditEvent event2
-        1 * mockAuditor.publishEvent(_) >> { args -> event1 = args[0].auditEvent}
-        1 * mockAuditor.publishEvent(_) >> { args -> event2 = args[0].auditEvent}
-
         when:
         mockMvc.perform(
             get("/incomeproving/v2/individual/$nino/income")
@@ -196,16 +188,5 @@ class IncomeServiceSpec extends Specification {
         responseEvent['response'].individual.forename == "Mark"
         responseEvent['response'].incomes.size == 0
         responseEvent['response'].total == "0"
-
-        event1.type == INCOME_PROVING_INCOME_CHECK_REQUEST.name()
-        event2.type == INCOME_PROVING_INCOME_CHECK_RESPONSE.name()
-
-        event1.data['eventId'] == event2.data['eventId']
-
-        event1.data['nino'] == nino
-        event1.data['fromDate'] == yesterday
-        event1.data['toDate'] == today
-
-        event2.data['response'].individual.forename == "Mark"
     }
 }

@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.proving.income.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.proving.income.audit.jpa.AuditRepository;
@@ -25,7 +24,6 @@ import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.api.NinoUtils.sanitiseNino;
 import static uk.gov.digital.ho.proving.income.api.NinoUtils.validateNino;
-import static uk.gov.digital.ho.proving.income.audit.AuditActions.auditEvent;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_INCOME_CHECK_REQUEST;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_INCOME_CHECK_RESPONSE;
 
@@ -36,12 +34,10 @@ public class IncomeRetrievalService {
 
     private final IncomeRecordService incomeRecordService;
     private final AuditRepository auditRepository;
-    private final ApplicationEventPublisher auditor;
 
-    public IncomeRetrievalService(IncomeRecordService incomeRecordService, AuditRepository auditRepository, ApplicationEventPublisher auditor) {
+    public IncomeRetrievalService(IncomeRecordService incomeRecordService, AuditRepository auditRepository) {
         this.incomeRecordService = incomeRecordService;
         this.auditRepository = auditRepository;
-        this.auditor = auditor;
     }
 
     @RequestMapping(value = "/incomeproving/v2/individual/{nino}/income", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
@@ -58,8 +54,6 @@ public class IncomeRetrievalService {
         UUID eventId = UUID.randomUUID();
 
         auditRepository.add(INCOME_PROVING_INCOME_CHECK_REQUEST, eventId, auditData(nino, forename, surname, dateOfBirth, fromDate, toDate));
-
-        auditor.publishEvent(auditEvent(INCOME_PROVING_INCOME_CHECK_REQUEST, eventId, auditData(nino, forename, surname, dateOfBirth, fromDate, toDate)));
 
         String cleanNino = sanitiseNino(nino);
         validateNino(cleanNino);
@@ -99,8 +93,6 @@ public class IncomeRetrievalService {
         log.debug("Income check result: {}", value("incomeCheckResponse", incomeRetrievalResponse));
 
         auditRepository.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
-
-        auditor.publishEvent(auditEvent(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse)));
 
         return incomeRetrievalResponse;
     }
