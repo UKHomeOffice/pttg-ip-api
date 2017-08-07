@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.proving.income.audit.jpa;
+package uk.gov.digital.ho.proving.income.audit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +7,8 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.AuditDataException;
+import uk.gov.digital.ho.proving.income.audit.AuditEntry;
+import uk.gov.digital.ho.proving.income.audit.AuditEntryRepository;
 import uk.gov.digital.ho.proving.income.audit.AuditEventType;
 
 import java.time.LocalDateTime;

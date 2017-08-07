@@ -5,7 +5,7 @@ import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.api.IncomeRetrievalService
-import uk.gov.digital.ho.proving.income.audit.jpa.AuditRepository
+import uk.gov.digital.ho.proving.income.audit.AuditRepository
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
 
