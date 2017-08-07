@@ -40,7 +40,7 @@ public class IncomeRetrievalService {
         this.auditRepository = auditRepository;
     }
 
-    @RequestMapping(value = "/incomeproving/v2/individual/{nino}/income", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/incomeproving/v2/individual/{nino}/income", produces = APPLICATION_JSON_VALUE)
     public IncomeRetrievalResponse getIncome(
         @PathVariable(value = "nino") String nino,
         @RequestParam(value = "forename") String forename,
@@ -49,7 +49,7 @@ public class IncomeRetrievalService {
         @RequestParam(value = "fromDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
 
-        log.debug("Get income details invoked for {} nino between {} and {}", value("nino", nino), fromDate, toDate);
+        log.info("Get income details of nino {} between {} and {}", nino, fromDate, toDate);
 
         UUID eventId = UUID.randomUUID();
 
@@ -90,7 +90,7 @@ public class IncomeRetrievalService {
                 collect(Collectors.toList())
         );
 
-        log.debug("Income check result: {}", value("incomeCheckResponse", incomeRetrievalResponse));
+        log.info("Income check result: {}", value("incomeCheckResponse", incomeRetrievalResponse));
 
         auditRepository.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
 

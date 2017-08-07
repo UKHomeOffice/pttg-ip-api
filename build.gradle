@@ -35,6 +35,12 @@ buildscript {
     }
 }
 
+
+plugins {
+    id "com.gorylenko.gradle-git-properties" version "1.4.17"
+}
+
+
 apply plugin: 'java'
 apply plugin: 'scala'
 apply plugin: 'groovy'
@@ -50,6 +56,11 @@ group 'pttg-ip-api'
 version = '0.1.0'
 
 mainClassName = "uk.gov.digital.ho.proving.income.ServiceRunner"
+
+
+springBoot {
+    buildInfo()
+}
 
 dependencies {
 
