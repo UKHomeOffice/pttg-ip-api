@@ -133,6 +133,7 @@ public class ApiDocumentation {
                 .addFilter(documentationConfiguration(this.restDocumentationRule))
                 .addFilter(document)
                 .build();
+
         when(incomeRecordService.getIncomeRecord(any(Identity.class), any(LocalDate.class), any(LocalDate.class)))
             .thenReturn(new IncomeRecord(someIncomes(), someEmployments()));
     }
