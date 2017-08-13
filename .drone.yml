@@ -10,6 +10,29 @@ pipeline:
     when:
      event: [push, pull_request, tag]
 
+  docker-build-db-image:
+    privileged: true
+    image: docker:1.11
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - docker build -t pttg-postgres -f Dockerfile-pttg-postgres .
+    when:
+      branch: [master, refs/tags/*]
+      event: [push, tag]
+
+  tag-db-image:
+    image: docker:1.11
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - docker login -u="ukhomeofficedigital+pttg" -p=${DOCKER_PASSWORD} quay.io
+      - docker tag pttg-postgres quay.io/ukhomeofficedigital/pttg-postgres:latest
+      - docker push quay.io/ukhomeofficedigital/pttg-postgres:latest
+    when:
+      branch: master
+      event: push
+
   docker-build:
     privileged: true
     image: docker:1.11
@@ -101,7 +124,6 @@ pipeline:
     when:
       event: deployment
       environment: prod
-
 
 services:
   dind:
