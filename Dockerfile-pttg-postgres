@@ -1,3 +1,17 @@
 FROM postgres
 
-ENTRYPOINT /bin/bash
+ENV USER pttg
+ENV GROUP pttg
+
+WORKDIR /app
+
+RUN groupadd -r ${GROUP} && \
+    useradd -r -g ${USER} ${GROUP} -d /app && \
+    mkdir -p /app && \
+    chown -R ${USER}:${GROUP} /app
+
+COPY run-db.sh /app
+
+RUN chmod a+x /app/run-db.sh
+
+ENTRYPOINT /app/run-db.sh
