@@ -1,5 +1,5 @@
 spring:
  datasource:
-    url: jdbc:postgresql://pds3v8fj4qak1h.coaznai19bkh.eu-west-1.rds.amazonaws.com:5432/ptidev?currentSchema=pttg_ip&stringtype=unspecified
-    username: pttg
-    password: pttg
+    url: ${audit.jdbc.url}
+    username: ${ip.db.username}
+    password: ${ip.db.password}
