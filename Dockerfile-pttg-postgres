@@ -10,8 +10,8 @@ RUN groupadd -r ${GROUP} && \
     mkdir -p /app && \
     chown -R ${USER}:${GROUP} /app
 
-COPY run-db.sh /app
+COPY run-pttg-postgres.sh /app
 
-RUN chmod a+x /app/run-db.sh
+RUN chmod a+x /app/run-pttg-postgres.sh
 
-ENTRYPOINT /app/run-db.sh
+ENTRYPOINT /app/run-pttg-postgres.sh
