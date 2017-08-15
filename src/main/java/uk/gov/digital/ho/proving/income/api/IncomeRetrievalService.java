@@ -2,7 +2,10 @@ package uk.gov.digital.ho.proving.income.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.proving.income.audit.AuditRepository;
 import uk.gov.digital.ho.proving.income.domain.Income;
 import uk.gov.digital.ho.proving.income.domain.Individual;
@@ -28,7 +31,6 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_INCOME_CHECK_RESPONSE;
 
 @RestController
-@ControllerAdvice
 @Slf4j
 public class IncomeRetrievalService {
 
