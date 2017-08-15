@@ -1,5 +1,5 @@
 #@check-applicants-income
-Feature: API returns a list of income for a specific NINO inorder to understand how much an Applicant has earned within a given period.
+Feature: API returns a list of income for a specific NINO inorder to understand how much an Applicant has earned within a given period
   This feature of the Income Proving API allows a client to ask the question:
 
   “How much income has the applicant or spouse earned within a given period?"
