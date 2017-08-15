@@ -35,8 +35,13 @@ buildscript {
     }
 }
 
+
+plugins {
+    id "com.gorylenko.gradle-git-properties" version "1.4.17"
+}
+
+
 apply plugin: 'java'
-apply plugin: 'scala'
 apply plugin: 'groovy'
 apply plugin: 'net.serenity-bdd.aggregator'
 apply plugin: 'net.linguica.maven-settings'
@@ -50,6 +55,11 @@ group 'pttg-ip-api'
 version = '0.1.0'
 
 mainClassName = "uk.gov.digital.ho.proving.income.ServiceRunner"
+
+
+springBoot {
+    buildInfo()
+}
 
 dependencies {
 
@@ -77,15 +87,20 @@ dependencies {
 
     compile "org.springframework.boot:spring-boot-starter-actuator:1.4.1.RELEASE"
 
-    compile 'com.fasterxml.jackson.module:jackson-module-scala_2.11:2.7.4'
     compile 'org.apache.httpcomponents:httpclient:4.5.2'
-    compile 'org.scala-lang:scala-library:2.11.8'
 
     compile "org.springframework.boot:spring-boot:$springBootVersion"
     compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
     compile "org.springframework.boot:spring-boot-starter-actuator:$springBootVersion"
     compile 'net.logstash.logback:logstash-logback-encoder:4.7'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.+'
+
+    compile group:'org.springframework.boot', name: 'spring-boot-starter-jetty',        version: "$springBootVersion"
+    compile group:'org.springframework.boot', name: 'spring-boot-starter-data-jpa',     version: "$springBootVersion"
+    compile group:'org.springframework.boot', name: 'spring-boot-devtools',             version: "$springBootVersion"
+    compile group: 'org.flywaydb',            name: 'flyway-core',                      version: '4.2.0'
+    compile group: 'org.postgresql',          name: 'postgresql',                       version: '9.4.1211.jre7'
+    compile group: 'org.hsqldb',              name: 'hsqldb',                           version: '2.4.0'
 
     compileOnly 'org.projectlombok:lombok:1.16.12'
 
@@ -117,8 +132,6 @@ dependencies {
     testCompile "net.serenity-bdd:serenity-spring:1.1.31"
     testCompile "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1"
     testCompile "com.github.tomakehurst:wiremock:2.4.1"
-
-    testCompile 'org.scala-lang:scala-library:2.11.8'
 
     testCompile "org.springframework.boot:spring-boot:$springBootVersion"
     testCompile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
@@ -183,14 +196,6 @@ tasks.withType(GroovyCompile) {
 
     options.fork = true  // Fork your compilation into a child process
     options.forkOptions.setMemoryMaximumSize("256m")
-}
-
-tasks.withType(ScalaCompile) {
-    scalaCompileOptions.with {
-        force = true
-        additionalParameters = ["-Xmax-classfile-name", "127"]
-        forkOptions.setMemoryMaximumSize("256m")
-    }
 }
 
 test {

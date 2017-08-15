@@ -1,14 +1,12 @@
 package uk.gov.digital.ho.proving.income.api.test
 
 import groovy.json.JsonSlurper
-import org.springframework.boot.actuate.audit.AuditEvent
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
-import uk.gov.digital.ho.proving.income.audit.AuditEventType
+import uk.gov.digital.ho.proving.income.audit.AuditRepository
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
 
@@ -17,22 +15,26 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
+import static uk.gov.digital.ho.proving.income.api.FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getConsecutiveIncomes2
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getEmployments
+import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST
+import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE
 
 class FinancialServiceSpec extends Specification {
 
 
-    def incomeRecordService = Mock(IncomeRecordService)
-    ApplicationEventPublisher auditor = Mock()
-    def financialStatusController = new FinancialStatusService(incomeRecordService, auditor)
+    def mockIncomeRecordService = Mock(IncomeRecordService)
+    def mockAuditRepository = Mock(AuditRepository)
+
+    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditRepository)
 
     MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ApiExceptionHandler()).build()
 
 
     def "valid NINO is looked up on the earnings service"() {
         given:
-        1 * incomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
 
         when:
         def response = mockMvc.perform(get("/incomeproving/v2/individual/AA123456A/financialstatus").
@@ -69,7 +71,7 @@ class FinancialServiceSpec extends Specification {
 
     def "unknown nino yields HTTP Not Found (404)"() {
         given:
-        1 * incomeRecordService.getIncomeRecord(_, _, _) >> { throw new EarningsServiceNoUniqueMatch() }
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { throw new EarningsServiceNoUniqueMatch() }
 
 
         when:
@@ -105,7 +107,7 @@ class FinancialServiceSpec extends Specification {
 
     def "can submit more than zero dependants"() {
         given:
-        1 * incomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
 
         when:
         def response = mockMvc.perform(get("/incomeproving/v2/individual/AA123456C/financialstatus").
@@ -159,7 +161,7 @@ class FinancialServiceSpec extends Specification {
 
     def "monthly payment uses 182 days in start date calculation"() {
         given:
-        1 * incomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
 
         when:
         def response = mockMvc.perform(get("/incomeproving/v2/individual/AA123456A/financialstatus").
@@ -185,12 +187,18 @@ class FinancialServiceSpec extends Specification {
         def dependants = "1"
         def category = 'A'
 
-        1 * incomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
 
-        AuditEvent event1
-        AuditEvent event2
-        1 * auditor.publishEvent(_) >> {args -> event1 = args[0].auditEvent}
-        1 * auditor.publishEvent(_) >> {args -> event2 = args[0].auditEvent}
+        String requestType
+        String requestEventId
+        Map<String, Object> requestEvent
+
+        String responseType
+        String responseEventId
+        Map<String, Object> responseEvent
+
+        1 * mockAuditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, _, _) >> { args -> requestType = args[0]; requestEventId = args[1]; requestEvent = args[2]}
+        1 * mockAuditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, _, _) >> { args -> responseType = args[0]; responseEventId = args[1]; responseEvent = args[2]}
 
         when:
         mockMvc.perform(get("/incomeproving/v2/individual/$nino/financialstatus").
@@ -203,16 +211,34 @@ class FinancialServiceSpec extends Specification {
 
         then:
 
-        event1.type == AuditEventType.SEARCH.name()
-        event2.type == AuditEventType.SEARCH_RESULT.name()
+        requestEventId == responseEventId
 
-        event1.data['eventId'] == event2.data['eventId']
+        requestType == INCOME_PROVING_FINANCIAL_STATUS_REQUEST.name()
+        requestEvent['nino'] == nino
+        requestEvent['forename'] == "Mark"
+        requestEvent['surname'] == "Jones"
+        requestEvent['dateOfBirth'] == "1980-01-13"
+        requestEvent['applicationRaisedDate'] == applicationRaisedDate
+        requestEvent['dependants'] == Integer.parseInt(dependants)
+        requestEvent['method'] == "get-financial-status"
 
-        event1.data['nino'] == nino
-        event1.data['applicationRaisedDate'] == applicationRaisedDate
-        event1.data['dependants'] == Integer.parseInt(dependants)
-
-        event2.data['response'].categoryCheck.category == category
+        responseType == INCOME_PROVING_FINANCIAL_STATUS_RESPONSE.name()
+        responseEvent['method'] == "get-financial-status"
+        responseEvent['response'].individual.title == ""
+        responseEvent['response'].individual.forename == "Mark"
+        responseEvent['response'].individual.surname == "Jones"
+        responseEvent['response'].individual.nino == nino
+        responseEvent['response'].categoryCheck.category == category
+        responseEvent['response'].categoryCheck.passed == false
+        responseEvent['response'].categoryCheck.applicationRaisedDate == "2015-09-23"
+        responseEvent['response'].categoryCheck.assessmentStartDate == "2015-03-25"
+        responseEvent['response'].categoryCheck.failureReason == MONTHLY_VALUE_BELOW_THRESHOLD
+        responseEvent['response'].categoryCheck.threshold == 1866.67
+        responseEvent['response'].categoryCheck.employers.size == 2
+        responseEvent['response'].categoryCheck.employers[0] == "Pizza Hut"
+        responseEvent['response'].categoryCheck.employers[1] == "Burger King"
+        responseEvent['response'].status.code == "100"
+        responseEvent['response'].status.message == "OK"
     }
 
 }

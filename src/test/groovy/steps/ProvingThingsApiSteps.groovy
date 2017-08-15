@@ -39,17 +39,17 @@ import static com.jayway.restassured.RestAssured.get
 @WebAppConfiguration
 @IntegrationTest()
 class ProvingThingsApiSteps implements ApplicationContextAware{
-    private WireMockServer wireMockServer = new WireMockServer(options().port(8083));
+    private WireMockServer wireMockServer = new WireMockServer(options().port(8083))
 
     @Autowired
     private ObjectMapper objectMapper
-    private static boolean SuiteSetupDone = false;
+    private static boolean SuiteSetupDone = false
 
     @Before
-    public void before() throws Exception {
+    void before() throws Exception {
         if (!SuiteSetupDone) {
-            configureFor(8083);
-            wireMockServer.start();
+            configureFor(8083)
+            wireMockServer.start()
             SuiteSetupDone = true
         }
     }
@@ -58,7 +58,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
     @Override
     void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         //required for @controllerAdvice to work
-        DispatcherServlet ds = applicationContext.getBean("dispatcherServlet");
+        DispatcherServlet ds = applicationContext.getBean("dispatcherServlet")
         ds.setThrowExceptionIfNoHandlerFound(true)
     }
 
@@ -73,7 +73,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
 
 
 
-    public String tocamelcase(String g) {
+    String tocamelcase(String g) {
         StringBuilder sbl = new StringBuilder()
 
         String firstString
@@ -161,17 +161,17 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
      - Date values are in the format yyyy-mm-dd
      - boolean values are lowercase
      */
-    public void validateJsonResult(DataTable arg) {
-        Map<String, String> entries = arg.asMap(String.class, String.class);
-        String[] tableKey = entries.keySet();
+    void validateJsonResult(DataTable arg) {
+        Map<String, String> entries = arg.asMap(String.class, String.class)
+        String[] tableKey = entries.keySet()
 
         for (String key : tableKey) {
             switch (key) {
                 case "HTTP Status":
-                    assert entries.get(key) == resp.getStatusCode().toString();
-                    break;
+                    assert entries.get(key) == resp.getStatusCode().toString()
+                    break
                 case "Employer Name":
-                    String jsonPath = FeatureKeyMapper.buildJsonPath(key).toString();
+                    String jsonPath = FeatureKeyMapper.buildJsonPath(key).toString()
                     String[] employers = entries.get(key).split(',')
 
                     for(String t : employers) {
@@ -179,10 +179,10 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
                         assert read(jsonAsString, jsonPath).toString().contains(t)
                     }
 
-                    break;
+                    break
                 default:
-                    String jsonPath = FeatureKeyMapper.buildJsonPath(key);
-                    assert entries.get(key) == read(jsonAsString, jsonPath).toString();
+                    String jsonPath = FeatureKeyMapper.buildJsonPath(key)
+                    assert entries.get(key) == read(jsonAsString, jsonPath).toString()
                     println " :" + jsonPath
                     println " :" + jsonAsString
                     println " :" + entries.get(key)
@@ -192,75 +192,75 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
     }
 
     @Given("^A service is consuming the Income Proving TM Family API\$")
-    public void a_service_is_consuming_the_Income_Proving_TM_Family_API() {
+    void a_service_is_consuming_the_Income_Proving_TM_Family_API() {
 
     }
 
     @When("^the Income Proving TM Family API is invoked with the following:\$")
-    public void the_Income_Proving_TM_Family_API_is_invoked_with_the_following(DataTable expectedResult) {
+    void the_Income_Proving_TM_Family_API_is_invoked_with_the_following(DataTable expectedResult) {
 
 
         getTableData(expectedResult)
-        resp = get("http://localhost:8081/incomeproving/v1/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}", nino, applicationRaisedDate, dependants);
-        jsonAsString = resp.asString();
+        resp = get("http://localhost:8081/incomeproving/v1/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}", nino, applicationRaisedDate, dependants)
+        jsonAsString = resp.asString()
         println "Generic Tool Json" + jsonAsString
     }
 
     @When("^the Income Proving v2 TM Family API is invoked with the following:\$")
-    public void theIncomeProvingVTMFamilyAPIIsInvokedWithTheFollowing(DataTable params) throws Throwable {
+    void theIncomeProvingVTMFamilyAPIIsInvokedWithTheFollowing(DataTable params) throws Throwable {
         getTableData(params)
-        resp = get("http://localhost:8081/incomeproving/v2/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, applicationRaisedDate, dependants);
-        jsonAsString = resp.asString();
+        resp = get("http://localhost:8081/incomeproving/v2/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, applicationRaisedDate, dependants)
+        jsonAsString = resp.asString()
         println "HMRC Json" + jsonAsString
     }
 
 
     @Then("^The Income Proving TM Family API provides the following result:\$")
-    public void the_Income_Proving_TM_Family_API_provides_the_following_result(DataTable arg1) {
+    void the_Income_Proving_TM_Family_API_provides_the_following_result(DataTable arg1) {
         validateJsonResult(arg1)
 
     }
 
     //For generic Tool
     @When("^the Income Proving API is invoked with the following:\$")
-    public void the_Income_Proving_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
+    void the_Income_Proving_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
         getTableData(arg1)
         resp = get("http://localhost:8081/incomeproving/v1/individual/{nino}/income?fromDate={fromDate}&toDate={toDate}", nino, fromDate, toDate)
 
-        jsonAsString = resp.asString();
+        jsonAsString = resp.asString()
         println "" + jsonAsString
     }
 
     //For generic Tool
     @When("^the Income Proving v2 API is invoked with the following:\$")
-    public void the_Income_Proving_v2_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
+    void the_Income_Proving_v2_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
         getTableData(arg1)
         resp = get("http://localhost:8081/incomeproving/v2/individual/{nino}/income?fromDate={fromDate}&toDate={toDate}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, fromDate, toDate)
 
-        jsonAsString = resp.asString();
+        jsonAsString = resp.asString()
         println "" + jsonAsString
     }
 
     @Then("^The API provides the following Individual details:\$")
-    public void the_API_provides_the_following_Individual_details(DataTable arg1) throws Throwable {
+    void the_API_provides_the_following_Individual_details(DataTable arg1) throws Throwable {
         validateJsonResult(arg1)
     }
 
     @Then("^The API provides the following result:\$")
-    public void the_API_provides_the_following_details(DataTable expectedResult) throws Throwable {
+    void the_API_provides_the_following_details(DataTable expectedResult) throws Throwable {
 
         checkIncome(expectedResult)
     }
 
 
     @Given("^HMRC has the following income records:\$")
-    public void hmrcHasTheFollowingIncomeRecords(DataTable incomeRecords) throws Throwable {
+    void hmrcHasTheFollowingIncomeRecords(DataTable incomeRecords) throws Throwable {
         List<Income> income = incomeRecords.
             raw().
             stream().
             skip(1).
             map({row -> toIncome(row)}).
-            collect();
+            collect()
 
         List<Employments> employments = incomeRecords.
             raw().
@@ -268,15 +268,15 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
             skip(1).
             map({row -> toEmployment(row)}).
             collect().
-            unique {e1, e2 -> e1.employer.payeReference <=> e2.employer.payeReference};
+            unique {e1, e2 -> e1.employer.payeReference <=> e2.employer.payeReference}
 
-        IncomeRecord incomeRecord = new IncomeRecord(income, employments);
+        IncomeRecord incomeRecord = new IncomeRecord(income, employments)
         String data = objectMapper.writeValueAsString(incomeRecord)
         stubFor(WireMock.get(urlMatching("/income.*")).
             willReturn(aResponse().
                 withHeader("Content-Type", "application/json").
-                withBody(data)));
-        incomeRecords.raw();
+                withBody(data)))
+        incomeRecords.raw()
     }
 
     def toIncome(row) {
@@ -295,7 +295,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
     }
 
     @Given("^HMRC has no matching record\$")
-    public void hmrcHasNoMatchingRecord() throws Throwable {
+    void hmrcHasNoMatchingRecord() throws Throwable {
         stubFor(WireMock.get(urlMatching("/income.*")).
             willReturn(aResponse().
                 withHeader("Content-Type", "application/json").

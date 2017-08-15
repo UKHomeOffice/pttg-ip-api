@@ -1,13 +1,11 @@
 package uk.gov.digital.ho.proving.income.api.test
 
 import groovy.json.JsonSlurper
-import org.springframework.boot.actuate.audit.AuditEvent
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.api.IncomeRetrievalService
-import uk.gov.digital.ho.proving.income.audit.AuditEventType
+import uk.gov.digital.ho.proving.income.audit.AuditRepository
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
 
@@ -16,9 +14,9 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getConsecutiveIncomes2
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getEmployments
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getIndividual
+import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.*
+import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_INCOME_CHECK_REQUEST
+import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_INCOME_CHECK_RESPONSE
 
 /**
  * @Author Home Office Digital
@@ -30,9 +28,10 @@ class IncomeServiceSpec extends Specification {
     String today = now().format(ISO_LOCAL_DATE);
     String tomorrow = now().plusDays(1).format(ISO_LOCAL_DATE);
 
-    def incomeRecordService = Mock(IncomeRecordService)
-    ApplicationEventPublisher auditor = Mock()
-    def controller = new IncomeRetrievalService(incomeRecordService, auditor)
+    def mockIncomeRecordService = Mock(IncomeRecordService)
+    def mockAuditRepository = Mock(AuditRepository)
+
+    def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditRepository)
 
     MockMvc mockMvc = standaloneSetup(controller).setControllerAdvice(new ApiExceptionHandler()).build()
 
@@ -144,12 +143,19 @@ class IncomeServiceSpec extends Specification {
         def frequency = "M1"
         def individual = getIndividual()
 
-        1 * incomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
 
-        AuditEvent event1
-        AuditEvent event2
-        1 * auditor.publishEvent(_) >> {args -> event1 = args[0].auditEvent}
-        1 * auditor.publishEvent(_) >> {args -> event2 = args[0].auditEvent}
+
+        String requestType
+        String requestEventId
+        Map<String, Object> requestEvent
+
+        String responseType
+        String responseEventId
+        Map<String, Object> responseEvent
+
+        1 * mockAuditRepository.add(INCOME_PROVING_INCOME_CHECK_REQUEST, _, _) >> { args -> requestType = args[0]; requestEventId = args[1]; requestEvent = args[2]}
+        1 * mockAuditRepository.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, _, _) >> { args -> responseType = args[0]; responseEventId = args[1]; responseEvent = args[2]}
 
         when:
         mockMvc.perform(
@@ -163,15 +169,24 @@ class IncomeServiceSpec extends Specification {
 
         then:
 
-        event1.type == AuditEventType.SEARCH.name()
-        event2.type == AuditEventType.SEARCH_RESULT.name()
+        requestEventId == responseEventId
 
-        event1.data['eventId'] == event2.data['eventId']
+        requestType == INCOME_PROVING_INCOME_CHECK_REQUEST.name()
+        requestEvent['method'] == "get-income"
+        requestEvent['nino'] == nino
+        requestEvent['forename'] == "Mark"
+        requestEvent['surname'] == "Jones"
+        requestEvent['dateOfBirth'] == "1980-01-13"
+        requestEvent['fromDate'] == yesterday
+        requestEvent['toDate'] == today
 
-        event1.data['nino'] == nino
-        event1.data['fromDate'] == yesterday
-        event1.data['toDate'] == today
-
-        event2.data['response'].individual.forename == "Mark"
+        responseType == INCOME_PROVING_INCOME_CHECK_RESPONSE.name()
+        responseEvent['method'] == "get-income"
+        responseEvent['response'].individual.title == ""
+        responseEvent['response'].individual.forename == "Mark"
+        responseEvent['response'].individual.surname == "Jones"
+        responseEvent['response'].individual.forename == "Mark"
+        responseEvent['response'].incomes.size == 0
+        responseEvent['response'].total == "0"
     }
 }

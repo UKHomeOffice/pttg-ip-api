@@ -8,29 +8,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch;
-import org.slf4j.MDC;
+import uk.gov.digital.ho.proving.income.api.RequestData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.digital.ho.proving.income.logging.LoggingInterceptor.CORRELATION_ID_HEADER;
-import static uk.gov.digital.ho.proving.income.logging.LoggingInterceptor.USER_ID_HEADER;
+import static uk.gov.digital.ho.proving.income.api.RequestData.*;
 
 @Service
 @Slf4j
 public class IncomeRecordService {
+
     private final RestTemplate restTemplate;
     private final String hmrcServiceEndpoint;
+    private final RequestData requestData;
 
-    public IncomeRecordService(RestTemplate restTemplate, @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint) {
+    public IncomeRecordService(RestTemplate restTemplate,
+                               @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
+                               RequestData requestData) {
         this.restTemplate = restTemplate;
         this.hmrcServiceEndpoint = hmrcServiceEndpoint;
+        this.requestData = requestData;
     }
 
     public IncomeRecord getIncomeRecord(Identity identity, LocalDate fromDate, LocalDate toDate) {
         try {
-            log.info(String.format("About to call income service %s for %s ", hmrcServiceEndpoint, identity.getNino()));
+            log.info(String.format("About to call Income Service at %s", hmrcServiceEndpoint));
             ResponseEntity<IncomeRecord> responseEntity = restTemplate.exchange(
                 String.format("%s?firstName={firstName}&lastName={lastName}&nino={nino}&dateOfBirth={dateOfBirth}&fromDate={fromDate}&toDate={toDate}", hmrcServiceEndpoint),
                 HttpMethod.GET,
@@ -49,30 +54,29 @@ public class IncomeRecordService {
             return responseEntity.getBody();
         } catch (HttpStatusCodeException e) {
             if (isNotFound(e)) {
-                log.info("No match found for {} {} {} {}", identity.getNino(), identity.getFirstname(), identity.getLastname(), identity.getDateOfBirth());
+                log.error("Income Service found no match");
                 throw new EarningsServiceNoUniqueMatch();
             }
-            log.error("Income service failed", e);
+            log.error("Income Service failed", e);
             throw e;
         }
     }
 
-    private static boolean isNotFound(HttpStatusCodeException e) {
+    private boolean isNotFound(HttpStatusCodeException e) {
         return e.getStatusCode() != null && e.getStatusCode() == HttpStatus.FORBIDDEN;
     }
 
-
-    private static HttpHeaders generateRestHeaders() {
+    private HttpHeaders generateRestHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", APPLICATION_JSON_VALUE);
-        headers.add(USER_ID_HEADER, MDC.get(USER_ID_HEADER));
-        headers.add(CORRELATION_ID_HEADER, MDC.get(CORRELATION_ID_HEADER));
+        headers.add(CONTENT_TYPE, APPLICATION_JSON_VALUE);
+        headers.add(SESSION_ID_HEADER, requestData.sessionId());
+        headers.add(CORRELATION_ID_HEADER, requestData.correlationId());
+        headers.add(USER_ID_HEADER, requestData.userId());
         return headers;
     }
 
-    private static HttpEntity createEntity() {
+    private HttpEntity createEntity() {
         return new HttpEntity<>(Void.class, generateRestHeaders());
     }
-
 
 }

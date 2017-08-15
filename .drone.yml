@@ -102,7 +102,6 @@ pipeline:
       event: deployment
       environment: prod
 
-
 services:
   dind:
     image: docker:1.11-dind
