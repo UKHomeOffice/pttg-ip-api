@@ -1,4 +1,4 @@
-Feature: Failure - Category A Financial Requirement (with no dependents - monthly pay)
+Feature: Failure - Category A Financial Requirement - with no dependents - monthly pay
 
     Requirement to meet Category A
     Applicant or Sponsor has received < 6 consecutive monthly payments from the same employer over the 182 day period prior to the Application Raised Date
@@ -123,7 +123,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Assessment start date     | 2015-03-05         |
             | Application Raised date   | 2015-09-03         |
             | National Insurance Number | GG987654A          |
-            | Threshold                 | 1550.00            |
+            | Threshold                 | 1550.0            |
             | Employer Name             | Curry House Ltd    |
 
 #New scenario - Added on 25th July 2017
@@ -154,15 +154,13 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                                |
             | Financial requirement met | false                              |
-            | Failure reason            | MULTIPLE_EMPLOYERS                 |
-            | Individual title          | Mr                                 |
-            | Individual forename       | Alan                               |
-            | Individual surname        | Partridge                          |
+            | Failure reason            | NON_CONSECUTIVE_MONTHS             |
             | Assessment start date     | 2015-03-05                         |
             | Application Raised date   | 2015-09-03                         |
             | National Insurance Number | AA987654A                          |
-            | Threshold                 | 1550.00                            |
-            | Employer Name             | Curry House  Ltd / Johns Chippy    |
+            | Threshold                 | 1550.0                             |
+            | Employer Name             | Curry House  Ltd                   |
+            | Employer Name             | Johns Chippy                       |
 
 #New scenario - Added on 24th July 2017
     Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement
@@ -192,8 +190,8 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Failure reason            | PAY_FREQUENCY_CHANGE |
             | Assessment start date     | 2015-05-24           |
             | Application Raised date   | 2015-11-22           |
-            | National Insurance Number | GG987654A            |
-            | Threshold                 | 1550.00              |
+            | National Insurance Number | JW984624A            |
+            | Threshold                 | 0               |
             | Employer Name             | Flying Pizza Ltd     |
 
 ######## New scenario 27th July
@@ -237,7 +235,6 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
             | Date       | Amount  | Week Number| Month Number | PAYE Reference | Employer        |
 
 
-
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
             | Application Raised Date | 2015-01-15 |
@@ -245,9 +242,7 @@ Feature: Failure - Category A Financial Requirement (with no dependents - monthl
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                           |
             | Financial requirement met | false                         |
-            | Failure reason            | RECORD_NOT_FOUND              |
+            | Failure reason            | NOT_ENOUGH_RECORDS            |
             | Assessment start date     | 2014-07-17                    |
             | Application Raised date   | 2015-01-15                    |
             | National Insurance Number | JL123456A                     |
-            | Threshold                 | 1550.0                        |
-            | Employer Name             | Flying Pizza Ltd              |

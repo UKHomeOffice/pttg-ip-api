@@ -1,4 +1,4 @@
-Feature: Pass - Category A Financial Requirement (with dependants - monthly)
+Feature: Pass - Category A Financial Requirement - with dependants - monthly
 
     Requirement to meet Category A
     Applicant or Sponsor has received 6 consecutive monthly payments from the same employer over the 182 day period prior to the Application Raised Date

@@ -1,4 +1,4 @@
-Feature: Failure - Category A Financial Requirement (with Dependants - weekly pay)
+Feature: Failure - Category A Financial Requirement  - with Dependants - weekly pay
 
     Requirement to meet Category A
     Applicant or Sponsor has received < 26 payments from the same employer over 182 day period prior to the Application Raised Date
@@ -166,7 +166,7 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | HTTP Status               | 200                |
             | Financial requirement met | false              |
             | Failure reason            | MULTIPLE_EMPLOYERS |
-            | Assessment start date     | 2015-02-26         |
+            | Assessment start date     | 2015-03-05         |
             | Application Raised date   | 2015-09-03         |
             | National Insurance Number | GG987654A          |
             | Threshold                 | 523.08             |
@@ -242,12 +242,13 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                                  |
             | Financial requirement met | false                                |
-            | Failure reason            | MULTIPLE_EMPLOYERS                   |
+            | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD                   |
             | Assessment start date     | 2015-03-05                           |
             | Application Raised date   | 2015-09-03                           |
             | National Insurance Number | GG987654A                            |
             | Threshold                 | 523.08                               |
-            | Employer Name             | Flying Pizza Ltd / Curry House Ltd   |
+            | Employer Name             | Curry House Ltd   |
+            | Employer Name             | Flying Pizza Ltd |
 
 #New scenario - Added on 24th July 2017
     Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement
@@ -286,8 +287,8 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | Failure reason            | PAY_FREQUENCY_CHANGE |
             | Assessment start date     | 2015-05-24           |
             | Application Raised date   | 2015-11-22           |
-            | National Insurance Number | GG987654A            |
-            | Threshold                 | 523.08               |
+            | National Insurance Number | JW984624A            |
+            | Threshold                 | 0               |
             | Employer Name             | Flying Pizza Ltd     |
 
 
@@ -313,5 +314,3 @@ Feature: Failure - Category A Financial Requirement (with Dependants - weekly pa
             | Assessment start date     | 2014-07-17                    |
             | Application Raised date   | 2015-01-15                    |
             | National Insurance Number | JL123456A                     |
-            | Threshold                 | 430.77                        |
-            | Employer Name             | Flying Pizza Ltd              |

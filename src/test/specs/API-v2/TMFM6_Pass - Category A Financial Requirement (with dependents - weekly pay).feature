@@ -1,4 +1,4 @@
-Feature: Pass - Category A Financial Requirement (with Dependants - weekly pay)
+Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
 
     Requirement to meet Category A
     Applicant or Sponsor has received 26 payments from the same employer over 182 day period prior to the Application Raised Date
@@ -53,16 +53,16 @@ Feature: Pass - Category A Financial Requirement (with Dependants - weekly pay)
             | 2015-09-05 | 466.01 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
             | 2015-08-29 | 466.01 |    01       |            | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving TM Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | TS123456A  |
-            | Application raised date | 2015-02-23 |
+            | Application raised date | 2016-02-23 |
             | Dependants              | 1          |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200              |
             | Financial requirement met | true             |
-            | Assessment start date     | 2014-08-25       |
-            | Application Raised date   | 2015-02-23       |
+            | Assessment start date     | 2015-08-25       |
+            | Application Raised date   | 2016-02-23       |
             | National Insurance Number | TS123456A        |
             | Threshold                 | 430.77           |
             | Employer Name             | Flying Pizza Ltd |
@@ -103,7 +103,7 @@ Feature: Pass - Category A Financial Requirement (with Dependants - weekly pay)
             | 2015-06-12 | 606.00 |    02       |              | FP/Ref1        | Flying Pizza Ltd |
             | 2015-06-05 | 606.00 |    01       |              | FP/Ref1        | Flying Pizza Ltd |
 
-        When the Income Proving TM Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JT123456C  |
             | Application raised date | 2015-12-04 |
             | Dependants              | 3          |
@@ -153,7 +153,7 @@ Feature: Pass - Category A Financial Requirement (with Dependants - weekly pay)
         | 2015-01-30 | 615.38 |    02       |              | FP/Ref1        | Flying Pizza Ltd |
         | 2015-01-23 | 615.38 |    01       |              | FP/Ref1        | Flying Pizza Ltd |
 
-        When the Income Proving TM Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | LV987654B  |
             | Application raised date | 2015-07-22 |
             | Dependants              | 5          |

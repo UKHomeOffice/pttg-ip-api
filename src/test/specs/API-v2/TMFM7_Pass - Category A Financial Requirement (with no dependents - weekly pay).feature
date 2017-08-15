@@ -1,4 +1,4 @@
-Feature: Pass - Category A Financial Requirement (with no dependents - weekly pay)
+Feature: Pass - Category A Financial Requirement - with no dependents - weekly pay
 
     Requirement to meet Category A
     Applicant or Sponsor has received 26 payments from the same employer over 182 day period prior to the Application Raised Date
@@ -40,7 +40,7 @@ Feature: Pass - Category A Financial Requirement (with no dependents - weekly pa
             | 2015-06-12 | 470.43 |    02       |            | FP/Ref1         | Flying Pizza Ltd |
             | 2015-06-05 | 470.43 |    01       |            | FP/Ref1         | Flying Pizza Ltd |
 
-        When the Income Proving TM Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | MH123456A  |
             | Application raised date | 2015-11-29 |
 
@@ -89,7 +89,7 @@ Feature: Pass - Category A Financial Requirement (with no dependents - weekly pa
             | 2014-10-10 | 357.69 |    01       |            | FP/Ref1         | Flying Pizza Ltd |
 
 
-        When the Income Proving TM Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | FS123456C  |
             | Application raised date | 2015-04-10 |
 
@@ -111,7 +111,7 @@ Feature: Pass - Category A Financial Requirement (with no dependents - weekly pa
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2015-06-26 | 1000.00 |    26       |              |                |                  |
+            | 2015-06-26 | 1000.00 |    26       |              | FP/Ref1        | Flying Pizza Ltd |
             | 2015-06-19 | 1000.00 |    25       |              | FP/Ref1        | Flying Pizza Ltd |
             | 2015-06-12 | 1000.00 |    24       |              | FP/Ref1        | Flying Pizza Ltd |
             | 2015-06-05 | 1000.00 |    23       |              | FP/Ref1        | Flying Pizza Ltd |
@@ -138,7 +138,7 @@ Feature: Pass - Category A Financial Requirement (with no dependents - weekly pa
             | 2015-01-09 | 1000.00 |    02       |              | FP/Ref1        | Flying Pizza Ltd |
             | 2015-01-02 | 1000.00 |    01       |              | FP/Ref1        | Flying Pizza Ltd |
 
-        When the Income Proving TM Family API is invoked with the following:
+        When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | JO123456A  |
             | Application raised date | 2015-06-28 |
 
