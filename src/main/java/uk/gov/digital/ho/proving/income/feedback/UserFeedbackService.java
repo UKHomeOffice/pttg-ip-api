@@ -2,7 +2,6 @@ package uk.gov.digital.ho.proving.income.feedback;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,12 +17,11 @@ public class UserFeedbackService {
         this.feedbackRepository = feedbackRepository;
     }
 
-    @PostMapping(path = "/incomeproving/v2/feedback/{nino}", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/incomeproving/v2/feedback", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity recordFeedback(
-        @PathVariable(value = "nino") String nino,
         @RequestBody String feedback) {
 
-        feedbackRepository.add(nino, feedback);
+        feedbackRepository.add(feedback);
 
         return new ResponseEntity(HttpStatus.OK);
     }

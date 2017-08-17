@@ -19,7 +19,7 @@ public class FeedbackRepository {
     }
 
     @Transactional
-    public void add(String nino, String feedback) {
+    public void add(String feedback) {
 
         repository.save(new FeedbackEntry(UUID.randomUUID().toString(),
             LocalDateTime.now(),
@@ -27,7 +27,6 @@ public class FeedbackRepository {
             requestData.deploymentName(),
             requestData.deploymentNamespace(),
             requestData.userId(),
-            nino,
             feedback));
     }
 }

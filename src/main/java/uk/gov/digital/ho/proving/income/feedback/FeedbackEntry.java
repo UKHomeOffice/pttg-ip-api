@@ -43,23 +43,18 @@ class FeedbackEntry {
     @Getter
     private String userId;
 
-    @Column(name = "nino", nullable = false)
-    @Getter
-    private String nino;
-
     @Column(name = "detail", nullable = false)
     @Getter
     private String detail;
 
     FeedbackEntry(String uuid, LocalDateTime timestamp, String sessionId, String deployment, String namespace,
-                         String userId, String nino, String detail) {
+                         String userId, String detail) {
         this.uuid = uuid;
         this.timestamp = timestamp;
         this.sessionId = sessionId;
         this.deployment = deployment;
         this.namespace = namespace;
         this.userId = userId;
-        this.nino = nino;
         this.detail = detail;
     }
 }

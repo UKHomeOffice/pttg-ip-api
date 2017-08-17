@@ -22,15 +22,15 @@ public class UserFeedbackServiceTest {
     @Test
     public void shouldUseCollaborators() {
 
-        userFeedbackService.recordFeedback("any nino", "any feedback");
+        userFeedbackService.recordFeedback("any feedback");
 
-        verify(mockFeedbackRepository).add("any nino", "any feedback");
+        verify(mockFeedbackRepository).add("any feedback");
     }
 
     @Test
     public void shouldReturnHttpOK() {
 
-        ResponseEntity responseEntity = userFeedbackService.recordFeedback("any nino", "any feedback");
+        ResponseEntity responseEntity = userFeedbackService.recordFeedback("any feedback");
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
         assertThat(responseEntity.getBody()).isNull();
