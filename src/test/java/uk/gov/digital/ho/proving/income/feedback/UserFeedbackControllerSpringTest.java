@@ -12,10 +12,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= RANDOM_PORT, classes = {ServiceRunner.class})
-public class UserFeedbackServiceSpringTest {
+public class UserFeedbackControllerSpringTest {
 
     @Autowired
-    private UserFeedbackService controller;
+    private UserFeedbackController controller;
 
     @Test
     public void shouldInitialiseController() {

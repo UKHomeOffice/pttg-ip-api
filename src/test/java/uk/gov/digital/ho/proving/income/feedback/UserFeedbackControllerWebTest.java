@@ -15,23 +15,24 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(value = UserFeedbackService.class, secure = false)
-public class UserFeedbackServiceWebTest {
+@WebMvcTest(value = UserFeedbackController.class, secure = false)
+public class UserFeedbackControllerWebTest {
 
-    private static final String feedbackUrl = "/incomeproving/v2/feedback/{nino}";
+    private static final String feedbackUrl = "/incomeproving/v2/feedback";
 
-    @MockBean FeedbackRepository mockFeedbackRepository;
+    @MockBean
+    FeedbackService mockFeedbackService;
     @MockBean RestTemplate mockRestTemplate;
 
     @Autowired private MockMvc mockMvc;
 
     @Test
     public void shouldReturnHttpOk() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(feedbackUrl, "some nino")
+        mockMvc.perform(MockMvcRequestBuilders.post(feedbackUrl)
                                                 .content("{some feedback}")
                                                 .contentType(APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(mockFeedbackRepository).add("some nino", "{some feedback}");
+        verify(mockFeedbackService).add("{some feedback}");
     }
 }

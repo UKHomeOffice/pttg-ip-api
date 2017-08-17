@@ -12,25 +12,25 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpStatus.OK;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserFeedbackServiceTest {
+public class UserFeedbackControllerTest {
 
-    @Mock private FeedbackRepository mockFeedbackRepository;
+    @Mock private FeedbackService mockFeedbackService;
 
     @InjectMocks
-    private UserFeedbackService userFeedbackService;
+    private UserFeedbackController userFeedbackController;
 
     @Test
     public void shouldUseCollaborators() {
 
-        userFeedbackService.recordFeedback("any nino", "any feedback");
+        userFeedbackController.recordFeedback("any feedback");
 
-        verify(mockFeedbackRepository).add("any nino", "any feedback");
+        verify(mockFeedbackService).add("any feedback");
     }
 
     @Test
     public void shouldReturnHttpOK() {
 
-        ResponseEntity responseEntity = userFeedbackService.recordFeedback("any nino", "any feedback");
+        ResponseEntity responseEntity = userFeedbackController.recordFeedback("any feedback");
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
         assertThat(responseEntity.getBody()).isNull();

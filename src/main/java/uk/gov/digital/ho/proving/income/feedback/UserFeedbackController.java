@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.proving.income.feedback;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,20 +10,24 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-public class UserFeedbackService {
+@Slf4j
+public class UserFeedbackController {
 
-    private final FeedbackRepository feedbackRepository;
+    private final FeedbackService feedbackService;
 
-    public UserFeedbackService(FeedbackRepository feedbackRepository) {
-        this.feedbackRepository = feedbackRepository;
+    public UserFeedbackController(FeedbackService feedbackService) {
+        this.feedbackService = feedbackService;
     }
 
-    @PostMapping(path = "/incomeproving/v2/feedback/{nino}", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/incomeproving/v2/feedback", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity recordFeedback(
-        @PathVariable(value = "nino") String nino,
         @RequestBody String feedback) {
 
-        feedbackRepository.add(nino, feedback);
+        log.info("Add feedback entry");
+
+        feedbackService.add(feedback);
+
+        log.info("Feedback entry added");
 
         return new ResponseEntity(HttpStatus.OK);
     }
