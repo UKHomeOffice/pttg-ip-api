@@ -4,5 +4,5 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FeedbackEntryRepository extends CrudRepository<FeedbackEntry, Long>{
+public interface FeedbackEntryJpaRepository extends CrudRepository<FeedbackEntry, Long>{
 }

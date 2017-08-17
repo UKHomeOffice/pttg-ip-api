@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
-public class FeedbackRepository {
+public class FeedbackService {
 
-    private final FeedbackEntryRepository repository;
+    private final FeedbackEntryJpaRepository repository;
     private final RequestData requestData;
 
-    public FeedbackRepository(FeedbackEntryRepository repository, RequestData requestData) {
+    public FeedbackService(FeedbackEntryJpaRepository repository, RequestData requestData) {
         this.repository = repository;
         this.requestData = requestData;
     }
