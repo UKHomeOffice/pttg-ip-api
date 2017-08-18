@@ -13,14 +13,12 @@ import net.thucydides.core.annotations.Managed
 import org.apache.commons.lang.StringUtils
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.IntegrationTest
-import org.springframework.boot.test.SpringApplicationConfiguration
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import org.springframework.test.context.web.WebAppConfiguration
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.servlet.DispatcherServlet
-import uk.gov.digital.ho.proving.income.ApiExceptionHandler
-import uk.gov.digital.ho.proving.income.ServiceConfiguration
 import uk.gov.digital.ho.proving.income.ServiceRunner
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employer
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments
@@ -35,25 +33,30 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static com.jayway.jsonpath.JsonPath.read
 import static com.jayway.restassured.RestAssured.get
 
-@SpringApplicationConfiguration(classes = [ServiceConfiguration.class, ServiceRunner.class, ApiExceptionHandler.class])
-@WebAppConfiguration
-@IntegrationTest()
-class ProvingThingsApiSteps implements ApplicationContextAware{
+@ContextConfiguration
+@SpringBootTest(classes = [ServiceRunner.class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class ProvingThingsApiSteps implements ApplicationContextAware {
+
     private WireMockServer wireMockServer = new WireMockServer(options().port(8083))
 
-    @Autowired
-    private ObjectMapper objectMapper
+    @Autowired private ObjectMapper objectMapper
+
+    @Value('${local.server.port}')
+    private int port
+
     private static boolean SuiteSetupDone = false
+
+    private static String APP_HOST
 
     @Before
     void before() throws Exception {
         if (!SuiteSetupDone) {
+            APP_HOST = "http://localhost:" + port + "/incomeproving"
             configureFor(8083)
             wireMockServer.start()
             SuiteSetupDone = true
         }
     }
-
 
     @Override
     void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -201,7 +204,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
 
 
         getTableData(expectedResult)
-        resp = get("http://localhost:8081/incomeproving/v1/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}", nino, applicationRaisedDate, dependants)
+        resp = get(APP_HOST + "/v1/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}", nino, applicationRaisedDate, dependants)
         jsonAsString = resp.asString()
         println "Generic Tool Json" + jsonAsString
     }
@@ -209,7 +212,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
     @When("^the Income Proving v2 TM Family API is invoked with the following:\$")
     void theIncomeProvingVTMFamilyAPIIsInvokedWithTheFollowing(DataTable params) throws Throwable {
         getTableData(params)
-        resp = get("http://localhost:8081/incomeproving/v2/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, applicationRaisedDate, dependants)
+        resp = get(APP_HOST + "/v2/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, applicationRaisedDate, dependants)
         jsonAsString = resp.asString()
         println "HMRC Json" + jsonAsString
     }
@@ -225,7 +228,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
     @When("^the Income Proving API is invoked with the following:\$")
     void the_Income_Proving_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
         getTableData(arg1)
-        resp = get("http://localhost:8081/incomeproving/v1/individual/{nino}/income?fromDate={fromDate}&toDate={toDate}", nino, fromDate, toDate)
+        resp = get(APP_HOST + "/v1/individual/{nino}/income?fromDate={fromDate}&toDate={toDate}", nino, fromDate, toDate)
 
         jsonAsString = resp.asString()
         println "" + jsonAsString
@@ -235,7 +238,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware{
     @When("^the Income Proving v2 API is invoked with the following:\$")
     void the_Income_Proving_v2_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
         getTableData(arg1)
-        resp = get("http://localhost:8081/incomeproving/v2/individual/{nino}/income?fromDate={fromDate}&toDate={toDate}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, fromDate, toDate)
+        resp = get(APP_HOST + "/v2/individual/{nino}/income?fromDate={fromDate}&toDate={toDate}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, fromDate, toDate)
 
         jsonAsString = resp.asString()
         println "" + jsonAsString
