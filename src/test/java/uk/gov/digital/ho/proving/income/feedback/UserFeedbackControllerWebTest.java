@@ -20,8 +20,7 @@ public class UserFeedbackControllerWebTest {
 
     private static final String feedbackUrl = "/incomeproving/v2/feedback";
 
-    @MockBean
-    FeedbackService mockFeedbackService;
+    @MockBean FeedbackService mockFeedbackService;
     @MockBean RestTemplate mockRestTemplate;
 
     @Autowired private MockMvc mockMvc;
