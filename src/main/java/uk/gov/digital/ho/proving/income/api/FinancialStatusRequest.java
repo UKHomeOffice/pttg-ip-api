@@ -7,12 +7,12 @@ import java.time.LocalDate;
 
 
 public class FinancialStatusRequest {
-    private String nino;
-    private String forename;
-    private String surname;
-    private LocalDate dateOfBirth;
-    private LocalDate applicationRaisedDate;
-    private Integer dependants;
+    private final String nino;
+    private final String forename;
+    private final String surname;
+    private final LocalDate dateOfBirth;
+    private final LocalDate applicationRaisedDate;
+    private final Integer dependants;
 
     @JsonCreator
     public FinancialStatusRequest(@JsonProperty("nino") String nino, @JsonProperty("forename") String forename, @JsonProperty("surname") String surname, @JsonProperty("dateOfBirth") LocalDate dateOfBirth, @JsonProperty("applicationRaisedDate") LocalDate applicationRaisedDate, @JsonProperty("dependants") Integer dependants) {

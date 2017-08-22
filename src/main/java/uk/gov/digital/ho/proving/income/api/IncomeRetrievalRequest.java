@@ -11,10 +11,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 public class IncomeRetrievalRequest {
-    private String nino;
-    private String forename;
-    private String surname;
-    private LocalDate dateOfBirth;
-    private LocalDate toDate;
-    private LocalDate fromDate;
+    private final String nino;
+    private final String forename;
+    private final String surname;
+    private final LocalDate dateOfBirth;
+    private final LocalDate toDate;
+    private final LocalDate fromDate;
 }
