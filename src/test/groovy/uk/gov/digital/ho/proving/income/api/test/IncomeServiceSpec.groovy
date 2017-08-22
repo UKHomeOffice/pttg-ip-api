@@ -51,7 +51,7 @@ class IncomeServiceSpec extends Specification {
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isBadRequest())
-        jsonContent.status.message == "Parameter error: Invalid value for fromDate"
+        jsonContent.status.message == "Error: Invalid value for fromDate"
 
     }
 
@@ -68,7 +68,7 @@ class IncomeServiceSpec extends Specification {
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isBadRequest())
-        jsonContent.status.message == "Parameter error: Invalid value for fromDate"
+        jsonContent.status.message == "Error: Invalid value for fromDate"
     }
 
     def "invalid to dates are rejected"() {
@@ -84,7 +84,7 @@ class IncomeServiceSpec extends Specification {
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isBadRequest())
-        jsonContent.status.message == "Parameter error: Invalid value for toDate"
+        jsonContent.status.message == "Error: Invalid value for toDate"
     }
 
     def "future from date is rejected"() {
@@ -100,7 +100,7 @@ class IncomeServiceSpec extends Specification {
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isBadRequest())
-        jsonContent.status.message == "Parameter error: fromDate"
+        jsonContent.status.message == "Error: fromDate"
     }
 
     def "future to date is rejected"() {
@@ -116,7 +116,7 @@ class IncomeServiceSpec extends Specification {
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isBadRequest())
-        jsonContent.status.message == "Parameter error: toDate"
+        jsonContent.status.message == "Error: toDate"
     }
 
     def "future from and to dates are rejected"() {
@@ -132,7 +132,7 @@ class IncomeServiceSpec extends Specification {
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isBadRequest())
-        jsonContent.status.message == "Parameter error: fromDate"
+        jsonContent.status.message == "Error: fromDate"
     }
 
     def 'audits search inputs and response'() {

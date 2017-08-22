@@ -13,11 +13,7 @@ import uk.gov.digital.ho.proving.income.domain.hmrc.Income
 import java.time.LocalDate
 import java.time.Month
 
-import static MockDataUtils.*
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.BURGER_KING
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.BURGER_KING_PAYE_REF
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.PIZZA_HUT
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.PIZZA_HUT_PAYE_REF
+import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.*
 
 class MonthlyIncomeValidatorSpec extends Specification {
 

@@ -3,7 +3,6 @@ package uk.gov.digital.ho.proving.income.audit;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.proving.income.audit.AuditEventType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

@@ -1,10 +1,8 @@
 package uk.gov.digital.ho.proving.income.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.proving.income.audit.AuditRepository;
 import uk.gov.digital.ho.proving.income.domain.Individual;
@@ -12,6 +10,7 @@ import uk.gov.digital.ho.proving.income.domain.hmrc.Identity;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -47,35 +46,31 @@ public class FinancialStatusService {
         this.auditRepository = auditRepository;
     }
 
-    @GetMapping(value = "/incomeproving/v2/individual/{nino}/financialstatus", produces = APPLICATION_JSON_VALUE)
-    public FinancialStatusCheckResponse getTemporaryMigrationFamilyApplication(
-        @PathVariable(value = "nino") String nino,
-        @RequestParam(value = "forename") String forename,
-        @RequestParam(value = "surname") String surname,
-        @RequestParam(value = "dateOfBirth") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateOfBirth,
-        @RequestParam(value = "applicationRaisedDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate applicationRaisedDate,
-        @RequestParam(value = "dependants", required = false, defaultValue = "0") Integer dependants) {
 
-        log.info("Financial status check request for {} application received on {}.", value("nino", nino), applicationRaisedDate);
+    @PostMapping(value = "/incomeproving/v2/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
+    public FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
+
+        log.info("Financial status check request received: {}", request);
 
         UUID eventId = UUID.randomUUID();
 
-        auditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, eventId, auditData(nino, forename, surname, dateOfBirth, applicationRaisedDate, dependants));
+        auditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, eventId, auditData(request.getNino(), request.getForename(), request.getSurname(), request.getDateOfBirth(), request.getApplicationRaisedDate(), request.getDependants()));
 
-        validateNino(sanitiseNino(nino));
-        validateDependents(dependants);
-        validateApplicationRaisedDate(applicationRaisedDate);
+        final String sanitisedNino = sanitiseNino(request.getNino());
+        validateNino(sanitisedNino);
+        validateDependents(request.getDependants());
+        validateApplicationRaisedDate(request.getApplicationRaisedDate());
 
-        LocalDate startSearchDate = applicationRaisedDate.minusDays(NUMBER_OF_DAYS);
+        LocalDate startSearchDate = request.getApplicationRaisedDate().minusDays(NUMBER_OF_DAYS);
 
         IncomeRecord incomeRecord = incomeRecordService.getIncomeRecord(
-            new Identity(forename, surname, dateOfBirth, sanitiseNino(nino)),
+            new Identity(request.getForename(), request.getSurname(), request.getDateOfBirth(), sanitisedNino),
             startSearchDate,
-            applicationRaisedDate);
+            request.getApplicationRaisedDate());
 
-        FinancialStatusCheckResponse response = calculateResponse(applicationRaisedDate, dependants, startSearchDate, incomeRecord, new Individual("", forename, surname, sanitiseNino(nino)));
+        FinancialStatusCheckResponse response = calculateResponse(request.getApplicationRaisedDate(), request.getDependants(), startSearchDate, incomeRecord, new Individual("", request.getForename(), request.getSurname(), sanitisedNino));
 
-        log.info("Financial status check result for {}", value("nino", nino));
+        log.info("Financial status check result for {}", value("nino", request.getNino()));
 
         auditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
 
@@ -142,18 +137,18 @@ public class FinancialStatusService {
 
     private void validateApplicationRaisedDate(LocalDate applicationRaisedDate) {
         if (applicationRaisedDate == null) {
-            throw new IllegalArgumentException("Parameter error: applicationRaisedDate");
+            throw new IllegalArgumentException("Error: applicationRaisedDate");
         }
         if (applicationRaisedDate.isAfter(now())) {
-            throw new IllegalArgumentException("Parameter error: applicationRaisedDate");
+            throw new IllegalArgumentException("Error: applicationRaisedDate");
         }
     }
 
     private void validateDependents(Integer dependants) {
         if (dependants < MINIMUM_DEPENDANTS) {
-            throw new IllegalArgumentException("Parameter error: Dependants cannot be less than " + MINIMUM_DEPENDANTS);
+            throw new IllegalArgumentException("Error: Dependants cannot be less than " + MINIMUM_DEPENDANTS);
         } else if (dependants > MAXIMUM_DEPENDANTS) {
-            throw new IllegalArgumentException("Parameter error: Dependants cannot be more than " + MAXIMUM_DEPENDANTS);
+            throw new IllegalArgumentException("Error: Dependants cannot be more than " + MAXIMUM_DEPENDANTS);
         }
     }
 
