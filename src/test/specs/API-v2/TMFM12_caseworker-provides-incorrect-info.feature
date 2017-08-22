@@ -8,9 +8,9 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
       | From Date | 2015-01-01 |
       | To Date   | 2015-06-30 |
     Then The API provides the following Individual details:
-      | HTTP Status    | 404                                                      |
-      | Status code    | 0009                                                     |
-      | Status message | Resource not found: /incomeproving/v2/individual//income |
+      | HTTP Status    | 400                                                      |
+      | Status code    | 0004                                                     |
+      | Status message | Error: Invalid NINO |
 
 
   Scenario: Robert is unable to obtain the NINOs income details due to providing a 7 character NINO
@@ -22,7 +22,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
     Then The API provides the following Individual details:
       | HTTP Status    | 400                           |
       | Status code    | 0004                          |
-      | Status message | Parameter error: Invalid NINO |
+      | Status message | Error: Invalid NINO |
 
   Scenario: Robert is unable to obtain the NINOs income details due to NOT providing the From Date field
     Given A service is consuming the Income Proving TM Family API
@@ -33,7 +33,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
     Then The API provides the following Individual details:
       | HTTP Status    | 400                                   |
       | Status code    | 0004                                  |
-      | Status message | Parameter error: From date is invalid |
+      | Status message | Error: From date is invalid |
 
   Scenario: Robert is unable to obtain the NINOs income details due to NOT providing the To Date field
     Given A service is consuming the Income Proving TM Family API
@@ -44,7 +44,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
     Then The API provides the following Individual details:
       | HTTP Status    | 400                                 |
       | Status code    | 0004                                |
-      | Status message | Parameter error: To date is invalid |
+      | Status message | Error: To date is invalid |
 
   Scenario: Robert is unable to obtain the NINOs income details due to NINO does not exist being held by the HMRC for the give NINO
     Given HMRC has no matching record
@@ -77,7 +77,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
     Then The API provides the following Individual details:
       | HTTP Status    | 400                       |
       | Status code    | 0004                      |
-      | Status message | Parameter error: fromDate |
+      | Status message | Error: fromDate |
 
   Scenario: Robert is unable to obtain the NINOs income details due to a future From Date
     Given A service is consuming the Income Proving TM Family API
@@ -88,7 +88,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
     Then The API provides the following Individual details:
       | HTTP Status    | 400                       |
       | Status code    | 0004                      |
-      | Status message | Parameter error: fromDate |
+      | Status message | Error: fromDate |
 
   Scenario: Robert is unable to obtain the NINOs income details due to a future To Date
     Given A service is consuming the Income Proving TM Family API
@@ -99,4 +99,4 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
     Then The API provides the following Individual details:
       | HTTP Status    | 400                     |
       | Status code    | 0004                    |
-      | Status message | Parameter error: toDate |
+      | Status message | Error: toDate |

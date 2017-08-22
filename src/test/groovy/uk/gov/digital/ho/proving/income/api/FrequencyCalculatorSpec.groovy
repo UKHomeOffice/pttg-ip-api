@@ -6,7 +6,6 @@ import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 
 import java.time.LocalDate
 import java.time.Month
-import java.time.temporal.TemporalField
 import java.time.temporal.WeekFields
 import java.util.function.UnaryOperator
 import java.util.stream.Stream

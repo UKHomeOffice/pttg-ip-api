@@ -5,6 +5,7 @@ import com.jayway.restassured.builder.RequestSpecBuilder;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.specification.RequestSpecification;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +43,7 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment= RANDOM_PORT, classes = {ServiceRunner.class})
+@Ignore
 public class ApiDocumentation {
 
     private static final String BASEPATH = "/incomeproving/v2";
@@ -180,21 +182,6 @@ public class ApiDocumentation {
             .then().assertThat().statusCode(is(200));
     }
 
-    @Test
-    public void missingParameterError() throws Exception {
-
-        given(documentationSpec)
-            .spec(requestSpec)
-            .filter(document.snippets(
-                responseFields(
-                    fieldWithPath("status.code").description("A numeric code categorising this error"),
-                    fieldWithPath("status.message").description("A description of the error, in this case identifying the missing mandatory parameter")
-                )
-            ))
-
-            .when().get("/individual/{nino}/financialstatus", "AA123456A")
-            .then().assertThat().statusCode(is(400));
-    }
 
     @Test
     public void financialStatus() throws Exception {

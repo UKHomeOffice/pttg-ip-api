@@ -3,6 +3,8 @@ package steps
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.google.gson.Gson
+import com.jayway.restassured.http.ContentType
 import com.jayway.restassured.response.Response
 import cucumber.api.DataTable
 import cucumber.api.java.Before
@@ -31,7 +33,7 @@ import java.time.format.DateTimeFormatter
 import static com.github.tomakehurst.wiremock.client.WireMock.*
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static com.jayway.jsonpath.JsonPath.read
-import static com.jayway.restassured.RestAssured.get
+import static com.jayway.restassured.RestAssured.given
 
 @ContextConfiguration
 @SpringBootTest(classes = [ServiceRunner.class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -199,24 +201,23 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
     }
 
-    @When("^the Income Proving TM Family API is invoked with the following:\$")
-    void the_Income_Proving_TM_Family_API_is_invoked_with_the_following(DataTable expectedResult) {
-
-
-        getTableData(expectedResult)
-        resp = get(APP_HOST + "/v1/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}", nino, applicationRaisedDate, dependants)
-        jsonAsString = resp.asString()
-        println "Generic Tool Json" + jsonAsString
-    }
 
     @When("^the Income Proving v2 TM Family API is invoked with the following:\$")
     void theIncomeProvingVTMFamilyAPIIsInvokedWithTheFollowing(DataTable params) throws Throwable {
         getTableData(params)
-        resp = get(APP_HOST + "/v2/individual/{nino}/financialstatus?applicationRaisedDate={applicationRaisedDate}&dependants={dependants}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, applicationRaisedDate, dependants)
+        Map<String,String> jsonRequest = new HashMap<>();
+        jsonRequest.put("applicationRaisedDate", applicationRaisedDate);
+        jsonRequest.put("nino", nino);
+        jsonRequest.put("dependants", dependants);
+        jsonRequest.put("forename", "Mark");
+        jsonRequest.put("surname", "Surname");
+        jsonRequest.put("dateOfBirth", "1980-01-13");
+
+        resp = given().contentType(ContentType.JSON).body(new Gson().toJson(jsonRequest)).post(APP_HOST + "/v2/individual/financialstatus")
+
         jsonAsString = resp.asString()
         println "HMRC Json" + jsonAsString
     }
-
 
     @Then("^The Income Proving TM Family API provides the following result:\$")
     void the_Income_Proving_TM_Family_API_provides_the_following_result(DataTable arg1) {
@@ -225,24 +226,24 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     }
 
     //For generic Tool
-    @When("^the Income Proving API is invoked with the following:\$")
-    void the_Income_Proving_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
-        getTableData(arg1)
-        resp = get(APP_HOST + "/v1/individual/{nino}/income?fromDate={fromDate}&toDate={toDate}", nino, fromDate, toDate)
-
-        jsonAsString = resp.asString()
-        println "" + jsonAsString
-    }
-
-    //For generic Tool
     @When("^the Income Proving v2 API is invoked with the following:\$")
     void the_Income_Proving_v2_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
         getTableData(arg1)
-        resp = get(APP_HOST + "/v2/individual/{nino}/income?fromDate={fromDate}&toDate={toDate}&forename=Mark&surname=Jones&dateOfBirth=1980-01-13", nino, fromDate, toDate)
+
+        Map<String,String> jsonRequest = new HashMap<>();
+        jsonRequest.put("nino", nino);
+        jsonRequest.put("forename", "Mark");
+        jsonRequest.put("surname", "Surname");
+        jsonRequest.put("dateOfBirth", "1980-01-13");
+        jsonRequest.put("fromDate", fromDate);
+        jsonRequest.put("toDate", toDate);
+
+        resp = given().contentType(ContentType.JSON).body(new Gson().toJson(jsonRequest)).post(APP_HOST + "/v2/individual/income")
 
         jsonAsString = resp.asString()
         println "" + jsonAsString
     }
+
 
     @Then("^The API provides the following Individual details:\$")
     void the_API_provides_the_following_Individual_details(DataTable arg1) throws Throwable {

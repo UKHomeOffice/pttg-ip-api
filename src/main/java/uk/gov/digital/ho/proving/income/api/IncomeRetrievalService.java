@@ -2,10 +2,7 @@ package uk.gov.digital.ho.proving.income.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.proving.income.audit.AuditRepository;
 import uk.gov.digital.ho.proving.income.domain.Income;
 import uk.gov.digital.ho.proving.income.domain.Individual;
@@ -14,6 +11,7 @@ import uk.gov.digital.ho.proving.income.domain.hmrc.Identity;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -42,8 +40,9 @@ public class IncomeRetrievalService {
         this.auditRepository = auditRepository;
     }
 
+    @Deprecated
     @GetMapping(value = "/incomeproving/v2/individual/{nino}/income", produces = APPLICATION_JSON_VALUE)
-    public IncomeRetrievalResponse getIncome(
+    public IncomeRetrievalResponse getIncomeDeprecated(
         @PathVariable(value = "nino") String nino,
         @RequestParam(value = "forename") String forename,
         @RequestParam(value = "surname") String surname,
@@ -61,16 +60,16 @@ public class IncomeRetrievalService {
         validateNino(cleanNino);
 
         if (fromDate == null) {
-            throw new IllegalArgumentException("Parameter error: From date is invalid");
+            throw new IllegalArgumentException("Error: From date is invalid");
         } else if(fromDate.isAfter(now())){
-            throw new IllegalArgumentException("Parameter error: fromDate");
+            throw new IllegalArgumentException("Error: fromDate");
         }
 
 
         if (toDate == null) {
-            throw new IllegalArgumentException("Parameter error: To date is invalid");
+            throw new IllegalArgumentException("Error: To date is invalid");
         } else if(toDate.isAfter(now())){
-            throw new IllegalArgumentException("Parameter error: toDate");
+            throw new IllegalArgumentException("Error: toDate");
         }
 
         IncomeRecord incomeRecord = incomeRecordService.getIncomeRecord(
@@ -88,6 +87,57 @@ public class IncomeRetrievalService {
                 ).
                 filter( income ->
                     !(income.getPayDate().isBefore(fromDate)) && !(income.getPayDate().isAfter(toDate))
+                ).
+                collect(Collectors.toList())
+        );
+
+        log.info("Income check result: {}", value("incomeCheckResponse", incomeRetrievalResponse));
+
+        auditRepository.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
+
+        return incomeRetrievalResponse;
+    }
+
+    @PostMapping(value = "/incomeproving/v2/individual/income", produces = APPLICATION_JSON_VALUE)
+    public IncomeRetrievalResponse getIncome(@Valid @RequestBody IncomeRetrievalRequest request) {
+
+        log.info("Income details request: {}", request);
+
+        UUID eventId = UUID.randomUUID();
+
+        auditRepository.add(INCOME_PROVING_INCOME_CHECK_REQUEST, eventId, auditData(request.getNino(), request.getForename(), request.getSurname(), request.getDateOfBirth(), request.getFromDate(), request.getToDate()));
+
+        String cleanNino = sanitiseNino(request.getNino());
+        validateNino(cleanNino);
+
+        if (request.getFromDate() == null) {
+            throw new IllegalArgumentException("Error: From date is invalid");
+        } else if(request.getFromDate().isAfter(now())){
+            throw new IllegalArgumentException("Error: fromDate");
+        }
+
+
+        if (request.getToDate() == null) {
+            throw new IllegalArgumentException("Error: To date is invalid");
+        } else if(request.getToDate().isAfter(now())){
+            throw new IllegalArgumentException("Error: toDate");
+        }
+
+        IncomeRecord incomeRecord = incomeRecordService.getIncomeRecord(
+            new Identity(request.getForename(), request.getSurname(), request.getDateOfBirth(), sanitiseNino(request.getNino())),
+            request.getFromDate(),
+            request.getToDate());
+
+
+        IncomeRetrievalResponse incomeRetrievalResponse = new IncomeRetrievalResponse(
+            new Individual("", request.getForename(), request.getSurname(), sanitiseNino(request.getNino())),
+            incomeRecord.getIncome().
+                stream().
+                map(
+                    income -> new Income(income.getPaymentDate(), getEmployer(income.getEmployerPayeReference(), incomeRecord.getEmployments()), income.getPayment().toString())
+                ).
+                filter( income ->
+                    !(income.getPayDate().isBefore(request.getFromDate())) && !(income.getPayDate().isAfter(request.getToDate()))
                 ).
                 collect(Collectors.toList())
         );

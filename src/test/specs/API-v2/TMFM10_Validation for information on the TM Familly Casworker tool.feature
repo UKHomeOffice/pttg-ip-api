@@ -11,9 +11,9 @@ Feature: Validation of the API fields and data
       | NINO                    |            |
       | Application Raised Date | 2015-01-01 |
     Then The Income Proving TM Family API provides the following result:
-      | HTTP Status    | 404                |
-      | Status code    | 0009               |
-      | Status message | Resource not found: /incomeproving/v2/individual//financialstatus |
+      | HTTP Status    | 400               |
+      | Status code    | 0004               |
+      | Status message | Error: Invalid NINO |
 
   Scenario: The API provides incorrect National Insurance Number prefixed with two digits
     Given A service is consuming the Income Proving TM Family API
@@ -23,7 +23,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                           |
       | Status code    | 0004                          |
-      | Status message | Parameter error: Invalid NINO |
+      | Status message | Error: Invalid NINO |
 
   Scenario: The API provides incorrect National Insurance Number with two characters in the middle
     Given A service is consuming the Income Proving TM Family API
@@ -33,7 +33,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                           |
       | Status code    | 0004                          |
-      | Status message | Parameter error: Invalid NINO |
+      | Status message | Error: Invalid NINO |
 
   Scenario: The API provides incorrect National Insurance Number with the last digit being a number
     Given A service is consuming the Income Proving TM Family API
@@ -43,7 +43,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                           |
       | Status code    | 0004                          |
-      | Status message | Parameter error: Invalid NINO |
+      | Status message | Error: Invalid NINO |
 
   Scenario: The API provides incorrect National Insurance Number with the last digit not being a valid character
     Given A service is consuming the Income Proving TM Family API
@@ -53,7 +53,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                           |
       | Status code    | 0004                          |
-      | Status message | Parameter error: Invalid NINO |
+      | Status message | Error: Invalid NINO |
 
   Scenario: The API provides incorrect National Insurance Number as not 9 characters
     Given A service is consuming the Income Proving TM Family API
@@ -63,7 +63,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                           |
       | Status code    | 0004                          |
-      | Status message | Parameter error: Invalid NINO |
+      | Status message | Error: Invalid NINO |
 
 ###################################### Section - Validation on the Application Raised Date ######################################
 
@@ -75,7 +75,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status | 400                                                 |
       | Status code | 0004                                                |
-      | Status message     | Parameter error: Invalid value for applicationRaisedDate |
+      | Status message     | Error: Invalid request |
 
   Scenario: The API provides an incorrect Application Raised Date (Month format)
     Given A service is consuming the Income Proving TM Family API
@@ -85,7 +85,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status | 400                                                 |
       | Status code | 0004                                                |
-      | Status message     | Parameter error: Invalid value for applicationRaisedDate |
+      | Status message     | Error: Invalid request |
 
   Scenario: The API provides an incorrect Application Raised Date (Year format)
     Given A service is consuming the Income Proving TM Family API
@@ -95,7 +95,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                                                 |
       | Status code    | 0004                                                |
-      | Status message | Parameter error: Invalid value for applicationRaisedDate |
+      | Status message | Error: Invalid request  |
 
   Scenario: The API provides a blank Application Raised date
     Given A service is consuming the Income Proving TM Family API
@@ -105,7 +105,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                                      |
       | Status code    | 0004                                     |
-      | Status message | Parameter error: applicationRaisedDate |
+      | Status message | Error: applicationRaisedDate  |
 
  #New scenario - Added 24.05.16
     Scenario: The API prevents a future date as the Application Raised Date
@@ -116,7 +116,7 @@ Feature: Validation of the API fields and data
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status    | 400                                                |
             | Status code    | 0004                                               |
-            | Status message | Parameter error: applicationRaisedDate |
+            | Status message | Error: applicationRaisedDate   |
 
 
 ###################################### Section - Validation on the Dependants field ######################################
@@ -130,7 +130,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                                                |
       | Status code    | 0004                                               |
-      | Status message | Parameter error: Invalid value for dependants |
+      | Status message | Error: Invalid request |
 
   Scenario: The API provides Dependants with a negative number
     Given A service is consuming the Income Proving TM Family API
@@ -141,7 +141,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status   | 400                                                |
       | Status code   | 0004                                               |
-      | Status message | Parameter error: Dependants cannot be less than 0 |
+      | Status message | Error: Dependants cannot be less than 0 |
 
   Scenario: The API provides Dependants with 3 digits
     Given A service is consuming the Income Proving TM Family API
@@ -152,7 +152,7 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                                                |
       | Status code    | 0004                                               |
-      | Status message | Parameter error: Dependants cannot be more than 99 |
+      | Status message | Error: Dependants cannot be more than 99 |
 
 ###################################### Section - NINO does not exist ######################################
 
@@ -176,4 +176,4 @@ Feature: Validation of the API fields and data
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                |
       | Status code    | 0004               |
-      | Status message | Parameter error: applicationRaisedDate |
+      | Status message | Error: applicationRaisedDate |

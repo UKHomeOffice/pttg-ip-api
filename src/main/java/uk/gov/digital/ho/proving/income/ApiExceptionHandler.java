@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -47,7 +49,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public Object methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
         log.error(append("errorCode", "0004"), exception.getMessage());
-        return buildErrorResponse(httpHeaders(), "0004", "Parameter error: Invalid value for " + exception.getName(), HttpStatus.BAD_REQUEST);
+        return buildErrorResponse(httpHeaders(), "0004", "Error: Invalid value for " + exception.getName(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
@@ -56,6 +58,12 @@ public class ApiExceptionHandler {
         return buildErrorResponse(httpHeaders(), "0004", exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseBody
+    public ResponseEntity<Object> invalidRequestBody(HttpMessageNotReadableException exception) {
+        log.error(append("errorCode", "0004"), exception.getMessage());
+        return buildErrorResponse(httpHeaders(), "0004", "Error: Invalid request", HttpStatus.BAD_REQUEST);
+    }
 
 
     @ExceptionHandler(value = UnknownPaymentFrequencyType.class)

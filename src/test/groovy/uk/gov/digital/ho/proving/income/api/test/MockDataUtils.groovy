@@ -1,10 +1,9 @@
 package uk.gov.digital.ho.proving.income.api.test
 
-import uk.gov.digital.ho.proving.income.domain.hmrc.Income
 import uk.gov.digital.ho.proving.income.domain.Individual
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employer
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments
-import uk.gov.digital.ho.proving.income.domain.hmrc.Identity
+import uk.gov.digital.ho.proving.income.domain.hmrc.Income
 
 import java.time.LocalDate
 import java.time.Month
