@@ -2,7 +2,6 @@ package uk.gov.digital.ho.proving.income.feedback;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -10,8 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.proving.income.ApiExceptionHandler;
-import uk.gov.digital.ho.proving.income.audit.AuditRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditService;
 
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -25,7 +23,7 @@ public class UserFeedbackControllerWebTest {
 
     @MockBean FeedbackService mockFeedbackService;
     @MockBean RestTemplate mockRestTemplate;
-    @MockBean AuditRepository mockAuditRepository;
+    @MockBean AuditService mockAuditService;
 
     @Autowired private MockMvc mockMvc;
 

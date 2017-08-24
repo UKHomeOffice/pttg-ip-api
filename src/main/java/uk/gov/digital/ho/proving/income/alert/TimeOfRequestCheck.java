@@ -2,7 +2,7 @@ package uk.gov.digital.ho.proving.income.alert;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.proving.income.audit.AuditEntryRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditEntryJpaRepository;
 import uk.gov.digital.ho.proving.income.audit.AuditEventType;
 
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ public class TimeOfRequestCheck {
         this.endTime = endTime;
     }
 
-    public TimeOfRequestUsage check(AuditEntryRepository repository) {
+    public TimeOfRequestUsage check(AuditEntryJpaRepository repository) {
         Long beforeWorkingHours = repository.countEntriesBetweenDates(
             LocalDate.now().atStartOfDay(),
             LocalDate.now().atTime(getStartHour(), getStartMinute()),

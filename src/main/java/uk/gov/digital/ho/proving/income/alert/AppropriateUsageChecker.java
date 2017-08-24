@@ -2,17 +2,17 @@ package uk.gov.digital.ho.proving.income.alert;
 
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.alert.sysdig.SuspectUsage;
-import uk.gov.digital.ho.proving.income.audit.AuditEntryRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditEntryJpaRepository;
 
 @Component
 public class AppropriateUsageChecker {
-    private final AuditEntryRepository repository;
+    private final AuditEntryJpaRepository repository;
     private final Alerter alerter;
     private final IndividualVolumeCheck individualVolumeCheck;
     private final TimeOfRequestCheck timeOfRequestCheck;
     private final MatchingFailureCheck matchingFailureCheck;
 
-    public AppropriateUsageChecker(AuditEntryRepository repository, Alerter alerter, IndividualVolumeCheck individualVolumeCheck, TimeOfRequestCheck timeOfRequestCheck, MatchingFailureCheck matchingFailureCheck) {
+    public AppropriateUsageChecker(AuditEntryJpaRepository repository, Alerter alerter, IndividualVolumeCheck individualVolumeCheck, TimeOfRequestCheck timeOfRequestCheck, MatchingFailureCheck matchingFailureCheck) {
         this.repository = repository;
         this.alerter = alerter;
         this.individualVolumeCheck = individualVolumeCheck;

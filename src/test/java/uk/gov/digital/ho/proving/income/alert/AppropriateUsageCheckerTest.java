@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.alert.sysdig.SuspectUsage;
-import uk.gov.digital.ho.proving.income.audit.AuditEntryRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditEntryJpaRepository;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 public class AppropriateUsageCheckerTest {
     private AppropriateUsageChecker appropriateUsageChecker;
     @Mock
-    private AuditEntryRepository repository;
+    private AuditEntryJpaRepository repository;
     @Mock
     private Alerter alerter;
     @Mock

@@ -2,7 +2,7 @@ package uk.gov.digital.ho.proving.income.alert;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.proving.income.audit.AuditEntryRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditEntryJpaRepository;
 import uk.gov.digital.ho.proving.income.audit.AuditEventType;
 import uk.gov.digital.ho.proving.income.audit.CountByUser;
 
@@ -19,7 +19,7 @@ public class IndividualVolumeCheck {
         this.dailyUsageThreshold = dailyUsageThreshold;
     }
 
-    public IndividualVolumeUsage check(AuditEntryRepository repository) {
+    public IndividualVolumeUsage check(AuditEntryJpaRepository repository) {
         List<CountByUser> counts = repository.countEntriesBetweenDatesGroupedByUser(LocalDate.now().atStartOfDay(), LocalDate.now().atStartOfDay().plusDays(1), AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
         return new IndividualVolumeUsage(countsOverThreshold(counts));
     }

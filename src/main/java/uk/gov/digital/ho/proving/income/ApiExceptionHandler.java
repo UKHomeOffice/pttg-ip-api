@@ -17,13 +17,10 @@ import uk.gov.digital.ho.proving.income.acl.EarningsServiceFailedToMapDataToDoma
 import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch;
 import uk.gov.digital.ho.proving.income.acl.UnknownPaymentFrequencyType;
 import uk.gov.digital.ho.proving.income.api.BaseResponse;
-import uk.gov.digital.ho.proving.income.api.FinancialStatusCheckResponse;
 import uk.gov.digital.ho.proving.income.api.ResponseStatus;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.AuditDataException;
-import uk.gov.digital.ho.proving.income.audit.AuditEventType;
-import uk.gov.digital.ho.proving.income.audit.AuditRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditService;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,10 +33,10 @@ public class ApiExceptionHandler {
 
     protected final String CONTENT_TYPE = "Content-type";
     protected final String APPLICATION_JSON = "application/json";
-    private final AuditRepository auditRepository;
+    private final AuditService auditService;
 
-    public ApiExceptionHandler(AuditRepository auditRepository) {
-        this.auditRepository = auditRepository;
+    public ApiExceptionHandler(AuditService auditService) {
+        this.auditService = auditService;
     }
 
 
@@ -97,7 +94,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(value = EarningsServiceNoUniqueMatch.class)
     public ResponseEntity<Object> handleException(EarningsServiceNoUniqueMatch e, WebRequest request) {
         log.error(append("errorCode", "0009"), "Could not retrieve earning details.", e);
-        auditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, UUID.randomUUID(), auditData(new BaseResponse(new ResponseStatus("0009", "Resource not found"))));
+        auditService.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, UUID.randomUUID(), auditData(new BaseResponse(new ResponseStatus("0009", "Resource not found"))));
         return buildErrorResponse(httpHeaders(), "0009", "Resource not found", HttpStatus.NOT_FOUND);
     }
 

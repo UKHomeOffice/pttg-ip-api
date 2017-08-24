@@ -3,7 +3,7 @@ package uk.gov.digital.ho.proving.income.alert;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.AuditEntry;
-import uk.gov.digital.ho.proving.income.audit.AuditEntryRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditEntryJpaRepository;
 import uk.gov.digital.ho.proving.income.audit.AuditEventType;
 
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ public class MatchingFailureCheck {
         this.matchFailureThreshold = matchFailureThreshold;
     }
 
-    public MatchingFailureUsage check(AuditEntryRepository repository) {
+    public MatchingFailureUsage check(AuditEntryJpaRepository repository) {
         List<AuditEntry> auditEntries = repository.getEntriesBetweenDates(
             LocalDateTime.now().minusMinutes(60),
             LocalDateTime.now(),

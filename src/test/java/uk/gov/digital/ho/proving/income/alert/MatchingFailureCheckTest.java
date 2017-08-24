@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.audit.AuditEntry;
-import uk.gov.digital.ho.proving.income.audit.AuditEntryRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditEntryJpaRepository;
 import uk.gov.digital.ho.proving.income.audit.AuditEventType;
 
 import java.time.LocalDate;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 public class MatchingFailureCheckTest {
     private MatchingFailureCheck matchingFailureCheck;
     @Mock
-    private AuditEntryRepository repository;
+    private AuditEntryJpaRepository repository;
     @Captor
     private ArgumentCaptor<LocalDateTime> startTimeCaptor;
     @Captor

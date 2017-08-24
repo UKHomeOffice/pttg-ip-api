@@ -9,7 +9,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.digital.ho.proving.income.audit.AuditEntryRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditEntryJpaRepository;
 import uk.gov.digital.ho.proving.income.audit.AuditEventType;
 import uk.gov.digital.ho.proving.income.audit.CountByUser;
 
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 public class IndividualVolumeCheckTest {
     private IndividualVolumeCheck individualVolumeCheck;
     @Mock
-    private AuditEntryRepository repository;
+    private AuditEntryJpaRepository repository;
     @Captor
     private ArgumentCaptor<LocalDateTime> startTimeCaptor;
     @Captor
