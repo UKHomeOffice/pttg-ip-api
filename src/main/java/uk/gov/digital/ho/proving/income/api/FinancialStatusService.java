@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.digital.ho.proving.income.audit.AuditRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditService;
 import uk.gov.digital.ho.proving.income.domain.Individual;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Identity;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
@@ -34,18 +34,17 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 public class FinancialStatusService {
 
     private final IncomeRecordService incomeRecordService;
-    private final AuditRepository auditRepository;
+    private final AuditService auditService;
 
     private static final int MINIMUM_DEPENDANTS = 0;
     private static final int MAXIMUM_DEPENDANTS = 99;
 
     private static final int NUMBER_OF_DAYS = 182;
 
-    public FinancialStatusService(IncomeRecordService incomeRecordService, AuditRepository auditRepository) {
+    public FinancialStatusService(IncomeRecordService incomeRecordService, AuditService auditService) {
         this.incomeRecordService = incomeRecordService;
-        this.auditRepository = auditRepository;
+        this.auditService = auditService;
     }
-
 
     @PostMapping(value = "/incomeproving/v2/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
     public FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
@@ -54,7 +53,7 @@ public class FinancialStatusService {
 
         UUID eventId = UUID.randomUUID();
 
-        auditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, eventId, auditData(request.getNino(), request.getForename(), request.getSurname(), request.getDateOfBirth(), request.getApplicationRaisedDate(), request.getDependants()));
+        auditService.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, eventId, auditData(request.getNino(), request.getForename(), request.getSurname(), request.getDateOfBirth(), request.getApplicationRaisedDate(), request.getDependants()));
 
         final String sanitisedNino = sanitiseNino(request.getNino());
         validateNino(sanitisedNino);
@@ -72,7 +71,7 @@ public class FinancialStatusService {
 
         log.info("Financial status check result for {}", value("nino", request.getNino()));
 
-        auditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
+        auditService.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
 
         return response;
     }

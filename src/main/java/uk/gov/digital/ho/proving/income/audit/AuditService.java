@@ -12,13 +12,13 @@ import java.util.Map;
 import java.util.UUID;
 
 @Component
-public class AuditRepository {
+public class AuditService {
 
     private final ObjectMapper mapper;
     private final RequestData requestData;
-    private final AuditEntryRepository repository;
+    private final AuditEntryJpaRepository repository;
 
-    public AuditRepository(ObjectMapper mapper, RequestData requestData, AuditEntryRepository repository) {
+    public AuditService(ObjectMapper mapper, RequestData requestData, AuditEntryJpaRepository repository) {
         this.mapper = mapper;
         this.requestData = requestData;
         this.repository = repository;

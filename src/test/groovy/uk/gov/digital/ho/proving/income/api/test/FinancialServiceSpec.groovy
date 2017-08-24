@@ -7,7 +7,7 @@ import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
-import uk.gov.digital.ho.proving.income.audit.AuditRepository
+import uk.gov.digital.ho.proving.income.audit.AuditService
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
 
@@ -26,7 +26,7 @@ class FinancialServiceSpec extends Specification {
 
 
     def mockIncomeRecordService = Mock(IncomeRecordService)
-    def mockAuditRepository = Mock(AuditRepository)
+    def mockAuditRepository = Mock(AuditService)
 
     def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditRepository)
 

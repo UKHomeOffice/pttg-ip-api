@@ -5,7 +5,7 @@ import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.api.IncomeRetrievalService
-import uk.gov.digital.ho.proving.income.audit.AuditRepository
+import uk.gov.digital.ho.proving.income.audit.AuditService
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
 
@@ -29,7 +29,7 @@ class IncomeServiceSpec extends Specification {
     String tomorrow = now().plusDays(1).format(ISO_LOCAL_DATE);
 
     def mockIncomeRecordService = Mock(IncomeRecordService)
-    def mockAuditRepository = Mock(AuditRepository)
+    def mockAuditRepository = Mock(AuditService)
 
     def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditRepository)
 

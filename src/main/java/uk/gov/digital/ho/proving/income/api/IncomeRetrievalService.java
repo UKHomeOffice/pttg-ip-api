@@ -3,7 +3,7 @@ package uk.gov.digital.ho.proving.income.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.proving.income.audit.AuditRepository;
+import uk.gov.digital.ho.proving.income.audit.AuditService;
 import uk.gov.digital.ho.proving.income.domain.Income;
 import uk.gov.digital.ho.proving.income.domain.Individual;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments;
@@ -33,11 +33,11 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 public class IncomeRetrievalService {
 
     private final IncomeRecordService incomeRecordService;
-    private final AuditRepository auditRepository;
+    private final AuditService auditService;
 
-    public IncomeRetrievalService(IncomeRecordService incomeRecordService, AuditRepository auditRepository) {
+    public IncomeRetrievalService(IncomeRecordService incomeRecordService, AuditService auditService) {
         this.incomeRecordService = incomeRecordService;
-        this.auditRepository = auditRepository;
+        this.auditService = auditService;
     }
 
     @Deprecated
@@ -54,7 +54,7 @@ public class IncomeRetrievalService {
 
         UUID eventId = UUID.randomUUID();
 
-        auditRepository.add(INCOME_PROVING_INCOME_CHECK_REQUEST, eventId, auditData(nino, forename, surname, dateOfBirth, fromDate, toDate));
+        auditService.add(INCOME_PROVING_INCOME_CHECK_REQUEST, eventId, auditData(nino, forename, surname, dateOfBirth, fromDate, toDate));
 
         String cleanNino = sanitiseNino(nino);
         validateNino(cleanNino);
@@ -93,7 +93,7 @@ public class IncomeRetrievalService {
 
         log.info("Income check result: {}", value("incomeCheckResponse", incomeRetrievalResponse));
 
-        auditRepository.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
+        auditService.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
 
         return incomeRetrievalResponse;
     }
@@ -105,7 +105,7 @@ public class IncomeRetrievalService {
 
         UUID eventId = UUID.randomUUID();
 
-        auditRepository.add(INCOME_PROVING_INCOME_CHECK_REQUEST, eventId, auditData(request.getNino(), request.getForename(), request.getSurname(), request.getDateOfBirth(), request.getFromDate(), request.getToDate()));
+        auditService.add(INCOME_PROVING_INCOME_CHECK_REQUEST, eventId, auditData(request.getNino(), request.getForename(), request.getSurname(), request.getDateOfBirth(), request.getFromDate(), request.getToDate()));
 
         String cleanNino = sanitiseNino(request.getNino());
         validateNino(cleanNino);
@@ -144,7 +144,7 @@ public class IncomeRetrievalService {
 
         log.info("Income check result: {}", value("incomeCheckResponse", incomeRetrievalResponse));
 
-        auditRepository.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
+        auditService.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
 
         return incomeRetrievalResponse;
     }
