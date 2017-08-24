@@ -70,7 +70,7 @@ public class SysdigEventService {
     private HttpHeaders generateRestHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.add(CONTENT_TYPE, APPLICATION_JSON_VALUE);
-        headers.add(AUTHORIZATION, String.format("Bearer '%s'", sysdigAccessToken));
+        headers.add(AUTHORIZATION, String.format("Bearer %s", sysdigAccessToken));
         log.info(headers.toString());
         return headers;
     }
