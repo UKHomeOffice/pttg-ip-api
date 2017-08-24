@@ -33,7 +33,7 @@ class IncomeServiceSpec extends Specification {
 
     def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditRepository)
 
-    MockMvc mockMvc = standaloneSetup(controller).setControllerAdvice(new ApiExceptionHandler()).build()
+    MockMvc mockMvc = standaloneSetup(controller).setControllerAdvice(new ApiExceptionHandler(mockAuditRepository)).build()
 
 
     def "invalid from date is rejected"() {
