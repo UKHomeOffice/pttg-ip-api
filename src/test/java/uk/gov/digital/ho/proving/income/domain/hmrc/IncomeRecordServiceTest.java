@@ -33,6 +33,7 @@ public class IncomeRecordServiceTest {
 
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
+    @Mock private ServiceResponseLogger mockServiceResponseLogger;
 
     @Captor private ArgumentCaptor<Map<String, String>> variablesCaptor;
     @Captor private ArgumentCaptor<String> urlTemplate;
@@ -41,7 +42,9 @@ public class IncomeRecordServiceTest {
 
     @Before
     public void before() throws Exception {
-        service = new IncomeRecordService(mockRestTemplate, "http://income-service/income", mockRequestData);
+
+        service = new IncomeRecordService(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger);
+
         when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
             .thenReturn(new ResponseEntity<>(new IncomeRecord(
                 emptyList(),

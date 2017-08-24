@@ -32,6 +32,19 @@ appender("STDOUT", ConsoleAppender) {
     }
 }
 
+appender("FILE", FileAppender) {
+    file = "income-record-service-live-proving.log"
+    append = true
+    encoder(PatternLayoutEncoder) {
+        pattern = "%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n"
+    }
+    filter(ThresholdFilter) {
+        level = INFO
+    }
+}
+
+logger("uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordServiceNotProductionResponseLogger", DEBUG, ["FILE"], additivity = false)
+
 // Define logging levels for specific packages
 logger("org.eclipse.jetty", WARN)
 logger("org.springframework", WARN)
