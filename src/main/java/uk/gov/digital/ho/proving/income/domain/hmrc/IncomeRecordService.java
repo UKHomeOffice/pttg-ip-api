@@ -24,18 +24,24 @@ public class IncomeRecordService {
     private final RestTemplate restTemplate;
     private final String hmrcServiceEndpoint;
     private final RequestData requestData;
+    private final ServiceResponseLogger serviceResponseLogger;
 
     public IncomeRecordService(RestTemplate restTemplate,
                                @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
-                               RequestData requestData) {
+                               RequestData requestData,
+                               ServiceResponseLogger serviceResponseLogger) {
         this.restTemplate = restTemplate;
         this.hmrcServiceEndpoint = hmrcServiceEndpoint;
         this.requestData = requestData;
+        this.serviceResponseLogger = serviceResponseLogger;
     }
 
     public IncomeRecord getIncomeRecord(Identity identity, LocalDate fromDate, LocalDate toDate) {
+
         try {
+
             log.info(String.format("About to call Income Service at %s", hmrcServiceEndpoint));
+
             ResponseEntity<IncomeRecord> responseEntity = restTemplate.exchange(
                 String.format("%s?firstName={firstName}&lastName={lastName}&nino={nino}&dateOfBirth={dateOfBirth}&fromDate={fromDate}&toDate={toDate}", hmrcServiceEndpoint),
                 HttpMethod.GET,
@@ -50,8 +56,13 @@ public class IncomeRecordService {
                     put("fromDate", fromDate.format(DateTimeFormatter.ISO_DATE)).
                     put("toDate", toDate.format(DateTimeFormatter.ISO_DATE)).
                     build());
+
+            serviceResponseLogger.record(responseEntity.getBody());
+
             log.info(String.format("Received %d incomes and %d employments ", responseEntity.getBody().getIncome().size(), responseEntity.getBody().getEmployments().size()));
+
             return responseEntity.getBody();
+
         } catch (HttpStatusCodeException e) {
             if (isNotFound(e)) {
                 log.error("Income Service found no match");

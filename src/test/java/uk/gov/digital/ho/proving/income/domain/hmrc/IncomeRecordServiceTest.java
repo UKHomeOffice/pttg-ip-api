@@ -33,15 +33,19 @@ public class IncomeRecordServiceTest {
 
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
+    @Mock private ServiceResponseLogger mockServiceResponseLogger;
 
-    @Captor private ArgumentCaptor<Map<String, String>> variablesCaptor;
-    @Captor private ArgumentCaptor<String> urlTemplate;
+    @Captor private ArgumentCaptor<Map<String, String>> captorVariables;
+    @Captor private ArgumentCaptor<String> captorUrlTemplate;
+    @Captor private ArgumentCaptor<IncomeRecord> captorResponseBody;
 
     private IncomeRecordService service;
 
     @Before
     public void before() throws Exception {
-        service = new IncomeRecordService(mockRestTemplate, "http://income-service/income", mockRequestData);
+
+        service = new IncomeRecordService(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger);
+
         when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
             .thenReturn(new ResponseEntity<>(new IncomeRecord(
                 emptyList(),
@@ -59,51 +63,59 @@ public class IncomeRecordServiceTest {
     }
 
     @Test
-    public void shouldPassFirstnameAsRestParameter() throws Exception {
-        verify(mockRestTemplate).exchange(urlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), variablesCaptor.capture());
+    public void shouldSendServiceResponseToLogger() {
+        verify(mockServiceResponseLogger).record(captorResponseBody.capture());
 
-        assertThat(variablesCaptor.getValue()).containsEntry("firstName", "John");
-        assertThat(urlTemplate.getValue()).contains("firstName={firstName}");
+        assertThat(captorResponseBody.getValue().getIncome()).isEmpty();
+        assertThat(captorResponseBody.getValue().getEmployments()).isEmpty();
+    }
+
+    @Test
+    public void shouldPassFirstnameAsRestParameter() throws Exception {
+        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
+
+        assertThat(captorVariables.getValue()).containsEntry("firstName", "John");
+        assertThat(captorUrlTemplate.getValue()).contains("firstName={firstName}");
     }
 
     @Test
     public void shouldPassLastnameAsRestParameter() throws Exception {
-        verify(mockRestTemplate).exchange(urlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), variablesCaptor.capture());
+        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
 
-        assertThat(variablesCaptor.getValue()).containsEntry("lastName", "Smith");
-        assertThat(urlTemplate.getValue()).contains("lastName={lastName}");
+        assertThat(captorVariables.getValue()).containsEntry("lastName", "Smith");
+        assertThat(captorUrlTemplate.getValue()).contains("lastName={lastName}");
     }
 
     @Test
     public void shouldPassNinoAsRestParameter() throws Exception {
-        verify(mockRestTemplate).exchange(urlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), variablesCaptor.capture());
+        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
 
-        assertThat(variablesCaptor.getValue()).containsEntry("nino", "NE121212A");
-        assertThat(urlTemplate.getValue()).contains("nino={nino}");
+        assertThat(captorVariables.getValue()).containsEntry("nino", "NE121212A");
+        assertThat(captorUrlTemplate.getValue()).contains("nino={nino}");
     }
 
     @Test
     public void shouldPassDateOfBirthAsRestParameterInISOFormat() throws Exception {
-        verify(mockRestTemplate).exchange(urlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), variablesCaptor.capture());
+        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
 
-        assertThat(variablesCaptor.getValue()).containsEntry("dateOfBirth", "1965-07-19");
-        assertThat(urlTemplate.getValue()).contains("dateOfBirth={dateOfBirth}");
+        assertThat(captorVariables.getValue()).containsEntry("dateOfBirth", "1965-07-19");
+        assertThat(captorUrlTemplate.getValue()).contains("dateOfBirth={dateOfBirth}");
     }
 
     @Test
     public void shouldPassFromDateAsRestParameterInISOFormat() throws Exception {
-        verify(mockRestTemplate).exchange(urlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), variablesCaptor.capture());
+        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
 
-        assertThat(variablesCaptor.getValue()).containsEntry("fromDate", "2017-01-01");
-        assertThat(urlTemplate.getValue()).contains("fromDate={fromDate}");
+        assertThat(captorVariables.getValue()).containsEntry("fromDate", "2017-01-01");
+        assertThat(captorUrlTemplate.getValue()).contains("fromDate={fromDate}");
     }
 
     @Test
     public void shouldPassToDateAsRestParameterInISOFormat() throws Exception {
-        verify(mockRestTemplate).exchange(urlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), variablesCaptor.capture());
+        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
 
-        assertThat(variablesCaptor.getValue()).containsEntry("toDate", "2017-07-01");
-        assertThat(urlTemplate.getValue()).contains("toDate={toDate}");
+        assertThat(captorVariables.getValue()).containsEntry("toDate", "2017-07-01");
+        assertThat(captorUrlTemplate.getValue()).contains("toDate={toDate}");
     }
 
     @Test(expected = EarningsServiceNoUniqueMatch.class)
