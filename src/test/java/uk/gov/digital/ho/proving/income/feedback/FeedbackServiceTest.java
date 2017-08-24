@@ -40,7 +40,7 @@ public class FeedbackServiceTest {
     @Test
     public void shouldUseCollaborators() {
 
-        feedbackService.add("and feedback");
+        feedbackService.add("any feedback");
 
         verify(mockFeedbackEntryJpaRepository).save(any(FeedbackEntry.class));
     }
