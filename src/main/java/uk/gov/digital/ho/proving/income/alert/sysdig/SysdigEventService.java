@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.alert.sysdig;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jersey.repackaged.com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +34,9 @@ public class SysdigEventService {
     public void sendUsersExceedUsageThresholdEvent(IndividualVolumeUsage individualVolumeUsage) {
         try {
             log.warn("Excessive usage detected");
+            log.info(sysdigEndpoint);
             Message message = new Message(new Event("Proving Things, Income Proving, Excessive Usage", String.format("Excessive usage detected; %s", individualVolumeUsage.getCountsByUser()), "6", ImmutableMap.of()));
+            log.info(new ObjectMapper().writeValueAsString(message));
             restTemplate.exchange(sysdigEndpoint, HttpMethod.POST, toEntity(message), Void.class);
         } catch (Exception e) {
             log.error("Unable to alert on suspect usage", e);
