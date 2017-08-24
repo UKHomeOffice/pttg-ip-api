@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.audit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +12,11 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import uk.gov.digital.ho.proving.income.alert.AppropriateUsageChecker;
+import uk.gov.digital.ho.proving.income.alert.IndividualVolumeUsage;
+import uk.gov.digital.ho.proving.income.alert.MatchingFailureUsage;
+import uk.gov.digital.ho.proving.income.alert.TimeOfRequestUsage;
+import uk.gov.digital.ho.proving.income.alert.sysdig.SuspectUsage;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions;
 
@@ -30,6 +36,8 @@ public class AuditServiceTest {
     @Mock private ObjectMapper mockMapper;
     @Mock private RequestData mockRequestData;
     @Mock private AuditEntryJpaRepository mockRepository;
+    @Mock private AppropriateUsageChecker mockAppropriateUsageChecker;
+
 
     @Captor private ArgumentCaptor<AuditEntry> captorAuditEntry;
 
@@ -91,4 +99,15 @@ public class AuditServiceTest {
         assertThat(arg.getType()).isEqualTo(someAuditEventType);
         assertThat(arg.getDetail()).isEqualTo("some json");
     }
+
+    @Test
+    public void shouldCheckForAppropriateUsage() {
+        SuspectUsage suspectUsage = new SuspectUsage(new IndividualVolumeUsage(ImmutableMap.of()), new TimeOfRequestUsage(0), new MatchingFailureUsage(0));
+        when(mockAppropriateUsageChecker.precheck()).thenReturn(suspectUsage);
+        auditService.add(AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.fromString("a1eaf791-08d5-4dad-8d59-dd0df9dabd3b"), ImmutableMap.of("name", "value"));
+
+        verify(mockAppropriateUsageChecker).precheck();
+        verify(mockAppropriateUsageChecker).postcheck(suspectUsage);
+    }
+
 }

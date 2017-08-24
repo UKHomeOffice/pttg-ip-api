@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income;
 
+import jersey.repackaged.com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,13 @@ import uk.gov.digital.ho.proving.income.acl.UnknownPaymentFrequencyType;
 import uk.gov.digital.ho.proving.income.api.BaseResponse;
 import uk.gov.digital.ho.proving.income.api.ResponseStatus;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.AuditDataException;
+import uk.gov.digital.ho.proving.income.audit.AuditService;
+
+import java.util.Map;
+import java.util.UUID;
 
 import static net.logstash.logback.marker.Markers.append;
+import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
 @ControllerAdvice
 @Slf4j
@@ -27,6 +33,12 @@ public class ApiExceptionHandler {
 
     protected final String CONTENT_TYPE = "Content-type";
     protected final String APPLICATION_JSON = "application/json";
+    private final AuditService auditService;
+
+    public ApiExceptionHandler(AuditService auditService) {
+        this.auditService = auditService;
+    }
+
 
     @ExceptionHandler(AuditDataException.class)
     public Object auditDataMarshalFailureHandler(AuditDataException exception) {
@@ -82,7 +94,12 @@ public class ApiExceptionHandler {
     @ExceptionHandler(value = EarningsServiceNoUniqueMatch.class)
     public ResponseEntity<Object> handleException(EarningsServiceNoUniqueMatch e, WebRequest request) {
         log.error(append("errorCode", "0009"), "Could not retrieve earning details.", e);
+        auditService.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, UUID.randomUUID(), auditData(new BaseResponse(new ResponseStatus("0009", "Resource not found"))));
         return buildErrorResponse(httpHeaders(), "0009", "Resource not found", HttpStatus.NOT_FOUND);
+    }
+
+    private Map<String, Object> auditData(BaseResponse response) {
+        return ImmutableMap.of("method", "get-financial-status", "response", response);
     }
 
 
