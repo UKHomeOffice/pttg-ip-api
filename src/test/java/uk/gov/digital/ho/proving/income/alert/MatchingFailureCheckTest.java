@@ -37,7 +37,7 @@ public class MatchingFailureCheckTest {
 
     @Before
     public void before() throws Exception {
-        matchingFailureCheck = new MatchingFailureCheck(3);
+        matchingFailureCheck = new MatchingFailureCheck(3, "dev");
     }
 
     @Test
@@ -49,7 +49,7 @@ public class MatchingFailureCheckTest {
             auditEntryWithDetail("Resource not found")
 
         );
-        when(repository.getEntriesBetweenDates(any(), any(), any())).thenReturn(fourFailures);
+        when(repository.getEntriesBetweenDates(any(), any(), any(), any())).thenReturn(fourFailures);
         assertThat(matchingFailureCheck.check(repository).isSuspect()).isTrue();
         assertThat(matchingFailureCheck.check(repository).getCountOfFailures()).isEqualTo(4);
     }
@@ -62,7 +62,7 @@ public class MatchingFailureCheckTest {
             auditEntryWithDetail("Resource not found")
 
         );
-        when(repository.getEntriesBetweenDates(any(), any(), any())).thenReturn(fourFailures);
+        when(repository.getEntriesBetweenDates(any(), any(), any(), any())).thenReturn(fourFailures);
         assertThat(matchingFailureCheck.check(repository).isSuspect()).isFalse();
         assertThat(matchingFailureCheck.check(repository).getCountOfFailures()).isEqualTo(0);
     }
@@ -81,7 +81,7 @@ public class MatchingFailureCheckTest {
             auditEntryWithDetail("Resource not found")
 
         );
-        when(repository.getEntriesBetweenDates(any(), any(), any())).thenReturn(fourFailures);
+        when(repository.getEntriesBetweenDates(any(), any(), any(), any())).thenReturn(fourFailures);
         assertThat(matchingFailureCheck.check(repository).isSuspect()).isFalse();
         assertThat(matchingFailureCheck.check(repository).getCountOfFailures()).isEqualTo(0);
     }
@@ -90,7 +90,7 @@ public class MatchingFailureCheckTest {
     public void shouldRetrieveEntriesInTheLastHour() throws Exception {
         matchingFailureCheck.check(repository);
 
-        verify(repository).getEntriesBetweenDates(startTimeCaptor.capture(), endTimeCaptor.capture(), Mockito.eq(AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE));
+        verify(repository).getEntriesBetweenDates(startTimeCaptor.capture(), endTimeCaptor.capture(), Mockito.eq(AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE), Mockito.eq("dev"));
 
         LocalDateTime startTime = startTimeCaptor.getValue();
         LocalDateTime endTime = endTimeCaptor.getValue();

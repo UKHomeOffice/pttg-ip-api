@@ -14,13 +14,15 @@ import java.util.stream.Collectors;
 @Component
 public class IndividualVolumeCheck {
     private final int dailyUsageThreshold;
+    private final String namespace;
 
-    public IndividualVolumeCheck(@Value("${alert.individual.usage.daily.threshold}") int dailyUsageThreshold) {
+    public IndividualVolumeCheck(@Value("${alert.individual.usage.daily.threshold}") int dailyUsageThreshold, @Value("${auditing.deployment.namespace}") String namespace) {
         this.dailyUsageThreshold = dailyUsageThreshold;
+        this.namespace = namespace;
     }
 
     public IndividualVolumeUsage check(AuditEntryJpaRepository repository) {
-        List<CountByUser> counts = repository.countEntriesBetweenDatesGroupedByUser(LocalDate.now().atStartOfDay(), LocalDate.now().atStartOfDay().plusDays(1), AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<CountByUser> counts = repository.countEntriesBetweenDatesGroupedByUser(LocalDate.now().atStartOfDay(), LocalDate.now().atStartOfDay().plusDays(1), AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, namespace);
         return new IndividualVolumeUsage(countsOverThreshold(counts));
     }
 

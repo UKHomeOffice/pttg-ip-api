@@ -15,9 +15,7 @@ import uk.gov.digital.ho.proving.income.audit.CountByUser;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -36,14 +34,14 @@ public class IndividualVolumeCheckTest {
 
     @Before
     public void before() throws Exception {
-        individualVolumeCheck = new IndividualVolumeCheck(10);
+        individualVolumeCheck = new IndividualVolumeCheck(10, "dev");
     }
 
     @Test
     public void shouldRetrieveCountsForToday() throws Exception {
         individualVolumeCheck.check(repository);
 
-        verify(repository).countEntriesBetweenDatesGroupedByUser(startTimeCaptor.capture(), endTimeCaptor.capture(), Mockito.eq(AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE));
+        verify(repository).countEntriesBetweenDatesGroupedByUser(startTimeCaptor.capture(), endTimeCaptor.capture(), Mockito.eq(AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE), Mockito.eq("dev"));
 
         LocalDateTime startTime = startTimeCaptor.getValue();
         LocalDateTime endTime = endTimeCaptor.getValue();
@@ -66,7 +64,7 @@ public class IndividualVolumeCheckTest {
             new CountByUser(11, "tony"),
             new CountByUser(1, "betty")
         );
-        when(repository.countEntriesBetweenDatesGroupedByUser(any(), any(), any())).thenReturn(twoCountsWithOneOverThreshold);
+        when(repository.countEntriesBetweenDatesGroupedByUser(any(), any(), any(), any())).thenReturn(twoCountsWithOneOverThreshold);
 
 
         IndividualVolumeUsage individualVolumeUsage = individualVolumeCheck.check(repository);
@@ -80,7 +78,7 @@ public class IndividualVolumeCheckTest {
             new CountByUser(11, "tony"),
             new CountByUser(1, "betty")
         );
-        when(repository.countEntriesBetweenDatesGroupedByUser(any(), any(), any())).thenReturn(twoCountsWithOneOverThreshold);
+        when(repository.countEntriesBetweenDatesGroupedByUser(any(), any(), any(), any())).thenReturn(twoCountsWithOneOverThreshold);
 
 
         IndividualVolumeUsage individualVolumeUsage = individualVolumeCheck.check(repository);
@@ -97,7 +95,7 @@ public class IndividualVolumeCheckTest {
             new CountByUser(10, "betty")
         );
 
-        when(repository.countEntriesBetweenDatesGroupedByUser(any(), any(), any())).thenReturn(twoCountsWithBothEqualToThreshold);
+        when(repository.countEntriesBetweenDatesGroupedByUser(any(), any(), any(), any())).thenReturn(twoCountsWithBothEqualToThreshold);
 
 
         IndividualVolumeUsage individualVolumeUsage = individualVolumeCheck.check(repository);
@@ -107,7 +105,7 @@ public class IndividualVolumeCheckTest {
 
     @Test
     public void shouldNotBeSuspectIfNothingFound() {
-        when(repository.countEntriesBetweenDatesGroupedByUser(any(), any(), any())).thenReturn(ImmutableList.of());
+        when(repository.countEntriesBetweenDatesGroupedByUser(any(), any(), any(), any())).thenReturn(ImmutableList.of());
 
         IndividualVolumeUsage individualVolumeUsage = individualVolumeCheck.check(repository);
 

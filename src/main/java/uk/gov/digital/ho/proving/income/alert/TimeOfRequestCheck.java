@@ -12,24 +12,29 @@ import java.time.LocalTime;
 public class TimeOfRequestCheck {
     private final String startTime;
     private final String endTime;
+    private final String namespace;
 
     public TimeOfRequestCheck(
         @Value("${alert.acceptable.hours.start}") String startTime,
-        @Value("${alert.acceptable.hours.end}") String endTime) {
+        @Value("${alert.acceptable.hours.end}") String endTime,
+        @Value("${auditing.deployment.namespace}") String namespace) {
         this.startTime = startTime;
         this.endTime = endTime;
+        this.namespace = namespace;
     }
 
     public TimeOfRequestUsage check(AuditEntryJpaRepository repository) {
         Long beforeWorkingHours = repository.countEntriesBetweenDates(
             LocalDate.now().atStartOfDay(),
             LocalDate.now().atTime(getStartHour(), getStartMinute()),
-            AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+            AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE,
+            namespace);
 
         Long afterWorkingHours = repository.countEntriesBetweenDates(
             LocalDate.now().atTime(getEndHour(), getEndMinute()),
             LocalDate.now().atStartOfDay().plusDays(1),
-            AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+            AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE,
+            namespace);
 
         return new TimeOfRequestUsage(beforeWorkingHours + afterWorkingHours);
     }
