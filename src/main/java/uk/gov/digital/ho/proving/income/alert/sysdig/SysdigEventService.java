@@ -82,7 +82,7 @@ public class SysdigEventService {
     }
 
     private String filter() {
-        return String.format("kubernetes.namespace.name='%s'", namespace);
+        return String.format("pttg.env='%s'", namespace);
     }
 
     private ImmutableMap<String, Object> tags() {
