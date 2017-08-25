@@ -57,7 +57,7 @@ public class IncomeRecordService {
                     put("toDate", toDate.format(DateTimeFormatter.ISO_DATE)).
                     build());
 
-            serviceResponseLogger.record(responseEntity.getBody());
+            serviceResponseLogger.record(identity, responseEntity.getBody());
 
             log.info(String.format("Received %d incomes and %d employments ", responseEntity.getBody().getIncome().size(), responseEntity.getBody().getEmployments().size()));
 
