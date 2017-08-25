@@ -56,7 +56,7 @@ public class AuditEntry {
     @Getter
     private String detail;
 
-    AuditEntry(String uuid, LocalDateTime timestamp, String sessionId, String correlationId,
+    public AuditEntry(String uuid, LocalDateTime timestamp, String sessionId, String correlationId,
                       String userId, String deployment, String namespace, AuditEventType type, String detail) {
         this.uuid = uuid;
         this.timestamp = timestamp;
@@ -67,5 +67,9 @@ public class AuditEntry {
         this.namespace = namespace;
         this.type = type;
         this.detail = detail;
+    }
+
+    public boolean isNotFoundEvent() {
+        return detail.contains("Resource not found");
     }
 }

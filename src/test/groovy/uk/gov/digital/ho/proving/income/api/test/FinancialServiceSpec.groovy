@@ -30,7 +30,7 @@ class FinancialServiceSpec extends Specification {
 
     def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditRepository)
 
-    MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ApiExceptionHandler()).build()
+    MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ApiExceptionHandler(mockAuditRepository)).build()
 
 
     def "valid NINO is looked up on the earnings service 2"() {

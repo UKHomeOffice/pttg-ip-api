@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.proving.income.audit.AuditService;
 
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -22,6 +23,7 @@ public class UserFeedbackControllerWebTest {
 
     @MockBean FeedbackService mockFeedbackService;
     @MockBean RestTemplate mockRestTemplate;
+    @MockBean AuditService mockAuditService;
 
     @Autowired private MockMvc mockMvc;
 
