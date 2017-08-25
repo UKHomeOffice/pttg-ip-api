@@ -23,19 +23,16 @@ public class SysdigEventService {
     private final String sysdigEndpoint;
     private final String sysdigAccessToken;
     private final String namespace;
-    private final String name;
 
     public SysdigEventService(
         RestTemplate restTemplate,
         @Value("${sysdig.service.endpoint}") String sysdigEndpoint,
         @Value("${sysdig.access.token}") String sysdigAccessToken,
-        @Value("${auditing.deployment.namespace}") String namespace,
-        @Value("${auditing.deployment.name}") String name) {
+        @Value("${auditing.deployment.namespace}") String namespace) {
         this.restTemplate = restTemplate;
         this.sysdigEndpoint = sysdigEndpoint;
         this.sysdigAccessToken = sysdigAccessToken;
         this.namespace = namespace;
-        this.name = name;
     }
 
 
@@ -85,11 +82,11 @@ public class SysdigEventService {
     }
 
     private String filter() {
-        return String.format("kubernetes.namespace.name='%s' and container.name='%s'", namespace, name);
+        return String.format("kubernetes.namespace.name='%s'", namespace);
     }
 
     private ImmutableMap<String, Object> tags() {
-        return ImmutableMap.of("source", "proving things - income proving");
+        return ImmutableMap.of("source", "proving things - income proving", "project", "PTTG");
     }
 
 }
