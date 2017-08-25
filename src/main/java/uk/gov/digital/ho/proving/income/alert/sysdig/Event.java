@@ -11,6 +11,6 @@ public class Event {
     private final String name;
     private final String description;
     private final String severity;
-    private final String event_filter;
+    private final String filter;
     private final Map<String, Object> tags;
 }
