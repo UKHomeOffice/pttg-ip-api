@@ -33,14 +33,14 @@ public class TimeOfRequestCheckTest {
 
     @Before
     public void before() throws Exception {
-        timeOfRequestCheck = new TimeOfRequestCheck("07:23", "19:13");
+        timeOfRequestCheck = new TimeOfRequestCheck("07:23", "19:13", "dev");
     }
 
     @Test
     public void shouldCountRequestsBetweenStartOfDayAndStartOfWorkingDay() throws Exception {
         timeOfRequestCheck.check(repository);
 
-        verify(repository, atLeast(2)).countEntriesBetweenDates(startTimeCaptor.capture(), endTimeCaptor.capture(), Mockito.eq(AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE));
+        verify(repository, atLeast(2)).countEntriesBetweenDates(startTimeCaptor.capture(), endTimeCaptor.capture(), Mockito.eq(AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE), Mockito.eq("dev"));
 
         LocalDateTime startOfDay = startTimeCaptor.getAllValues().get(0);
         LocalDateTime startOfWorkingDay = endTimeCaptor.getAllValues().get(0);
@@ -61,7 +61,7 @@ public class TimeOfRequestCheckTest {
     public void shouldCountRequestsBetweenEndOfWorkingDayAndStartOfTomorrow() throws Exception {
         timeOfRequestCheck.check(repository);
 
-        verify(repository, atLeast(2)).countEntriesBetweenDates(startTimeCaptor.capture(), endTimeCaptor.capture(), Mockito.eq(AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE));
+        verify(repository, atLeast(2)).countEntriesBetweenDates(startTimeCaptor.capture(), endTimeCaptor.capture(), Mockito.eq(AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE), Mockito.eq("dev"));
 
         LocalDateTime endOfWorkingDay = startTimeCaptor.getAllValues().get(1);
         LocalDateTime endOfDay = endTimeCaptor.getAllValues().get(1);
@@ -79,7 +79,7 @@ public class TimeOfRequestCheckTest {
 
     @Test
     public void shouldSumBothCounts() {
-        when(repository.countEntriesBetweenDates(any(), any(), any())).thenReturn(Long.valueOf(3));
+        when(repository.countEntriesBetweenDates(any(), any(), any(), any())).thenReturn(Long.valueOf(3));
 
         TimeOfRequestUsage timeOfRequestUsage = timeOfRequestCheck.check(repository);
 
