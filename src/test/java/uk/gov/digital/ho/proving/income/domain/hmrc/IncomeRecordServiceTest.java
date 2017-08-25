@@ -25,6 +25,7 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,7 +65,10 @@ public class IncomeRecordServiceTest {
 
     @Test
     public void shouldSendServiceResponseToLogger() {
-        verify(mockServiceResponseLogger).record(captorResponseBody.capture());
+        verify(mockServiceResponseLogger).record(eq(new Identity("John",
+                                                                "Smith",
+                                                                LocalDate.of(1965, Month.JULY, 19), "NE121212A")),
+                                                    captorResponseBody.capture());
 
         assertThat(captorResponseBody.getValue().getIncome()).isEmpty();
         assertThat(captorResponseBody.getValue().getEmployments()).isEmpty();

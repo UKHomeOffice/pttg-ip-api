@@ -42,6 +42,8 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
         m.registerModule(javaTimeModule);
         m.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         m.enable(SerializationFeature.INDENT_OUTPUT);
+        m.writer().withDefaultPrettyPrinter();
+
         return m;
     }
 

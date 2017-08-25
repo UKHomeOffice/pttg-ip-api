@@ -17,33 +17,39 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
+import java.time.LocalDate;
+import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IncomeRecordServiceNotProductionResponseLoggerTest {
 
-    @Mock
-    private ObjectMapper mockMapper;
-    @Mock
-    private Appender mockAppender;
+    @Mock private ObjectMapper mockMapper;
+    @Mock private Appender mockAppender;
 
-    @InjectMocks
-    private IncomeRecordServiceNotProductionResponseLogger incomeRecordServiceNotProductionResponseLogger;
+    @InjectMocks private IncomeRecordServiceNotProductionResponseLogger incomeRecordServiceNotProductionResponseLogger;
 
-    @Captor
-    private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
+    @Captor private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
+
+    private Identity stubIdentity;
+    private IncomeRecord stubIncomeRecord;
 
     @Before
     public void setup() {
         ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(IncomeRecordServiceNotProductionResponseLogger.class);
         logger.addAppender(mockAppender);
+
+        stubIncomeRecord = new IncomeRecord(emptyList(), emptyList());
+
+        stubIdentity = new Identity("some firstname",
+                                        "some lastname",
+                                        LocalDate.now(),
+                                        "some nino");
     }
 
     @After
@@ -54,13 +60,12 @@ public class IncomeRecordServiceNotProductionResponseLoggerTest {
     @Test
     public void shouldUseCollaborators() throws JsonProcessingException {
 
-        IncomeRecord incomeRecord = new IncomeRecord(emptyList(), emptyList());
+        when(mockMapper.writeValueAsString(any())).thenReturn("json version of Income Record");
 
-        when(mockMapper.writeValueAsString(incomeRecord)).thenReturn("json version of Income Record");
+        incomeRecordServiceNotProductionResponseLogger.record(stubIdentity, stubIncomeRecord);
 
-        incomeRecordServiceNotProductionResponseLogger.record(incomeRecord);
-
-        verify(mockMapper).writeValueAsString(incomeRecord);
+        verify(mockMapper).writeValueAsString(
+                            incomeRecordServiceNotProductionResponseLogger.produceLogEntry(stubIdentity, stubIncomeRecord));
         verify(mockAppender).doAppend(captorLoggingEvent.capture());
 
         assertThat(captorLoggingEvent.getAllValues().size()).isEqualTo(1);
@@ -71,16 +76,26 @@ public class IncomeRecordServiceNotProductionResponseLoggerTest {
     @Test
     public void shouldSwallowJsonProcessingException() throws JsonProcessingException {
 
-        IncomeRecord incomeRecord = new IncomeRecord(emptyList(), emptyList());
+        when(mockMapper.writeValueAsString(any())).thenThrow(JsonProcessingException.class);
 
-        when(mockMapper.writeValueAsString(incomeRecord)).thenThrow(JsonProcessingException.class);
-
-        incomeRecordServiceNotProductionResponseLogger.record(incomeRecord);
+        incomeRecordServiceNotProductionResponseLogger.record(stubIdentity, stubIncomeRecord);
 
         verify(mockAppender).doAppend(captorLoggingEvent.capture());
 
         assertThat(captorLoggingEvent.getAllValues().size()).isEqualTo(1);
         assertThat(captorLoggingEvent.getValue().getLevel()).isEqualTo(Level.ERROR);
         assertThat(captorLoggingEvent.getValue().getMessage()).isEqualTo("Failed to turn IncomeRecord response data into JSON");
+    }
+
+    @Test
+    public void shouldProduceLogEntry() {
+
+        Map<String, Object> logEntry = incomeRecordServiceNotProductionResponseLogger.produceLogEntry(stubIdentity, stubIncomeRecord);
+
+        assertThat(logEntry.size()).isEqualTo(2);
+        assertThat(logEntry.containsKey("identity"));
+        assertThat(logEntry.get("identity")).isEqualTo(stubIdentity);
+        assertThat(logEntry.containsKey("incomeRecord"));
+        assertThat(logEntry.get("incomeRecord")).isEqualTo(stubIncomeRecord);
     }
 }
