@@ -92,6 +92,4 @@ public class SysdigEventService {
         return ImmutableMap.of("source", "proving things - income proving");
     }
 
-
-
 }
