@@ -44,7 +44,7 @@ public class AppropriateUsageCheckerTest {
 
         appropriateUsageChecker.postcheck(beforeUsage);
 
-        verify(alerter, never()).inappropriateUsage(any());
+        verify(alerter, never()).inappropriateUsage(any(), any());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class AppropriateUsageCheckerTest {
 
         appropriateUsageChecker.postcheck(beforeUsage);
 
-        verify(alerter, never()).inappropriateUsage(any());
+        verify(alerter, never()).inappropriateUsage(any(), any());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class AppropriateUsageCheckerTest {
 
         appropriateUsageChecker.postcheck(beforeUsage);
 
-        verify(alerter).inappropriateUsage(any());
+        verify(alerter).inappropriateUsage(any(), any());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class AppropriateUsageCheckerTest {
 
         appropriateUsageChecker.postcheck(beforeUsage);
 
-        verify(alerter).inappropriateUsage(any());
+        verify(alerter).inappropriateUsage(any(), any());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class AppropriateUsageCheckerTest {
 
         appropriateUsageChecker.postcheck(beforeUsage);
 
-        verify(alerter, never()).inappropriateUsage(any());
+        verify(alerter, never()).inappropriateUsage(any(), any());
     }
 
 }

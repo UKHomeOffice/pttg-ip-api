@@ -26,7 +26,7 @@ public class AlerterTest {
 
     @Test
     public void shouldSendIndividualVolumeCheckExceededEventWhenSuspect() throws Exception {
-        alerter.inappropriateUsage(new SuspectUsage(
+        alerter.inappropriateUsage(noSuspects(), new SuspectUsage(
             new IndividualVolumeUsage(ImmutableMap.of("andy", 11L)),
             new TimeOfRequestUsage(0),
             new MatchingFailureUsage(0)
@@ -35,9 +35,10 @@ public class AlerterTest {
         verify(sysdigEventService).sendUsersExceedUsageThresholdEvent(new IndividualVolumeUsage(ImmutableMap.of("andy", 11L)));
     }
 
+
     @Test
     public void shouldNotSendIndividualVolumeCheckExceededEventWhenNotSuspect() throws Exception {
-        alerter.inappropriateUsage(new SuspectUsage(
+        alerter.inappropriateUsage(noSuspects(), new SuspectUsage(
             new IndividualVolumeUsage(ImmutableMap.of()),
             new TimeOfRequestUsage(0),
             new MatchingFailureUsage(0)
@@ -48,7 +49,7 @@ public class AlerterTest {
 
     @Test
     public void shouldSendMatchingFailuresExceededEventWhenSuspect() throws Exception {
-        alerter.inappropriateUsage(new SuspectUsage(
+        alerter.inappropriateUsage(noSuspects(), new SuspectUsage(
             new IndividualVolumeUsage(ImmutableMap.of()),
             new TimeOfRequestUsage(0),
             new MatchingFailureUsage(4)
@@ -59,7 +60,7 @@ public class AlerterTest {
 
     @Test
     public void shouldNotSendMatchingFailuresExceededEventWhenNotSuspect() throws Exception {
-        alerter.inappropriateUsage(new SuspectUsage(
+        alerter.inappropriateUsage(noSuspects(), new SuspectUsage(
             new IndividualVolumeUsage(ImmutableMap.of()),
             new TimeOfRequestUsage(0),
             new MatchingFailureUsage(0)
@@ -70,7 +71,7 @@ public class AlerterTest {
 
     @Test
     public void shouldSendRequestsOutsideHoursEventWhenSuspect() throws Exception {
-        alerter.inappropriateUsage(new SuspectUsage(
+        alerter.inappropriateUsage(noSuspects(), new SuspectUsage(
             new IndividualVolumeUsage(ImmutableMap.of()),
             new TimeOfRequestUsage(4),
             new MatchingFailureUsage(0)
@@ -81,7 +82,7 @@ public class AlerterTest {
 
     @Test
     public void shouldNotSendRequestsOutsideHoursEventWhenNotSuspect() throws Exception {
-        alerter.inappropriateUsage(new SuspectUsage(
+        alerter.inappropriateUsage(noSuspects(), new SuspectUsage(
             new IndividualVolumeUsage(ImmutableMap.of()),
             new TimeOfRequestUsage(0),
             new MatchingFailureUsage(0)
@@ -92,7 +93,7 @@ public class AlerterTest {
 
     @Test
     public void shouldSendMultipleEventsWhenMultipleSuspectCategories() {
-        alerter.inappropriateUsage(new SuspectUsage(
+        alerter.inappropriateUsage(noSuspects(), new SuspectUsage(
             new IndividualVolumeUsage(ImmutableMap.of("andy", 11L)),
             new TimeOfRequestUsage(4),
             new MatchingFailureUsage(4)
@@ -101,6 +102,56 @@ public class AlerterTest {
         verify(sysdigEventService).sendUsersExceedUsageThresholdEvent(new IndividualVolumeUsage(ImmutableMap.of("andy", 11L)));
         verify(sysdigEventService).sendRequestsOutsideHoursEvent(new TimeOfRequestUsage(4));
         verify(sysdigEventService).sendMatchingFailuresExceedThresholdEvent(new MatchingFailureUsage(4));
+    }
+
+    @Test
+    public void shouldNotSendMultipleEventsWhenNoCategoriesAreWorse() {
+        alerter.inappropriateUsage(
+            new SuspectUsage(
+                new IndividualVolumeUsage(ImmutableMap.of("andy", 11L)),
+                new TimeOfRequestUsage(4),
+                new MatchingFailureUsage(4)
+            ),
+            new SuspectUsage(
+                new IndividualVolumeUsage(ImmutableMap.of("andy", 11L)),
+                new TimeOfRequestUsage(3),
+                new MatchingFailureUsage(3)
+            )
+        );
+
+        verify(sysdigEventService, never()).sendUsersExceedUsageThresholdEvent(any());
+        verify(sysdigEventService, never()).sendMatchingFailuresExceedThresholdEvent(any());
+        verify(sysdigEventService, never()).sendRequestsOutsideHoursEvent(any());
+    }
+
+    @Test
+    public void shouldSendMultipleEventsWhenMultipleSuspectCategoriesHaveGotWorse() {
+        alerter.inappropriateUsage(
+            new SuspectUsage(
+                new IndividualVolumeUsage(ImmutableMap.of("sarah", 11L)),
+                new TimeOfRequestUsage(3),
+                new MatchingFailureUsage(3)
+            ),
+            new SuspectUsage(
+                new IndividualVolumeUsage(ImmutableMap.of("andy", 11L)),
+                new TimeOfRequestUsage(4),
+                new MatchingFailureUsage(4)
+            )
+        );
+
+
+        verify(sysdigEventService).sendUsersExceedUsageThresholdEvent(new IndividualVolumeUsage(ImmutableMap.of("andy", 11L)));
+        verify(sysdigEventService).sendRequestsOutsideHoursEvent(new TimeOfRequestUsage(4));
+        verify(sysdigEventService).sendMatchingFailuresExceedThresholdEvent(new MatchingFailureUsage(4));
+    }
+
+
+    private SuspectUsage noSuspects() {
+        return new SuspectUsage(
+            new IndividualVolumeUsage(ImmutableMap.of()),
+            new TimeOfRequestUsage(0),
+            new MatchingFailureUsage(0)
+        );
     }
 
 }

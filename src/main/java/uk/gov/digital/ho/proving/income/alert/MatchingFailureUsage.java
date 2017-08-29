@@ -17,4 +17,8 @@ public class MatchingFailureUsage {
     public long getCountOfFailures() {
         return noMatchesCountForPeriod;
     }
+
+    public boolean isWorseThan(MatchingFailureUsage matchingFailureUsage) {
+        return noMatchesCountForPeriod > matchingFailureUsage.noMatchesCountForPeriod;
+    }
 }

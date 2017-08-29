@@ -17,4 +17,8 @@ public class TimeOfRequestUsage {
     public long getRequestCount() {
         return requestsOutsideWorkingDay;
     }
+
+    public boolean isWorseThan(TimeOfRequestUsage timeOfRequestUsage) {
+        return requestsOutsideWorkingDay > timeOfRequestUsage.requestsOutsideWorkingDay;
+    }
 }

@@ -19,4 +19,8 @@ public class IndividualVolumeUsage {
     public Map<String, Long> getCountsByUser() {
         return exceededVolumeByUser;
     }
+
+    public boolean isWorseThan(IndividualVolumeUsage individualVolumeUsage) {
+        return !this.equals(individualVolumeUsage);
+    }
 }

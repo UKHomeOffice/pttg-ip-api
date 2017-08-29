@@ -12,16 +12,19 @@ public class Alerter {
         this.sysdigEventService = sysdigEventService;
     }
 
-    public void inappropriateUsage(SuspectUsage suspectUsage) {
-        if (suspectUsage.getIndividualVolumeUsage().isSuspect()) {
+    public void inappropriateUsage(SuspectUsage previousUsage, SuspectUsage suspectUsage) {
+        if (suspectUsage.getIndividualVolumeUsage().isSuspect() &&
+            suspectUsage.getIndividualVolumeUsage().isWorseThan(previousUsage.getIndividualVolumeUsage())) {
             sysdigEventService.sendUsersExceedUsageThresholdEvent(suspectUsage.getIndividualVolumeUsage());
         }
 
-        if (suspectUsage.getMatchingFailureUsage().isSuspect()) {
+        if (suspectUsage.getMatchingFailureUsage().isSuspect() &&
+            suspectUsage.getMatchingFailureUsage().isWorseThan(previousUsage.getMatchingFailureUsage())) {
             sysdigEventService.sendMatchingFailuresExceedThresholdEvent(suspectUsage.getMatchingFailureUsage());
         }
 
-        if (suspectUsage.getTimeOfRequestUsage().isSuspect()) {
+        if (suspectUsage.getTimeOfRequestUsage().isSuspect() &&
+            suspectUsage.getTimeOfRequestUsage().isWorseThan(previousUsage.getTimeOfRequestUsage())) {
             sysdigEventService.sendRequestsOutsideHoursEvent(suspectUsage.getTimeOfRequestUsage());
         }
     }
