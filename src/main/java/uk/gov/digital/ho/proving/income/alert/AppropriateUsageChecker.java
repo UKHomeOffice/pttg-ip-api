@@ -27,7 +27,7 @@ public class AppropriateUsageChecker {
     public void postcheck(SuspectUsage suspectUsage) {
         SuspectUsage newSuspectUsage = check();
         if (newSuspectUsage.isSuspect() && !newSuspectUsage.equals(suspectUsage)) {
-            alerter.inappropriateUsage(newSuspectUsage);
+            alerter.inappropriateUsage(suspectUsage, newSuspectUsage);
         }
     }
 
