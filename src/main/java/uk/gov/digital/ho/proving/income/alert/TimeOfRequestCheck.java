@@ -7,6 +7,7 @@ import uk.gov.digital.ho.proving.income.audit.AuditEventType;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 @Component
 public class TimeOfRequestCheck {
@@ -40,18 +41,28 @@ public class TimeOfRequestCheck {
     }
 
     private int getEndHour() {
-        return LocalTime.parse(endTime).getHour();
+        return parseLondonTime(endTime).getHour();
     }
 
     private int getEndMinute() {
-        return LocalTime.parse(endTime).getMinute();
+        return parseLondonTime(endTime).getMinute();
     }
 
     private int getStartMinute() {
-        return LocalTime.parse(startTime).getMinute();
+        return parseLondonTime(startTime).getMinute();
     }
 
     private int getStartHour() {
-        return LocalTime.parse(startTime).getHour();
+        return parseLondonTime(startTime).getHour();
+    }
+
+    private LocalTime parseLondonTime(String time) {
+        // config is specified as a UK time e.g 07:00 is 07:00 UTC in winter and 06:00 UTC in summer
+        return LocalDate.
+            now().
+            atTime(LocalTime.parse(time)).
+            atZone(ZoneId.of("Europe/London")).
+            withZoneSameInstant(ZoneId.systemDefault()).
+            toLocalTime();
     }
 }
