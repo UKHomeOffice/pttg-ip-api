@@ -18,6 +18,7 @@ import uk.gov.digital.ho.proving.income.domain.hmrc.ServiceResponseLogger;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordServiceProductionResponseLogger;
 
 import java.text.SimpleDateFormat;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -91,4 +92,8 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
         return new IncomeRecordServiceProductionResponseLogger();
     }
 
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
+    }
 }
