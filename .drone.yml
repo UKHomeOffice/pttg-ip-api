@@ -53,7 +53,6 @@ pipeline:
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
     when:
-      branch: [master]
       event: [push, tag, deployment]
 
   deploy-to-dev-from-build-number:
