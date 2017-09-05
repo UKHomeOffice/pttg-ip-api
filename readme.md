@@ -49,10 +49,10 @@ file for details.
 
 
 
-[contributors]:                     https://github.com/UKHomeOffice/pttg-ip-hmrc/graphs/contributors
+[contributors]:                     https://github.com/UKHomeOffice/pttg-ip-api/graphs/contributors
 [pttg-ip-hmrc]:                     https://github.com/UKHomeOffice/pttg-ip-hmrc
 [pttg-ip-fm-ui]:                    https://github.com/UKHomeOffice/pttg-ip-fm-ui
-[Quay.io]:                          https://quay.io/repository/ukhomeofficedigital/pttg-ip-hmrc
+[Quay.io]:                          https://quay.io/repository/ukhomeofficedigital/pttg-ip-api
 [kubernetes configuration]:         https://github.com/UKHomeOffice/kube-pttg-ip-api
 [Drone yaml]:                       .drone.yml
 [tags on this repository]:          https://github.com/UKHomeOffice/pttg-ip-api/tags
