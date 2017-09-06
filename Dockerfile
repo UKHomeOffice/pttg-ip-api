@@ -1,19 +1,19 @@
-FROM quay.io/ukhomeofficedigital/openjdk8:v1.0.0
+FROM quay.io/ukhomeofficedigital/openjdk8:v1.8.0.131
 
-ENV MONGO_HOST localhost
-ENV MONGO_PORT 28017
-ENV HMRC_API_ENDPOINT localhost
 ENV USER pttg
 ENV GROUP pttg
 ENV NAME pttg-ip-api
 
 ENV JAR_PATH build/libs
-ARG VERSION
+
+RUN yum update -y glibc && \
+    yum update -y nss && \
+    yum update -y bind-license
 
 WORKDIR /app
 
 RUN groupadd -r ${GROUP} && \
-    useradd -r -g ${USER} ${GROUP} -d /app && \
+    useradd -r -g ${GROUP} ${USER} -d /app && \
     mkdir -p /app && \
     chown -R ${USER}:${GROUP} /app
 
