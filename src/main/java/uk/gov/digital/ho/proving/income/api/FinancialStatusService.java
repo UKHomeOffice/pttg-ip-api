@@ -49,7 +49,7 @@ public class FinancialStatusService {
     @PostMapping(value = "/incomeproving/v2/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
     public FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
 
-        log.info("Financial status check request received: {}", request);
+        log.info("Financial status check request received for {} - applicationRaisedDate = {}, dependents = {}", request.getNino(), request.getApplicationRaisedDate(), request.getDependants());
 
         UUID eventId = UUID.randomUUID();
 

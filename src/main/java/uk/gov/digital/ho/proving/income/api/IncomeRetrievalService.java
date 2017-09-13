@@ -91,7 +91,7 @@ public class IncomeRetrievalService {
                 collect(Collectors.toList())
         );
 
-        log.info("Income check result: {}", value("incomeCheckResponse", incomeRetrievalResponse));
+        log.info("Income check result for: {}", value("nino", incomeRetrievalResponse.getIndividual() != null ? incomeRetrievalResponse.getIndividual().getNino() : ""));
 
         auditService.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
 
@@ -101,7 +101,7 @@ public class IncomeRetrievalService {
     @PostMapping(value = "/incomeproving/v2/individual/income", produces = APPLICATION_JSON_VALUE)
     public IncomeRetrievalResponse getIncome(@Valid @RequestBody IncomeRetrievalRequest request) {
 
-        log.info("Income details request: {}", request);
+        log.info("Retrieve income details of nino {} between {} and {}", request.getNino(), request.getFromDate(), request.getToDate());
 
         UUID eventId = UUID.randomUUID();
 
@@ -142,7 +142,7 @@ public class IncomeRetrievalService {
                 collect(Collectors.toList())
         );
 
-        log.info("Income check result: {}", value("incomeCheckResponse", incomeRetrievalResponse));
+        log.info("Income check result for: {}", value("nino", incomeRetrievalResponse.getIndividual() != null ? incomeRetrievalResponse.getIndividual().getNino() : ""));
 
         auditService.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
 
