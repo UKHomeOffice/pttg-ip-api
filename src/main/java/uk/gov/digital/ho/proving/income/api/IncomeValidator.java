@@ -38,11 +38,14 @@ public class IncomeValidator {
         return employments.stream().map(employment -> employment.getEmployer().getName()).collect(Collectors.toList());
     }
 
-
     private static FinancialCheckValues financialCheckForMonthlySalaried(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate lower, LocalDate upper) {
+
         Stream<Income> individualIncome = filterIncomesByDates(incomes, lower, upper);
-        List<Income> lastXMonths = individualIncome.limit(numOfMonths).collect(Collectors.toList());
-        if (lastXMonths.size() >= numOfMonths) {
+        List<Income> lastXMonths = individualIncome.collect(Collectors.toList());
+
+        if (lastXMonths.size() > numOfMonths) {
+            return FinancialCheckValues.NON_CONSECUTIVE_MONTHS;
+        } else if (lastXMonths.size() == numOfMonths) {
 
             // Do we have NUMBER_OF_MONTHS consecutive months with the same employer
             for (int i = 0; i < numOfMonths - 1; i++) {
