@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.proving.income.api.test
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.junit.Ignore
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.FinancialCheckResult
 import uk.gov.digital.ho.proving.income.api.FinancialCheckValues
@@ -17,9 +16,105 @@ import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.*
 
 class MonthlyIncomeValidatorSpec extends Specification {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonthlyIncomeValidatorSpec.class);
-
     int days = 182
+
+    def "multiple monthly payments are not accepted when not contiguous monthly payments and insufficient number of records"() {
+
+        given:
+        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
+        List<Income> incomes = nonContiguousMonthlyPaymentsWithMultiplePaymentsPerMonthAndInsufficientQuantity(raisedDate)
+        LocalDate pastDate = raisedDate.minusMonths(6)
+
+        when:
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+
+        then:
+        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NOT_ENOUGH_RECORDS
+    }
+
+    def "multiple monthly payments are not accepted when not contiguous monthly payments"() {
+
+        given:
+        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
+        List<Income> incomes = nonContiguousMonthlyPaymentsWithMultiplePaymentsPerMonth(raisedDate)
+        LocalDate pastDate = raisedDate.minusMonths(6)
+
+        when:
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+
+        then:
+        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
+    }
+
+    def "multiple monthly payments are not accepted when contiguous monthly payments but insufficient range of months"() {
+
+        given:
+        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
+        List<Income> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsPerMonthAndInsufficientRangeOfMonths(raisedDate)
+        LocalDate pastDate = raisedDate.minusMonths(6)
+
+        when:
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+
+        then:
+        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
+    }
+
+    def "multiple monthly payments in earlist are not accepted when sufficient number of contiguous monthly payments"() {
+
+        given:
+        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
+        List<Income> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsInEarliestMonth(raisedDate)
+        LocalDate pastDate = raisedDate.minusMonths(6)
+
+        when:
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+
+        then:
+        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
+    }
+
+    def "multiple monthly payments in middle are not accepted when sufficient number of contiguous monthly payments"() {
+
+        given:
+        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
+        List<Income> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsInMiddleMonth(raisedDate)
+        LocalDate pastDate = raisedDate.minusMonths(6)
+
+        when:
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+
+        then:
+        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
+    }
+
+//    def "multiple monthly payments in oldest month are not accepted when sufficient number of contiguous monthly payments"() {
+//
+//        given:
+//        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
+//        List<Income> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsInOldestMonth(raisedDate)
+//        LocalDate pastDate = raisedDate.minusMonths(6)
+//
+//        when:
+//        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+//
+//        then:
+//        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
+//    }
+
+    def "unique monthly payments are accepted when sufficient number of contiguous monthly payments"() {
+
+        given:
+        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
+        List<Income> incomes = contiguousMonthlyPayments(raisedDate)
+        LocalDate pastDate = raisedDate.minusMonths(6)
+
+        when:
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+
+        then:
+        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
+    }
 
     def "valid category A individual is accepted"() {
 
@@ -133,7 +228,7 @@ class MonthlyIncomeValidatorSpec extends Specification {
         for (Income income : incomes) {
             employeRef.add(income.getEmployerPayeReference())
         }
-        return employeRef.stream().map({ref -> new Employments(new Employer(employerRefToName(ref), ref))}).collect();
+        return employeRef.stream().map({ref -> new Employments(new Employer(employerRefToName(ref), ref))}).collect()
     }
 
     String employerRefToName(ref) {

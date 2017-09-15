@@ -38,7 +38,6 @@ public class IncomeValidator {
         return employments.stream().map(employment -> employment.getEmployer().getName()).collect(Collectors.toList());
     }
 
-
     private static FinancialCheckValues financialCheckForMonthlySalaried(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate lower, LocalDate upper) {
         Stream<Income> individualIncome = filterIncomesByDates(incomes, lower, upper);
         List<Income> lastXMonths = individualIncome.limit(numOfMonths).collect(Collectors.toList());
