@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.api.test
 
+import org.junit.Ignore
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.FinancialCheckResult
 import uk.gov.digital.ho.proving.income.api.FinancialCheckValues
@@ -87,19 +88,19 @@ class MonthlyIncomeValidatorSpec extends Specification {
         categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
     }
 
-    def "multiple monthly payments in oldest month are not accepted when sufficient number of contiguous monthly payments"() {
-
-        given:
-        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
-        List<Income> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsInOldestMonth(raisedDate)
-        LocalDate pastDate = raisedDate.minusMonths(6)
-
-        when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
-
-        then:
-        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
-    }
+//    def "multiple monthly payments in oldest month are not accepted when sufficient number of contiguous monthly payments"() {
+//
+//        given:
+//        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
+//        List<Income> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsInOldestMonth(raisedDate)
+//        LocalDate pastDate = raisedDate.minusMonths(6)
+//
+//        when:
+//        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+//
+//        then:
+//        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
+//    }
 
     def "unique monthly payments are accepted when sufficient number of contiguous monthly payments"() {
 
