@@ -34,6 +34,8 @@ public class FinancialStatusServiceTest {
     private Income incomeE;
     private Income incomeF;
     private List<Employments> employments;
+    private List<Employments> employmentsWithDuplicates;
+    private List<Employments> multipleEmployments;
 
     private LocalDate middleOfCurrentMonth = LocalDate.now().withDayOfMonth(14);
 
@@ -78,6 +80,15 @@ public class FinancialStatusServiceTest {
 
         employments = new ArrayList<>();
         employments.add(new Employments(new Employer("any employer", ANY_EMPLOYER_PAYE_REF)));
+
+        multipleEmployments = new ArrayList<>();
+        multipleEmployments.add(new Employments(new Employer("any employer", ANY_EMPLOYER_PAYE_REF)));
+        multipleEmployments.add(new Employments(new Employer("another employer", ANY_EMPLOYER_PAYE_REF)));
+
+
+        employmentsWithDuplicates = new ArrayList<>();
+        employmentsWithDuplicates.add(new Employments(new Employer("any employer", ANY_EMPLOYER_PAYE_REF)));
+        employmentsWithDuplicates.add(new Employments(new Employer("any employer", ANY_EMPLOYER_PAYE_REF)));
     }
 
     @Test
@@ -134,5 +145,37 @@ public class FinancialStatusServiceTest {
                                                                         null);
 
         assertThat(response.getCategoryCheck().isPassed()).isTrue();
+    }
+
+    @Test
+    public void shouldFilterOutDuplicateEmployers() {
+
+        List<Income> incomes = new ArrayList<>();
+
+        IncomeRecord incomeRecord = new IncomeRecord(incomes, employmentsWithDuplicates);
+
+        FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
+            0,
+            LocalDate.now().minusMonths(6),
+            incomeRecord,
+            null);
+
+        assertThat(response.getCategoryCheck().getEmployers().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void duplicateEmployerFilterShouldAllowMultipleEmployersWithDifferentNames() {
+
+        List<Income> incomes = new ArrayList<>();
+
+        IncomeRecord incomeRecord = new IncomeRecord(incomes, multipleEmployments);
+
+        FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
+            0,
+            LocalDate.now().minusMonths(6),
+            incomeRecord,
+            null);
+
+        assertThat(response.getCategoryCheck().getEmployers().size()).isEqualTo(2);
     }
 }
