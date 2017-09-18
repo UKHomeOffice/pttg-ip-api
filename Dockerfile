@@ -1,7 +1,7 @@
 FROM quay.io/ukhomeofficedigital/openjdk8:v1.8.0.131
 
-ENV USER pttg_ip_api
-ENV GROUP pttg
+ENV USER user_pttg_ip_api
+ENV GROUP group_pttg_ip_api
 ENV NAME pttg-ip-api
 
 ENV JAR_PATH build/libs
