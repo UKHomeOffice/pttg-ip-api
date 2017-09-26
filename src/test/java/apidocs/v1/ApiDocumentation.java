@@ -137,7 +137,7 @@ public class ApiDocumentation {
                 .build();
 
         when(incomeRecordService.getIncomeRecord(any(Identity.class), any(LocalDate.class), any(LocalDate.class)))
-            .thenReturn(new IncomeRecord(someIncomes(), someEmployments()));
+            .thenReturn(new IncomeRecord(someIncomes(), someEmployments(), aIndividual()));
     }
 
 
@@ -304,5 +304,9 @@ public class ApiDocumentation {
 
             .when().get("/individual/{nino}/income", "QQ654321A")
             .then().assertThat().statusCode(is(200));
+    }
+
+    private Individual aIndividual() {
+        return new Individual("Joe", "Bloggs", "NE121212C", LocalDate.now());
     }
 }

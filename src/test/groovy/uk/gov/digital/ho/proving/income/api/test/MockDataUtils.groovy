@@ -344,6 +344,10 @@ class MockDataUtils {
 
     }
 
+    static def getHmrcIndividual() {
+        new uk.gov.digital.ho.proving.income.domain.hmrc.Individual("Markus", "Jonesy", 'AA123456A', LocalDate.now())
+    }
+
 
     static def getDate(int year, Month month, int day) {
         LocalDate localDate = LocalDate.of(year,month,day)

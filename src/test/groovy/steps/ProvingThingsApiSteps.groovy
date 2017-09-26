@@ -26,6 +26,7 @@ import uk.gov.digital.ho.proving.income.domain.hmrc.Employer
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments
 import uk.gov.digital.ho.proving.income.domain.hmrc.Income
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
+import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -274,7 +275,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
             collect().
             unique {e1, e2 -> e1.employer.payeReference <=> e2.employer.payeReference}
 
-        IncomeRecord incomeRecord = new IncomeRecord(income, employments)
+        IncomeRecord incomeRecord = new IncomeRecord(income, employments, new Individual("Joe", "Bloggs", "NE121212A", LocalDate.now()))
         String data = objectMapper.writeValueAsString(incomeRecord)
         stubFor(WireMock.get(urlMatching("/income.*")).
             willReturn(aResponse().

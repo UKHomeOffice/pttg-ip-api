@@ -50,7 +50,8 @@ public class IncomeRecordServiceTest {
         when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
             .thenReturn(new ResponseEntity<>(new IncomeRecord(
                 emptyList(),
-                emptyList()
+                emptyList(),
+                aIndividual()
             ), HttpStatus.OK));
 
         service.getIncomeRecord(
@@ -136,5 +137,10 @@ public class IncomeRecordServiceTest {
             LocalDate.of(2017, Month.JULY, 1)
         );
     }
+
+    private Individual aIndividual() {
+        return new Individual("Joe", "Bloggs", "NE121212C", LocalDate.now());
+    }
+
 
 }

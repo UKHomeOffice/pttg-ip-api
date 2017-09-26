@@ -79,7 +79,7 @@ public class IncomeRetrievalService {
 
 
         IncomeRetrievalResponse incomeRetrievalResponse = new IncomeRetrievalResponse(
-            new Individual("", forename, surname, sanitiseNino(nino)),
+            new Individual(forename, surname, sanitiseNino(nino)),
             incomeRecord.getIncome().
                 stream().
                 map(
@@ -130,7 +130,7 @@ public class IncomeRetrievalService {
 
 
         IncomeRetrievalResponse incomeRetrievalResponse = new IncomeRetrievalResponse(
-            new Individual("", request.getForename(), request.getSurname(), sanitiseNino(request.getNino())),
+            new Individual(request.getForename(), request.getSurname(), sanitiseNino(request.getNino())),
             incomeRecord.getIncome().
                 stream().
                 map(

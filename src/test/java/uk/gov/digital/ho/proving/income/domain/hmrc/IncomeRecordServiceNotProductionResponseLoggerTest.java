@@ -44,7 +44,7 @@ public class IncomeRecordServiceNotProductionResponseLoggerTest {
         ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(IncomeRecordServiceNotProductionResponseLogger.class);
         logger.addAppender(mockAppender);
 
-        stubIncomeRecord = new IncomeRecord(emptyList(), emptyList());
+        stubIncomeRecord = new IncomeRecord(emptyList(), emptyList(), aIndividual());
 
         stubIdentity = new Identity("some firstname",
                                         "some lastname",
@@ -98,4 +98,9 @@ public class IncomeRecordServiceNotProductionResponseLoggerTest {
         assertThat(logEntry.containsKey("incomeRecord"));
         assertThat(logEntry.get("incomeRecord")).isEqualTo(stubIncomeRecord);
     }
+
+    private Individual aIndividual() {
+        return new Individual("Joe", "Bloggs", "NE121212C", LocalDate.now());
+    }
+
 }

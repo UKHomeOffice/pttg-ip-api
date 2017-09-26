@@ -103,7 +103,7 @@ public class FinancialStatusServiceTest {
         incomeWithoutDuplicates.add(incomeE);
         incomeWithoutDuplicates.add(incomeF);
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, employments);
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, employments, aIndividual());
 
         FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
                                                                         0,
@@ -136,7 +136,7 @@ public class FinancialStatusServiceTest {
         incomeWithDuplicates.add(incomeF);
         incomeWithDuplicates.add(incomeF);
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomeWithDuplicates, employments);
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithDuplicates, employments, aIndividual());
 
         FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
                                                                         0,
@@ -152,7 +152,7 @@ public class FinancialStatusServiceTest {
 
         List<Income> incomes = new ArrayList<>();
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomes, employmentsWithDuplicates);
+        IncomeRecord incomeRecord = new IncomeRecord(incomes, employmentsWithDuplicates, aIndividual());
 
         FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
             0,
@@ -168,7 +168,7 @@ public class FinancialStatusServiceTest {
 
         List<Income> incomes = new ArrayList<>();
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomes, multipleEmployments);
+        IncomeRecord incomeRecord = new IncomeRecord(incomes, multipleEmployments, aIndividual());
 
         FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
             0,
@@ -178,4 +178,9 @@ public class FinancialStatusServiceTest {
 
         assertThat(response.getCategoryCheck().getEmployers().size()).isEqualTo(2);
     }
+
+    private Individual aIndividual() {
+        return new Individual("Joe", "Bloggs", "NE121212C", LocalDate.now());
+    }
+
 }

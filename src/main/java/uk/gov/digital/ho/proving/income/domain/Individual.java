@@ -6,8 +6,8 @@ public class Individual {
     private String surname;
     private String nino;
 
-    public Individual(String title, String forename, String surname, String nino) {
-        this.title = title;
+    public Individual(String forename, String surname, String nino) {
+        this.title = "";
         this.forename = forename;
         this.surname = surname;
         this.nino = nino;
