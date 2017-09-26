@@ -14,6 +14,7 @@ public class IncomeRecord {
 
     private List<Income> income;
     private List<Employments> employments;
+    private Individual individual;
 
     public List<Income> deDuplicatedIncome() {
 

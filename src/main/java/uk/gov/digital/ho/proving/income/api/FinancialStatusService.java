@@ -67,13 +67,23 @@ public class FinancialStatusService {
             startSearchDate,
             request.getApplicationRaisedDate());
 
-        FinancialStatusCheckResponse response = calculateResponse(request.getApplicationRaisedDate(), request.getDependants(), startSearchDate, incomeRecord, new Individual("", request.getForename(), request.getSurname(), sanitisedNino));
+        Individual individual = individualFromRequestAndRecord(request, incomeRecord.getIndividual(), sanitisedNino);
+
+        FinancialStatusCheckResponse response = calculateResponse(request.getApplicationRaisedDate(), request.getDependants(), startSearchDate, incomeRecord, individual);
 
         log.info("Financial status check result for {}", value("nino", request.getNino()));
 
         auditService.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
 
         return response;
+    }
+
+    private Individual individualFromRequestAndRecord(FinancialStatusRequest request, uk.gov.digital.ho.proving.income.domain.hmrc.Individual individual, String nino) {
+        if (individual != null) {
+            return new Individual(individual.getFirstName(), individual.getLastName(), nino);
+        }
+        // for service backward compatibility echo back request if hmrc service returns no individual
+        return new Individual(request.getForename(), request.getSurname(), nino);
     }
 
     private FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {

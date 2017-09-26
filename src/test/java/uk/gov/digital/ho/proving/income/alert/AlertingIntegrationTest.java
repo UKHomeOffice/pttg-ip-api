@@ -61,7 +61,7 @@ public class AlertingIntegrationTest {
 
     @Before
     public void setup() {
-        when(mockIncomRecordService.getIncomeRecord(any(), any(), any())).thenReturn(new IncomeRecord(Collections.emptyList(), Collections.emptyList()));
+        when(mockIncomRecordService.getIncomeRecord(any(), any(), any())).thenReturn(new IncomeRecord(Collections.emptyList(), Collections.emptyList(), null));
         stubFor(post(urlPathMatching("/api/events"))
             .willReturn(aResponse()
                 .withStatus(200)));

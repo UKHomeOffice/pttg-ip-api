@@ -8,6 +8,9 @@ import uk.gov.digital.ho.proving.income.api.IncomeRetrievalService
 import uk.gov.digital.ho.proving.income.audit.AuditService
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
+import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
+
+import java.time.LocalDate
 
 import static java.time.LocalDate.now
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
@@ -143,7 +146,7 @@ class IncomeServiceSpec extends Specification {
         def frequency = "M1"
         def individual = getIndividual()
 
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), new Individual("Markus", "Jonesy", nino, LocalDate.now()))
 
 
         String requestType
@@ -185,7 +188,7 @@ class IncomeServiceSpec extends Specification {
         responseEvent['response'].individual.title == ""
         responseEvent['response'].individual.forename == "Mark"
         responseEvent['response'].individual.surname == "Jones"
-        responseEvent['response'].individual.forename == "Mark"
+        responseEvent['response'].individual.forename == "Mark" // uses request parameters not hmrc data
         responseEvent['response'].incomes.size == 0
         responseEvent['response'].total == "0"
     }

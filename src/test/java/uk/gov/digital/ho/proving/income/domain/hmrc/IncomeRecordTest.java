@@ -31,7 +31,7 @@ public class IncomeRecordTest {
         incomeWithoutDuplicates.add(a);
         incomeWithoutDuplicates.add(b);
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, null);
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, null, null);
 
         List<Income> deDuplicated = incomeRecord.deDuplicatedIncome();
 
@@ -48,7 +48,7 @@ public class IncomeRecordTest {
         incomeWithoutDuplicates.add(b);
         incomeWithoutDuplicates.add(b);
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, null);
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, null, null);
 
         List<Income> deDuplicated = incomeRecord.deDuplicatedIncome();
 

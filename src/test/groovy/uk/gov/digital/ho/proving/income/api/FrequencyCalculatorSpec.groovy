@@ -167,7 +167,8 @@ class FrequencyCalculatorSpec extends Specification {
 
         def incomeRecord = new IncomeRecord(
             Arrays.asList(monthlyPayment, weeklyPayment),
-            emptyList())
+            emptyList(),
+            null)
 
 
         when:
@@ -328,13 +329,15 @@ class FrequencyCalculatorSpec extends Specification {
     def incomeRecordForDate(dates) {
         new IncomeRecord(
             dates.stream().map({ date -> new Income(BigDecimal.ONE, date, null, null, "ref")}).collect(),
-            emptyList())
+            emptyList(),
+            null)
     }
 
     def incomeRecordForDateWithMonthPayNumber(dates) {
         new IncomeRecord(
             dates.stream().map({ date -> new Income(BigDecimal.ONE, date, mapMonthToNumber(date), null, "ref")}).collect(),
-            emptyList())
+            emptyList(),
+            null)
     }
 
     def mapMonthToNumber(LocalDate date) {
@@ -348,7 +351,8 @@ class FrequencyCalculatorSpec extends Specification {
     def incomeRecordForRandomisedDateWithWeekPayNumber(dates) {
         new IncomeRecord(
             dates.stream().map({ date -> new Income(BigDecimal.ONE, date.plusDays(randomBetween(-7, 7)), null, mapWeekToNumber(date), "ref")}).collect(),
-            emptyList())
+            emptyList(),
+            null)
     }
 
     def mapWeekToNumber(LocalDate date) {
