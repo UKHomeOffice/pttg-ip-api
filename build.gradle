@@ -47,7 +47,7 @@ apply plugin: 'net.serenity-bdd.aggregator'
 apply plugin: 'net.linguica.maven-settings'
 apply plugin: 'org.owasp.dependencycheck'
 apply plugin: 'application'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.asciidoctor.convert'
 

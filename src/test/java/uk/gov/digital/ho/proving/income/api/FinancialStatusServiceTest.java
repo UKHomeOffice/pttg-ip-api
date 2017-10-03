@@ -38,47 +38,13 @@ public class FinancialStatusServiceTest {
     @Before
     public void setup() {
 
-        Income incomeA = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(6),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
-
-        Income incomeB = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(5),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
-
-        Income incomeC = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(4),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
-
-        Income incomeD = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(3),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
-
-        Income incomeE = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(2),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
-
-        Income incomeF = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(1),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
-
-        Income incomeG = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(0),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
+        Income incomeA = incomeFromMonthsAgo(6);
+        Income incomeB = incomeFromMonthsAgo(5);
+        Income incomeC = incomeFromMonthsAgo(4);
+        Income incomeD = incomeFromMonthsAgo(3);
+        Income incomeE = incomeFromMonthsAgo(2);
+        Income incomeF = incomeFromMonthsAgo(1);
+        Income incomeG = incomeFromMonthsAgo(0);
 
         incomeWithoutDuplicates = new ArrayList<>();
 
@@ -121,6 +87,14 @@ public class FinancialStatusServiceTest {
         employmentsWithDuplicates = new ArrayList<>();
         employmentsWithDuplicates.add(new Employments(new Employer("any employer", ANY_EMPLOYER_PAYE_REF)));
         employmentsWithDuplicates.add(new Employments(new Employer("any employer", ANY_EMPLOYER_PAYE_REF)));
+    }
+
+    private Income incomeFromMonthsAgo(int offset) {
+        return new Income(new BigDecimal("1600"),
+            middleOfCurrentMonth.minusMonths(offset),
+            1,
+            null,
+            ANY_EMPLOYER_PAYE_REF);
     }
 
     @Test
