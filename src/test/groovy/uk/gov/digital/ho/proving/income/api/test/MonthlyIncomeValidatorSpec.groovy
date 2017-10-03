@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.proving.income.api.test
 
-import org.junit.Ignore
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.FinancialCheckResult
 import uk.gov.digital.ho.proving.income.api.FinancialCheckValues

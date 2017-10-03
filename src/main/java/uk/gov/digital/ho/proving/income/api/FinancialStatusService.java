@@ -122,7 +122,13 @@ public class FinancialStatusService {
     }
 
     FinancialStatusCheckResponse monthlyCheck(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
-        FinancialCheckResult categoryAMonthlySalaried = IncomeValidator.validateCategoryAMonthlySalaried(incomeRecord.deDuplicatedIncome(), startSearchDate, applicationRaisedDate, dependants, incomeRecord.getEmployments());
+
+        FinancialCheckResult categoryAMonthlySalaried = IncomeValidator.validateCategoryAMonthlySalaried(incomeRecord.deDuplicatedIncome(),
+            startSearchDate,
+            applicationRaisedDate,
+            dependants,
+            incomeRecord.getEmployments());
+
         if (categoryAMonthlySalaried.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)) {
             return new FinancialStatusCheckResponse(
                 successResponse(),
