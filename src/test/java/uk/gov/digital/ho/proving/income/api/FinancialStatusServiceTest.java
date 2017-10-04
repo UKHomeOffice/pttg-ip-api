@@ -27,56 +27,54 @@ public class FinancialStatusServiceTest {
     @InjectMocks
     private FinancialStatusService service;
 
-    private Income incomeA;
-    private Income incomeB;
-    private Income incomeC;
-    private Income incomeD;
-    private Income incomeE;
-    private Income incomeF;
     private List<Employments> employments;
     private List<Employments> employmentsWithDuplicates;
     private List<Employments> multipleEmployments;
+    private List<Income> incomeWithoutDuplicates;
+    private List<Income> incomeWithDuplicates;
 
     private LocalDate middleOfCurrentMonth = LocalDate.now().withDayOfMonth(14);
 
     @Before
     public void setup() {
 
-        incomeA = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(5),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
+        Income incomeA = incomeFromMonthsAgo(6);
+        Income incomeB = incomeFromMonthsAgo(5);
+        Income incomeC = incomeFromMonthsAgo(4);
+        Income incomeD = incomeFromMonthsAgo(3);
+        Income incomeE = incomeFromMonthsAgo(2);
+        Income incomeF = incomeFromMonthsAgo(1);
+        Income incomeG = incomeFromMonthsAgo(0);
 
-        incomeB = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(4),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
+        incomeWithoutDuplicates = new ArrayList<>();
 
-        incomeC = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(3),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
+        incomeWithoutDuplicates.add(incomeA);
+        incomeWithoutDuplicates.add(incomeB);
+        incomeWithoutDuplicates.add(incomeC);
+        incomeWithoutDuplicates.add(incomeD);
+        incomeWithoutDuplicates.add(incomeE);
+        incomeWithoutDuplicates.add(incomeF);
+        incomeWithoutDuplicates.add(incomeG);
 
-        incomeD = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(2),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
+        incomeWithDuplicates = new ArrayList<>();
 
-        incomeE = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(1),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
-
-        incomeF = new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(0),
-            1,
-            null,
-            ANY_EMPLOYER_PAYE_REF);
+        incomeWithDuplicates.add(incomeA);
+        incomeWithDuplicates.add(incomeB);
+        incomeWithDuplicates.add(incomeB);
+        incomeWithDuplicates.add(incomeB);
+        incomeWithDuplicates.add(incomeC);
+        incomeWithDuplicates.add(incomeC);
+        incomeWithDuplicates.add(incomeD);
+        incomeWithDuplicates.add(incomeD);
+        incomeWithDuplicates.add(incomeD);
+        incomeWithDuplicates.add(incomeE);
+        incomeWithDuplicates.add(incomeE);
+        incomeWithDuplicates.add(incomeF);
+        incomeWithDuplicates.add(incomeF);
+        incomeWithDuplicates.add(incomeF);
+        incomeWithDuplicates.add(incomeG);
+        incomeWithDuplicates.add(incomeG);
+        incomeWithDuplicates.add(incomeG);
 
         employments = new ArrayList<>();
         employments.add(new Employments(new Employer("any employer", ANY_EMPLOYER_PAYE_REF)));
@@ -91,50 +89,64 @@ public class FinancialStatusServiceTest {
         employmentsWithDuplicates.add(new Employments(new Employer("any employer", ANY_EMPLOYER_PAYE_REF)));
     }
 
+    private Income incomeFromMonthsAgo(int offset) {
+        return new Income(new BigDecimal("1600"),
+            middleOfCurrentMonth.minusMonths(offset),
+            1,
+            null,
+            ANY_EMPLOYER_PAYE_REF);
+    }
+
     @Test
-    public void shouldPassWhenValidWithoutDuplicates() {
-
-        List<Income> incomeWithoutDuplicates = new ArrayList<>();
-
-        incomeWithoutDuplicates.add(incomeA);
-        incomeWithoutDuplicates.add(incomeB);
-        incomeWithoutDuplicates.add(incomeC);
-        incomeWithoutDuplicates.add(incomeD);
-        incomeWithoutDuplicates.add(incomeE);
-        incomeWithoutDuplicates.add(incomeF);
+    public void shouldPassWhenValidWithoutDuplicatesAndDayInMonthOfPaymentEqualToCurrentDayOfMonth() {
 
         IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, employments, aIndividual());
 
-        FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
-                                                                        0,
-                                                                        LocalDate.now().minusMonths(6),
-                                                                        incomeRecord,
-                                                                        null);
+        LocalDate applicationRaisedDate = this.middleOfCurrentMonth;
+
+        FinancialStatusCheckResponse response = service.monthlyCheck(applicationRaisedDate,
+            0,
+            applicationRaisedDate.minusMonths(6),
+            incomeRecord,
+            null);
+
+        assertThat(response.getCategoryCheck().isPassed()).isTrue();
+    }
+
+    @Test
+    public void shouldPassWhenValidWithoutDuplicatesAndDayInMonthOfPaymentBeforeCurrentDayOfMonth() {
+
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, employments, aIndividual());
+
+        LocalDate applicationRaisedDate = middleOfCurrentMonth.plusDays(1);
+
+        FinancialStatusCheckResponse response = service.monthlyCheck(applicationRaisedDate,
+            0,
+            applicationRaisedDate.minusMonths(6),
+            incomeRecord,
+            null);
+
+        assertThat(response.getCategoryCheck().isPassed()).isTrue();
+    }
+
+    @Test
+    public void shouldPassWhenValidWithoutDuplicatesAndDayInMonthOfPaymentAfterCurrentDayOfMonth() {
+
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, employments, aIndividual());
+
+        LocalDate applicationRaisedDate = middleOfCurrentMonth.minusDays(1);
+
+        FinancialStatusCheckResponse response = service.monthlyCheck(applicationRaisedDate,
+            0,
+            applicationRaisedDate.minusMonths(6),
+            incomeRecord,
+            null);
 
         assertThat(response.getCategoryCheck().isPassed()).isTrue();
     }
 
     @Test
     public void shouldPassWhenValidWithDuplicates() {
-
-        List<Income> incomeWithDuplicates = new ArrayList<>();
-
-        incomeWithDuplicates.add(incomeA);
-        incomeWithDuplicates.add(incomeA);
-        incomeWithDuplicates.add(incomeA);
-        incomeWithDuplicates.add(incomeB);
-        incomeWithDuplicates.add(incomeB);
-        incomeWithDuplicates.add(incomeC);
-        incomeWithDuplicates.add(incomeC);
-        incomeWithDuplicates.add(incomeC);
-        incomeWithDuplicates.add(incomeD);
-        incomeWithDuplicates.add(incomeD);
-        incomeWithDuplicates.add(incomeE);
-        incomeWithDuplicates.add(incomeE);
-        incomeWithDuplicates.add(incomeE);
-        incomeWithDuplicates.add(incomeF);
-        incomeWithDuplicates.add(incomeF);
-        incomeWithDuplicates.add(incomeF);
 
         IncomeRecord incomeRecord = new IncomeRecord(incomeWithDuplicates, employments, aIndividual());
 
