@@ -24,6 +24,7 @@ public class RequestData implements HandlerInterceptor {
 
     @Value("${auditing.deployment.name}") private String deploymentName;
     @Value("${auditing.deployment.namespace}") private String deploymentNamespace;
+    @Value("${hmrc.service.auth}") private String hmrcBasicAuth;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -69,6 +70,8 @@ public class RequestData implements HandlerInterceptor {
     public String deploymentNamespace() {
         return deploymentNamespace;
     }
+
+    public String hmrcBasicAuth() { return String.format("Basic %s", hmrcBasicAuth); }
 
     public String sessionId() {
         return MDC.get(SESSION_ID_HEADER);

@@ -13,6 +13,7 @@ import uk.gov.digital.ho.proving.income.api.RequestData;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.api.RequestData.*;
@@ -78,11 +79,15 @@ public class IncomeRecordService {
     }
 
     private HttpHeaders generateRestHeaders() {
+
         HttpHeaders headers = new HttpHeaders();
+
         headers.add(CONTENT_TYPE, APPLICATION_JSON_VALUE);
         headers.add(SESSION_ID_HEADER, requestData.sessionId());
         headers.add(CORRELATION_ID_HEADER, requestData.correlationId());
         headers.add(USER_ID_HEADER, requestData.userId());
+        headers.add(AUTHORIZATION, requestData.hmrcBasicAuth());
+
         return headers;
     }
 
