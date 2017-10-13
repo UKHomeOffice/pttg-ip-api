@@ -4,8 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Base64;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RequestDataTest {
@@ -20,11 +18,7 @@ public class RequestDataTest {
 
     @Test
     public void shouldProduceBasicAuthHeaderValue() {
-        assertThat(requestData.hmrcBasicAuth()).isEqualTo("Basic " + encode("user:password"));
-    }
-
-    private String encode(String target) {
-        return Base64.getEncoder().encodeToString(target.getBytes());
+        assertThat(requestData.hmrcBasicAuth()).isEqualTo("Basic dXNlcjpwYXNzd29yZA==");
     }
 
 }
