@@ -10,6 +10,7 @@ import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Base64;
 import java.util.UUID;
 
 /**
@@ -71,7 +72,7 @@ public class RequestData implements HandlerInterceptor {
         return deploymentNamespace;
     }
 
-    public String hmrcBasicAuth() { return String.format("Basic %s", hmrcBasicAuth); }
+    public String hmrcBasicAuth() { return String.format("Basic %s", Base64.getEncoder().encodeToString(hmrcBasicAuth.getBytes())); }
 
     public String sessionId() {
         return MDC.get(SESSION_ID_HEADER);
