@@ -6,8 +6,8 @@ import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.IncomeRetrievalService
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
+import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
-import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
 import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
 
 import java.time.LocalDate
@@ -31,7 +31,7 @@ class IncomeServiceSpec extends Specification {
     String today = now().format(ISO_LOCAL_DATE);
     String tomorrow = now().plusDays(1).format(ISO_LOCAL_DATE);
 
-    def mockIncomeRecordService = Mock(IncomeRecordService)
+    def mockIncomeRecordService = Mock(HmrcClient)
     def mockAuditClient = Mock(AuditClient)
 
     def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditClient)

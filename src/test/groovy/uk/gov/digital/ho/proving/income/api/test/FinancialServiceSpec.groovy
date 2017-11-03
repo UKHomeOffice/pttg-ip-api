@@ -8,8 +8,8 @@ import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
+import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
-import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
 import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
 
 import java.time.LocalDate
@@ -27,7 +27,7 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 class FinancialServiceSpec extends Specification {
 
 
-    def mockIncomeRecordService = Mock(IncomeRecordService)
+    def mockIncomeRecordService = Mock(HmrcClient)
     def mockAuditClient = Mock(AuditClient)
 
     def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient)

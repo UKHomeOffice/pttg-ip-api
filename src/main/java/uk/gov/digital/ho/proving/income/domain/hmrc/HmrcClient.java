@@ -25,17 +25,17 @@ import static uk.gov.digital.ho.proving.income.api.RequestData.*;
 
 @Service
 @Slf4j
-public class IncomeRecordService {
+public class HmrcClient {
 
     private final RestTemplate restTemplate;
     private final String hmrcServiceEndpoint;
     private final RequestData requestData;
     private final ServiceResponseLogger serviceResponseLogger;
 
-    public IncomeRecordService(RestTemplate restTemplate,
-                               @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
-                               RequestData requestData,
-                               ServiceResponseLogger serviceResponseLogger) {
+    public HmrcClient(RestTemplate restTemplate,
+                      @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
+                      RequestData requestData,
+                      ServiceResponseLogger serviceResponseLogger) {
         this.restTemplate = restTemplate;
         this.hmrcServiceEndpoint = hmrcServiceEndpoint;
         this.requestData = requestData;
@@ -86,19 +86,19 @@ public class IncomeRecordService {
 
     @Recover
     IncomeRecord getIncomeRecordFailureRecovery(HttpServerErrorException e) {
-        log.error("Failed to retrieve HMRC data after retries", e.getMessage());
+        log.error("Failed to retrieve HMRC data after retries - {}", e.getMessage());
         throw(e);
     }
 
     @Recover
     IncomeRecord getIncomeRecordFailureRecovery(HttpClientErrorException e) {
-        log.error("Failed to retrieve HMRC data (no retries attempted)", e.getMessage());
+        log.error("Failed to retrieve HMRC data (no retries attempted) - {}", e.getMessage());
         throw(e);
     }
 
     @Recover
     IncomeRecord getIncomeRecordFailureRecovery(EarningsServiceNoUniqueMatch e) {
-        log.error("Failed to retrieve HMRC data (no retries attempted)", e.getMessage());
+        log.error("Failed to retrieve HMRC data (no retries attempted) - {}", e.getMessage());
         throw(e);
     }
 

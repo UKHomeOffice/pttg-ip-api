@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.domain.Individual;
+import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Identity;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
-import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
@@ -33,7 +33,7 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 @Slf4j
 public class FinancialStatusService {
 
-    private final IncomeRecordService incomeRecordService;
+    private final HmrcClient hmrcClient;
     private final AuditClient auditClient;
 
     private static final int MINIMUM_DEPENDANTS = 0;
@@ -41,8 +41,8 @@ public class FinancialStatusService {
 
     private static final int NUMBER_OF_DAYS = 182;
 
-    public FinancialStatusService(IncomeRecordService incomeRecordService, AuditClient auditClient) {
-        this.incomeRecordService = incomeRecordService;
+    public FinancialStatusService(HmrcClient hmrcClient, AuditClient auditClient) {
+        this.hmrcClient = hmrcClient;
         this.auditClient = auditClient;
     }
 
@@ -64,7 +64,7 @@ public class FinancialStatusService {
 
         LocalDate startSearchDate = request.getApplicationRaisedDate().minusDays(NUMBER_OF_DAYS);
 
-        IncomeRecord incomeRecord = incomeRecordService.getIncomeRecord(
+        IncomeRecord incomeRecord = hmrcClient.getIncomeRecord(
             new Identity(request.getForename(), request.getSurname(), request.getDateOfBirth(), sanitisedNino),
             startSearchDate,
             request.getApplicationRaisedDate());

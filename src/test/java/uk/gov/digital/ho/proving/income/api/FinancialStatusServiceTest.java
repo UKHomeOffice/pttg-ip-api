@@ -20,7 +20,7 @@ public class FinancialStatusServiceTest {
 
     private static final String ANY_EMPLOYER_PAYE_REF = "any employer PAYE ref";
 
-    @Mock private IncomeRecordService mockIncomeRecordService;
+    @Mock private HmrcClient mockHmrcClient;
     @Mock private AuditClient mockAuditClient;
 
     private FinancialStatusService service;
@@ -36,7 +36,7 @@ public class FinancialStatusServiceTest {
     @Before
     public void setup() {
 
-        service = new FinancialStatusService(mockIncomeRecordService, mockAuditClient);
+        service = new FinancialStatusService(mockHmrcClient, mockAuditClient);
 
         Income incomeA = incomeFromMonthsAgo(6);
         Income incomeB = incomeFromMonthsAgo(5);

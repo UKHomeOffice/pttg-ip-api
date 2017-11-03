@@ -60,7 +60,7 @@ public class ApiDocumentation {
     private int port;
 
     @MockBean
-    private IncomeRecordService incomeRecordService;
+    private HmrcClient hmrcClient;
     private RequestSpecification documentationSpec;
 
     private RequestSpecification requestSpec;
@@ -136,7 +136,7 @@ public class ApiDocumentation {
                 .addFilter(document)
                 .build();
 
-        when(incomeRecordService.getIncomeRecord(any(Identity.class), any(LocalDate.class), any(LocalDate.class)))
+        when(hmrcClient.getIncomeRecord(any(Identity.class), any(LocalDate.class), any(LocalDate.class)))
             .thenReturn(new IncomeRecord(someIncomes(), someEmployments(), aIndividual()));
     }
 

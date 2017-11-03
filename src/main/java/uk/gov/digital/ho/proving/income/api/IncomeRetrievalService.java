@@ -7,9 +7,9 @@ import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.domain.Income;
 import uk.gov.digital.ho.proving.income.domain.Individual;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments;
+import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Identity;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
-import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -32,11 +32,11 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 @Slf4j
 public class IncomeRetrievalService {
 
-    private final IncomeRecordService incomeRecordService;
+    private final HmrcClient hmrcClient;
     private final AuditClient auditClient;
 
-    public IncomeRetrievalService(IncomeRecordService incomeRecordService, AuditClient auditClient) {
-        this.incomeRecordService = incomeRecordService;
+    public IncomeRetrievalService(HmrcClient hmrcClient, AuditClient auditClient) {
+        this.hmrcClient = hmrcClient;
         this.auditClient = auditClient;
     }
 
@@ -72,7 +72,7 @@ public class IncomeRetrievalService {
             throw new IllegalArgumentException("Error: toDate");
         }
 
-        IncomeRecord incomeRecord = incomeRecordService.getIncomeRecord(
+        IncomeRecord incomeRecord = hmrcClient.getIncomeRecord(
             new Identity(forename, surname, dateOfBirth, sanitiseNino(nino)),
             fromDate,
             toDate);
@@ -123,7 +123,7 @@ public class IncomeRetrievalService {
             throw new IllegalArgumentException("Error: toDate");
         }
 
-        IncomeRecord incomeRecord = incomeRecordService.getIncomeRecord(
+        IncomeRecord incomeRecord = hmrcClient.getIncomeRecord(
             new Identity(request.getForename(), request.getSurname(), request.getDateOfBirth(), sanitiseNino(request.getNino())),
             request.getFromDate(),
             request.getToDate());
