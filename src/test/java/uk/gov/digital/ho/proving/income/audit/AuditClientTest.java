@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -32,9 +33,11 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 public class AuditClientTest {
 
     private static TimeZone defaultTimeZone;
+    private static ObjectMapper mapper = new ObjectMapper();
 
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
+
     @Captor private ArgumentCaptor<HttpEntity> captorHttpEntity;
 
     private AuditClient auditClient;
@@ -55,7 +58,8 @@ public class AuditClientTest {
         auditClient = new AuditClient(Clock.fixed(Instant.parse("2017-08-29T08:00:00Z"), ZoneId.of("UTC")),
                                         mockRestTemplate,
                                         mockRequestData,
-                                        "some endpoint");
+                                        "some endpoint",
+                                        mapper);
     }
 
     @Test
@@ -100,6 +104,6 @@ public class AuditClientTest {
         assertThat(auditableData.getDeploymentName()).isEqualTo("some deployment name");
         assertThat(auditableData.getDeploymentNamespace()).isEqualTo("some deployment namespace");
         assertThat(auditableData.getEventType()).isEqualTo(INCOME_PROVING_FINANCIAL_STATUS_REQUEST);
-        assertThat(auditableData.getData().size()).isEqualTo(0);
+        assertThat(auditableData.getData()).isEqualTo("{}");
     }
 }

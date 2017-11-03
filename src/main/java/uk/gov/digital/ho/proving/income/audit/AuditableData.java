@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @AllArgsConstructor
 @Getter
@@ -36,5 +35,5 @@ class AuditableData {
     private AuditEventType eventType;
 
     @JsonProperty(value="data", required=true)
-    private Map<String, Object> data;
+    private String data;
 }

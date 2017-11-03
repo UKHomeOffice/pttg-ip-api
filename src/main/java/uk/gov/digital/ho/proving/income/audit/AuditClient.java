@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.proving.income.audit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -30,15 +31,17 @@ public class AuditClient {
     private final RestTemplate restTemplate;
     private final String auditEndpoint;
     private final RequestData requestData;
+    private final ObjectMapper mapper;
 
     public AuditClient(Clock clock,
                        RestTemplate restTemplate,
                        RequestData requestData,
-                       @Value("${pttg.audit.endpoint}") String auditEndpoint) {
+                       @Value("${pttg.audit.endpoint}") String auditEndpoint, ObjectMapper mapper) {
         this.clock = clock;
         this.restTemplate = restTemplate;
         this.requestData = requestData;
         this.auditEndpoint = auditEndpoint;
+        this.mapper = mapper;
     }
 
     public void add(AuditEventType eventType, UUID eventId, Map<String, Object> auditDetail) {
@@ -76,7 +79,7 @@ public class AuditClient {
                                     requestData.deploymentName(),
                                     requestData.deploymentNamespace(),
                                     eventType,
-                                    auditDetail);
+                                    mapper.writeValueAsString(auditDetail));
     }
 
     private HttpEntity<AuditableData> toEntity(AuditableData auditableData) {
