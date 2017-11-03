@@ -3,9 +3,9 @@ package uk.gov.digital.ho.proving.income.api.test
 import groovy.json.JsonSlurper
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
-import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.api.IncomeRetrievalService
-import uk.gov.digital.ho.proving.income.audit.AuditService
+import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
+import uk.gov.digital.ho.proving.income.audit.AuditClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
 import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
@@ -32,11 +32,11 @@ class IncomeServiceSpec extends Specification {
     String tomorrow = now().plusDays(1).format(ISO_LOCAL_DATE);
 
     def mockIncomeRecordService = Mock(IncomeRecordService)
-    def mockAuditRepository = Mock(AuditService)
+    def mockAuditClient = Mock(AuditClient)
 
-    def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditRepository)
+    def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditClient)
 
-    MockMvc mockMvc = standaloneSetup(controller).setControllerAdvice(new ApiExceptionHandler(mockAuditRepository)).build()
+    MockMvc mockMvc = standaloneSetup(controller).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient)).build()
 
 
     def "invalid from date is rejected"() {
@@ -157,8 +157,8 @@ class IncomeServiceSpec extends Specification {
         String responseEventId
         Map<String, Object> responseEvent
 
-        1 * mockAuditRepository.add(INCOME_PROVING_INCOME_CHECK_REQUEST, _, _) >> { args -> requestType = args[0]; requestEventId = args[1]; requestEvent = args[2]}
-        1 * mockAuditRepository.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, _, _) >> { args -> responseType = args[0]; responseEventId = args[1]; responseEvent = args[2]}
+        1 * mockAuditClient.add(INCOME_PROVING_INCOME_CHECK_REQUEST, _, _) >> { args -> requestType = args[0]; requestEventId = args[1]; requestEvent = args[2]}
+        1 * mockAuditClient.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, _, _) >> { args -> responseType = args[0]; responseEventId = args[1]; responseEvent = args[2]}
 
         when:
         mockMvc.perform(

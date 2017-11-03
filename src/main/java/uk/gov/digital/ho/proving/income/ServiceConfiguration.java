@@ -10,12 +10,13 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.*;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordServiceNotProductionResponseLogger;
-import uk.gov.digital.ho.proving.income.domain.hmrc.ServiceResponseLogger;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordServiceProductionResponseLogger;
+import uk.gov.digital.ho.proving.income.domain.hmrc.ServiceResponseLogger;
 
 import java.text.SimpleDateFormat;
 import java.time.Clock;
@@ -24,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 
 @EnableWebMvc
 @Configuration
+@EnableRetry
 public class ServiceConfiguration extends WebMvcConfigurerAdapter {
 
     @Value("${apidocs.dir}") private String apiDocsDir;

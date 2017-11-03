@@ -4,10 +4,10 @@ import groovy.json.JsonSlurper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
-import uk.gov.digital.ho.proving.income.ApiExceptionHandler
 import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
-import uk.gov.digital.ho.proving.income.audit.AuditService
+import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
+import uk.gov.digital.ho.proving.income.audit.AuditClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordService
 import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
@@ -20,9 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
 import static uk.gov.digital.ho.proving.income.api.FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getConsecutiveIncomes2
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getEmployments
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.getHmrcIndividual
+import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.*
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE
 
@@ -30,11 +28,11 @@ class FinancialServiceSpec extends Specification {
 
 
     def mockIncomeRecordService = Mock(IncomeRecordService)
-    def mockAuditRepository = Mock(AuditService)
+    def mockAuditClient = Mock(AuditClient)
 
-    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditRepository)
+    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient)
 
-    MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ApiExceptionHandler(mockAuditRepository)).build()
+    MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient)).build()
 
 
     def "valid NINO is looked up on the earnings service 2"() {
@@ -181,8 +179,8 @@ class FinancialServiceSpec extends Specification {
         String responseEventId
         Map<String, Object> responseEvent
 
-        1 * mockAuditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, _, _) >> { args -> requestType = args[0]; requestEventId = args[1]; requestEvent = args[2]}
-        1 * mockAuditRepository.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, _, _) >> { args -> responseType = args[0]; responseEventId = args[1]; responseEvent = args[2]}
+        1 * mockAuditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, _, _) >> { args -> requestType = args[0]; requestEventId = args[1]; requestEvent = args[2]}
+        1 * mockAuditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, _, _) >> { args -> responseType = args[0]; responseEventId = args[1]; responseEvent = args[2]}
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")

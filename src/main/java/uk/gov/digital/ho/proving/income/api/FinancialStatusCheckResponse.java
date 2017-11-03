@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import uk.gov.digital.ho.proving.income.domain.Individual;
 
-public class FinancialStatusCheckResponse extends BaseResponse{
+public class FinancialStatusCheckResponse extends BaseResponse {
 
     @JsonInclude(Include.NON_NULL)
     private final Individual individual;

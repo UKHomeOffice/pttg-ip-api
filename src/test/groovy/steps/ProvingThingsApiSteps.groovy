@@ -22,11 +22,7 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.servlet.DispatcherServlet
 import uk.gov.digital.ho.proving.income.ServiceRunner
-import uk.gov.digital.ho.proving.income.domain.hmrc.Employer
-import uk.gov.digital.ho.proving.income.domain.hmrc.Employments
-import uk.gov.digital.ho.proving.income.domain.hmrc.Income
-import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
-import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
+import uk.gov.digital.ho.proving.income.domain.hmrc.*
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -199,7 +195,8 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
     @Given("^A service is consuming the Income Proving TM Family API\$")
     void a_service_is_consuming_the_Income_Proving_TM_Family_API() {
-
+        stubFor(WireMock.post(urlMatching("/audit.*")).
+            willReturn(aResponse().withStatus(200)))
     }
 
 
@@ -260,6 +257,10 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
     @Given("^HMRC has the following income records:\$")
     void hmrcHasTheFollowingIncomeRecords(DataTable incomeRecords) throws Throwable {
+
+        stubFor(WireMock.post(urlMatching("/audit.*")).
+            willReturn(aResponse().withStatus(200)))
+
         List<Income> income = incomeRecords.
             raw().
             stream().

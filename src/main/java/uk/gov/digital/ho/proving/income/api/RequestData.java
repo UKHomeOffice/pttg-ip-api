@@ -10,12 +10,9 @@ import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.Charset;
 import java.util.Base64;
-import java.util.UUID;
 
-/**
- * @Author Home Office Digital
- */
 @Component
 public class RequestData implements HandlerInterceptor {
 
@@ -26,6 +23,7 @@ public class RequestData implements HandlerInterceptor {
     @Value("${auditing.deployment.name}") private String deploymentName;
     @Value("${auditing.deployment.namespace}") private String deploymentNamespace;
     @Value("${hmrc.service.auth}") private String hmrcBasicAuth;
+    @Value("${audit.service.auth}") private String auditBasicAuth;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -46,7 +44,7 @@ public class RequestData implements HandlerInterceptor {
 
     private String initialiseCorrelationId(HttpServletRequest request) {
         String correlationId = request.getHeader(CORRELATION_ID_HEADER);
-        return StringUtils.isNotBlank(correlationId) ? correlationId : UUID.randomUUID().toString();
+        return StringUtils.isNotBlank(correlationId) ? correlationId : "unknown";
     }
 
     private String initialiseUserName(HttpServletRequest request) {
@@ -73,6 +71,8 @@ public class RequestData implements HandlerInterceptor {
     }
 
     public String hmrcBasicAuth() { return String.format("Basic %s", Base64.getEncoder().encodeToString(hmrcBasicAuth.getBytes())); }
+
+    public String auditBasicAuth() { return String.format("Basic %s", Base64.getEncoder().encodeToString(auditBasicAuth.getBytes(Charset.forName("UTF-8")))); }
 
     public String sessionId() {
         return MDC.get(SESSION_ID_HEADER);
