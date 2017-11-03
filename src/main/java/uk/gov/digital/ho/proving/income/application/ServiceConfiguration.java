@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.proving.income;
+package uk.gov.digital.ho.proving.income.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -38,7 +38,7 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public ObjectMapper getMapper() {
+    public ObjectMapper createObjectMapper() {
         ObjectMapper m = new ObjectMapper();
         JavaTimeModule javaTimeModule = new JavaTimeModule();
         javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern("yyyy-M-d")));
@@ -69,23 +69,23 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestData());
+        registry.addInterceptor(createRequestData());
     }
 
     @Bean
-    public RequestData requestData() {
+    public RequestData createRequestData() {
         return new RequestData();
     }
 
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+    public RestTemplate createRestTemplate(RestTemplateBuilder builder) {
         return builder.build();
     }
 
     @Bean
     @ConditionalOnProperty(value = "feature.logging.not.production", havingValue = "true")
     public ServiceResponseLogger notProdServiceResponseLogger() {
-        return new IncomeRecordServiceNotProductionResponseLogger(getMapper());
+        return new IncomeRecordServiceNotProductionResponseLogger(createObjectMapper());
     }
 
     @Bean
@@ -95,7 +95,7 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public Clock clock() {
+    public Clock createClock() {
         return Clock.systemDefaultZone();
     }
 }
