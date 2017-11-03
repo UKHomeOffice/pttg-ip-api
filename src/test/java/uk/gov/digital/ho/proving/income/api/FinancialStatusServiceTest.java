@@ -3,10 +3,9 @@ package uk.gov.digital.ho.proving.income.api;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.digital.ho.proving.income.audit.AuditService;
+import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.domain.hmrc.*;
 
 import java.math.BigDecimal;
@@ -21,10 +20,9 @@ public class FinancialStatusServiceTest {
 
     private static final String ANY_EMPLOYER_PAYE_REF = "any employer PAYE ref";
 
-    @Mock IncomeRecordService mockIncomeRecordService;
-    @Mock AuditService mockAuditService;
+    @Mock private HmrcClient mockHmrcClient;
+    @Mock private AuditClient mockAuditClient;
 
-    @InjectMocks
     private FinancialStatusService service;
 
     private List<Employments> employments;
@@ -37,6 +35,8 @@ public class FinancialStatusServiceTest {
 
     @Before
     public void setup() {
+
+        service = new FinancialStatusService(mockHmrcClient, mockAuditClient);
 
         Income incomeA = incomeFromMonthsAgo(6);
         Income incomeB = incomeFromMonthsAgo(5);

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IncomeRecordServiceNotProductionResponseLoggerTest {
+public class HmrcClientNotProductionResponseLoggerTest {
 
     @Mock private ObjectMapper mockMapper;
     @Mock private Appender mockAppender;

@@ -8,7 +8,10 @@ import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch;
@@ -21,20 +24,16 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.*;
-import static uk.gov.digital.ho.proving.income.api.RequestData.CORRELATION_ID_HEADER;
-import static uk.gov.digital.ho.proving.income.api.RequestData.SESSION_ID_HEADER;
-import static uk.gov.digital.ho.proving.income.api.RequestData.USER_ID_HEADER;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.digital.ho.proving.income.api.RequestData.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IncomeRecordServiceTest {
+public class HmrcClientTest {
 
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
@@ -45,7 +44,7 @@ public class IncomeRecordServiceTest {
     @Captor private ArgumentCaptor<IncomeRecord> captorResponseBody;
     @Captor private ArgumentCaptor<HttpEntity> captorEntity;
 
-    private IncomeRecordService service;
+    private HmrcClient service;
 
     @Before
     public void before() throws Exception {
@@ -55,7 +54,7 @@ public class IncomeRecordServiceTest {
         when(mockRequestData.userId()).thenReturn("some user id");
         when(mockRequestData.hmrcBasicAuth()).thenReturn("some basic auth");
 
-        service = new IncomeRecordService(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger);
+        service = new HmrcClient(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger);
 
         when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
             .thenReturn(new ResponseEntity<>(new IncomeRecord(
