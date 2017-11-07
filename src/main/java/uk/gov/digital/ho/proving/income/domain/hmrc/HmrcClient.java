@@ -45,8 +45,8 @@ public class HmrcClient {
     @Retryable(
         include = { HttpServerErrorException.class },
         exclude = { HttpClientErrorException.class, EarningsServiceNoUniqueMatch.class },
-        maxAttemptsExpression = "#{${hmrc.retry.attempts}}",
-        backoff = @Backoff(delayExpression = "#{${hmrc.retry.delay}}"))
+        maxAttemptsExpression = "#{${hmrc.service.retry.attempts}}",
+        backoff = @Backoff(delayExpression = "#{${hmrc.service.retry.delay}}"))
     public IncomeRecord getIncomeRecord(Identity identity, LocalDate fromDate, LocalDate toDate) {
 
         try {
