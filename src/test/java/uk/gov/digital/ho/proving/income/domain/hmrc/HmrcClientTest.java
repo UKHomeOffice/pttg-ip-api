@@ -1,7 +1,9 @@
 package uk.gov.digital.ho.proving.income.domain.hmrc;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -13,9 +15,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch;
 import uk.gov.digital.ho.proving.income.api.RequestData;
+import uk.gov.digital.ho.proving.income.application.ApplicationExceptions;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -45,6 +48,9 @@ public class HmrcClientTest {
     @Captor private ArgumentCaptor<HttpEntity> captorEntity;
 
     private HmrcClient service;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void before() throws Exception {
@@ -141,7 +147,7 @@ public class HmrcClientTest {
         assertThat(captorUrlTemplate.getValue()).contains("toDate={toDate}");
     }
 
-    @Test(expected = EarningsServiceNoUniqueMatch.class)
+    @Test(expected = ApplicationExceptions.EarningsServiceNoUniqueMatchException.class)
     public void forbiddenShouldBeMappedToNoMatch() {
         when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
             .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
@@ -176,4 +182,33 @@ public class HmrcClientTest {
     }
 
 
+    @Test
+    public void shouldRethrowHttpServerErrorException() {
+
+        thrown.expect(HttpServerErrorException.class);
+
+        HttpServerErrorException exception = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
+
+        service.getIncomeRecordFailureRecovery(exception);
+    }
+
+    @Test
+    public void shouldHttpClientErrorException() {
+
+        thrown.expect(HttpClientErrorException.class);
+
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
+
+        service.getIncomeRecordFailureRecovery(exception);
+    }
+
+    @Test
+    public void shouldEarningsServiceNoUniqueMatch() {
+
+        thrown.expect(ApplicationExceptions.EarningsServiceNoUniqueMatchException.class);
+
+        ApplicationExceptions.EarningsServiceNoUniqueMatchException exception = new ApplicationExceptions.EarningsServiceNoUniqueMatchException();
+
+        service.getIncomeRecordFailureRecovery(exception);
+    }
 }

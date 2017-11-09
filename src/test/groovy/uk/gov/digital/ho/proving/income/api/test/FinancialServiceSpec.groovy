@@ -4,8 +4,8 @@ import groovy.json.JsonSlurper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
-import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
+import uk.gov.digital.ho.proving.income.application.ApplicationExceptions
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient
@@ -70,7 +70,7 @@ class FinancialServiceSpec extends Specification {
 
     def "unknown nino yields HTTP Not Found (404)"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { throw new EarningsServiceNoUniqueMatch() }
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException() }
 
 
         when:

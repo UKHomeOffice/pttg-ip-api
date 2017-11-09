@@ -16,4 +16,6 @@ public interface ApplicationExceptions {
         }
     }
 
+    class EarningsServiceNoUniqueMatchException extends RuntimeException {
+    }
 }

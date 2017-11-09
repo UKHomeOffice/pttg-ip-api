@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import uk.gov.digital.ho.proving.income.acl.EarningsServiceFailedToMapDataToDomainClass;
-import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch;
-import uk.gov.digital.ho.proving.income.acl.UnknownPaymentFrequencyType;
 import uk.gov.digital.ho.proving.income.api.BaseResponse;
 import uk.gov.digital.ho.proving.income.api.ResponseStatus;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.AuditDataException;
@@ -77,20 +74,8 @@ public class ResourceExceptionHandler {
         return buildErrorResponse(httpHeaders(), "0004", "Error: Invalid request", HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = UnknownPaymentFrequencyType.class)
-    public ResponseEntity<BaseResponse> handle(UnknownPaymentFrequencyType e, WebRequest request) {
-        log.error(append("errorCode", "0005"), "Unknown payment frequency type " + e);
-        return buildErrorResponse(httpHeaders(), "0005", "Unknown payment frequency type", HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = EarningsServiceFailedToMapDataToDomainClass.class)
-    public ResponseEntity<BaseResponse> handle(EarningsServiceFailedToMapDataToDomainClass e, WebRequest request) {
-        log.error(append("errorCode", "0009"), "Could not retrieve earning details.", e);
-        return buildErrorResponse(httpHeaders(), "0009", "Resource not found", HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = EarningsServiceNoUniqueMatch.class)
-    public ResponseEntity<BaseResponse> handle(EarningsServiceNoUniqueMatch e, WebRequest request) {
+    @ExceptionHandler(value = ApplicationExceptions.EarningsServiceNoUniqueMatchException.class)
+    public ResponseEntity<BaseResponse> handle(ApplicationExceptions.EarningsServiceNoUniqueMatchException e, WebRequest request) {
         log.error(append("errorCode", "0009"), "Could not retrieve earning details.", e);
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, UUID.randomUUID(), auditData(new BaseResponse(new ResponseStatus("0009", "Resource not found"))));
         return buildErrorResponse(httpHeaders(), "0009", "Resource not found", HttpStatus.NOT_FOUND);

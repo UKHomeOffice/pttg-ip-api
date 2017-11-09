@@ -90,15 +90,10 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-jetty'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
     compile group: 'org.springframework.boot', name: 'spring-boot-devtools'
 
     compile group: 'org.springframework', name: 'spring-aspects', version: '3.2.0.RELEASE'
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.0.RELEASE'
-
-    compile group: 'org.flywaydb',            name: 'flyway-core',                      version: '4.2.0'
-    compile group: 'org.postgresql',          name: 'postgresql',                       version: '9.4.1211.jre7'
-    compile group: 'org.hsqldb',              name: 'hsqldb',                           version: '2.4.0'
 
     compileOnly 'org.projectlombok:lombok:1.16.12'
 
