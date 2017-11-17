@@ -12,8 +12,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.proving.income.acl.EarningsServiceNoUniqueMatch;
 import uk.gov.digital.ho.proving.income.api.RequestData;
+import uk.gov.digital.ho.proving.income.application.ApplicationExceptions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -44,7 +44,7 @@ public class HmrcClient {
 
     @Retryable(
         include = { HttpServerErrorException.class },
-        exclude = { HttpClientErrorException.class, EarningsServiceNoUniqueMatch.class },
+        exclude = { HttpClientErrorException.class, ApplicationExceptions.EarningsServiceNoUniqueMatchException.class },
         maxAttemptsExpression = "#{${hmrc.service.retry.attempts}}",
         backoff = @Backoff(delayExpression = "#{${hmrc.service.retry.delay}}"))
     public IncomeRecord getIncomeRecord(Identity identity, LocalDate fromDate, LocalDate toDate) {
@@ -77,7 +77,7 @@ public class HmrcClient {
         } catch (HttpStatusCodeException e) {
             if (isNotFound(e)) {
                 log.error("Income Service found no match");
-                throw new EarningsServiceNoUniqueMatch();
+                throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException();
             }
             log.error("Income Service failed", e);
             throw e;
@@ -97,7 +97,7 @@ public class HmrcClient {
     }
 
     @Recover
-    IncomeRecord getIncomeRecordFailureRecovery(EarningsServiceNoUniqueMatch e) {
+    IncomeRecord getIncomeRecordFailureRecovery(ApplicationExceptions.EarningsServiceNoUniqueMatchException e) {
         log.error("Failed to retrieve HMRC data (no retries attempted) - {}", e.getMessage());
         throw(e);
     }
