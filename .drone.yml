@@ -58,6 +58,8 @@ pipeline:
       - ENVIRONMENT=dev
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    secrets:
+      - pttg_fs_dev
     commands:
       - cd kube-pttg-ip-api
       - ./deploy.sh
