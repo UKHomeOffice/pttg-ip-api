@@ -10,3 +10,4 @@ runtime
 version.properties
 .gradle/
 out/
+.DS_Store
