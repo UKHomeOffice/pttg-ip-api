@@ -6,6 +6,7 @@ import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.IncomeRetrievalService
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
+import uk.gov.digital.ho.proving.income.domain.hmrc.AnnualSelfAssessmentTaxReturn
 import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
@@ -146,7 +147,7 @@ class IncomeServiceSpec extends Specification {
         def frequency = "M1"
         def individual = getIndividual()
 
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), new Individual("Markus", "Jonesy", nino, LocalDate.now()))
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), new ArrayList<AnnualSelfAssessmentTaxReturn>(), getEmployments(), new Individual("Markus", "Jonesy", nino, LocalDate.now()))
 
 
         String requestType

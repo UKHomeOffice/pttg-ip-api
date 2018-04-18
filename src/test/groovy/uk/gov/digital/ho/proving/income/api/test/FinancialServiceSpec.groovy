@@ -8,6 +8,7 @@ import uk.gov.digital.ho.proving.income.api.FinancialStatusService
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
+import uk.gov.digital.ho.proving.income.domain.hmrc.AnnualSelfAssessmentTaxReturn
 import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
 import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
@@ -32,12 +33,14 @@ class FinancialServiceSpec extends Specification {
 
     def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient)
 
+    def emptyTaxes = new ArrayList<AnnualSelfAssessmentTaxReturn>()
+
     MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient)).build()
 
 
     def "valid NINO is looked up on the earnings service 2"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), getHmrcIndividual())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
@@ -101,7 +104,7 @@ class FinancialServiceSpec extends Specification {
 
     def "can submit more than zero dependants"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), getHmrcIndividual())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
@@ -145,7 +148,7 @@ class FinancialServiceSpec extends Specification {
 
     def "monthly payment uses 182 days in start date calculation"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), getHmrcIndividual())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
@@ -169,7 +172,7 @@ class FinancialServiceSpec extends Specification {
         def dependants = "1"
         def category = 'A'
 
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), new Individual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new Individual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
 
         String requestType
         String requestEventId
@@ -222,7 +225,7 @@ class FinancialServiceSpec extends Specification {
 
     def "individual details from HMRC are returned when present"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), new Individual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new Individual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
@@ -238,7 +241,7 @@ class FinancialServiceSpec extends Specification {
 
     def "individual details from request are returned when HMRC individual not present"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), null)
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), null)
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")

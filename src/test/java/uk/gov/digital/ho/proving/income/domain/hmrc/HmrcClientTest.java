@@ -66,6 +66,7 @@ public class HmrcClientTest {
             .thenReturn(new ResponseEntity<>(new IncomeRecord(
                 emptyList(),
                 emptyList(),
+                emptyList(),
                 aIndividual()
             ), HttpStatus.OK));
 
@@ -86,7 +87,7 @@ public class HmrcClientTest {
                                                                 LocalDate.of(1965, Month.JULY, 19), "NE121212A")),
                                                     captorResponseBody.capture());
 
-        assertThat(captorResponseBody.getValue().getIncome()).isEmpty();
+        assertThat(captorResponseBody.getValue().getPaye()).isEmpty();
         assertThat(captorResponseBody.getValue().getEmployments()).isEmpty();
     }
 

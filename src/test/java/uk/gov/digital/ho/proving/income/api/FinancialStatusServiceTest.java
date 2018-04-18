@@ -27,6 +27,7 @@ public class FinancialStatusServiceTest {
 
     private List<Employments> employments;
     private List<Employments> employmentsWithDuplicates;
+    private List<AnnualSelfAssessmentTaxReturn> taxReturns;
     private List<Employments> multipleEmployments;
     private List<Income> incomeWithoutDuplicates;
     private List<Income> incomeWithDuplicates;
@@ -79,6 +80,8 @@ public class FinancialStatusServiceTest {
         employments = new ArrayList<>();
         employments.add(new Employments(new Employer("any employer", ANY_EMPLOYER_PAYE_REF)));
 
+        taxReturns = new ArrayList<>();
+
         multipleEmployments = new ArrayList<>();
         multipleEmployments.add(new Employments(new Employer("any employer", ANY_EMPLOYER_PAYE_REF)));
         multipleEmployments.add(new Employments(new Employer("another employer", ANY_EMPLOYER_PAYE_REF)));
@@ -100,7 +103,7 @@ public class FinancialStatusServiceTest {
     @Test
     public void shouldPassWhenValidWithoutDuplicatesAndDayInMonthOfPaymentEqualToCurrentDayOfMonth() {
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, employments, aIndividual());
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, taxReturns, employments, aIndividual());
 
         LocalDate applicationRaisedDate = this.middleOfCurrentMonth;
 
@@ -116,7 +119,7 @@ public class FinancialStatusServiceTest {
     @Test
     public void shouldPassWhenValidWithoutDuplicatesAndDayInMonthOfPaymentBeforeCurrentDayOfMonth() {
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, employments, aIndividual());
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, taxReturns, employments, aIndividual());
 
         LocalDate applicationRaisedDate = middleOfCurrentMonth.plusDays(1);
 
@@ -132,7 +135,7 @@ public class FinancialStatusServiceTest {
     @Test
     public void shouldPassWhenValidWithoutDuplicatesAndDayInMonthOfPaymentAfterCurrentDayOfMonth() {
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, employments, aIndividual());
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, taxReturns, employments, aIndividual());
 
         LocalDate applicationRaisedDate = middleOfCurrentMonth.minusDays(1);
 
@@ -148,7 +151,7 @@ public class FinancialStatusServiceTest {
     @Test
     public void shouldPassWhenValidWithDuplicates() {
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomeWithDuplicates, employments, aIndividual());
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithDuplicates, taxReturns, employments, aIndividual());
 
         FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
                                                                         0,
@@ -164,7 +167,7 @@ public class FinancialStatusServiceTest {
 
         List<Income> incomes = new ArrayList<>();
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomes, employmentsWithDuplicates, aIndividual());
+        IncomeRecord incomeRecord = new IncomeRecord(incomes, taxReturns, employmentsWithDuplicates, aIndividual());
 
         FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
             0,
@@ -180,7 +183,7 @@ public class FinancialStatusServiceTest {
 
         List<Income> incomes = new ArrayList<>();
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomes, multipleEmployments, aIndividual());
+        IncomeRecord incomeRecord = new IncomeRecord(incomes, taxReturns, multipleEmployments, aIndividual());
 
         FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
             0,
