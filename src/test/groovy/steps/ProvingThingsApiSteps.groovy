@@ -20,8 +20,10 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.servlet.DispatcherServlet
 import uk.gov.digital.ho.proving.income.ServiceRunner
+import uk.gov.digital.ho.proving.income.audit.AuditClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.*
 
 import java.time.LocalDate
@@ -36,12 +38,22 @@ import static com.jayway.restassured.RestAssured.given
 @SpringBootTest(classes = [ServiceRunner.class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ProvingThingsApiSteps implements ApplicationContextAware {
 
-    private WireMockServer wireMockServer = new WireMockServer(options().port(8083))
+    private WireMockServer wireMockServer
 
     @Autowired private ObjectMapper objectMapper
 
+    @Autowired private AuditClient auditClient
+
+    @Autowired private HmrcClient hmrcClient
+
     @Value('${local.server.port}')
     private int port
+
+    @Value('${hmrc.service.port}')
+    private int  hmrcServicePort
+
+    @Value('${pttg.audit.port}')
+    private int auditServicePort
 
     private static boolean SuiteSetupDone = false
 
@@ -51,10 +63,19 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     void before() throws Exception {
         if (!SuiteSetupDone) {
             APP_HOST = "http://localhost:" + port + "/incomeproving"
-            configureFor(8083)
+            wireMockServer = new WireMockServer(options().dynamicPort())
             wireMockServer.start()
+            configureFor(wireMockServer.port())
+            overrideClientPorts(wireMockServer.port())
             SuiteSetupDone = true
         }
+    }
+
+    def overrideClientPorts(int newPort) {
+        String hmrcUrl = ReflectionTestUtils.getField(hmrcClient, "hmrcServiceEndpoint")
+        String auditUrl = ReflectionTestUtils.getField(auditClient, "auditEndpoint")
+        ReflectionTestUtils.setField(hmrcClient, "hmrcServiceEndpoint", hmrcUrl.replace(hmrcServicePort.toString(), newPort.toString()))
+        ReflectionTestUtils.setField(auditClient, "auditEndpoint", auditUrl.replace(auditServicePort.toString(), newPort.toString()))
     }
 
     @Override
@@ -276,7 +297,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
             collect().
             unique {e1, e2 -> e1.employer.payeReference <=> e2.employer.payeReference}
 
-        IncomeRecord incomeRecord = new IncomeRecord(income, employments, new Individual("Joe", "Bloggs", "NE121212A", LocalDate.now()))
+        IncomeRecord incomeRecord = new IncomeRecord(income, new ArrayList<AnnualSelfAssessmentTaxReturn>(), employments, new Individual("Joe", "Bloggs", "NE121212A", LocalDate.now()))
         String data = objectMapper.writeValueAsString(incomeRecord)
         stubFor(WireMock.get(urlMatching("/income.*")).
             willReturn(aResponse().

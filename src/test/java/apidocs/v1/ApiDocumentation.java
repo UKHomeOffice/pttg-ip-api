@@ -137,7 +137,7 @@ public class ApiDocumentation {
                 .build();
 
         when(hmrcClient.getIncomeRecord(any(Identity.class), any(LocalDate.class), any(LocalDate.class)))
-            .thenReturn(new IncomeRecord(someIncomes(), someEmployments(), aIndividual()));
+            .thenReturn(new IncomeRecord(someIncomes(), new ArrayList<>(), someEmployments(), aIndividual()));
     }
 
 

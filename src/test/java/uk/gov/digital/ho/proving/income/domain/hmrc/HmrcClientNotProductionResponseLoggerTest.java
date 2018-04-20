@@ -44,7 +44,7 @@ public class HmrcClientNotProductionResponseLoggerTest {
         ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(IncomeRecordServiceNotProductionResponseLogger.class);
         logger.addAppender(mockAppender);
 
-        stubIncomeRecord = new IncomeRecord(emptyList(), emptyList(), aIndividual());
+        stubIncomeRecord = new IncomeRecord(emptyList(), emptyList(), emptyList(), aIndividual());
 
         stubIdentity = new Identity("some firstname",
                                         "some lastname",

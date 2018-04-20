@@ -70,7 +70,7 @@ public class HmrcClient {
 
             serviceResponseLogger.record(identity, responseEntity.getBody());
 
-            log.info(String.format("Received %d incomes and %d employments ", responseEntity.getBody().getIncome().size(), responseEntity.getBody().getEmployments().size()));
+            log.info(String.format("Received %d incomes and %d employments ", responseEntity.getBody().getPaye().size(), responseEntity.getBody().getEmployments().size()));
 
             return responseEntity.getBody();
 

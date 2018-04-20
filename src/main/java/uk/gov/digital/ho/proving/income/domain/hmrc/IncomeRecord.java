@@ -12,13 +12,14 @@ import java.util.stream.Collectors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IncomeRecord {
 
-    private List<Income> income;
+    private List<Income> paye;
+    private final List<AnnualSelfAssessmentTaxReturn> selfAssessment;
     private List<Employments> employments;
     private Individual individual;
 
     public List<Income> deDuplicatedIncome() {
 
-        return income.stream()
+        return paye.stream()
                         .distinct()
                         .collect(Collectors.toList());
     }

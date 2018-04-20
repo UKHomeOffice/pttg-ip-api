@@ -31,11 +31,11 @@ public class IncomeRecordTest {
         incomeWithoutDuplicates.add(a);
         incomeWithoutDuplicates.add(b);
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, null, null);
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, null, null, null);
 
         List<Income> deDuplicated = incomeRecord.deDuplicatedIncome();
 
-        assertThat(incomeRecord.getIncome().equals(deDuplicated)).isTrue();
+        assertThat(incomeRecord.getPaye().equals(deDuplicated)).isTrue();
     }
 
     @Test
@@ -48,13 +48,13 @@ public class IncomeRecordTest {
         incomeWithoutDuplicates.add(b);
         incomeWithoutDuplicates.add(b);
 
-        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, null, null);
+        IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, null, null, null);
 
         List<Income> deDuplicated = incomeRecord.deDuplicatedIncome();
 
-        assertThat(incomeRecord.getIncome().equals(deDuplicated)).isFalse();
-        assertThat(incomeRecord.getIncome().size()).isEqualTo(4);
+        assertThat(incomeRecord.getPaye().equals(deDuplicated)).isFalse();
+        assertThat(incomeRecord.getPaye().size()).isEqualTo(4);
         assertThat(deDuplicated.size()).isEqualTo(2);
-        assertThat(incomeRecord.getIncome().containsAll(deDuplicated));
+        assertThat(incomeRecord.getPaye().containsAll(deDuplicated));
     }
 }
