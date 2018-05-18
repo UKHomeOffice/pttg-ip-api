@@ -40,7 +40,7 @@ public class FinancialStatusService {
 
     private static final int NUMBER_OF_DAYS = 182;
 
-    public FinancialStatusService(HmrcClient hmrcClient, AuditClient auditClient, final NinoUtils ninoUtils) {
+    public FinancialStatusService(HmrcClient hmrcClient, AuditClient auditClient, NinoUtils ninoUtils) {
         this.hmrcClient = hmrcClient;
         this.auditClient = auditClient;
         this.ninoUtils = ninoUtils;
@@ -49,7 +49,8 @@ public class FinancialStatusService {
     @PostMapping(value = "/incomeproving/v2/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
     public FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
 
-        log.info("Financial status check request received for {} - applicationRaisedDate = {}, dependents = {}", request.getNino(), request.getApplicationRaisedDate(), request.getDependants());
+        final String redactedNino = ninoUtils.redact(request.getNino());
+        log.info("Financial status check request received for {} - applicationRaisedDate = {}, dependents = {}", redactedNino, request.getApplicationRaisedDate(), request.getDependants());
 
         UUID eventId = UUID.randomUUID();
 
@@ -59,6 +60,7 @@ public class FinancialStatusService {
 
         final String sanitisedNino = ninoUtils.sanitise(request.getNino());
         ninoUtils.validate(sanitisedNino);
+
         validateDependents(request.getDependants());
         validateApplicationRaisedDate(request.getApplicationRaisedDate());
 
@@ -73,7 +75,7 @@ public class FinancialStatusService {
 
         FinancialStatusCheckResponse response = calculateResponse(request.getApplicationRaisedDate(), request.getDependants(), startSearchDate, incomeRecord, individual);
 
-        log.info("Financial status check result for {}", value("nino", request.getNino()));
+        log.info("Financial status check result for {}", value("nino", redactedNino));
 
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
 

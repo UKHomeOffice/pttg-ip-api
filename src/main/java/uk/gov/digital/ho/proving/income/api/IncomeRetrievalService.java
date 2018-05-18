@@ -34,7 +34,7 @@ public class IncomeRetrievalService {
     private final AuditClient auditClient;
     private final NinoUtils ninoUtils;
 
-    public IncomeRetrievalService(HmrcClient hmrcClient, AuditClient auditClient, final NinoUtils ninoUtils) {
+    public IncomeRetrievalService(HmrcClient hmrcClient, AuditClient auditClient, NinoUtils ninoUtils) {
         this.hmrcClient = hmrcClient;
         this.auditClient = auditClient;
         this.ninoUtils = ninoUtils;
@@ -50,7 +50,8 @@ public class IncomeRetrievalService {
         @RequestParam(value = "fromDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
 
-        log.info("Get income details of nino {} between {} and {}", nino, fromDate, toDate);
+        final String redactedNino = ninoUtils.redact(nino);
+        log.info("Get income details of nino {} between {} and {}", redactedNino, fromDate, toDate);
 
         UUID eventId = UUID.randomUUID();
 
@@ -91,7 +92,7 @@ public class IncomeRetrievalService {
                 collect(Collectors.toList())
         );
 
-        log.info("Income check result for: {}", value("nino", incomeRetrievalResponse.getIndividual() != null ? incomeRetrievalResponse.getIndividual().getNino() : ""));
+        log.info("Income check result for: {}", value("nino", redactedNino));
 
         auditClient.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
 
@@ -101,7 +102,8 @@ public class IncomeRetrievalService {
     @PostMapping(value = "/incomeproving/v2/individual/income", produces = APPLICATION_JSON_VALUE)
     public IncomeRetrievalResponse getIncome(@Valid @RequestBody IncomeRetrievalRequest request) {
 
-        log.info("Retrieve income details of nino {} between {} and {}", request.getNino(), request.getFromDate(), request.getToDate());
+        final String redactedNino = ninoUtils.redact(request.getNino());
+        log.info("Retrieve income details of nino {} between {} and {}", redactedNino, request.getFromDate(), request.getToDate());
 
         UUID eventId = UUID.randomUUID();
 
@@ -142,7 +144,7 @@ public class IncomeRetrievalService {
                 collect(Collectors.toList())
         );
 
-        log.info("Income check result for: {}", value("nino", incomeRetrievalResponse.getIndividual() != null ? incomeRetrievalResponse.getIndividual().getNino() : ""));
+        log.info("Income check result for: {}", value("nino", redactedNino));
 
         auditClient.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
 
