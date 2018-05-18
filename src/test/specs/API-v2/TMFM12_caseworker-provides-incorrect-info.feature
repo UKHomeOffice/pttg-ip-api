@@ -27,7 +27,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
   Scenario: Robert is unable to obtain the NINOs income details due to NOT providing the From Date field
     Given A service is consuming the Income Proving TM Family API
     When the Income Proving v2 API is invoked with the following:
-      | nino      | QQ123456A  |
+      | nino      | SP123456A  |
       | From Date |            |
       | To Date   | 2015-06-30 |
     Then The API provides the following Individual details:
@@ -38,7 +38,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
   Scenario: Robert is unable to obtain the NINOs income details due to NOT providing the To Date field
     Given A service is consuming the Income Proving TM Family API
     When the Income Proving v2 API is invoked with the following:
-      | nino      | QQ129856A  |
+      | nino      | SP129856A  |
       | From Date | 2015-01-01 |
       | To Date   |            |
     Then The API provides the following Individual details:
@@ -61,7 +61,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
     Given HMRC has the following income records:
       | Date       | Amount  | Week Number| Month Number| PAYE Reference| Employer         |
     When the Income Proving v2 API is invoked with the following:
-      | nino      | QQ769875A  |
+      | nino      | SP769875A  |
       | From Date | 2015-01-01 |
       | To Date   | 2015-06-30 |
     Then The API provides the following Individual details:
@@ -71,7 +71,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
   Scenario: Robert is unable to obtain the NINOs income details due to a future From Date and To Date
     Given A service is consuming the Income Proving TM Family API
     When the Income Proving v2 API is invoked with the following:
-      | nino      | QQ129856A  |
+      | nino      | SP129856A  |
       | From Date | 2019-06-30 |
       | To Date   | 2019-12-30 |
     Then The API provides the following Individual details:
@@ -82,7 +82,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
   Scenario: Robert is unable to obtain the NINOs income details due to a future From Date
     Given A service is consuming the Income Proving TM Family API
     When the Income Proving v2 API is invoked with the following:
-      | nino      | QQ129856A  |
+      | nino      | SP129856A  |
       | From Date | 2019-06-30 |
       | To Date   | 2015-12-30 |
     Then The API provides the following Individual details:
@@ -93,7 +93,7 @@ Feature: Robert is presented with an error when attempting to obtain a NINOs inc
   Scenario: Robert is unable to obtain the NINOs income details due to a future To Date
     Given A service is consuming the Income Proving TM Family API
     When the Income Proving v2 API is invoked with the following:
-      | nino      | QQ129856A  |
+      | nino      | SP129856A  |
       | From Date | 2015-06-30 |
       | To Date   | 2019-12-30 |
     Then The API provides the following Individual details:

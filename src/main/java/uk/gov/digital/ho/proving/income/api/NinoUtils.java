@@ -11,7 +11,6 @@ import static java.util.Objects.nonNull;
 @Component
 public class NinoUtils {
     private static final Pattern NINO_PATTERN = Pattern.compile("(^((?!(BG|GB|KN|NK|NT|TN|ZZ)|([DFIQUV])[A-Z]|[A-Z]([DFIOQUV]))[A-Z]{2})[0-9]{6}[A-D]?$)");
-    public static final int NUMBER_OF_VISIBLE_CHARS = 5;
 
     public String sanitise(final String nino) {
         if (isNull(nino)) {
@@ -22,8 +21,7 @@ public class NinoUtils {
 
     public void validate(final String nino) {
         if (isInvalid(nino)) {
-            String redactedNino = isNull(nino) ? "(null)" : redact(nino);
-            throw new IllegalArgumentException(String.format("Invalid NINO: %s", redactedNino));
+            throw new IllegalArgumentException("Error: Invalid NINO");
         }
     }
 

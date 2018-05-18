@@ -57,6 +57,10 @@ class FinancialServiceSpec extends Specification {
     }
 
     def "invalid nino is rejected"() {
+        given:
+        mockNinoUtils.sanitise("AA12345") >> "AA12345"
+        mockNinoUtils.validate("AA12345") >> { throw new IllegalArgumentException("Error: Invalid NINO") }
+
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
@@ -173,6 +177,8 @@ class FinancialServiceSpec extends Specification {
         def applicationRaisedDate = "2015-09-23"
         def dependants = "1"
         def category = 'A'
+
+        mockNinoUtils.sanitise(nino) >> nino
 
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new Individual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
 

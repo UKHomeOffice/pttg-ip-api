@@ -21,7 +21,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | 2015-11-03 |    1666.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
       | 2015-12-03 |    1666.11 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
     When the Income Proving v2 API is invoked with the following:
-      | NINO      | QQ123456A  |
+      | NINO      | SP123456A  |
       | From Date | 2015-01-01 |
       | To Date   | 2015-06-30 |
     Then The API provides the following result:
@@ -34,7 +34,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | Total:     |                  | 9996.66 |
     And The API provides the following Individual details:
       | HTTP Status               | 200       |
-      | National Insurance Number | QQ123456A |
+      | National Insurance Number | SP123456A |
 
 
 #@ Changed scenario, added Your search box
@@ -55,7 +55,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | 2015-12-11 |    1666.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
       | 2016-01-11 |    1666.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
     When the Income Proving v2 API is invoked with the following:
-      | NINO      | QQ654321A  |
+      | NINO      | SP654321A  |
       | From Date | 2015-02-11 |
       | To Date   | 2016-01-15 |
     Then The API provides the following result:
@@ -74,7 +74,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | Total:     |                  | 18830.00 |
     And The API provides the following Individual details:
       | HTTP Status               | 200       |
-      | National Insurance Number | QQ654321A |
+      | National Insurance Number | SP654321A |
 
 
 #@ Changed scenario, added Your search box
@@ -93,7 +93,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | 2015-06-10 |    2000.00 | 1           |            | 123/HC45678       | Halifax PLC |
       | 2015-06-17 |    2000.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
     When the Income Proving v2 API is invoked with the following:
-      | NINO      | QQ023987A  |
+      | NINO      | SP023987A  |
       | From Date | 2015-01-01 |
       | To Date   | 2015-06-30 |
     Then The API provides the following result:
@@ -111,7 +111,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | Total:     |                  | 19998.00 |
     And The API provides the following Individual details:
       | HTTP Status               | 200       |
-      | National Insurance Number | QQ023987A |
+      | National Insurance Number | SP023987A |
 
 
 #@ Changed scenario, added Your search box
@@ -125,7 +125,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | 2015-07-20 |    1666.00 | 1           |            | 123/PD45678       | Pizza Hut LTD |
       | 2015-08-20 |    1666.00 | 1           |            | 123/PD45678       | Pizza Hut LTD |
     When the Income Proving v2 API is invoked with the following:
-      | NINO      | QQ987654A  |
+      | NINO      | SP987654A  |
       | From Date | 2015-01-01 |
       | To Date   | 2015-08-30 |
     Then The API provides the following result:
@@ -138,7 +138,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | Total:     |                  | 10830.00 |
     And The API provides the following Individual details:
       | HTTP Status               | 200       |
-      | National Insurance Number | QQ987654A |
+      | National Insurance Number | SP987654A |
 
 
 #@ Changed scenario, added Your search box
@@ -158,7 +158,7 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | 2015-12-01 |    1000.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
       | 2016-01-01 |    2500.00 | 1           |            | 123/FD45678       | Flying Pizza Ltd |
     When the Income Proving v2 API is invoked with the following:
-      | NINO      | QQ765432A  |
+      | NINO      | SP765432A  |
       | From Date | 2015-02-01 |
       | To Date   | 2016-01-31 |
     Then The API provides the following result:
@@ -177,4 +177,4 @@ Feature: API returns a list of income for a specific NINO inorder to understand 
       | Total:     |                  | 19994.00 |
     And The API provides the following Individual details:
       | HTTP Status               | 200       |
-      | National Insurance Number | QQ765432A |
+      | National Insurance Number | SP765432A |

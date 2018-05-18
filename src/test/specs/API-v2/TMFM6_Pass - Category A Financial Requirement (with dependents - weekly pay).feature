@@ -154,7 +154,7 @@ Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
         | 2015-01-23 | 615.38 |    01       |              | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | LV987654B  |
+            | NINO                    | PS987654B  |
             | Application raised date | 2015-07-22 |
             | Dependants              | 5          |
 
@@ -163,7 +163,7 @@ Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
             | Financial requirement met | true             |
             | Assessment start date     | 2015-01-21       |
             | Application Raised date   | 2015-07-22       |
-            | National Insurance Number | LV987654B        |
+            | National Insurance Number | PS987654B        |
             | Threshold                 | 615.38           |
             | Employer Name             | Flying Pizza Ltd |
 

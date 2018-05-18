@@ -54,7 +54,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2014-09-28 | 1250.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | FL123456B  |
+            | NINO                    | AP123456B  |
             | Application Raised Date | 2015-03-28 |
 
         Then The Income Proving TM Family API provides the following result:
@@ -63,7 +63,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
             | Assessment start date     | 2014-09-27                    |
             | Application Raised date   | 2015-03-28                    |
-            | National Insurance Number | FL123456B                     |
+            | National Insurance Number | AP123456B                     |
             | Threshold                 | 1550.0                        |
             | Employer Name             | Flying Pizza Ltd              |
 
