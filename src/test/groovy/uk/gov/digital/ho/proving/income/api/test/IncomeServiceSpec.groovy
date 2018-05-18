@@ -35,7 +35,7 @@ class IncomeServiceSpec extends Specification {
     def mockIncomeRecordService = Mock(HmrcClient)
     def mockAuditClient = Mock(AuditClient)
 
-    def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditClient)
+    def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditClient, ninoUtils)
 
     MockMvc mockMvc = standaloneSetup(controller).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient)).build()
 

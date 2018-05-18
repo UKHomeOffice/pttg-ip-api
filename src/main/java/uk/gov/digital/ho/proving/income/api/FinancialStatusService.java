@@ -24,8 +24,6 @@ import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.Frequency;
 import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.calculate;
-import static uk.gov.digital.ho.proving.income.api.NinoUtils.sanitiseNino;
-import static uk.gov.digital.ho.proving.income.api.NinoUtils.validateNino;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
@@ -35,15 +33,17 @@ public class FinancialStatusService {
 
     private final HmrcClient hmrcClient;
     private final AuditClient auditClient;
+    private final NinoUtils ninoUtils;
 
     private static final int MINIMUM_DEPENDANTS = 0;
     private static final int MAXIMUM_DEPENDANTS = 99;
 
     private static final int NUMBER_OF_DAYS = 182;
 
-    public FinancialStatusService(HmrcClient hmrcClient, AuditClient auditClient) {
+    public FinancialStatusService(HmrcClient hmrcClient, AuditClient auditClient, final NinoUtils ninoUtils) {
         this.hmrcClient = hmrcClient;
         this.auditClient = auditClient;
+        this.ninoUtils = ninoUtils;
     }
 
     @PostMapping(value = "/incomeproving/v2/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
@@ -57,8 +57,8 @@ public class FinancialStatusService {
                         eventId,
                         auditData(request.getNino(), request.getForename(), request.getSurname(), request.getDateOfBirth(), request.getApplicationRaisedDate(), request.getDependants()));
 
-        final String sanitisedNino = sanitiseNino(request.getNino());
-        validateNino(sanitisedNino);
+        final String sanitisedNino = ninoUtils.sanitise(request.getNino());
+        ninoUtils.validate(sanitisedNino);
         validateDependents(request.getDependants());
         validateApplicationRaisedDate(request.getApplicationRaisedDate());
 

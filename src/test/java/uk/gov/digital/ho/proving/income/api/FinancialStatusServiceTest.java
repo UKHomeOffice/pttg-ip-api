@@ -22,6 +22,8 @@ public class FinancialStatusServiceTest {
 
     @Mock private HmrcClient mockHmrcClient;
     @Mock private AuditClient mockAuditClient;
+    @Mock
+    private NinoUtils mockNinoUtils;
 
     private FinancialStatusService service;
 
@@ -37,7 +39,7 @@ public class FinancialStatusServiceTest {
     @Before
     public void setup() {
 
-        service = new FinancialStatusService(mockHmrcClient, mockAuditClient);
+        service = new FinancialStatusService(mockHmrcClient, mockAuditClient, mockNinoUtils);
 
         Income incomeA = incomeFromMonthsAgo(6);
         Income incomeB = incomeFromMonthsAgo(5);

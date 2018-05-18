@@ -5,6 +5,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
+import uk.gov.digital.ho.proving.income.api.NinoUtils
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
@@ -30,8 +31,9 @@ class FinancialServiceSpec extends Specification {
 
     def mockIncomeRecordService = Mock(HmrcClient)
     def mockAuditClient = Mock(AuditClient)
+    def mockNinoUtils = Mock(NinoUtils)
 
-    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient)
+    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient, mockNinoUtils)
 
     def emptyTaxes = new ArrayList<AnnualSelfAssessmentTaxReturn>()
 
