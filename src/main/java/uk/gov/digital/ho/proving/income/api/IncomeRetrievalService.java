@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 import static java.time.LocalDate.now;
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.digital.ho.proving.income.api.NinoUtils.sanitiseNino;
-import static uk.gov.digital.ho.proving.income.api.NinoUtils.validateNino;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_INCOME_CHECK_REQUEST;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_INCOME_CHECK_RESPONSE;
 
@@ -34,10 +32,12 @@ public class IncomeRetrievalService {
 
     private final HmrcClient hmrcClient;
     private final AuditClient auditClient;
+    private final NinoUtils ninoUtils;
 
-    public IncomeRetrievalService(HmrcClient hmrcClient, AuditClient auditClient) {
+    public IncomeRetrievalService(HmrcClient hmrcClient, AuditClient auditClient, NinoUtils ninoUtils) {
         this.hmrcClient = hmrcClient;
         this.auditClient = auditClient;
+        this.ninoUtils = ninoUtils;
     }
 
     @Deprecated
@@ -50,14 +50,15 @@ public class IncomeRetrievalService {
         @RequestParam(value = "fromDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
         @RequestParam(value = "toDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
 
-        log.info("Get income details of nino {} between {} and {}", nino, fromDate, toDate);
+        final String redactedNino = ninoUtils.redact(nino);
+        log.info("Get income details of nino {} between {} and {}", redactedNino, fromDate, toDate);
 
         UUID eventId = UUID.randomUUID();
 
         auditClient.add(INCOME_PROVING_INCOME_CHECK_REQUEST, eventId, auditData(nino, forename, surname, dateOfBirth, fromDate, toDate));
 
-        String cleanNino = sanitiseNino(nino);
-        validateNino(cleanNino);
+        String sanitisedNino = ninoUtils.sanitise(nino);
+        ninoUtils.validate(sanitisedNino);
 
         if (fromDate == null) {
             throw new IllegalArgumentException("Error: From date is invalid");
@@ -73,13 +74,13 @@ public class IncomeRetrievalService {
         }
 
         IncomeRecord incomeRecord = hmrcClient.getIncomeRecord(
-            new Identity(forename, surname, dateOfBirth, sanitiseNino(nino)),
+            new Identity(forename, surname, dateOfBirth, sanitisedNino),
             fromDate,
             toDate);
 
 
         IncomeRetrievalResponse incomeRetrievalResponse = new IncomeRetrievalResponse(
-            new Individual(forename, surname, sanitiseNino(nino)),
+            new Individual(forename, surname, sanitisedNino),
             incomeRecord.getPaye().
                 stream().
                 map(
@@ -91,7 +92,7 @@ public class IncomeRetrievalService {
                 collect(Collectors.toList())
         );
 
-        log.info("Income check result for: {}", value("nino", incomeRetrievalResponse.getIndividual() != null ? incomeRetrievalResponse.getIndividual().getNino() : ""));
+        log.info("Income check result for: {}", value("nino", redactedNino));
 
         auditClient.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
 
@@ -101,14 +102,15 @@ public class IncomeRetrievalService {
     @PostMapping(value = "/incomeproving/v2/individual/income", produces = APPLICATION_JSON_VALUE)
     public IncomeRetrievalResponse getIncome(@Valid @RequestBody IncomeRetrievalRequest request) {
 
-        log.info("Retrieve income details of nino {} between {} and {}", request.getNino(), request.getFromDate(), request.getToDate());
+        final String redactedNino = ninoUtils.redact(request.getNino());
+        log.info("Retrieve income details of nino {} between {} and {}", redactedNino, request.getFromDate(), request.getToDate());
 
         UUID eventId = UUID.randomUUID();
 
         auditClient.add(INCOME_PROVING_INCOME_CHECK_REQUEST, eventId, auditData(request.getNino(), request.getForename(), request.getSurname(), request.getDateOfBirth(), request.getFromDate(), request.getToDate()));
 
-        String cleanNino = sanitiseNino(request.getNino());
-        validateNino(cleanNino);
+        String sanitisedNino = ninoUtils.sanitise(request.getNino());
+        ninoUtils.validate(sanitisedNino);
 
         if (request.getFromDate() == null) {
             throw new IllegalArgumentException("Error: From date is invalid");
@@ -124,13 +126,13 @@ public class IncomeRetrievalService {
         }
 
         IncomeRecord incomeRecord = hmrcClient.getIncomeRecord(
-            new Identity(request.getForename(), request.getSurname(), request.getDateOfBirth(), sanitiseNino(request.getNino())),
+            new Identity(request.getForename(), request.getSurname(), request.getDateOfBirth(), sanitisedNino),
             request.getFromDate(),
             request.getToDate());
 
 
         IncomeRetrievalResponse incomeRetrievalResponse = new IncomeRetrievalResponse(
-            new Individual(request.getForename(), request.getSurname(), sanitiseNino(request.getNino())),
+            new Individual(request.getForename(), request.getSurname(), sanitisedNino),
             incomeRecord.getPaye().
                 stream().
                 map(
@@ -142,7 +144,7 @@ public class IncomeRetrievalService {
                 collect(Collectors.toList())
         );
 
-        log.info("Income check result for: {}", value("nino", incomeRetrievalResponse.getIndividual() != null ? incomeRetrievalResponse.getIndividual().getNino() : ""));
+        log.info("Income check result for: {}", value("nino", redactedNino));
 
         auditClient.add(INCOME_PROVING_INCOME_CHECK_RESPONSE, eventId, auditData(incomeRetrievalResponse));
 

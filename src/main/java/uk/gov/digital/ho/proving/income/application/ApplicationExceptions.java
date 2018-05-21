@@ -18,4 +18,10 @@ public interface ApplicationExceptions {
 
     class EarningsServiceNoUniqueMatchException extends RuntimeException {
     }
+
+    class InvalidNationalInsuranceNumber extends IllegalArgumentException {
+        public InvalidNationalInsuranceNumber(final String message) {
+            super(message);
+        }
+    }
 }

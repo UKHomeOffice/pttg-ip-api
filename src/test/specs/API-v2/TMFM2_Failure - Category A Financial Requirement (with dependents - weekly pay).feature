@@ -57,7 +57,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
 
 
         When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | DS123456C  |
+            | NINO                    | AP123456C  |
             | Application Raised Date | 2015-11-03 |
             | dependants              | 3          |
 
@@ -68,7 +68,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
             | Assessment start date     | 2015-05-05                   |
             | Application Raised date   | 2015-11-03                   |
-            | National Insurance Number | DS123456C                    |
+            | National Insurance Number | AP123456C                    |
             | Threshold                 | 523.08                       |
             | Employer Name             | Flying Pizza Ltd             |
 

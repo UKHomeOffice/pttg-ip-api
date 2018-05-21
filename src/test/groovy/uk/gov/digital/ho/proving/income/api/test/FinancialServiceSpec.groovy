@@ -5,6 +5,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
+import uk.gov.digital.ho.proving.income.api.NinoUtils
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
@@ -30,8 +31,9 @@ class FinancialServiceSpec extends Specification {
 
     def mockIncomeRecordService = Mock(HmrcClient)
     def mockAuditClient = Mock(AuditClient)
+    def mockNinoUtils = Mock(NinoUtils)
 
-    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient)
+    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient, mockNinoUtils)
 
     def emptyTaxes = new ArrayList<AnnualSelfAssessmentTaxReturn>()
 
@@ -55,6 +57,10 @@ class FinancialServiceSpec extends Specification {
     }
 
     def "invalid nino is rejected"() {
+        given:
+        mockNinoUtils.sanitise("AA12345") >> "AA12345"
+        mockNinoUtils.validate("AA12345") >> { throw new IllegalArgumentException("Error: Invalid NINO") }
+
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
@@ -171,6 +177,8 @@ class FinancialServiceSpec extends Specification {
         def applicationRaisedDate = "2015-09-23"
         def dependants = "1"
         def category = 'A'
+
+        mockNinoUtils.sanitise(nino) >> nino
 
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new Individual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
 

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.api;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.domain.hmrc.*;
+import utils.LogCapturer;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,14 +16,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FinancialStatusServiceTest {
-
     private static final String ANY_EMPLOYER_PAYE_REF = "any employer PAYE ref";
+    private static final LocalDate MIDDLE_OF_CURRENT_MONTH = LocalDate.now().withDayOfMonth(14);
 
-    @Mock private HmrcClient mockHmrcClient;
-    @Mock private AuditClient mockAuditClient;
+    @Mock
+    private HmrcClient mockHmrcClient;
+
+    @Mock
+    private AuditClient mockAuditClient;
+
+    @Mock
+    private NinoUtils mockNinoUtils;
 
     private FinancialStatusService service;
 
@@ -32,12 +42,10 @@ public class FinancialStatusServiceTest {
     private List<Income> incomeWithoutDuplicates;
     private List<Income> incomeWithDuplicates;
 
-    private LocalDate middleOfCurrentMonth = LocalDate.now().withDayOfMonth(14);
-
     @Before
     public void setup() {
 
-        service = new FinancialStatusService(mockHmrcClient, mockAuditClient);
+        service = new FinancialStatusService(mockHmrcClient, mockAuditClient, mockNinoUtils);
 
         Income incomeA = incomeFromMonthsAgo(6);
         Income incomeB = incomeFromMonthsAgo(5);
@@ -94,7 +102,7 @@ public class FinancialStatusServiceTest {
 
     private Income incomeFromMonthsAgo(int offset) {
         return new Income(new BigDecimal("1600"),
-            middleOfCurrentMonth.minusMonths(offset),
+            MIDDLE_OF_CURRENT_MONTH.minusMonths(offset),
             1,
             null,
             ANY_EMPLOYER_PAYE_REF);
@@ -105,7 +113,7 @@ public class FinancialStatusServiceTest {
 
         IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, taxReturns, employments, aIndividual());
 
-        LocalDate applicationRaisedDate = this.middleOfCurrentMonth;
+        LocalDate applicationRaisedDate = this.MIDDLE_OF_CURRENT_MONTH;
 
         FinancialStatusCheckResponse response = service.monthlyCheck(applicationRaisedDate,
             0,
@@ -121,7 +129,7 @@ public class FinancialStatusServiceTest {
 
         IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, taxReturns, employments, aIndividual());
 
-        LocalDate applicationRaisedDate = middleOfCurrentMonth.plusDays(1);
+        LocalDate applicationRaisedDate = MIDDLE_OF_CURRENT_MONTH.plusDays(1);
 
         FinancialStatusCheckResponse response = service.monthlyCheck(applicationRaisedDate,
             0,
@@ -137,7 +145,7 @@ public class FinancialStatusServiceTest {
 
         IncomeRecord incomeRecord = new IncomeRecord(incomeWithoutDuplicates, taxReturns, employments, aIndividual());
 
-        LocalDate applicationRaisedDate = middleOfCurrentMonth.minusDays(1);
+        LocalDate applicationRaisedDate = MIDDLE_OF_CURRENT_MONTH.minusDays(1);
 
         FinancialStatusCheckResponse response = service.monthlyCheck(applicationRaisedDate,
             0,
@@ -154,10 +162,10 @@ public class FinancialStatusServiceTest {
         IncomeRecord incomeRecord = new IncomeRecord(incomeWithDuplicates, taxReturns, employments, aIndividual());
 
         FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
-                                                                        0,
-                                                                        LocalDate.now().minusMonths(6),
-                                                                        incomeRecord,
-                                                                        null);
+            0,
+            LocalDate.now().minusMonths(6),
+            incomeRecord,
+            null);
 
         assertThat(response.getCategoryCheck().isPassed()).isTrue();
     }
@@ -194,8 +202,37 @@ public class FinancialStatusServiceTest {
         assertThat(response.getCategoryCheck().getEmployers().size()).isEqualTo(2);
     }
 
+    @Test
+    public void shouldNeverLogSuppliedNino() {
+        // given
+        final String realNino = "RealNino";
+        final FinancialStatusRequest mockFinancialStatusRequest = mock(FinancialStatusRequest.class);
+        when(mockFinancialStatusRequest.getNino()).thenReturn(realNino);
+
+        when(mockNinoUtils.redact(realNino)).thenReturn("RedactedNino");
+
+        when(mockFinancialStatusRequest.getApplicationRaisedDate()).thenReturn(MIDDLE_OF_CURRENT_MONTH);
+        when(mockHmrcClient.getIncomeRecord(any(), any(), any())).thenReturn(mock(IncomeRecord.class));
+
+        final LogCapturer<FinancialStatusService> logCapturer = LogCapturer.forClass(FinancialStatusService.class);
+        logCapturer.start();
+
+        // when
+        service.getFinancialStatus(mockFinancialStatusRequest);
+
+        // then
+        verify(mockNinoUtils, atLeastOnce()).redact(realNino);
+
+        // verify log outputs never contain the `real` nino
+        final List<ILoggingEvent> allLogEvents = logCapturer.getAllEvents();
+        for (final ILoggingEvent logEvent : allLogEvents) {
+            final String logMessage = logEvent.getFormattedMessage();
+            assertThat(logMessage).doesNotContain(realNino);
+        }
+
+    }
+
     private Individual aIndividual() {
         return new Individual("Joe", "Bloggs", "NE121212C", LocalDate.now());
     }
-
 }

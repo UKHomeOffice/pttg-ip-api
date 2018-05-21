@@ -4,6 +4,7 @@ import groovy.json.JsonSlurper
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.IncomeRetrievalService
+import uk.gov.digital.ho.proving.income.api.NinoUtils
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.AnnualSelfAssessmentTaxReturn
@@ -34,8 +35,9 @@ class IncomeServiceSpec extends Specification {
 
     def mockIncomeRecordService = Mock(HmrcClient)
     def mockAuditClient = Mock(AuditClient)
+    def mockNinoUtils = Mock(NinoUtils)
 
-    def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditClient)
+    def controller = new IncomeRetrievalService(mockIncomeRecordService, mockAuditClient, mockNinoUtils)
 
     MockMvc mockMvc = standaloneSetup(controller).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient)).build()
 
