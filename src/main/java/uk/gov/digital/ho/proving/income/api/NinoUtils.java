@@ -2,6 +2,7 @@ package uk.gov.digital.ho.proving.income.api;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.InvalidNationalInsuranceNumber;
 
 import java.util.regex.Pattern;
 
@@ -11,6 +12,9 @@ import static java.util.Objects.nonNull;
 @Component
 public class NinoUtils {
     private static final Pattern NINO_PATTERN = Pattern.compile("(^((?!(BG|GB|KN|NK|NT|TN|ZZ)|([DFIQUV])[A-Z]|[A-Z]([DFIOQUV]))[A-Z]{2})[0-9]{6}[A-D]?$)");
+    private static final char REDACTION_CHAR = '*';
+    private static final int NUM_VISIBLE_CHARS = 5;
+
 
     public String sanitise(final String nino) {
         if (isNull(nino)) {
@@ -21,21 +25,22 @@ public class NinoUtils {
 
     public void validate(final String nino) {
         if (isInvalid(nino)) {
-            throw new IllegalArgumentException("Error: Invalid NINO");
+            throw new InvalidNationalInsuranceNumber("Error: Invalid NINO");
         }
     }
 
     public String redact(final String nino) {
-        final String sanitisedNino = sanitise(nino);
-
-        if (isInvalid(sanitisedNino)) {
-            return nino;
+        if (isNull(nino)) {
+            return null;
         }
 
-        final String firstFourCharacters = StringUtils.left(sanitisedNino, 4);
-        final String lastTwoCharacters = StringUtils.right(sanitisedNino, 2);
+        final String sanitisedNino = sanitise(nino);
+        final int ninoLength = sanitisedNino.length();
 
-        return firstFourCharacters + "***" + lastTwoCharacters;
+        final String visibleChars = StringUtils.left(sanitisedNino, NUM_VISIBLE_CHARS);
+        final String redactedNino = StringUtils.rightPad(visibleChars, ninoLength, REDACTION_CHAR);
+
+        return redactedNino;
     }
 
     private boolean isInvalid(final String nino) {
