@@ -13,6 +13,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
     Scenario 01: Lucy has no dependents. Her income history shows a payment in the ARD month and payments in all the 5 months prior that meet the threshold
 
+
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
             | 2018-04-27 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
