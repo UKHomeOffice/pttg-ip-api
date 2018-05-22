@@ -91,7 +91,7 @@ Feature: Category A Financial Requirement - Solo applicant
             | Application Raised date   | 2015-01-23         |
             | National Insurance Number | AA345678A          |
             | Threshold                 | 18600              |
-            | Employer Name             | Flying Pizza Ltd
+            | Employer Name             | Flying Pizza Ltd   |
 
     Scenario: Applicant does not meet requirements due to recent payment restriction
     # PTTG-636

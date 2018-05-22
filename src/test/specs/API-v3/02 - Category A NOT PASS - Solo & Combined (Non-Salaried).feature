@@ -9,7 +9,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
     #             Applications with one dependant will be required to meet an amended threshold value of £22,400
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800
 
-    Scenario 01: Cheryl has no dependents. Her income history shows a payment in the ARD month and payments in all the 5 months prior that do not meet the threshold
+    Scenario: 01: Cheryl has no dependents. Her income history shows a payment in the ARD month and payments in all the 5 months prior that do not meet the threshold
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -33,9 +33,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
-    -------------
 
-    Scenario 02: Ashley has one dependent. His income history shows no payment in the ARD month but payments in all 6 months prior that do not meet the threshold
+    Scenario: 02: Ashley has one dependent. His income history shows no payment in the ARD month but payments in all 6 months prior that do not meet the threshold
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -59,9 +58,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Threshold                 | 22400            |
             | Employer Name             | Flying Pizza Ltd |
 
-    -------------
 
-    Scenario 03: Kayleigh has no dependants. Her income history shows the ARD month with a payment and all other months with payments that only meet the threshold with combined income from multiple employers
+    Scenario: 03: Kayleigh has no dependants. Her income history shows the ARD month with a payment and all other months with payments that only meet the threshold with combined income from multiple employers
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer          |
@@ -86,9 +84,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Threshold                 | 18600                               |
             | Employer Name             | Flying Pizza Ltd, Derek's Autos Ltd |
 
-    --------------
 
-    Scenario 04: Barry has no dependents. His income history shows a payment in the ARD month and remaining months have gaps but do not meet the threshold even when it is supplemented by a partners income also having gaps
+    Scenario: 04: Barry has no dependents. His income history shows a payment in the ARD month and remaining months have gaps but do not meet the threshold even when it is supplemented by a partners income also having gaps
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -119,9 +116,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
-    --------------
 
-    Scenario 05: Sherilyn has two dependents. Her income history shows a full contingent of payments over a 12 month period. All 12 months average as a pass against the threshold but the payments within the 6 month period do not.
+    Scenario: 05: Sherilyn has two dependents. Her income history shows a full contingent of payments over a 12 month period. All 12 months average as a pass against the threshold but the payments within the 6 month period do not.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |

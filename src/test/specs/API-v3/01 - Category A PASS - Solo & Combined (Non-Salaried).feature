@@ -1,7 +1,7 @@
 Feature: Category A Financial Requirement - Solo & Combined Applications for Non-Salaried Assessments
 
     # JIRA STORY: EE-3838
-    # Scenarios where Category A Non-Salaried Assessments pass
+    # Scenario:s where Category A Non-Salaried Assessments pass
     # Annual threshold is £18,600 if no dependents are included. Addition of a first dependent child adds £3,800 then each thereafter a further £2,400.
     # Formula for calculating the income for comparison against the threshold is: Total all payments, divide by 6, multiply by 12
 
@@ -11,7 +11,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800
 
 
-    Scenario 01: Lucy has no dependents. Her income history shows a payment in the ARD month and payments in all the 5 months prior that meet the threshold
+    Scenario: 01: Lucy has no dependents. Her income history shows a payment in the ARD month and payments in all the 5 months prior that meet the threshold
 
 
         Given HMRC has the following income records:
@@ -36,9 +36,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
--------------
 
-    Scenario 02: David has no dependents. His income history shows no payment in the ARD month but payments in all 6 months prior that meet the threshold
+    Scenario: 02: David has no dependents. His income history shows no payment in the ARD month but payments in all 6 months prior that meet the threshold
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -62,9 +61,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
--------------
 
-    Scenario 03: Pauline has no dependents. Her income history shows no payment in the ARD month but payments in all 6 months prior that meet the threshold, but ignoring payments from a second employer
+    Scenario: 03: Pauline has no dependents. Her income history shows no payment in the ARD month but payments in all 6 months prior that meet the threshold, but ignoring payments from a second employer
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -86,11 +84,11 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Application Raised date   | 2018-04-30                       |
             | National Insurance Number | VB345678A                        |
             | Threshold                 | 18600                            |
-            | Employer Name             | Flying Pizza Ltd, Flowers 4U Ltd |   #maybe change this pending what it is used for
+#maybe change this pending what it is used for
+            | Employer Name             | Flying Pizza Ltd, Flowers 4U Ltd |
 
--------------
 
-    Scenario 04: Sarah has no dependants. Her income history shows the ARD month with a payment that meets the threshold in the ARD month. All other months are blank.
+    Scenario: 04: Sarah has no dependants. Her income history shows the ARD month with a payment that meets the threshold in the ARD month. All other months are blank.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -110,9 +108,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
---------------
 
-    Scenario 05: Sally has no dependants. Her income history shows the ARD month with a payment that meets the threshold at the very end of the 6 month range. All other months are blank.
+    Scenario: 05: Sally has no dependants. Her income history shows the ARD month with a payment that meets the threshold at the very end of the 6 month range. All other months are blank.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -132,9 +129,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
---------------
 
-    Scenario 06: Phillip has no dependents. His income history shows the all 6 months with payments. One month has weekly payments and another month has fortnightly and a monthly payment. Average meets the threshold.
+    Scenario: 06: Phillip has no dependents. His income history shows the all 6 months with payments. One month has weekly payments and another month has fortnightly and a monthly payment. Average meets the threshold.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -162,9 +158,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
----------------
 
-    Scenario 07: Siobhan has one dependent. Her income history shows a payment in the ARD month and the other 5 months with a mixture of payments and gaps that meet the threshold (Nov & Sept are blank)
+    Scenario: 07: Siobhan has one dependent. Her income history shows a payment in the ARD month and the other 5 months with a mixture of payments and gaps that meet the threshold (Nov & Sept are blank)
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -186,9 +181,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | £22400           |
             | Employer Name             | Flying Pizza Ltd |
 
-----------------
 
-    Scenario 08: Derek has two dependents. His income history shows a payment in the ARD month and the other 5 months with a mixture of payments and gaps that meet the threshold (Nov, Oct & Sept are blank)
+    Scenario: 08: Derek has two dependents. His income history shows a payment in the ARD month and the other 5 months with a mixture of payments and gaps that meet the threshold (Nov, Oct & Sept are blank)
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -210,9 +204,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | £24800           |
             | Employer Name             | Flying Pizza Ltd |
 
-----------------
 
-    Scenario 09: Geraldine has no dependents. Her income history shows a payment in the ARD month and remaining months but does not meet the threshold until it is supplemented by a partners income
+    Scenario: 09: Geraldine has no dependents. Her income history shows a payment in the ARD month and remaining months but does not meet the threshold until it is supplemented by a partners income
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -248,9 +241,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Employer Name             | Flying Pizza Ltd, The Home Office |
 
 
---------------
-
-    Scenario 10: Bertie has no dependents. His income history shows a payment in the ARD month and remaining months have gaps but do not meet the threshold until it is supplemented by a partners income also having gaps
+    Scenario: 10: Bertie has no dependents. His income history shows a payment in the ARD month and remaining months have gaps but do not meet the threshold until it is supplemented by a partners income also having gaps
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
