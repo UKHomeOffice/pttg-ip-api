@@ -6,7 +6,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
     # Annual threshold is £18,600 if no dependents are included. Addition of a first dependent child adds £3,800 then each thereafter a further £2,400.
     # Formula for calculating the income for comparison against the threshold is: Total all payments, divide by number of months paid, multiply by 12
 
-    Scenario: 01: Georgina has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days and payments in all the 12 months prior that meet the annual threshold
+    Scenario: 01 Georgina has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days and payments in all the 12 months prior that meet the annual threshold
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -36,8 +36,37 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+    ##############
 
-#        CONTINUE FROM HERE
+    Scenario: 02 Carl has no dependents. His income history shows a payment that meets the employment check in the immediate 32 days and payments in all the preceeding 11 months prior that meet the annual threshold
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | PAYE Reference | Employer         |
+         #  | 2018-04-27 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |  to 2nd march    start of april 2017
+            | 2018-03-02 | 1550.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 1050.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 | 3000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-27 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-09-29 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-08-25 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-07-28 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-05-26 | 3000.00 | FP/Ref1        | Flying Pizza Ltd |
+
+        When the Income Proving v2 TM Family API is invoked with the following:
+            | NINO                    | GH345678S  |
+            | Application Raised Date | 2018-04-02 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200              |
+            | Category                  | A                |
+            | Financial requirement met | true             |
+            | Application Raised date   | 2018-04-30       |
+            | National Insurance Number | GH345678S        |
+            | Threshold                 | 18600            |
+            | Employer Name             | Flying Pizza Ltd |
 
 
 
@@ -73,6 +102,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+    -------------
 
     Scenario: 03: Pauline has no dependents. Her income history shows no payment in the ARD month but payments in all 6 months prior that meet the threshold, but ignoring payments from a second employer
 
@@ -98,6 +128,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600                            |
             | Employer Name             | Flying Pizza Ltd, Flowers 4U Ltd |
 
+    -------------
 
     Scenario: 04: Sarah has no dependants. Her income history shows the ARD month with a payment that meets the threshold in the ARD month. All other months are blank.
 
@@ -119,6 +150,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+    --------------
 
     Scenario: 05: Sally has no dependants. Her income history shows the ARD month with a payment that meets the threshold at the very end of the 6 month range. All other months are blank.
 
@@ -140,6 +172,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+    --------------
 
     Scenario: 06: Phillip has no dependents. His income history shows the all 6 months with payments. One month has weekly payments and another month has fortnightly and a monthly payment. Average meets the threshold.
 
@@ -169,8 +202,9 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+    ---------------
 
-    Scenario: 07: Siobhan has one dependent. Her income history shows a payment in the ARD month and the other 5 months with a mixture of payments and gaps that meet the threshold (Nov & Sept are blank)
+    Scenario 07: Siobhan has one dependent. Her income history shows a payment in the ARD month and the other 5 months with a mixture of payments and gaps that meet the threshold (Nov & Sept are blank)
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -192,8 +226,9 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | £22400           |
             | Employer Name             | Flying Pizza Ltd |
 
+    ----------------
 
-    Scenario: 08: Derek has two dependents. His income history shows a payment in the ARD month and the other 5 months with a mixture of payments and gaps that meet the threshold (Nov, Oct & Sept are blank)
+    Scenario 08: Derek has two dependents. His income history shows a payment in the ARD month and the other 5 months with a mixture of payments and gaps that meet the threshold (Nov, Oct & Sept are blank)
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -215,8 +250,9 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | £24800           |
             | Employer Name             | Flying Pizza Ltd |
 
+    ----------------
 
-    Scenario: 09: Geraldine has no dependents. Her income history shows a payment in the ARD month and remaining months but does not meet the threshold until it is supplemented by a partners income
+    Scenario 09: Geraldine has no dependents. Her income history shows a payment in the ARD month and remaining months but does not meet the threshold until it is supplemented by a partners income
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -249,8 +285,9 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+    --------------
 
-    Scenario: 10: Bertie has no dependents. His income history shows a payment in the ARD month and remaining months have gaps but do not meet the threshold until it is supplemented by a partners income also having gaps
+    Scenario 10: Bertie has no dependents. His income history shows a payment in the ARD month and remaining months have gaps but do not meet the threshold until it is supplemented by a partners income also having gaps
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |

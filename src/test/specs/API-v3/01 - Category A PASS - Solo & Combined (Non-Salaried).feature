@@ -1,7 +1,7 @@
 Feature: Category A Financial Requirement - Solo & Combined Applications for Non-Salaried Assessments
 
     # JIRA STORY: EE-3838
-    # Scenario:s where Category A Non-Salaried Assessments pass
+    # Scenarios where Category A Non-Salaried Assessments pass
     # Annual threshold is £18,600 if no dependents are included. Addition of a first dependent child adds £3,800 then each thereafter a further £2,400.
     # Formula for calculating the income for comparison against the threshold is: Total all payments, divide by 6, multiply by 12
 
@@ -11,7 +11,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800
 
 
-    Scenario: 01: Lucy has no dependents. Her income history shows a payment in the ARD month and payments in all the 5 months prior that meet the threshold
+    Scenario: 01 Lucy has no dependents. Her income history shows a payments in 6 months that meet the threshold. Assessment range 2018-04-30 to 2017-10-30
 
 
         Given HMRC has the following income records:
@@ -36,17 +36,19 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+############
 
-    Scenario: 02: David has no dependents. His income history shows no payment in the ARD month but payments in all 6 months prior that meet the threshold
+    Scenario: 02 David has no dependents. His income history shows payments in 7 months prior that meet the threshold. Assessment range 2018-04-30 to 2017-10-30
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
+            | 2018-04-30 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-29 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 | 1300.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-27 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-01-31 | 1300.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-30 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | FD345678A  |
@@ -61,17 +63,19 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+############
 
-    Scenario: 03: Pauline has no dependents. Her income history shows no payment in the ARD month but payments in all 6 months prior that meet the threshold, but ignoring payments from a second employer
+    Scenario: 03 Pauline has no dependents. Her income history shows payments in 6 months that meet the threshold, but ignoring payments from a second employer.  Assessment range 2018-04-30 to 2017-10-30
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
+            | 2018-04-30 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-29 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-31 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
             | 2017-12-29 | 1000.00 | FP/Ref2        | Flowers 4U Ltd   |
             | 2017-11-30 | 2300.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-27 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-30 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | VB345678A  |
@@ -84,11 +88,11 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Application Raised date   | 2018-04-30                       |
             | National Insurance Number | VB345678A                        |
             | Threshold                 | 18600                            |
-#maybe change this pending what it is used for
             | Employer Name             | Flying Pizza Ltd, Flowers 4U Ltd |
 
+############
 
-    Scenario: 04: Sarah has no dependants. Her income history shows the ARD month with a payment that meets the threshold in the ARD month. All other months are blank.
+    Scenario: 04 Sarah has no dependants. Her income history shows a payment that meets the threshold at the very beginning of the 6 month range. All other months are blank. Assessment range 2017-12-30 to 2017-07-01.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -108,12 +112,13 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+############
 
-    Scenario: 05: Sally has no dependants. Her income history shows the ARD month with a payment that meets the threshold at the very end of the 6 month range. All other months are blank.
+    Scenario: 05 Sally has no dependants. Her income history shows a payment that meets the threshold at the very end of the 6 month range. All other months are blank. Assessment range 2017-12-30 to 2017-07-01.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
-            | 2017-06-01 | 9300.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-07-01 | 9300.00 | FP/Ref1        | Flying Pizza Ltd |
 
 
         When the Income Proving v2 TM Family API is invoked with the following:
@@ -129,8 +134,9 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+############
 
-    Scenario: 06: Phillip has no dependents. His income history shows the all 6 months with payments. One month has weekly payments and another month has fortnightly and a monthly payment. Average meets the threshold.
+    Scenario: 06 Phillip has no dependents. His income history shows 6 months with payments. One month has weekly payments and another month has fortnightly and a monthly payment. Average meets the threshold. Assessment range 2017-09-30 to 2017-04-01.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -158,8 +164,9 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+############
 
-    Scenario: 07: Siobhan has one dependent. Her income history shows a payment in the ARD month and the other 5 months with a mixture of payments and gaps that meet the threshold (Nov & Sept are blank)
+    Scenario: 07 Siobhan has one dependent. Her income history shows a payment in 6 months with a mixture of payments and gaps that meet the threshold (Nov & Sept are blank). Assessment range 2018-01-31 to 2017-08-02.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -176,13 +183,14 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | HTTP Status               | 200              |
             | Category                  | A                |
             | Financial requirement met | true             |
-            | Application Raised date   | 2018-04-31       |
+            | Application Raised date   | 2018-01-31       |
             | National Insurance Number | LA345628A        |
             | Threshold                 | £22400           |
             | Employer Name             | Flying Pizza Ltd |
 
+############
 
-    Scenario: 08: Derek has two dependents. His income history shows a payment in the ARD month and the other 5 months with a mixture of payments and gaps that meet the threshold (Nov, Oct & Sept are blank)
+    Scenario: 08 Derek has two dependents. His income history shows a payment in 6 months with a mixture of payments and gaps that meet the threshold (Nov, Oct & Sept are blank). Assessment range 2017-01-31 to 2017-08-02.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -199,13 +207,14 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | HTTP Status               | 200              |
             | Category                  | A                |
             | Financial requirement met | true             |
-            | Application Raised date   | 2018-04-31       |
+            | Application Raised date   | 2018-01-31       |
             | National Insurance Number | PL327678A        |
             | Threshold                 | £24800           |
             | Employer Name             | Flying Pizza Ltd |
 
+############
 
-    Scenario: 09: Geraldine has no dependents. Her income history shows a payment in the ARD month and remaining months but does not meet the threshold until it is supplemented by a partners income
+    Scenario: 09 Geraldine has no dependents. Her income history shows payments in 6 months but does not meet the threshold until it is supplemented by a partners income. Assessment range 2018-04-30 to 2017-10-30.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -228,20 +237,22 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO - Applicant        | QS317678A  |
             | NINO - Partner          | GF374820B  |
-            | Application Raised Date | 2018-04-31 |
+            | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                               |
             | Category                  | A                                 |
             | Financial requirement met | true                              |
-            | Application Raised date   | 2018-04-31                        |
+            | Application Raised date   | 2018-04-30                        |
             | National Insurance Number | QS317678A                         |
             | National Insurance Number | GF374820B                         |
             | Threshold                 | 18600                             |
             | Employer Name             | Flying Pizza Ltd, The Home Office |
 
 
-    Scenario: 10: Bertie has no dependents. His income history shows a payment in the ARD month and remaining months have gaps but do not meet the threshold until it is supplemented by a partners income also having gaps
+############
+
+    Scenario: 10 Bertie has no dependents. His income history shows payments but with some months having gaps. The payments do not meet the threshold until it is supplemented by a partners income also having gaps. Assessment range 2018-04-30 to 2017-10-30.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -260,13 +271,13 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO - Applicant        | JD345678A  |
             | NINO - Partner          | GH428174C  |
-            | Application Raised Date | 2018-04-31 |
+            | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200                               |
             | Category                  | A                                 |
             | Financial requirement met | true                              |
-            | Application Raised date   | 2018-04-31                        |
+            | Application Raised date   | 2018-04-30                        |
             | National Insurance Number | JD345678A                         |
             | National Insurance Number | GH428174C                         |
             | Threshold                 | 18600                             |

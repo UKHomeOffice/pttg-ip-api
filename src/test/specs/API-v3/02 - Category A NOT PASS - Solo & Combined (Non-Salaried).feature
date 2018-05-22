@@ -9,7 +9,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
     #             Applications with one dependant will be required to meet an amended threshold value of £22,400
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800
 
-    Scenario: 01: Cheryl has no dependents. Her income history shows a payment in the ARD month and payments in all the 5 months prior that do not meet the threshold
+    Scenario: 01 Cheryl has no dependents. Her income history shows payments in 6 months that do not meet the threshold. Assessment range 2018-04-30 to 2017-10-30
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -33,17 +33,19 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+    ############
 
-    Scenario: 02: Ashley has one dependent. His income history shows no payment in the ARD month but payments in all 6 months prior that do not meet the threshold
+    Scenario: 02 Ashley has one dependent. His income history shows payments in 7 months that do not meet the threshold. Assessment range 2018-04-30 to 2017-10-30
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
+            | 2018-04-30 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-29 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 4000.00 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-31 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
             | 2017-12-29 | 1199.50 | FP/Ref1        | Flying Pizza Ltd |
             | 2017-11-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-27 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-30 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | VB345624B  |
@@ -58,8 +60,37 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Threshold                 | 22400            |
             | Employer Name             | Flying Pizza Ltd |
 
+       ############
 
-    Scenario: 03: Kayleigh has no dependants. Her income history shows the ARD month with a payment and all other months with payments that only meet the threshold with combined income from multiple employers
+    Scenario: 03 Carla has no dependents. Her income history shows payments in 7 months that meet the threshold however one payment is just outside the assessment range. Assessment range 2018-04-30 to 2017-10-30
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | PAYE Reference | Employer         |
+            | 2018-04-30 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-29 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-01-31 | 1300.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 |  999.99 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-29 |  000.01 | FP/Ref1        | Flying Pizza Ltd |
+
+        When the Income Proving v2 TM Family API is invoked with the following:
+            | NINO                    | FD345678A  |
+            | Application Raised Date | 2018-04-30 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200              |
+            | Category                  | A                |
+            | Financial requirement met | false            |
+            | Failure Reason            | Below Threshold  |
+            | Application Raised date   | 2018-04-30       |
+            | National Insurance Number | FD345678A        |
+            | Threshold                 | 18600            |
+            | Employer Name             | Flying Pizza Ltd |
+
+    ############
+
+    Scenario: 04 Kayleigh has no dependants. Her income history shows payments that only meet the threshold with combined income from multiple employers. Assessment range 2018-04-30 to 2017-10-30
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer          |
@@ -68,7 +99,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | 2018-01-31 | 2000.00 | FP/Ref1        | Flying Pizza Ltd  |
             | 2017-12-29 | 2000.00 | FP/Ref2        | Derek's Autos Ltd |
             | 2017-11-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd  |
-            | 2017-10-27 | 1000.00 | FP/Ref1        | Flying Pizza Ltd  |
+            | 2017-10-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd  |
 
 
         When the Income Proving v2 TM Family API is invoked with the following:
@@ -84,8 +115,9 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Threshold                 | 18600                               |
             | Employer Name             | Flying Pizza Ltd, Derek's Autos Ltd |
 
+    ############
 
-    Scenario: 04: Barry has no dependents. His income history shows a payment in the ARD month and remaining months have gaps but do not meet the threshold even when it is supplemented by a partners income also having gaps
+    Scenario: 05 Barry has no dependents. His income history shows a payment in some months with gaps but do not meet the threshold even when it is supplemented by a partners income also having gaps. Assessment range 2018-04-30 to 2017-10-30
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -116,23 +148,24 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
+    ############
 
-    Scenario: 05: Sherilyn has two dependents. Her income history shows a full contingent of payments over a 12 month period. All 12 months average as a pass against the threshold but the payments within the 6 month period do not.
+    Scenario: 06 Sherilyn has two dependents. Her income history shows a full contingent of payments over a 12 month period. All 12 months average as a pass against the threshold but the payments within the 6 month period do not. Assessment range 2018-04-30 to 2017-10-30
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
             | 2018-04-27 | 400.00  | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 300.00  | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 300.00  | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 300.00  | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-04-27 |  50.00  | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 |  49.99  | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-04-27 | 2500.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-29 | 300.00  | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-23 | 300.00  | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-26 | 300.00  | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-27 |  50.00  | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-28 |  49.99  | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-31 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-09-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-08-27 | 2500.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-07-28 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-31 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-05-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO - Applicant        | HG345118A  |
