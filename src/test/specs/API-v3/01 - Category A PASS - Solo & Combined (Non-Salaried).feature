@@ -96,7 +96,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
-            | 2017-12-22 | 9300.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-30 | 9300.00 | FP/Ref1        | Flying Pizza Ltd |
 
 
         When the Income Proving v2 TM Family API is invoked with the following:
