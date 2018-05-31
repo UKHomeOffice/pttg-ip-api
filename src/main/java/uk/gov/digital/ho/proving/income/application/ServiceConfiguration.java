@@ -28,7 +28,17 @@ import java.time.format.DateTimeFormatter;
 @EnableRetry
 public class ServiceConfiguration extends WebMvcConfigurerAdapter {
 
-    @Value("${apidocs.dir}") private String apiDocsDir;
+    private final String apiDocsDir;
+    private final int restTemplateReadTimeoutInMillis;
+    private final int restTemplateConnectTimeoutInMillis;
+
+    public ServiceConfiguration(@Value("${apidocs.dir}") String apiDocsDir,
+                                @Value("${resttemplate.timeout.read:30000}") int restTemplateReadTimeoutInMillis,
+                                @Value("${resttemplate.timeout.connect:30000}") int restTemplateConnectTimeoutInMillis) {
+        this.apiDocsDir = apiDocsDir;
+        this.restTemplateReadTimeoutInMillis = restTemplateReadTimeoutInMillis;
+        this.restTemplateConnectTimeoutInMillis = restTemplateConnectTimeoutInMillis;
+    }
 
     @Bean
     public Jackson2ObjectMapperBuilder jacksonBuilder() {
@@ -78,8 +88,11 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public RestTemplate createRestTemplate(RestTemplateBuilder builder) {
-        return builder.build();
+    public RestTemplate createRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+        return restTemplateBuilder
+            .setReadTimeout(restTemplateReadTimeoutInMillis)
+            .setConnectTimeout(restTemplateConnectTimeoutInMillis)
+            .build();
     }
 
     @Bean
