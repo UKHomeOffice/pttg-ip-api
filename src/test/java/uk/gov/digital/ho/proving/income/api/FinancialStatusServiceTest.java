@@ -205,16 +205,17 @@ public class FinancialStatusServiceTest {
     @Test
     public void shouldNeverLogSuppliedNino() {
         // given
-        final String realNino = "RealNino";
-        final FinancialStatusRequest mockFinancialStatusRequest = mock(FinancialStatusRequest.class);
+        String realNino = "RealNino";
+        FinancialStatusRequest mockFinancialStatusRequest = mock(FinancialStatusRequest.class);
         when(mockFinancialStatusRequest.getNino()).thenReturn(realNino);
 
         when(mockNinoUtils.redact(realNino)).thenReturn("RedactedNino");
 
-        when(mockFinancialStatusRequest.getApplicationRaisedDate()).thenReturn(MIDDLE_OF_CURRENT_MONTH);
+        LocalDate fiveDaysAgo = LocalDate.now().minusDays(5);
+        when(mockFinancialStatusRequest.getApplicationRaisedDate()).thenReturn(fiveDaysAgo);
         when(mockHmrcClient.getIncomeRecord(any(), any(), any())).thenReturn(mock(IncomeRecord.class));
 
-        final LogCapturer<FinancialStatusService> logCapturer = LogCapturer.forClass(FinancialStatusService.class);
+        LogCapturer<FinancialStatusService> logCapturer = LogCapturer.forClass(FinancialStatusService.class);
         logCapturer.start();
 
         // when
@@ -224,12 +225,11 @@ public class FinancialStatusServiceTest {
         verify(mockNinoUtils, atLeastOnce()).redact(realNino);
 
         // verify log outputs never contain the `real` nino
-        final List<ILoggingEvent> allLogEvents = logCapturer.getAllEvents();
+        List<ILoggingEvent> allLogEvents = logCapturer.getAllEvents();
         for (final ILoggingEvent logEvent : allLogEvents) {
             final String logMessage = logEvent.getFormattedMessage();
             assertThat(logMessage).doesNotContain(realNino);
         }
-
     }
 
     private Individual aIndividual() {
