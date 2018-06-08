@@ -13,6 +13,7 @@ import utils.LogCapturer;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -207,7 +208,9 @@ public class FinancialStatusServiceTest {
         // given
         String realNino = "RealNino";
         FinancialStatusRequest mockFinancialStatusRequest = mock(FinancialStatusRequest.class);
-        when(mockFinancialStatusRequest.getNino()).thenReturn(realNino);
+        Applicant applicant = new Applicant("forename", "surname", LocalDate.now(), realNino);
+        List<Applicant> applicants = Arrays.asList(applicant);
+        when(mockFinancialStatusRequest.getApplicants()).thenReturn(applicants);
 
         when(mockNinoUtils.redact(realNino)).thenReturn("RedactedNino");
 

@@ -47,7 +47,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:
@@ -64,7 +64,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA12345\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA12345\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
 
@@ -85,7 +85,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:
@@ -99,7 +99,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":-1}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":-1}")
         )
 
         then:
@@ -115,7 +115,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":1}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":1}")
         )
 
         then:
@@ -128,7 +128,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-nm\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-nm\",\"dependants\":0}")
         )
 
         then:
@@ -143,7 +143,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2000-08-21\",\"applicationRaisedDate\":\"2028-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2000-08-21\"}],\"applicationRaisedDate\":\"2028-08-21\",\"dependants\":0}")
         )
 
         then:
@@ -159,7 +159,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\",\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":0}")
         )
 
         then:
@@ -196,7 +196,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\",\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":1}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":1}")
         )
 
         then:
@@ -238,7 +238,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:
@@ -254,7 +254,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:

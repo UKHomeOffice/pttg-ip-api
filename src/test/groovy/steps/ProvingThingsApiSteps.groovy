@@ -88,7 +88,8 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     @Managed
     public Response resp
     String jsonAsString
-    String nino
+    String nino1
+    String nino2
     String dependants = ""
     String applicationRaisedDate
     String fromDate = ""
@@ -139,7 +140,10 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
                 applicationRaisedDate = entries.get(s)
             }
             if (s.equalsIgnoreCase("nino")) {
-                nino = entries.get(s)
+                nino1 = entries.get(s)
+            }
+            if (s.equalsIgnoreCase("nino2")) {
+                nino2 = entries.get(s)
             }
             if (s.equalsIgnoreCase("dependants")) {
                 dependants = entries.get(s)
@@ -226,16 +230,26 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
         getTableData(params)
         Map<String,String> jsonRequest = new HashMap<>();
         jsonRequest.put("applicationRaisedDate", applicationRaisedDate);
-        jsonRequest.put("nino", nino);
         jsonRequest.put("dependants", dependants);
-        jsonRequest.put("forename", "Mark");
-        jsonRequest.put("surname", "Surname");
-        jsonRequest.put("dateOfBirth", "1980-01-13");
+        jsonRequest.put("individuals", getSingleApplicantJson(nino1))
 
         resp = given().contentType(ContentType.JSON).body(new Gson().toJson(jsonRequest)).post(APP_HOST + "/v2/individual/financialstatus")
 
         jsonAsString = resp.asString()
         println "HMRC Json" + jsonAsString
+    }
+
+    def getSingleApplicantJson(nino="nino", forename="Mark", surname="Surname", dateOfBirth="1980-01-13") {
+        Map<String, String> applicant = new HashMap<>()
+        applicant.put("nino", nino)
+        applicant.put("forename", forename)
+        applicant.put("surname", surname)
+        applicant.put("dateOfBirth", dateOfBirth)
+
+        List<Map<String, String>> applicants = new ArrayList<>()
+        applicants.add(applicant)
+
+        return applicants
     }
 
     @Then("^The Income Proving TM Family API provides the following result:\$")
@@ -250,7 +264,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
         getTableData(arg1)
 
         Map<String,String> jsonRequest = new HashMap<>();
-        jsonRequest.put("nino", nino);
+        jsonRequest.put("nino", nino1);
         jsonRequest.put("forename", "Mark");
         jsonRequest.put("surname", "Surname");
         jsonRequest.put("dateOfBirth", "1980-01-13");

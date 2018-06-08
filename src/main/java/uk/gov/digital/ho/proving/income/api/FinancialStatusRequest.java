@@ -4,22 +4,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 public class FinancialStatusRequest {
-    private final String nino;
-    private final String forename;
-    private final String surname;
-    private final LocalDate dateOfBirth;
+    private final List<Applicant> applicants;
     private final LocalDate applicationRaisedDate;
     private final Integer dependants;
 
     @JsonCreator
-    public FinancialStatusRequest(@JsonProperty("nino") String nino, @JsonProperty("forename") String forename, @JsonProperty("surname") String surname, @JsonProperty("dateOfBirth") LocalDate dateOfBirth, @JsonProperty("applicationRaisedDate") LocalDate applicationRaisedDate, @JsonProperty("dependants") Integer dependants) {
-        this.nino = nino;
-        this.forename = forename;
-        this.surname = surname;
-        this.dateOfBirth = dateOfBirth;
+    public FinancialStatusRequest(@JsonProperty("individuals") List<Applicant> applicants, @JsonProperty("applicationRaisedDate") LocalDate applicationRaisedDate, @JsonProperty("dependants") Integer dependants) {
+        this.applicants = applicants;
         this.applicationRaisedDate = applicationRaisedDate;
         this.dependants = dependants!=null? dependants : 0;
     }
@@ -27,30 +22,18 @@ public class FinancialStatusRequest {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("FinancialStatusRequest{");
-        sb.append("nino='").append(nino).append('\'');
-        sb.append(", forename='").append(forename).append('\'');
-        sb.append(", surname='").append(surname).append('\'');
-        sb.append(", dateOfBirth=").append(dateOfBirth);
+        String prefix = "";
+        for(Applicant applicant : applicants) {
+            sb.append(prefix).append("nino='").append(applicant.getNino()).append('\'');
+            sb.append(", forename='").append(applicant.getForename()).append('\'');
+            sb.append(", surname='").append(applicant.getSurname()).append('\'');
+            sb.append(", dateOfBirth=").append(applicant.getDateOfBirth());
+            prefix = ", ";
+        }
         sb.append(", applicationRaisedDate=").append(applicationRaisedDate);
         sb.append(", dependants=").append(dependants);
         sb.append('}');
         return sb.toString();
-    }
-
-    public String getNino() {
-        return nino;
-    }
-
-    public String getForename() {
-        return forename;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
     }
 
     public LocalDate getApplicationRaisedDate() {
@@ -60,4 +43,10 @@ public class FinancialStatusRequest {
     public Integer getDependants() {
         return dependants;
     }
+
+    public List<Applicant> getApplicants() {
+        return applicants;
+    }
 }
+
+

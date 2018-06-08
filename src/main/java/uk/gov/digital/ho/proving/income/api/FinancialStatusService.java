@@ -49,16 +49,18 @@ public class FinancialStatusService {
     @PostMapping(value = "/incomeproving/v2/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
     public FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
 
-        final String redactedNino = ninoUtils.redact(request.getNino());
+        Applicant mainApplicant = request.getApplicants().get(0);
+
+        final String redactedNino = ninoUtils.redact(mainApplicant.getNino());
         log.info("Financial status check request received for {} - applicationRaisedDate = {}, dependents = {}", redactedNino, request.getApplicationRaisedDate(), request.getDependants());
 
         UUID eventId = UUID.randomUUID();
 
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST,
                         eventId,
-                        auditData(request.getNino(), request.getForename(), request.getSurname(), request.getDateOfBirth(), request.getApplicationRaisedDate(), request.getDependants()));
+                        auditData(mainApplicant.getNino(), mainApplicant.getForename(), mainApplicant.getSurname(), mainApplicant.getDateOfBirth(), request.getApplicationRaisedDate(), request.getDependants()));
 
-        final String sanitisedNino = ninoUtils.sanitise(request.getNino());
+        final String sanitisedNino = ninoUtils.sanitise(mainApplicant.getNino());
         ninoUtils.validate(sanitisedNino);
 
         validateDependents(request.getDependants());
@@ -67,7 +69,7 @@ public class FinancialStatusService {
         LocalDate startSearchDate = request.getApplicationRaisedDate().minusDays(NUMBER_OF_DAYS);
 
         IncomeRecord incomeRecord = hmrcClient.getIncomeRecord(
-            new Identity(request.getForename(), request.getSurname(), request.getDateOfBirth(), sanitisedNino),
+            new Identity(mainApplicant.getForename(), mainApplicant.getSurname(), mainApplicant.getDateOfBirth(), sanitisedNino),
             startSearchDate,
             request.getApplicationRaisedDate());
 
@@ -87,7 +89,8 @@ public class FinancialStatusService {
             return new Individual(individual.getFirstName(), individual.getLastName(), nino);
         }
         // for service backward compatibility echo back request if hmrc service returns no individual
-        return new Individual(request.getForename(), request.getSurname(), nino);
+        Applicant mainApplicant = request.getApplicants().get(0);
+        return new Individual(mainApplicant.getForename(), mainApplicant.getSurname(), nino);
     }
 
     private FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
