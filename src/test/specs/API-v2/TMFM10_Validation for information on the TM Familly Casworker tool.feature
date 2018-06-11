@@ -4,7 +4,7 @@ Feature: Validation of the API fields and data
   Date formats: Format should be yyyy-MM-dd
 
 ###################################### Section - Validation on the NINO ######################################
-    @singletest
+
   Scenario: The API is not provided with an NINO (National Insurance Number)
     Given A service is consuming the Income Proving TM Family API
     When the Income Proving v2 TM Family API is invoked with the following:

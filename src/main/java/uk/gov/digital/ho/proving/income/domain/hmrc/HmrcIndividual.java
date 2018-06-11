@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Individual {
+public class HmrcIndividual {
     private String firstName;
     private String lastName;
     private String nino;

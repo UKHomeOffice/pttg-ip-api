@@ -4,35 +4,35 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import uk.gov.digital.ho.proving.income.domain.Individual;
 
+import java.util.List;
+
 public class FinancialStatusCheckResponse extends BaseResponse {
 
     @JsonInclude(Include.NON_NULL)
-    private final Individual individual;
+    private final List<Individual> individuals;
 
     @JsonInclude(Include.NON_NULL)
-    private final CategoryCheck categoryCheck;
+    private final List<CategoryCheck> categoryChecks;
 
-    public FinancialStatusCheckResponse(ResponseStatus status, Individual individual, CategoryCheck categoryCheck) {
+    public FinancialStatusCheckResponse(ResponseStatus status, List<Individual> individuals, List<CategoryCheck> categoryChecks) {
         super(status);
-        this.individual = individual;
-        this.categoryCheck = categoryCheck;
+        this.individuals = individuals;
+        this.categoryChecks = categoryChecks;
     }
 
-    public Individual getIndividual() {
-        return individual;
+    public List<Individual> getIndividuals() {
+        return individuals;
     }
 
-
-    public CategoryCheck getCategoryCheck() {
-        return categoryCheck;
+    public List<CategoryCheck> getCategoryChecks() {
+        return categoryChecks;
     }
-
 
     @Override
     public String toString() {
         return "FinancialStatusCheckResponse{" +
-            "individual=" + individual +
-            ", categoryCheck=" + categoryCheck +
+            "individuals=" + individuals +
+            ", categoryChecks=" + categoryChecks +
             '}';
     }
 }

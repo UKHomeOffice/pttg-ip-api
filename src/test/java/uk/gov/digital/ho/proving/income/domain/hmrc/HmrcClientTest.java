@@ -178,8 +178,8 @@ public class HmrcClientTest {
         assertThat(captorEntity.getValue().getHeaders()).containsEntry(AUTHORIZATION, Arrays.asList("some basic auth"));
     }
 
-    private Individual aIndividual() {
-        return new Individual("Joe", "Bloggs", "NE121212C", LocalDate.now());
+    private HmrcIndividual aIndividual() {
+        return new HmrcIndividual("Joe", "Bloggs", "NE121212C", LocalDate.now());
     }
 
 

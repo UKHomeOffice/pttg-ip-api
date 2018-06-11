@@ -8,6 +8,7 @@ import uk.gov.digital.ho.proving.income.domain.hmrc.Income;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,16 +23,18 @@ public class IncomeValidator {
     private IncomeValidator() {
     }
 
-    public static FinancialCheckResult validateCategoryAMonthlySalaried(List<Income> income, LocalDate lower, LocalDate upper, Integer dependants, List<Employments> employments) {
+    public static FinancialCheckResult validateCategoryAMonthlySalaried(List<Income> income, LocalDate lower, LocalDate upper, Integer dependants, List<Employments> employments, String nino) {
         SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(dependants);
         BigDecimal monthlyThreshold = thresholdCalculator.getMonthlyThreshold();
-        return new FinancialCheckResult(financialCheckForMonthlySalaried(income, NUMBER_OF_MONTHS, monthlyThreshold, lower, upper), monthlyThreshold, toEmployerNames(employments));
+        CheckedIndividual checkedIndividual = new CheckedIndividual(nino, toEmployerNames(employments));
+        return new FinancialCheckResult(financialCheckForMonthlySalaried(income, NUMBER_OF_MONTHS, monthlyThreshold, lower, upper), monthlyThreshold, Arrays.asList(checkedIndividual));
     }
 
-    public static FinancialCheckResult validateCategoryAWeeklySalaried(List<Income> income, LocalDate lower, LocalDate upper, Integer dependants, List<Employments> employments) {
+    public static FinancialCheckResult validateCategoryAWeeklySalaried(List<Income> income, LocalDate lower, LocalDate upper, Integer dependants, List<Employments> employments, String nino) {
         SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(dependants);
         BigDecimal weeklyThreshold = thresholdCalculator.getWeeklyThreshold();
-        return new FinancialCheckResult(financialCheckForWeeklySalaried(income, NUMBER_OF_WEEKS, weeklyThreshold, lower, upper), weeklyThreshold, toEmployerNames(employments));
+        CheckedIndividual checkedIndividual = new CheckedIndividual(nino, toEmployerNames(employments));
+        return new FinancialCheckResult(financialCheckForWeeklySalaried(income, NUMBER_OF_WEEKS, weeklyThreshold, lower, upper), weeklyThreshold, Arrays.asList(checkedIndividual));
     }
 
     private static List<String> toEmployerNames(List<Employments> employments) {

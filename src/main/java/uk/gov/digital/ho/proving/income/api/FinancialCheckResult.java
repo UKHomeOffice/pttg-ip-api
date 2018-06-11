@@ -8,12 +8,12 @@ public class FinancialCheckResult {
 
     private FinancialCheckValues financialCheckValue;
     private BigDecimal threshold;
-    private List<String> employers;
+    private List<CheckedIndividual> individuals;
 
-    public FinancialCheckResult(FinancialCheckValues financialCheckValue, BigDecimal threshold, List<String> employers) {
+    public FinancialCheckResult(FinancialCheckValues financialCheckValue, BigDecimal threshold, List<CheckedIndividual> individuals) {
         this.financialCheckValue = financialCheckValue;
         this.threshold = threshold;
-        this.employers = employers;
+        this.individuals = individuals;
     }
 
     public FinancialCheckValues getFinancialCheckValue() {
@@ -24,8 +24,8 @@ public class FinancialCheckResult {
         return threshold;
     }
 
-    public List<String> getEmployers() {
-        return employers;
+    public List<CheckedIndividual> getIndividuals() {
+        return individuals;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class FinancialCheckResult {
         return "FinancialCheckResult{" +
             "financialCheckValue=" + financialCheckValue +
             ", threshold=" + threshold +
-            ", employers=" + employers +
+            ", individuals=" + individuals +
             '}';
     }
 }

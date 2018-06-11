@@ -12,7 +12,7 @@ import uk.gov.digital.ho.proving.income.audit.AuditClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.AnnualSelfAssessmentTaxReturn
 import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
-import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
+import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcIndividual
 
 import java.time.LocalDate
 
@@ -166,7 +166,7 @@ class FinancialServiceSpec extends Specification {
 
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isOk())
-        jsonContent.categoryCheck.assessmentStartDate == "2015-03-25"
+        jsonContent.categoryChecks[0].assessmentStartDate == "2015-03-25"
 
     }
 
@@ -180,7 +180,7 @@ class FinancialServiceSpec extends Specification {
 
         mockNinoUtils.sanitise(nino) >> nino
 
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new Individual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new HmrcIndividual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
 
         String requestType
         String requestEventId
@@ -214,26 +214,26 @@ class FinancialServiceSpec extends Specification {
 
         responseType == INCOME_PROVING_FINANCIAL_STATUS_RESPONSE.name()
         responseEvent['method'] == "get-financial-status"
-        responseEvent['response'].individual.title == ""
-        responseEvent['response'].individual.forename == "Marcus"
-        responseEvent['response'].individual.surname == "Jonesmen"
-        responseEvent['response'].individual.nino == nino
-        responseEvent['response'].categoryCheck.category == category
-        responseEvent['response'].categoryCheck.passed == false
-        responseEvent['response'].categoryCheck.applicationRaisedDate == "2015-09-23"
-        responseEvent['response'].categoryCheck.assessmentStartDate == "2015-03-25"
-        responseEvent['response'].categoryCheck.failureReason == MONTHLY_VALUE_BELOW_THRESHOLD
-        responseEvent['response'].categoryCheck.threshold == 1866.67
-        responseEvent['response'].categoryCheck.employers.size == 2
-        responseEvent['response'].categoryCheck.employers[0] == "Pizza Hut"
-        responseEvent['response'].categoryCheck.employers[1] == "Burger King"
+        responseEvent['response'].individuals[0].title == ""
+        responseEvent['response'].individuals[0].forename == "Marcus"
+        responseEvent['response'].individuals[0].surname == "Jonesmen"
+        responseEvent['response'].individuals[0].nino == nino
+        responseEvent['response'].categoryChecks[0].category == category
+        responseEvent['response'].categoryChecks[0].passed == false
+        responseEvent['response'].categoryChecks[0].applicationRaisedDate == "2015-09-23"
+        responseEvent['response'].categoryChecks[0].assessmentStartDate == "2015-03-25"
+        responseEvent['response'].categoryChecks[0].failureReason == MONTHLY_VALUE_BELOW_THRESHOLD
+        responseEvent['response'].categoryChecks[0].threshold == 1866.67
+        responseEvent['response'].categoryChecks[0].individuals[0].employers.size == 2
+        responseEvent['response'].categoryChecks[0].individuals[0].employers[0] == "Pizza Hut"
+        responseEvent['response'].categoryChecks[0].individuals[0].employers[1] == "Burger King"
         responseEvent['response'].status.code == "100"
         responseEvent['response'].status.message == "OK"
     }
 
     def "individual details from HMRC are returned when present"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new Individual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new HmrcIndividual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
@@ -243,8 +243,8 @@ class FinancialServiceSpec extends Specification {
 
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
-        jsonContent.individual.forename == "Marcus"
-        jsonContent.individual.surname == "Jonesmen"
+        jsonContent.individuals[0].forename == "Marcus"
+        jsonContent.individuals[0].surname == "Jonesmen"
     }
 
     def "individual details from request are returned when HMRC individual not present"() {
@@ -259,8 +259,8 @@ class FinancialServiceSpec extends Specification {
 
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
-        jsonContent.individual.forename == "Mark"
-        jsonContent.individual.surname == "Jones"
+        jsonContent.individuals[0].forename == "Mark"
+        jsonContent.individuals[0].surname == "Jones"
     }
 
 }

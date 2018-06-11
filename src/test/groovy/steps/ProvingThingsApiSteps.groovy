@@ -311,7 +311,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
             collect().
             unique {e1, e2 -> e1.employer.payeReference <=> e2.employer.payeReference}
 
-        IncomeRecord incomeRecord = new IncomeRecord(income, new ArrayList<AnnualSelfAssessmentTaxReturn>(), employments, new Individual("Joe", "Bloggs", "NE121212A", LocalDate.now()))
+        IncomeRecord incomeRecord = new IncomeRecord(income, new ArrayList<AnnualSelfAssessmentTaxReturn>(), employments, new HmrcIndividual("Joe", "Bloggs", "NE121212A", LocalDate.now()))
         String data = objectMapper.writeValueAsString(incomeRecord)
         stubFor(WireMock.get(urlMatching("/income.*")).
             willReturn(aResponse().

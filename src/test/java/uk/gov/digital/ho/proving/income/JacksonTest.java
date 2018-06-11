@@ -31,7 +31,7 @@ public class JacksonTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void thatSomeJsonIsUnmartialed() throws IOException {
+    public void thatRequestsAreUnmartialed() throws IOException {
         String json = "{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}";
         FinancialStatusRequest request = objectMapper.readValue(json, FinancialStatusRequest.class);
 
@@ -39,7 +39,7 @@ public class JacksonTest {
     }
 
     @Test
-    public void thatSomeObjectIsMartialed() throws IOException {
+    public void thatRequestsMartialed() throws IOException {
         Applicant applicant = new Applicant("Mark", "Surname", LocalDate.of(2017, Month.AUGUST, 21), "AA123456A");
         List<Applicant> applicants = Arrays.asList(applicant);
         LocalDate raisedDate = LocalDate.of(2017, Month.AUGUST, 21);

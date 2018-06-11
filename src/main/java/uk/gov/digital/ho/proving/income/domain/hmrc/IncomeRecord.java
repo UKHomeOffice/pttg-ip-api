@@ -15,7 +15,7 @@ public class IncomeRecord {
     private List<Income> paye;
     private final List<AnnualSelfAssessmentTaxReturn> selfAssessment;
     private List<Employments> employments;
-    private Individual individual;
+    private HmrcIndividual hmrcIndividual;
 
     public List<Income> deDuplicatedIncome() {
 
