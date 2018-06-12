@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryCheck {
+@Deprecated
+public class CategoryCheckV2 {
 
     private String category;
     private boolean passed;
@@ -23,18 +25,18 @@ public class CategoryCheck {
 
     private BigDecimal threshold;
 
-    private List<CheckedIndividual> individuals;
+    private List<String> employers;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public CategoryCheck(String category, boolean passed, FinancialCheckValues failureReason, LocalDate applicationRaisedDate, LocalDate assessmentStartDate, BigDecimal threshold, List<CheckedIndividual> individuals) {
+    public CategoryCheckV2(String category, boolean passed, FinancialCheckValues failureReason, LocalDate applicationRaisedDate, LocalDate assessmentStartDate, BigDecimal threshold, List<String> employers) {
         this.category = category;
         this.passed = passed;
         this.applicationRaisedDate = applicationRaisedDate;
         this.assessmentStartDate = assessmentStartDate;
         this.failureReason = failureReason;
         this.threshold = threshold;
-        this.individuals = individuals;
+        this.employers = employers;
     }
 
     private String formatDate(LocalDate date){
@@ -61,20 +63,12 @@ public class CategoryCheck {
         return formatDate(applicationRaisedDate);
     }
 
-    public LocalDate getApplicationRaised() {
-        return applicationRaisedDate;
-    }
-
     public void setApplicationRaisedDate(LocalDate applicationRaisedDate) {
         this.applicationRaisedDate = applicationRaisedDate;
     }
 
     public String getAssessmentStartDate() {
         return formatDate(assessmentStartDate);
-    }
-
-    public LocalDate getAssessmentStart() {
-        return assessmentStartDate;
     }
 
     public void setAssessmentStartDate(LocalDate assessmentStartDate) {
@@ -97,8 +91,12 @@ public class CategoryCheck {
         this.threshold = threshold;
     }
 
-    public List<CheckedIndividual> getIndividuals() {
-        return individuals;
+    public List<String> getEmployers() {
+        return new ArrayList(employers);
+    }
+
+    public void setEmployers(List<String> employers) {
+        this.employers = new ArrayList(employers);
     }
 
     @Override
@@ -111,5 +109,4 @@ public class CategoryCheck {
             ", failureReason=" + failureReason +
             ", threshold=" + threshold +
             '}';
-    }
-}
+    }}

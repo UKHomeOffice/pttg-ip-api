@@ -225,7 +225,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     }
 
 
-    @When("^the Income Proving v2 TM Family API is invoked with the following:\$")
+    @When("^the Income Proving v3 TM Family API is invoked with the following:\$")
     void theIncomeProvingVTMFamilyAPIIsInvokedWithTheFollowing(DataTable params) throws Throwable {
         getTableData(params)
         Map<String,String> jsonRequest = new HashMap<>();
@@ -233,7 +233,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
         jsonRequest.put("dependants", dependants);
         jsonRequest.put("individuals", getSingleApplicantJson(nino1))
 
-        resp = given().contentType(ContentType.JSON).body(new Gson().toJson(jsonRequest)).post(APP_HOST + "/v2/individual/financialstatus")
+        resp = given().contentType(ContentType.JSON).body(new Gson().toJson(jsonRequest)).post(APP_HOST + "/v3/individual/financialstatus")
 
         jsonAsString = resp.asString()
         println "HMRC Json" + jsonAsString

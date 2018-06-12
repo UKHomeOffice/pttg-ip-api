@@ -23,7 +23,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2014-09-15 | 1000.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-15 | 1000.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
             | Application Raised Date | 2015-01-15 |
 
@@ -53,7 +53,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2014-10-28 | 1250.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-09-28 | 1250.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | AP123456B  |
             | Application Raised Date | 2015-03-28 |
 
@@ -81,7 +81,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2015-04-03 | 1600.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | KS123456C  |
             | Application Raised Date | 2015-07-03 |
 
@@ -112,7 +112,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2015-04-28 | 1600.00 |             |      02        | FP/Ref1        | Office Supplies Ltd |
             | 2015-03-28 | 1600.00 |             |      01        | FP/Ref1        | Office Supplies Ltd |
 
-    When the Income Proving v2 TM Family API is invoked with the following:
+    When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | GG987654A  |
             | Application Raised Date | 2015-09-03 |
 
@@ -147,7 +147,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2015-03-28 | 1200.00 |             |      01        | FP/Ref2        | Curry House Ltd     |
             | 2015-03-28 |  900.00 |             |      01        | FP/Ref1        | Johns Chippy        |
 
-    When the Income Proving v2 TM Family API is invoked with the following:
+    When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | AA987654A  |
             | Application Raised Date | 2015-09-03 |
 
@@ -180,7 +180,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2015-06-29 | 1400.00  |             |     02       | FP/Ref1       | Flying Pizza Ltd |
             | 2015-05-29 | 1400.00  |             |     01       | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JW984624A  |
             | Application Raised Date | 2015-11-22 |
 
@@ -210,7 +210,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2014-11-15 | 9600.00 |            | 04           |               | Flying Pizza Ltd |
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
             | Application Raised Date | 2015-01-15 |
 
@@ -235,7 +235,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Date       | Amount  | Week Number| Month Number | PAYE Reference | Employer        |
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
             | Application Raised Date | 2015-01-15 |
 

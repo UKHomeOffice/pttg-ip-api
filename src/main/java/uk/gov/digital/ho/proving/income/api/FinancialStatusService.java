@@ -45,7 +45,21 @@ public class FinancialStatusService {
         this.ninoUtils = ninoUtils;
     }
 
+    @Deprecated
     @PostMapping(value = "/incomeproving/v2/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
+    public FinancialStatusCheckResponseV2 getFinancialStatusV2(@Valid @RequestBody FinancialStatusRequestV2 requestV2) {
+        Applicant applicant = new Applicant(requestV2.getForename(), requestV2.getSurname(), requestV2.getDateOfBirth(), requestV2.getNino());
+        FinancialStatusRequest request = new FinancialStatusRequest(Arrays.asList(applicant), requestV2.getDateOfBirth(), requestV2.getDependants());
+
+        FinancialStatusCheckResponse response = getFinancialStatus(request);
+
+        CategoryCheck categoryCheck = response.getCategoryChecks().get(0);
+        CategoryCheckV2 categoryCheckV2 = new CategoryCheckV2(categoryCheck.getCategory(), categoryCheck.isPassed(), categoryCheck.getFailureReason(), categoryCheck.getApplicationRaised(), categoryCheck.getAssessmentStart(), categoryCheck.getThreshold(), categoryCheck.getIndividuals().get(0).getEmployers());
+        FinancialStatusCheckResponseV2 responseV2 = new FinancialStatusCheckResponseV2(response.getStatus(), response.getIndividuals().get(0), categoryCheckV2);
+        return responseV2;
+    }
+
+    @PostMapping(value = "/incomeproving/v3/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
     public FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
 
         Applicant mainApplicant = request.getApplicants().get(0);

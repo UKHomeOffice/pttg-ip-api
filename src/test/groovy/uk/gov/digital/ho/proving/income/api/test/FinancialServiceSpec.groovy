@@ -45,7 +45,7 @@ class FinancialServiceSpec extends Specification {
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
@@ -62,7 +62,7 @@ class FinancialServiceSpec extends Specification {
         mockNinoUtils.validate("AA12345") >> { throw new IllegalArgumentException("Error: Invalid NINO") }
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA12345\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
@@ -83,7 +83,7 @@ class FinancialServiceSpec extends Specification {
 
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
@@ -97,7 +97,7 @@ class FinancialServiceSpec extends Specification {
 
     def "cannot submit less than zero dependants"() {
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":-1}")
         )
@@ -113,7 +113,7 @@ class FinancialServiceSpec extends Specification {
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":1}")
         )
@@ -126,7 +126,7 @@ class FinancialServiceSpec extends Specification {
 
     def "invalid date is rejected"() {
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-nm\",\"dependants\":0}")
         )
@@ -141,7 +141,7 @@ class FinancialServiceSpec extends Specification {
         String tomorrow = now().plusDays(1).format(ISO_LOCAL_DATE);
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2000-08-21\"}],\"applicationRaisedDate\":\"2028-08-21\",\"dependants\":0}")
         )
@@ -157,7 +157,7 @@ class FinancialServiceSpec extends Specification {
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":0}")
         )
@@ -194,7 +194,7 @@ class FinancialServiceSpec extends Specification {
         1 * mockAuditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, _, _) >> { args -> responseType = args[0]; responseEventId = args[1]; responseEvent = args[2]}
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":1}")
         )
@@ -236,7 +236,7 @@ class FinancialServiceSpec extends Specification {
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new HmrcIndividual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
@@ -252,7 +252,7 @@ class FinancialServiceSpec extends Specification {
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), null)
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
