@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.proving.income.api;
+package uk.gov.digital.ho.proving.income.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

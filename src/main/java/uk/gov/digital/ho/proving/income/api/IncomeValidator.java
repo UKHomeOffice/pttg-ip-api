@@ -2,6 +2,9 @@ package uk.gov.digital.ho.proving.income.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
+import uk.gov.digital.ho.proving.income.api.domain.FinancialCheckResult;
+import uk.gov.digital.ho.proving.income.api.domain.FinancialCheckValues;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Income;
 
@@ -38,7 +41,7 @@ public class IncomeValidator {
     }
 
     private static List<String> toEmployerNames(List<Employments> employments) {
-        return employments.stream().map(employment -> employment.getEmployer().getName()).distinct().collect(Collectors.toList());
+        return employments.stream().map(employment -> employment.employer().name()).distinct().collect(Collectors.toList());
     }
 
     private static FinancialCheckValues financialCheckForMonthlySalaried(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate lower, LocalDate upper) {
@@ -85,15 +88,15 @@ public class IncomeValidator {
     }
 
     private static EmploymentCheck checkIncomesPassThresholdWithSameEmployer(List<Income> incomes, BigDecimal threshold) {
-        String employerPayeReference = incomes.get(0).getEmployerPayeReference();
+        String employerPayeReference = incomes.get(0).employerPayeReference();
         for (Income income : incomes) {
-            if (!checkValuePassesThreshold(income.getPayment(), threshold)) {
-                LOGGER.debug("FAILED: Income value = " + income.getPayment() + " is below threshold: " + threshold);
+            if (!checkValuePassesThreshold(income.payment(), threshold)) {
+                LOGGER.debug("FAILED: Income value = " + income.payment() + " is below threshold: " + threshold);
                 return EmploymentCheck.FAILED_THRESHOLD;
             }
 
-            if (!employerPayeReference.equalsIgnoreCase(income.getEmployerPayeReference())) {
-                LOGGER.debug("FAILED: Different employerPayeReference = " + employerPayeReference + " is not the same as " + income.getEmployerPayeReference());
+            if (!employerPayeReference.equalsIgnoreCase(income.employerPayeReference())) {
+                LOGGER.debug("FAILED: Different employerPayeReference = " + employerPayeReference + " is not the same as " + income.employerPayeReference());
                 return EmploymentCheck.FAILED_EMPLOYER;
             }
         }
@@ -108,12 +111,12 @@ public class IncomeValidator {
 
     private static Stream<Income> filterIncomesByDates(List<Income> incomes, LocalDate lower, LocalDate upper) {
         return incomes.stream()
-            .sorted((income1, income2) -> income2.getPaymentDate().compareTo(income1.getPaymentDate()))
-            .filter(income -> isDateInRange(income.getPaymentDate(), lower, upper));
+            .sorted((income1, income2) -> income2.paymentDate().compareTo(income1.paymentDate()))
+            .filter(income -> isDateInRange(income.paymentDate(), lower, upper));
     }
 
     private static boolean isSuccessiveMonths(Income first, Income second) {
-        return getDifferenceInMonthsBetweenDates(first.getPaymentDate(), second.getPaymentDate()) == 1;
+        return getDifferenceInMonthsBetweenDates(first.paymentDate(), second.paymentDate()) == 1;
     }
 
 

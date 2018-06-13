@@ -7,8 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.digital.ho.proving.income.api.Applicant;
-import uk.gov.digital.ho.proving.income.api.FinancialStatusRequest;
+import uk.gov.digital.ho.proving.income.api.domain.Applicant;
+import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusRequest;
 
 import java.io.IOException;
 import java.time.LocalDate;

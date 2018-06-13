@@ -21,7 +21,7 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
-import static uk.gov.digital.ho.proving.income.api.FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD
+import static uk.gov.digital.ho.proving.income.api.domain.FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.*
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE
@@ -227,8 +227,8 @@ class FinancialServiceSpec extends Specification {
         responseEvent['response'].categoryChecks[0].individuals[0].employers.size == 2
         responseEvent['response'].categoryChecks[0].individuals[0].employers[0] == "Pizza Hut"
         responseEvent['response'].categoryChecks[0].individuals[0].employers[1] == "Burger King"
-        responseEvent['response'].status.code == "100"
-        responseEvent['response'].status.message == "OK"
+        responseEvent['response'].status().code == "100"
+        responseEvent['response'].status().message == "OK"
     }
 
     def "individual details from HMRC are returned when present"() {

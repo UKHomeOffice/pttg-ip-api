@@ -87,8 +87,8 @@ public class HmrcClientTest {
                                                                 LocalDate.of(1965, Month.JULY, 19), "NE121212A")),
                                                     captorResponseBody.capture());
 
-        assertThat(captorResponseBody.getValue().getPaye()).isEmpty();
-        assertThat(captorResponseBody.getValue().getEmployments()).isEmpty();
+        assertThat(captorResponseBody.getValue().paye()).isEmpty();
+        assertThat(captorResponseBody.getValue().employments()).isEmpty();
     }
 
     @Test
