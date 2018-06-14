@@ -3,7 +3,7 @@ package uk.gov.digital.ho.proving.income.api.test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
-import uk.gov.digital.ho.proving.income.api.domain.FinancialCheckResult
+import uk.gov.digital.ho.proving.income.domain.FinancialCheckResult
 import uk.gov.digital.ho.proving.income.api.domain.FinancialCheckValues
 import uk.gov.digital.ho.proving.income.api.IncomeValidator
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employer

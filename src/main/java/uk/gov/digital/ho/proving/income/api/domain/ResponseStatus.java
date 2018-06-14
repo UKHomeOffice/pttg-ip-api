@@ -11,8 +11,8 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @ToString
 public class ResponseStatus {
-    @JsonProperty
+    @JsonProperty(value = "code")
     private String code;
-    @JsonProperty
+    @JsonProperty(value = "message")
     private String message;
 }

@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @ToString
 public class BaseResponse {
-    @JsonProperty
+    @JsonProperty(value = "status")
     private final ResponseStatus status;
     public BaseResponse() {
         this.status = null;

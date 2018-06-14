@@ -32,7 +32,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-25       |
             | Application Raised date   | 2015-01-23       |
             | National Insurance Number | AA345678A        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 #New Scenario -
@@ -61,7 +61,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-12       |
             | Application Raised date   | 2015-01-10       |
             | National Insurance Number | AA123456B        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 
@@ -91,7 +91,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-25       |
             | Application Raised date   | 2015-01-23       |
             | National Insurance Number | BB123456B        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 
@@ -121,7 +121,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-25       |
             | Application Raised date   | 2015-01-23       |
             | National Insurance Number | CC123456C        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 
@@ -151,7 +151,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-11       |
             | Application Raised date   | 2015-01-09       |
             | National Insurance Number | CC123456B        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 #New Scenario -
@@ -182,7 +182,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-25       |
             | Application Raised date   | 2015-01-23       |
             | National Insurance Number | AA123456A        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 
@@ -213,5 +213,5 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-12       |
             | Application Raised date   | 2015-01-10       |
             | National Insurance Number | AA123456B        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,21 +17,21 @@ import java.util.List;
 @Accessors(fluent = true)
 @ToString
 public class CategoryCheck {
-    @JsonProperty
+    @JsonProperty(value = "category")
     private String category;
-    @JsonProperty
+    @JsonProperty(value = "passed")
     private boolean passed;
-    @JsonProperty
+    @JsonProperty(value = "applicationRaisedDate")
     private LocalDate applicationRaisedDate;
-    @JsonProperty
+    @JsonProperty(value = "assessmentStartDate")
     private LocalDate assessmentStartDate;
-    @JsonProperty
+    @JsonProperty(value = "failureReason")
     private FinancialCheckValues failureReason;
-    @JsonProperty
+    @JsonProperty(value = "threshold")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigDecimal threshold;
-    @JsonProperty
+    @JsonProperty(value = "individuals")
     private List<CheckedIndividual> individuals;
-    @JsonProperty
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public String getApplicationRaisedDate() {

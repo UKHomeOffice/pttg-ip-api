@@ -3,7 +3,7 @@ package uk.gov.digital.ho.proving.income.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
-import uk.gov.digital.ho.proving.income.api.domain.FinancialCheckResult;
+import uk.gov.digital.ho.proving.income.domain.FinancialCheckResult;
 import uk.gov.digital.ho.proving.income.api.domain.FinancialCheckValues;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Income;

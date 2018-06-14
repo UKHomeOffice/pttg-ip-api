@@ -13,8 +13,8 @@ import java.util.List;
 @Accessors(fluent = true)
 @ToString
 public class CheckedIndividual {
-    @JsonProperty
+    @JsonProperty(value = "nino")
     private String nino;
-    @JsonProperty
+    @JsonProperty(value = "employers")
     private List<String> employers;
 }
