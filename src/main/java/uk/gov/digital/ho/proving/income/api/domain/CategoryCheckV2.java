@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.proving.income.api;
+package uk.gov.digital.ho.proving.income.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -8,7 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryCheck {
+@Deprecated
+public class CategoryCheckV2 {
 
     private String category;
     private boolean passed;
@@ -28,7 +29,7 @@ public class CategoryCheck {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public CategoryCheck(String category, boolean passed, FinancialCheckValues failureReason, LocalDate applicationRaisedDate, LocalDate assessmentStartDate, BigDecimal threshold, List<String> employers) {
+    public CategoryCheckV2(String category, boolean passed, FinancialCheckValues failureReason, LocalDate applicationRaisedDate, LocalDate assessmentStartDate, BigDecimal threshold, List<String> employers) {
         this.category = category;
         this.passed = passed;
         this.applicationRaisedDate = applicationRaisedDate;
@@ -108,5 +109,4 @@ public class CategoryCheck {
             ", failureReason=" + failureReason +
             ", threshold=" + threshold +
             '}';
-    }
-}
+    }}

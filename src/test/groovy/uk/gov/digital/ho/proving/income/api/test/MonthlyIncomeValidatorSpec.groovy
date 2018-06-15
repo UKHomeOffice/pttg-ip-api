@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.proving.income.api.test
 
 import spock.lang.Specification
-import uk.gov.digital.ho.proving.income.api.FinancialCheckResult
-import uk.gov.digital.ho.proving.income.api.FinancialCheckValues
+import uk.gov.digital.ho.proving.income.domain.FinancialCheckResult
+import uk.gov.digital.ho.proving.income.api.domain.FinancialCheckValues
 import uk.gov.digital.ho.proving.income.api.IncomeValidator
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employer
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments
@@ -16,6 +16,7 @@ import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.*
 class MonthlyIncomeValidatorSpec extends Specification {
 
     int days = 182
+    String nino = "AA123456A"
 
     def "multiple monthly payments are not accepted when not contiguous monthly payments and insufficient number of records"() {
 
@@ -25,10 +26,10 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = raisedDate.minusMonths(6)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NOT_ENOUGH_RECORDS
+        categoryAIndividual.financialCheckValue() == FinancialCheckValues.NOT_ENOUGH_RECORDS
     }
 
     def "multiple monthly payments are not accepted when not contiguous monthly payments"() {
@@ -39,10 +40,10 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = raisedDate.minusMonths(6)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
+        categoryAIndividual.financialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
     }
 
     def "multiple monthly payments are not accepted when contiguous monthly payments but insufficient range of months"() {
@@ -53,10 +54,10 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = raisedDate.minusMonths(6)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
+        categoryAIndividual.financialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
     }
 
     def "multiple monthly payments in earlist are not accepted when sufficient number of contiguous monthly payments"() {
@@ -67,10 +68,10 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = raisedDate.minusMonths(6)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
+        categoryAIndividual.financialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
     }
 
     def "multiple monthly payments in middle are not accepted when sufficient number of contiguous monthly payments"() {
@@ -81,25 +82,11 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = raisedDate.minusMonths(6)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
+        categoryAIndividual.financialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
     }
-
-//    def "multiple monthly payments in oldest month are not accepted when sufficient number of contiguous monthly payments"() {
-//
-//        given:
-//        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23)
-//        List<Income> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsInOldestMonth(raisedDate)
-//        LocalDate pastDate = raisedDate.minusMonths(6)
-//
-//        when:
-//        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
-//
-//        then:
-//        categoryAIndividual.getFinancialCheckValue() == FinancialCheckValues.NON_CONSECUTIVE_MONTHS
-//    }
 
     def "unique monthly payments are accepted when sufficient number of contiguous monthly payments"() {
 
@@ -109,10 +96,10 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = raisedDate.minusMonths(6)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
+        categoryAIndividual.financialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
     }
 
     def "valid category A individual is accepted"() {
@@ -123,10 +110,10 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
+        categoryAIndividual.financialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
 
     }
 
@@ -138,10 +125,10 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NON_CONSECUTIVE_MONTHS)
+        categoryAIndividual.financialCheckValue().equals(FinancialCheckValues.NON_CONSECUTIVE_MONTHS)
 
     }
 
@@ -153,10 +140,10 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.NOT_ENOUGH_RECORDS)
+        categoryAIndividual.financialCheckValue().equals(FinancialCheckValues.NOT_ENOUGH_RECORDS)
 
     }
 
@@ -168,12 +155,12 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MULTIPLE_EMPLOYERS)
-        categoryAIndividual.getEmployers().contains(BURGER_KING)
-        categoryAIndividual.getEmployers().contains(PIZZA_HUT)
+        categoryAIndividual.financialCheckValue().equals(FinancialCheckValues.MULTIPLE_EMPLOYERS)
+        categoryAIndividual.individuals().get(0).employers().contains(BURGER_KING)
+        categoryAIndividual.individuals().get(0).employers().contains(PIZZA_HUT)
 
     }
 
@@ -185,10 +172,10 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD)
+        categoryAIndividual.financialCheckValue().equals(FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD)
 
     }
 
@@ -200,10 +187,10 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
+        categoryAIndividual.financialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
 
     }
 
@@ -215,17 +202,17 @@ class MonthlyIncomeValidatorSpec extends Specification {
         LocalDate pastDate = subtractDaysFromDate(raisedDate, days)
 
         when:
-        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes))
+        FinancialCheckResult categoryAIndividual = IncomeValidator.validateCategoryAMonthlySalaried(incomes, pastDate, raisedDate, 0, getEmployers(incomes), nino)
 
         then:
-        categoryAIndividual.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
+        categoryAIndividual.financialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)
 
     }
 
     List<Employments> getEmployers(List<Income> incomes) {
         Set<String> employeRef = new HashSet<>()
         for (Income income : incomes) {
-            employeRef.add(income.getEmployerPayeReference())
+            employeRef.add(income.employerPayeReference())
         }
         return employeRef.stream().map({ref -> new Employments(new Employer(employerRefToName(ref), ref))}).collect()
     }

@@ -37,7 +37,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | 2014-08-15 | 2250.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | SP123456B  |
             | Application Raised Date | 2015-02-03 |
             | Dependants              | 4          |
@@ -69,7 +69,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | 2014-10-10 | 1416.67 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-09-10 | 1416.67 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | BS123456B  |
             | Application Raised Date | 2015-02-10 |
             | Dependants              | 2          |
@@ -103,7 +103,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | 2015-05-03 | 2916.67 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2015-04-03 | 2916.67 |            | 01           | F/Ref1        | Flying           |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | SY987654C  |
             | Application Raised Date | 2015-09-03 |
             | Dependants              | 3          |
@@ -137,7 +137,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | 2015-05-03 | 2916.67 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | SY987654C  |
             | Application Raised Date | 2015-09-03 |
             | Dependants              | 3          |

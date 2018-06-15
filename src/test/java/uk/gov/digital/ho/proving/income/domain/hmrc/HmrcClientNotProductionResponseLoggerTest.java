@@ -99,8 +99,8 @@ public class HmrcClientNotProductionResponseLoggerTest {
         assertThat(logEntry.get("incomeRecord")).isEqualTo(stubIncomeRecord);
     }
 
-    private Individual aIndividual() {
-        return new Individual("Joe", "Bloggs", "NE121212C", LocalDate.now());
+    private HmrcIndividual aIndividual() {
+        return new HmrcIndividual("Joe", "Bloggs", "NE121212C", LocalDate.now());
     }
 
 }

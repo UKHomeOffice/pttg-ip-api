@@ -23,7 +23,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2014-09-15 | 1000.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-15 | 1000.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
             | Application Raised Date | 2015-01-15 |
 
@@ -34,7 +34,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Assessment start date     | 2014-07-17                    |
             | Application Raised date   | 2015-01-15                    |
             | National Insurance Number | JL123456A                     |
-            | Threshold                 | 1550.0                        |
+            | Threshold                 | 1550.00                       |
             | Employer Name             | Flying Pizza Ltd              |
 
 ###New Scenario -
@@ -53,7 +53,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2014-10-28 | 1250.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-09-28 | 1250.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | AP123456B  |
             | Application Raised Date | 2015-03-28 |
 
@@ -64,7 +64,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Assessment start date     | 2014-09-27                    |
             | Application Raised date   | 2015-03-28                    |
             | National Insurance Number | AP123456B                     |
-            | Threshold                 | 1550.0                        |
+            | Threshold                 | 1550.00                       |
             | Employer Name             | Flying Pizza Ltd              |
 
 #New Scenario -
@@ -81,7 +81,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2015-04-03 | 1600.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | KS123456C  |
             | Application Raised Date | 2015-07-03 |
 
@@ -92,7 +92,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Assessment start date     | 2015-01-02         |
             | Application Raised date   | 2015-07-03         |
             | National Insurance Number | KS123456C          |
-            | Threshold                 | 1550.0             |
+            | Threshold                 | 1550.00            |
             | Employer Name             | Flying Pizza Ltd   |
 
 #New scenario - Added on 25th July 2017
@@ -112,7 +112,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2015-04-28 | 1600.00 |             |      02        | FP/Ref1        | Office Supplies Ltd |
             | 2015-03-28 | 1600.00 |             |      01        | FP/Ref1        | Office Supplies Ltd |
 
-    When the Income Proving v2 TM Family API is invoked with the following:
+    When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | GG987654A  |
             | Application Raised Date | 2015-09-03 |
 
@@ -123,7 +123,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Assessment start date     | 2015-03-05         |
             | Application Raised date   | 2015-09-03         |
             | National Insurance Number | GG987654A          |
-            | Threshold                 | 1550.0            |
+            | Threshold                 | 1550.00           |
             | Employer Name             | Curry House Ltd    |
 
 #New scenario - Added on 25th July 2017
@@ -147,7 +147,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2015-03-28 | 1200.00 |             |      01        | FP/Ref2        | Curry House Ltd     |
             | 2015-03-28 |  900.00 |             |      01        | FP/Ref1        | Johns Chippy        |
 
-    When the Income Proving v2 TM Family API is invoked with the following:
+    When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | AA987654A  |
             | Application Raised Date | 2015-09-03 |
 
@@ -158,7 +158,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Assessment start date     | 2015-03-05                         |
             | Application Raised date   | 2015-09-03                         |
             | National Insurance Number | AA987654A                          |
-            | Threshold                 | 1550.0                             |
+            | Threshold                 | 1550.00                            |
             | Employer Name             | Curry House  Ltd                   |
             | Employer Name             | Johns Chippy                       |
 
@@ -180,7 +180,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2015-06-29 | 1400.00  |             |     02       | FP/Ref1       | Flying Pizza Ltd |
             | 2015-05-29 | 1400.00  |             |     01       | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JW984624A  |
             | Application Raised Date | 2015-11-22 |
 
@@ -191,7 +191,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Assessment start date     | 2015-05-24           |
             | Application Raised date   | 2015-11-22           |
             | National Insurance Number | JW984624A            |
-            | Threshold                 | 0               |
+            | Threshold                 | 0                    |
             | Employer Name             | Flying Pizza Ltd     |
 
 ######## New scenario 27th July
@@ -210,7 +210,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | 2014-11-15 | 9600.00 |            | 04           |               | Flying Pizza Ltd |
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
             | Application Raised Date | 2015-01-15 |
 
@@ -221,7 +221,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Assessment start date     | 2014-07-17                    |
             | Application Raised date   | 2015-01-15                    |
             | National Insurance Number | JL123456A                     |
-            | Threshold                 | 1550.0                        |
+            | Threshold                 | 1550.00                       |
             | Employer Name             | Flying Pizza Ltd              |
 
 
@@ -235,7 +235,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Date       | Amount  | Week Number| Month Number | PAYE Reference | Employer        |
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
             | Application Raised Date | 2015-01-15 |
 

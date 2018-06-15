@@ -1,9 +1,9 @@
-package uk.gov.digital.ho.proving.income.domain.hmrc;
+package uk.gov.digital.ho.proving.income.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
@@ -11,12 +11,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Accessors(fluent = true)
-@EqualsAndHashCode
-public class Identity {
+@ToString
+public class Applicant {
     @JsonProperty
-    private String firstname;
+    private String forename;
     @JsonProperty
-    private String lastname;
+    private String surname;
     @JsonProperty
     private LocalDate dateOfBirth;
     @JsonProperty

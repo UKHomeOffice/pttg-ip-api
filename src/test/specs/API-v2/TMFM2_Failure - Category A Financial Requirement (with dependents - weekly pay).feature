@@ -56,7 +56,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
 
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | AP123456C  |
             | Application Raised Date | 2015-11-03 |
             | dependants              | 3          |
@@ -106,7 +106,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | 2015-05-29 | 475.67 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JL123456D  |
             | Application Raised Date | 2015-11-03 |
             | Dependants              | 2          |
@@ -157,7 +157,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | 2015-03-13 | 525.30 |    02       |             | FP/Ref1       | Curry House Ltd  |
             | 2015-03-06 | 525.30 |    01       |             | FP/Ref1       | Curry House Ltd  |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | GG987654A  |
             | Application Raised Date | 2015-09-03 |
             | Dependants              | 3          |
@@ -234,7 +234,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | 2015-03-06 | 300.00 |    01       |             | FP/Ref2       | Flying Pizza Ltd |
             | 2015-03-06 | 260.60 |    01       |             | FP/Ref1       | Curry House Ltd  |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | GG987654A  |
             | Application Raised Date | 2015-09-03 |
             | Dependants              | 3          |
@@ -276,7 +276,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | 2015-06-05 | 525.00  |    02       |            | FP/Ref1       | Flying Pizza Ltd |
             | 2015-05-29 | 525.00  |    01       |            | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JW984624A  |
             | Application Raised Date | 2015-11-22 |
             | Dependants              | 3          |
@@ -303,7 +303,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
 
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JL123456A  |
             | Application Raised Date | 2015-01-15 |
 

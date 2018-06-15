@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import uk.gov.digital.ho.proving.income.api.BaseResponse;
-import uk.gov.digital.ho.proving.income.api.ResponseStatus;
+import uk.gov.digital.ho.proving.income.api.domain.BaseResponse;
+import uk.gov.digital.ho.proving.income.api.domain.ResponseStatus;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.AuditDataException;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 

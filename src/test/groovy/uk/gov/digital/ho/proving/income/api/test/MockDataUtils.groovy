@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.api.test
 import uk.gov.digital.ho.proving.income.domain.Individual
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employer
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments
+import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcIndividual
 import uk.gov.digital.ho.proving.income.domain.hmrc.Income
 
 import java.time.LocalDate
@@ -345,7 +346,7 @@ class MockDataUtils {
     }
 
     static def getHmrcIndividual() {
-        new uk.gov.digital.ho.proving.income.domain.hmrc.Individual("Markus", "Jonesy", 'AA123456A', LocalDate.now())
+        new HmrcIndividual("Markus", "Jonesy", 'AA123456A', LocalDate.now())
     }
 
 

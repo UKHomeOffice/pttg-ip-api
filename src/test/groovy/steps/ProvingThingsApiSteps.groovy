@@ -88,7 +88,8 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     @Managed
     public Response resp
     String jsonAsString
-    String nino
+    String nino1
+    String nino2
     String dependants = ""
     String applicationRaisedDate
     String fromDate = ""
@@ -139,7 +140,10 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
                 applicationRaisedDate = entries.get(s)
             }
             if (s.equalsIgnoreCase("nino")) {
-                nino = entries.get(s)
+                nino1 = entries.get(s)
+            }
+            if (s.equalsIgnoreCase("nino2")) {
+                nino2 = entries.get(s)
             }
             if (s.equalsIgnoreCase("dependants")) {
                 dependants = entries.get(s)
@@ -221,21 +225,31 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     }
 
 
-    @When("^the Income Proving v2 TM Family API is invoked with the following:\$")
+    @When("^the Income Proving v3 TM Family API is invoked with the following:\$")
     void theIncomeProvingVTMFamilyAPIIsInvokedWithTheFollowing(DataTable params) throws Throwable {
         getTableData(params)
         Map<String,String> jsonRequest = new HashMap<>();
         jsonRequest.put("applicationRaisedDate", applicationRaisedDate);
-        jsonRequest.put("nino", nino);
         jsonRequest.put("dependants", dependants);
-        jsonRequest.put("forename", "Mark");
-        jsonRequest.put("surname", "Surname");
-        jsonRequest.put("dateOfBirth", "1980-01-13");
+        jsonRequest.put("individuals", getSingleApplicantJson(nino1))
 
-        resp = given().contentType(ContentType.JSON).body(new Gson().toJson(jsonRequest)).post(APP_HOST + "/v2/individual/financialstatus")
+        resp = given().contentType(ContentType.JSON).body(new Gson().toJson(jsonRequest)).post(APP_HOST + "/v3/individual/financialstatus")
 
         jsonAsString = resp.asString()
         println "HMRC Json" + jsonAsString
+    }
+
+    def getSingleApplicantJson(nino="nino", forename="Mark", surname="Surname", dateOfBirth="1980-01-13") {
+        Map<String, String> applicant = new HashMap<>()
+        applicant.put("nino", nino)
+        applicant.put("forename", forename)
+        applicant.put("surname", surname)
+        applicant.put("dateOfBirth", dateOfBirth)
+
+        List<Map<String, String>> applicants = new ArrayList<>()
+        applicants.add(applicant)
+
+        return applicants
     }
 
     @Then("^The Income Proving TM Family API provides the following result:\$")
@@ -244,13 +258,14 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
     }
 
+    // TODO this is not used?
     //For generic Tool
     @When("^the Income Proving v2 API is invoked with the following:\$")
     void the_Income_Proving_v2_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
         getTableData(arg1)
 
         Map<String,String> jsonRequest = new HashMap<>();
-        jsonRequest.put("nino", nino);
+        jsonRequest.put("nino", nino1);
         jsonRequest.put("forename", "Mark");
         jsonRequest.put("surname", "Surname");
         jsonRequest.put("dateOfBirth", "1980-01-13");
@@ -297,7 +312,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
             collect().
             unique {e1, e2 -> e1.employer.payeReference <=> e2.employer.payeReference}
 
-        IncomeRecord incomeRecord = new IncomeRecord(income, new ArrayList<AnnualSelfAssessmentTaxReturn>(), employments, new Individual("Joe", "Bloggs", "NE121212A", LocalDate.now()))
+        IncomeRecord incomeRecord = new IncomeRecord(income, new ArrayList<AnnualSelfAssessmentTaxReturn>(), employments, new HmrcIndividual("Joe", "Bloggs", "NE121212A", LocalDate.now()))
         String data = objectMapper.writeValueAsString(incomeRecord)
         stubFor(WireMock.get(urlMatching("/income.*")).
             willReturn(aResponse().
