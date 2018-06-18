@@ -26,7 +26,7 @@ public class CalculationRequest {
         for(Individual individual : incomeRecords.keySet()) {
             IncomeRecord incomeRecord = incomeRecords.get(individual);
             Applicant applicant = new Applicant(individual.forename(), individual.surname(), incomeRecord.dateOfBirth(), individual.nino());
-            ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord.paye(), incomeRecord.employments());
+            ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord);
             applicantIncomes.add(applicantIncome);
         }
         return new CalculationRequest(applicantIncomes, startSearchDate, applicationRaisedDate, dependants);

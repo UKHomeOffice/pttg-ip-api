@@ -9,7 +9,6 @@ import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.calculation.CalculationRequest;
 import uk.gov.digital.ho.proving.income.calculation.CalculationResult;
 import uk.gov.digital.ho.proving.income.calculation.CalculationType;
-import uk.gov.digital.ho.proving.income.domain.FinancialCheckResult;
 import uk.gov.digital.ho.proving.income.domain.Individual;
 import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient;
 import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcIndividual;
@@ -17,17 +16,13 @@ import uk.gov.digital.ho.proving.income.domain.hmrc.Identity;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.Frequency;
-import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.calculate;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
@@ -114,26 +109,14 @@ public class FinancialStatusService {
     private FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
 
         FinancialStatusCheckResponse response = new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), new ArrayList<>());
-
-        CategoryCheck categoryACheck;
-        switch (calculateFrequency(incomeRecord)) {
-            case CALENDAR_MONTHLY:
-                categoryACheck = monthlyCheck(applicationRaisedDate, dependants, startSearchDate, incomeRecord, individual);
-                break;
-            case WEEKLY:
-                categoryACheck = weeklyCheck(applicationRaisedDate, dependants, startSearchDate, incomeRecord, individual);
-                break;
-            case CHANGED:
-                categoryACheck = unableToCalculate(applicationRaisedDate, startSearchDate, incomeRecord, individual, FinancialCheckValues.PAY_FREQUENCY_CHANGE);
-                break;
-            default:
-                categoryACheck = unableToCalculate(applicationRaisedDate, startSearchDate, incomeRecord, individual, FinancialCheckValues.UNKNOWN_PAY_FREQUENCY);
-        }
-
         Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
         incomeRecords.put(individual, incomeRecord);
         CalculationRequest calculationRequest = CalculationRequest.create(applicationRaisedDate, startSearchDate, incomeRecords, dependants);
-        CalculationResult catBResult = CalculationType.CATEGORY_B_NON_SALARIED.getCalculator().calculate(calculationRequest);
+
+        CalculationResult catAResult = CalculationType.CATEGORY_A_SALARIED.calculator().calculate(calculationRequest);
+        CategoryCheck categoryACheck = new CategoryCheck("A", catAResult.result(), applicationRaisedDate, startSearchDate, catAResult.financialCheckValue(), catAResult.threshold(), catAResult.individuals());
+
+        CalculationResult catBResult = CalculationType.CATEGORY_B_NON_SALARIED.calculator().calculate(calculationRequest);
         CategoryCheck categoryBCheck = new CategoryCheck("B", catBResult.result(), applicationRaisedDate, startSearchDate, catBResult.financialCheckValue(), catBResult.threshold(), catBResult.individuals());
 
         response.categoryChecks().add(categoryACheck);
@@ -141,58 +124,8 @@ public class FinancialStatusService {
         return response;
     }
 
-    private CategoryCheck unableToCalculate(LocalDate applicationRaisedDate, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual, FinancialCheckValues reason) {
-        List<String> employers = incomeRecord.employments().stream().map(employments -> employments.employer().name()).collect(Collectors.toList());
-        CheckedIndividual checkedIndividual = new CheckedIndividual(individual.nino(), employers);
-        CategoryCheck categoryCheck = new CategoryCheck("A", false, applicationRaisedDate, startSearchDate, reason, BigDecimal.ZERO, Arrays.asList(checkedIndividual));
-        return categoryCheck;
-    }
-
-    private CategoryCheck weeklyCheck(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
-        FinancialCheckResult categoryAWeeklySalaried =
-            IncomeValidator.validateCategoryAWeeklySalaried(
-                incomeRecord.paye(),
-                startSearchDate,
-                applicationRaisedDate,
-                dependants,
-                incomeRecord.employments(),
-                individual.nino());
-
-        CategoryCheck categoryCheck = null;
-        if (categoryAWeeklySalaried.financialCheckValue().equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)) {
-            categoryCheck = new CategoryCheck("A", true, applicationRaisedDate, startSearchDate, null, categoryAWeeklySalaried.threshold(), categoryAWeeklySalaried.individuals());
-        } else {
-            categoryCheck = new CategoryCheck("A", false, applicationRaisedDate, startSearchDate, categoryAWeeklySalaried.financialCheckValue(), categoryAWeeklySalaried.threshold(), categoryAWeeklySalaried.individuals());
-        }
-        return categoryCheck;
-
-    }
-
-    CategoryCheck monthlyCheck(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
-        FinancialCheckResult categoryAMonthlySalaried =
-            IncomeValidator.validateCategoryAMonthlySalaried(
-                incomeRecord.deDuplicatedIncome(),
-                startSearchDate,
-                applicationRaisedDate,
-                dependants,
-                incomeRecord.employments(),
-                individual.nino());
-
-        CategoryCheck categoryCheck = null;
-        if (categoryAMonthlySalaried.financialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)) {
-            categoryCheck = new CategoryCheck("A", true, applicationRaisedDate, startSearchDate, null, categoryAMonthlySalaried.threshold(), categoryAMonthlySalaried.individuals());
-        } else {
-            categoryCheck = new CategoryCheck("A", false, applicationRaisedDate, startSearchDate, categoryAMonthlySalaried.financialCheckValue(), categoryAMonthlySalaried.threshold(), categoryAMonthlySalaried.individuals());
-        }
-        return categoryCheck;
-    }
-
     private ResponseStatus successResponse() {
         return new ResponseStatus("100", "OK");
-    }
-
-    private Frequency calculateFrequency(IncomeRecord incomeRecord) {
-        return calculate(incomeRecord);
     }
 
     private void validateApplicationRaisedDate(LocalDate applicationRaisedDate) {

@@ -12,8 +12,8 @@ import java.util.stream.Stream
 
 import static java.util.Collections.emptyList
 import static java.util.Collections.singletonList
-import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.Frequency.*
-import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.calculate
+import static uk.gov.digital.ho.proving.income.calculation.FrequencyCalculator.Frequency.*
+import static uk.gov.digital.ho.proving.income.calculation.FrequencyCalculator.calculate
 
 /**
  *

@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.proving.income.api;
+package uk.gov.digital.ho.proving.income.calculation;
 
 import uk.gov.digital.ho.proving.income.domain.hmrc.Income;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;

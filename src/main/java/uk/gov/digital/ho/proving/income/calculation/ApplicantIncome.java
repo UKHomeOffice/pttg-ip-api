@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Employments;
-import uk.gov.digital.ho.proving.income.domain.hmrc.Income;
+import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
 
 import java.util.List;
 
@@ -14,6 +14,9 @@ import java.util.List;
 @Accessors(fluent = true)
 public class ApplicantIncome {
     private Applicant applicant;
-    private List<Income> income;
-    private List<Employments> employments;
+    private IncomeRecord incomeRecord;
+
+    public List<Employments> employments() {
+        return incomeRecord.employments();
+    }
 }

@@ -62,7 +62,12 @@ public class CalculationHelper {
         return inRange;
     }
 
-    private static boolean checkValuePassesThreshold(BigDecimal value, BigDecimal threshold) {
+    static boolean checkValuePassesThreshold(BigDecimal value, BigDecimal threshold) {
         return (value.compareTo(threshold) >= 0);
     }
+
+    static List<Income> removeDuplicates(List<Income> incomes) {
+        return incomes.stream().distinct().collect(Collectors.toList());
+    }
+
 }
