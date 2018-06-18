@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
+import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck;
 import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusCheckResponse;
 import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusRequest;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
@@ -122,13 +123,13 @@ public class FinancialStatusServiceTest {
 
         LocalDate applicationRaisedDate = this.MIDDLE_OF_CURRENT_MONTH;
 
-        FinancialStatusCheckResponse response = service.monthlyCheck(applicationRaisedDate,
+        CategoryCheck check = service.monthlyCheck(applicationRaisedDate,
             0,
             applicationRaisedDate.minusMonths(6),
             incomeRecord,
             individual);
 
-        assertThat(response.categoryChecks().get(0).passed()).isTrue();
+        assertThat(check.passed()).isTrue();
     }
 
     @Test
@@ -140,13 +141,13 @@ public class FinancialStatusServiceTest {
 
         LocalDate applicationRaisedDate = MIDDLE_OF_CURRENT_MONTH.plusDays(1);
 
-        FinancialStatusCheckResponse response = service.monthlyCheck(applicationRaisedDate,
+        CategoryCheck check = service.monthlyCheck(applicationRaisedDate,
             0,
             applicationRaisedDate.minusMonths(6),
             incomeRecord,
             individual);
 
-        assertThat(response.categoryChecks().get(0).passed()).isTrue();
+        assertThat(check.passed()).isTrue();
     }
 
     @Test
@@ -158,13 +159,13 @@ public class FinancialStatusServiceTest {
 
         LocalDate applicationRaisedDate = MIDDLE_OF_CURRENT_MONTH.minusDays(1);
 
-        FinancialStatusCheckResponse response = service.monthlyCheck(applicationRaisedDate,
+        CategoryCheck check = service.monthlyCheck(applicationRaisedDate,
             0,
             applicationRaisedDate.minusMonths(6),
             incomeRecord,
             individual);
 
-        assertThat(response.categoryChecks().get(0).passed()).isTrue();
+        assertThat(check.passed()).isTrue();
     }
 
     @Test
@@ -174,13 +175,13 @@ public class FinancialStatusServiceTest {
         Individual individual = new Individual(hmrcIndividual.firstName(), hmrcIndividual.lastName(), hmrcIndividual.nino());
         IncomeRecord incomeRecord = new IncomeRecord(incomeWithDuplicates, taxReturns, employments, hmrcIndividual);
 
-        FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
+        CategoryCheck check = service.monthlyCheck(LocalDate.now(),
             0,
             LocalDate.now().minusMonths(6),
             incomeRecord,
             individual);
 
-        assertThat(response.categoryChecks().get(0).passed()).isTrue();
+        assertThat(check.passed()).isTrue();
     }
 
     @Test
@@ -192,13 +193,13 @@ public class FinancialStatusServiceTest {
         Individual individual = new Individual(hmrcIndividual.firstName(), hmrcIndividual.lastName(), hmrcIndividual.nino());
         IncomeRecord incomeRecord = new IncomeRecord(incomes, taxReturns, employmentsWithDuplicates, hmrcIndividual);
 
-        FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
+        CategoryCheck check = service.monthlyCheck(LocalDate.now(),
             0,
             LocalDate.now().minusMonths(6),
             incomeRecord,
             individual);
 
-        assertThat(response.categoryChecks().get(0).individuals().get(0).employers().size()).isEqualTo(1);
+        assertThat(check.individuals().get(0).employers().size()).isEqualTo(1);
     }
 
     @Test
@@ -210,13 +211,13 @@ public class FinancialStatusServiceTest {
         Individual individual = new Individual(hmrcIndividual.firstName(), hmrcIndividual.lastName(), hmrcIndividual.nino());
         IncomeRecord incomeRecord = new IncomeRecord(incomes, taxReturns, multipleEmployments, hmrcIndividual);
 
-        FinancialStatusCheckResponse response = service.monthlyCheck(LocalDate.now(),
+        CategoryCheck check = service.monthlyCheck(LocalDate.now(),
             0,
             LocalDate.now().minusMonths(6),
             incomeRecord,
             individual);
 
-        assertThat(response.categoryChecks().get(0).individuals().get(0).employers().size()).isEqualTo(2);
+        assertThat(check.individuals().get(0).employers().size()).isEqualTo(2);
     }
 
     @Test
@@ -229,6 +230,7 @@ public class FinancialStatusServiceTest {
         when(mockFinancialStatusRequest.applicants()).thenReturn(applicants);
 
         when(mockNinoUtils.redact(realNino)).thenReturn("RedactedNino");
+        when(mockNinoUtils.sanitise(realNino)).thenReturn("SanitisedNino");
 
         LocalDate fiveDaysAgo = LocalDate.now().minusDays(5);
         when(mockFinancialStatusRequest.applicationRaisedDate()).thenReturn(fiveDaysAgo);

@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.proving.income.api.domain.*;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
+import uk.gov.digital.ho.proving.income.calculation.CalculationRequest;
+import uk.gov.digital.ho.proving.income.calculation.CalculationResult;
+import uk.gov.digital.ho.proving.income.calculation.CalculationType;
 import uk.gov.digital.ho.proving.income.domain.FinancialCheckResult;
 import uk.gov.digital.ho.proving.income.domain.Individual;
 import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient;
@@ -109,26 +112,43 @@ public class FinancialStatusService {
     }
 
     private FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
+
+        FinancialStatusCheckResponse response = new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), new ArrayList<>());
+
+        CategoryCheck categoryACheck;
         switch (calculateFrequency(incomeRecord)) {
             case CALENDAR_MONTHLY:
-                return monthlyCheck(applicationRaisedDate, dependants, startSearchDate, incomeRecord, individual);
+                categoryACheck = monthlyCheck(applicationRaisedDate, dependants, startSearchDate, incomeRecord, individual);
+                break;
             case WEEKLY:
-                return weeklyCheck(applicationRaisedDate, dependants, startSearchDate, incomeRecord, individual);
+                categoryACheck = weeklyCheck(applicationRaisedDate, dependants, startSearchDate, incomeRecord, individual);
+                break;
             case CHANGED:
-                return unableToCalculate(applicationRaisedDate, startSearchDate, incomeRecord, individual, FinancialCheckValues.PAY_FREQUENCY_CHANGE);
+                categoryACheck = unableToCalculate(applicationRaisedDate, startSearchDate, incomeRecord, individual, FinancialCheckValues.PAY_FREQUENCY_CHANGE);
+                break;
             default:
-                return unableToCalculate(applicationRaisedDate, startSearchDate, incomeRecord, individual, FinancialCheckValues.UNKNOWN_PAY_FREQUENCY);
+                categoryACheck = unableToCalculate(applicationRaisedDate, startSearchDate, incomeRecord, individual, FinancialCheckValues.UNKNOWN_PAY_FREQUENCY);
         }
+
+        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
+        incomeRecords.put(individual, incomeRecord);
+        CalculationRequest calculationRequest = CalculationRequest.create(applicationRaisedDate, startSearchDate, incomeRecords, dependants);
+        CalculationResult catBResult = CalculationType.CATEGORY_B_NON_SALARIED.getCalculator().calculate(calculationRequest);
+        CategoryCheck categoryBCheck = new CategoryCheck("B", catBResult.result(), applicationRaisedDate, startSearchDate, catBResult.financialCheckValue(), catBResult.threshold(), catBResult.individuals());
+
+        response.categoryChecks().add(categoryACheck);
+        response.categoryChecks().add(categoryBCheck);
+        return response;
     }
 
-    private FinancialStatusCheckResponse unableToCalculate(LocalDate applicationRaisedDate, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual, FinancialCheckValues reason) {
+    private CategoryCheck unableToCalculate(LocalDate applicationRaisedDate, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual, FinancialCheckValues reason) {
         List<String> employers = incomeRecord.employments().stream().map(employments -> employments.employer().name()).collect(Collectors.toList());
         CheckedIndividual checkedIndividual = new CheckedIndividual(individual.nino(), employers);
         CategoryCheck categoryCheck = new CategoryCheck("A", false, applicationRaisedDate, startSearchDate, reason, BigDecimal.ZERO, Arrays.asList(checkedIndividual));
-        return new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), Arrays.asList(categoryCheck));
+        return categoryCheck;
     }
 
-    private FinancialStatusCheckResponse weeklyCheck(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
+    private CategoryCheck weeklyCheck(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
         FinancialCheckResult categoryAWeeklySalaried =
             IncomeValidator.validateCategoryAWeeklySalaried(
                 incomeRecord.paye(),
@@ -144,11 +164,11 @@ public class FinancialStatusService {
         } else {
             categoryCheck = new CategoryCheck("A", false, applicationRaisedDate, startSearchDate, categoryAWeeklySalaried.financialCheckValue(), categoryAWeeklySalaried.threshold(), categoryAWeeklySalaried.individuals());
         }
-        return new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), Arrays.asList(categoryCheck));
+        return categoryCheck;
 
     }
 
-    FinancialStatusCheckResponse monthlyCheck(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
+    CategoryCheck monthlyCheck(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
         FinancialCheckResult categoryAMonthlySalaried =
             IncomeValidator.validateCategoryAMonthlySalaried(
                 incomeRecord.deDuplicatedIncome(),
@@ -164,7 +184,7 @@ public class FinancialStatusService {
         } else {
             categoryCheck = new CategoryCheck("A", false, applicationRaisedDate, startSearchDate, categoryAMonthlySalaried.financialCheckValue(), categoryAMonthlySalaried.threshold(), categoryAMonthlySalaried.individuals());
         }
-        return new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), Arrays.asList(categoryCheck));
+        return categoryCheck;
     }
 
     private ResponseStatus successResponse() {

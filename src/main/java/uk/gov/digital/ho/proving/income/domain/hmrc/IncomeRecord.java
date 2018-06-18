@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,10 @@ public class IncomeRecord {
         return paye.stream()
                         .distinct()
                         .collect(Collectors.toList());
+    }
+
+    public LocalDate dateOfBirth() {
+        return hmrcIndividual != null?hmrcIndividual.dateOfBirth():null;
     }
 }
 
