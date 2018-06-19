@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import uk.gov.digital.ho.proving.income.domain.Individual;
 
 import java.beans.ConstructorProperties;
 import java.util.List;

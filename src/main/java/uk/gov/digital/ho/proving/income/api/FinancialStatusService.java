@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.proving.income.api.domain.*;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
-import uk.gov.digital.ho.proving.income.calculation.CalculationRequest;
-import uk.gov.digital.ho.proving.income.calculation.CalculationResult;
-import uk.gov.digital.ho.proving.income.calculation.CalculationType;
-import uk.gov.digital.ho.proving.income.domain.Individual;
-import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient;
-import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcIndividual;
-import uk.gov.digital.ho.proving.income.domain.hmrc.Identity;
-import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
+import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
+import uk.gov.digital.ho.proving.income.api.domain.Individual;
+import uk.gov.digital.ho.proving.income.hmrc.HmrcClient;
+import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
+import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
+import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
+import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
+import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationType;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -111,13 +111,13 @@ public class FinancialStatusService {
         FinancialStatusCheckResponse response = new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), new ArrayList<>());
         Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
         incomeRecords.put(individual, incomeRecord);
-        CalculationRequest calculationRequest = CalculationRequest.create(applicationRaisedDate, startSearchDate, incomeRecords, dependants);
+        IncomeValidationRequest incomeValidationRequest = IncomeValidationRequest.create(applicationRaisedDate, startSearchDate, incomeRecords, dependants);
 
-        CalculationResult catAResult = CalculationType.CATEGORY_A_SALARIED.calculator().calculate(calculationRequest);
-        CategoryCheck categoryACheck = new CategoryCheck("A", catAResult.result(), applicationRaisedDate, startSearchDate, catAResult.financialCheckValue(), catAResult.threshold(), catAResult.individuals());
+        IncomeValidationResult catAResult = IncomeValidationType.CATEGORY_A_SALARIED.calculator().validate(incomeValidationRequest);
+        CategoryCheck categoryACheck = new CategoryCheck("A", catAResult.status().isPassed(), applicationRaisedDate, startSearchDate, catAResult.status(), catAResult.threshold(), catAResult.individuals());
 
-        CalculationResult catBResult = CalculationType.CATEGORY_B_NON_SALARIED.calculator().calculate(calculationRequest);
-        CategoryCheck categoryBCheck = new CategoryCheck("B", catBResult.result(), applicationRaisedDate, startSearchDate, catBResult.financialCheckValue(), catBResult.threshold(), catBResult.individuals());
+        IncomeValidationResult catBResult = IncomeValidationType.CATEGORY_B_NON_SALARIED.calculator().validate(incomeValidationRequest);
+        CategoryCheck categoryBCheck = new CategoryCheck("B", catBResult.status().isPassed(), applicationRaisedDate, startSearchDate, catBResult.status(), catBResult.threshold(), catBResult.individuals());
 
         response.categoryChecks().add(categoryACheck);
         response.categoryChecks().add(categoryBCheck);

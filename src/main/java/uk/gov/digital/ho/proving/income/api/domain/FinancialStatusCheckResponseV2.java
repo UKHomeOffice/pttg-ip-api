@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.proving.income.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import uk.gov.digital.ho.proving.income.domain.Individual;
 
 @Deprecated
 public class FinancialStatusCheckResponseV2 extends BaseResponse {

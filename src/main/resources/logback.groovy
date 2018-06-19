@@ -43,7 +43,7 @@ appender("FILE", FileAppender) {
     }
 }
 
-logger("uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecordServiceNotProductionResponseLogger", DEBUG, ["FILE"], additivity = false)
+logger("uk.gov.digital.ho.proving.income.hmrc.IncomeRecordServiceNotProductionResponseLogger", DEBUG, ["FILE"], additivity = false)
 
 // Define logging levels for specific packages
 logger("org.eclipse.jetty", WARN)

@@ -11,7 +11,7 @@
 //import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusCheckResponse;
 //import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusRequest;
 //import uk.gov.digital.ho.proving.income.audit.AuditClient;
-//import uk.gov.digital.ho.proving.income.domain.Individual;
+//import uk.gov.digital.ho.proving.income.api.domain.Individual;
 //import uk.gov.digital.ho.proving.income.domain.hmrc.*;
 //import utils.LogCapturer;
 //

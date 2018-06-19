@@ -9,22 +9,18 @@ import uk.gov.digital.ho.proving.income.api.NinoUtils
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
-import uk.gov.digital.ho.proving.income.domain.hmrc.AnnualSelfAssessmentTaxReturn
-import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient
-import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
-import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcIndividual
-
-import java.time.LocalDate
+import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn
+import uk.gov.digital.ho.proving.income.hmrc.HmrcClient
 
 import static java.time.LocalDate.now
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
-import static uk.gov.digital.ho.proving.income.api.domain.FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD
-import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.*
+import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE
+import static uk.gov.digital.ho.proving.income.validator.TestData.getConsecutiveIncomes2;
 
 class FinancialServiceSpec extends Specification {
 
@@ -42,7 +38,7 @@ class FinancialServiceSpec extends Specification {
 
     def "valid NINO is looked up on the earnings service 2"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
@@ -110,7 +106,7 @@ class FinancialServiceSpec extends Specification {
 
     def "can submit more than zero dependants"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
@@ -154,7 +150,7 @@ class FinancialServiceSpec extends Specification {
 
     def "monthly payment uses 182 days in start date calculation"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
@@ -180,7 +176,7 @@ class FinancialServiceSpec extends Specification {
 
         mockNinoUtils.sanitise(nino) >> nino
 
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new HmrcIndividual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
 
         String requestType
         String requestEventId
@@ -196,7 +192,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":1}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Duncan\",\"surname\":\"Smith\",\"dateOfBirth\":\"1970-01-01\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":1}")
         )
 
         then:
@@ -205,9 +201,9 @@ class FinancialServiceSpec extends Specification {
 
         requestType == INCOME_PROVING_FINANCIAL_STATUS_REQUEST.name()
         requestEvent['nino'] == nino
-        requestEvent['forename'] == "Mark"
-        requestEvent['surname'] == "Jones"
-        requestEvent['dateOfBirth'] == "1980-01-13"
+        requestEvent['forename'] == "Duncan"
+        requestEvent['surname'] == "Smith"
+        requestEvent['dateOfBirth'] == "1970-01-01"
         requestEvent['applicationRaisedDate'] == applicationRaisedDate
         requestEvent['dependants'] == Integer.parseInt(dependants)
         requestEvent['method'] == "get-financial-status"
@@ -215,8 +211,8 @@ class FinancialServiceSpec extends Specification {
         responseType == INCOME_PROVING_FINANCIAL_STATUS_RESPONSE.name()
         responseEvent['method'] == "get-financial-status"
         responseEvent['response'].individuals[0].title == ""
-        responseEvent['response'].individuals[0].forename == "Marcus"
-        responseEvent['response'].individuals[0].surname == "Jonesmen"
+        responseEvent['response'].individuals[0].forename == "Duncan"
+        responseEvent['response'].individuals[0].surname == "Smith"
         responseEvent['response'].individuals[0].nino == nino
         responseEvent['response'].categoryChecks[0].category == category
         responseEvent['response'].categoryChecks[0].passed == false
@@ -233,34 +229,34 @@ class FinancialServiceSpec extends Specification {
 
     def "individual details from HMRC are returned when present"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new HmrcIndividual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Duncan\",\"surname\":\"Smith\",\"dateOfBirth\":\"1970-01-01\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
-        jsonContent.individuals[0].forename == "Marcus"
-        jsonContent.individuals[0].surname == "Jonesmen"
+        jsonContent.individuals[0].forename == "Duncan"
+        jsonContent.individuals[0].surname == "Smith"
     }
 
     def "individual details from request are returned when HMRC individual not present"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), null)
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Duncan\",\"surname\":\"Smith\",\"dateOfBirth\":\"1970-01-01\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
-        jsonContent.individuals[0].forename == "Mark"
-        jsonContent.individuals[0].surname == "Jones"
+        jsonContent.individuals[0].forename == "Duncan"
+        jsonContent.individuals[0].surname == "Smith"
     }
 
 }

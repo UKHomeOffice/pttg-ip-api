@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.api.domain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.digital.ho.proving.income.application.ServiceConfiguration;
+import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -26,7 +27,7 @@ public class CategoryCheckSerializeTest {
         assertThat(categoryCheck.passed()).isEqualTo(false);
         assertThat(categoryCheck.applicationRaisedDate()).isEqualTo(LocalDate.of(2017, Month.DECEMBER, 31));
         assertThat(categoryCheck.assessmentStartDate()).isEqualTo(LocalDate.of(2016, Month.DECEMBER, 31));
-        assertThat(categoryCheck.failureReason()).isEqualTo(FinancialCheckValues.NON_CONSECUTIVE_MONTHS);
+        assertThat(categoryCheck.failureReason()).isEqualTo(IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
         assertThat(categoryCheck.threshold()).isEqualTo(new BigDecimal("1560.50"));
         assertThat(categoryCheck.individuals()).isNotNull();
         assertThat(categoryCheck.individuals().size()).isEqualTo(0);
@@ -34,7 +35,7 @@ public class CategoryCheckSerializeTest {
 
     @Test
     public void thatObjectIsSerialized() throws IOException {
-        CategoryCheck categoryCheck = new CategoryCheck("category-value", false, LocalDate.of(2017, Month.DECEMBER, 31), LocalDate.of(2016, Month.DECEMBER, 31), FinancialCheckValues.NON_CONSECUTIVE_MONTHS, new BigDecimal("1560.50"), new ArrayList<>());
+        CategoryCheck categoryCheck = new CategoryCheck("category-value", false, LocalDate.of(2017, Month.DECEMBER, 31), LocalDate.of(2016, Month.DECEMBER, 31), IncomeValidationStatus.NON_CONSECUTIVE_MONTHS, new BigDecimal("1560.50"), new ArrayList<>());
 
         String json = objectMapper.writeValueAsString(categoryCheck);
 
