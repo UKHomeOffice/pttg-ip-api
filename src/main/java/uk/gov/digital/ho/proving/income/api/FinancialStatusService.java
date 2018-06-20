@@ -1,11 +1,13 @@
 package uk.gov.digital.ho.proving.income.api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.proving.income.api.domain.*;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
+import uk.gov.digital.ho.proving.income.validator.IncomeValidationService;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.api.domain.Individual;
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient;
@@ -29,6 +31,9 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 @RestController
 @Slf4j
 public class FinancialStatusService {
+
+    @Autowired
+    private IncomeValidationService incomeValidationService;
 
     private final HmrcClient hmrcClient;
     private final AuditClient auditClient;
@@ -109,18 +114,12 @@ public class FinancialStatusService {
     private FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
 
         FinancialStatusCheckResponse response = new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), new ArrayList<>());
+
         Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
         incomeRecords.put(individual, incomeRecord);
         IncomeValidationRequest incomeValidationRequest = IncomeValidationRequest.create(applicationRaisedDate, startSearchDate, incomeRecords, dependants);
 
-        IncomeValidationResult catAResult = IncomeValidationType.CATEGORY_A_SALARIED.calculator().validate(incomeValidationRequest);
-        CategoryCheck categoryACheck = new CategoryCheck("A", catAResult.status().isPassed(), applicationRaisedDate, startSearchDate, catAResult.status(), catAResult.threshold(), catAResult.individuals());
-
-        IncomeValidationResult catBResult = IncomeValidationType.CATEGORY_B_NON_SALARIED.calculator().validate(incomeValidationRequest);
-        CategoryCheck categoryBCheck = new CategoryCheck("B", catBResult.status().isPassed(), applicationRaisedDate, startSearchDate, catBResult.status(), catBResult.threshold(), catBResult.individuals());
-
-        response.categoryChecks().add(categoryACheck);
-        response.categoryChecks().add(categoryBCheck);
+        response.categoryChecks().addAll(incomeValidationService.validate(incomeValidationRequest));
         return response;
     }
 

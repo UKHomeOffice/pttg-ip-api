@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.proving.income.validator;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 
 @Slf4j
+@Service
 public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
     private static final Integer NUMBER_OF_MONTHS = 6;
@@ -41,8 +43,8 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
                 removeDuplicates(applicantIncome.incomeRecord().paye()),
                 NUMBER_OF_MONTHS,
                 monthlyThreshold,
-                incomeValidationRequest.lower(),
-                incomeValidationRequest.upper());
+                incomeValidationRequest.assessmentStartDate(),
+                incomeValidationRequest.applicationRaisedDate());
 
         return new IncomeValidationResult(status, monthlyThreshold, Arrays.asList(checkedIndividual));
     }

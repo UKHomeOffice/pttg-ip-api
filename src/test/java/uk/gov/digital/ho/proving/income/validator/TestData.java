@@ -361,6 +361,21 @@ public class TestData {
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
+    public static List<ApplicantIncome> fortnightlyPayment(LocalDate raisedDate) {
+        List<Income> incomes = new ArrayList<>();
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), null, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1).minusDays(14), null, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1).minusDays(28), null, null, PIZZA_HUT_PAYE_REF ));
+        return getApplicantIncomes(incomes, new Employer("n/a", "n/a"));
+    }
+
+    public static List<ApplicantIncome> changedFrequencyPayments(LocalDate raisedDate) {
+        List<Income> incomes = new ArrayList<>();
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(2), null, 1, PIZZA_HUT_PAYE_REF ));
+        return getApplicantIncomes(incomes, new Employer("n/a", "n/a"));
+    }
+
     public static LocalDate getDate(int year, Month month, int day) {
         LocalDate localDate = LocalDate.of(year,month,day);
         return localDate;

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.validator;
 
+import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 
+@Service
 public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
     private final static Integer NUMBER_OF_WEEKS = 26;
@@ -39,8 +41,8 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
                 removeDuplicates(applicantIncome.incomeRecord().paye()),
                 NUMBER_OF_WEEKS,
                 weeklyThreshold,
-                incomeValidationRequest.lower(),
-                incomeValidationRequest.upper());
+                incomeValidationRequest.assessmentStartDate(),
+                incomeValidationRequest.applicationRaisedDate());
 
         return new IncomeValidationResult(status, weeklyThreshold, Arrays.asList(checkedIndividual));
     }
