@@ -10,21 +10,13 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
     #             Applications with one dependant will be required to meet an amended threshold value of £22,400
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800
 
-    Scenario: 01 Helena has no dependents. Her income history shows a payment that does not meet the employment check in the immediate 32 days (2018-03-30) and payments in all the 11 months prior that meet the annual threshold
+    Scenario: No dependents. Employment check not met. Annual check met.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
             | 2018-03-30 | 1549.99 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 1050.01 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 3000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-27 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-09-29 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-08-25 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-07-28 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-06-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-05-26 | 3000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 1550.01 | FP/Ref1        | Flying Pizza Ltd |
+
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | GH345678S  |
@@ -37,13 +29,13 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Failure Reason            | Does not meet employment check |
             | Application Raised date   | 2018-04-30                     |
             | Assessment Start Date     | 2017-04-30                     |
-            | National Insurance Number | GH345678S                      |
+            | NINO                      | GH345678S                      |
             | Threshold                 | 18600                          |
             | Employer Name             | Flying Pizza Ltd               |
 
     ##############
 
-    Scenario: 02 Erika has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days (2018-03-30) and payments in all the 11 months prior that do not meet the annual threshold
+    Scenario: No dependents. Employment check met. Annual check not met.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -70,38 +62,13 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Failure Reason            | Below Threshold  |
             | Application Raised date   | 2018-04-30       |
             | Assessment Start Date     | 2017-04-30       |
-            | National Insurance Number | GH345678S        |
+            | NINO                      | GH345678S        |
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
     ##############
 
-    Scenario: 03 Ross has no dependents. His income history shows a payment that meets the employment check in the immediate 32 days (2018-03-30) and one payment at the end of the range that does not meet the annual threshold
-
-        Given HMRC has the following income records:
-            | Date       | Amount  | PAYE Reference | Employer         |
-            | 2018-03-30 | 1550.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-04-30 | 1549.99 | FP/Ref1        | Flying Pizza Ltd |
-
-
-        When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | GH345678S  |
-            | Application Raised Date | 2018-04-30 |
-
-        Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200              |
-            | Category                  | B                |
-            | Financial requirement met | false            |
-            | Failure Reason            | Below Threshold  |
-            | Application Raised date   | 2018-04-30       |
-            | Assessment Start Date     | 2017-04-30       |
-            | National Insurance Number | GH345678S        |
-            | Threshold                 | 18600            |
-            | Employer Name             | Flying Pizza Ltd |
-
-    ##############
-
-    Scenario: 04 Phillipa has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days (2018-03-30) and one payment that meets the annual threshold just outside of the range
+    Scenario: No dependents. Employment check met. Annual check not met, boundary test.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
@@ -121,27 +88,19 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Failure Reason            | Below Threshold  |
             | Application Raised date   | 2018-04-30       |
             | Assessment Start Date     | 2017-04-30       |
-            | National Insurance Number | GH345678S        |
+            | NINO                      | GH345678S        |
             | Threshold                 | 18600            |
             | Employer Name             | Flying Pizza Ltd |
 
     ##############
 
-    Scenario: 05 Graham has no dependents. His income history shows a payment that meets the employment check in the immediate 32 days (2018-03-30) and payments from multiple employers in all months that do not meet the annual threshold
+    Scenario: No dependents. Employment check not met with multiple employers. Annual check met.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
-            | 2018-03-30 | 1549.99 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 1050.01 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 1000.00 | F4U/Ref2       | Flowers 4U Ltd   |
-            | 2017-12-29 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 3000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-27 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-09-29 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-08-25 | 1000.00 | SP/Ref3        | Steve's Pasties  |
-            | 2017-07-28 | 2000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-06-30 | 1000.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-05-26 | 3000.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-30 |   00.01 | FP/Ref2        | Specsavers       |
+            | 2018-03-30 | 1549.98 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 1550.01 | FP/Ref1        | Flying Pizza Ltd |
 
 
         When the Income Proving v2 TM Family API is invoked with the following:
@@ -149,49 +108,31 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200                                               |
-            | Category                  | B                                                 |
-            | Financial requirement met | false                                             |
-            | Failure Reason            | Below Threshold                                   |
-            | Application Raised date   | 2018-04-30                                        |
-            | Assessment Start Date     | 2017-04-30                                        |
-            | National Insurance Number | GH345678S                                         |
-            | Threshold                 | 18600                                             |
-            | Employer Name             | Flying Pizza Ltd, Flowers 4U Ltd, Steve's Pasties |
+            | HTTP Status               | 200                          |
+            | Category                  | B                            |
+            | Financial requirement met | false                        |
+            | Failure Reason            | Below Threshold              |
+            | Application Raised date   | 2018-04-30                   |
+            | Assessment Start Date     | 2017-04-30                   |
+            | NINO                      | GH345678S                    |
+            | Threshold                 | 18600                        |
+            | Employer Name             | Flying Pizza Ltd, Specsavers |
 
              ##############
 
-    Scenario: 06 Craig has no dependents. His income history shows a payment that meets the employment check in the immediate 32 days (2018-04-22) and does not meet the threshold even with a partners income to supplement
+    Scenario: No dependents. Employment check met. Annual check not met with partners income included.
 
         Given HMRC has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
             | 2018-04-22 | 1550.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-03-29 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 |  500.00 | F4U/Ref2       | Flowers 4U Ltd   |
-            | 2017-11-30 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-27 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-09-29 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-08-25 |  500.00 | F4U/Ref2       | Flowers 4U Ltd   |
-            | 2017-07-28 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-06-30 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-05-26 |  500.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-29 |  549.99 | FP/Ref1        | Flying Pizza Ltd |
+
 
         And the applicants partner has the following income records:
             | Date       | Amount  | PAYE Reference | Employer         |
-            | 2018-04-21 |  549.99 | RM/Ref3        | Reliable Motors  |
-            | 2018-03-27 | 1000.00 | RM/Ref3        | Reliable Motors  |
-            | 2018-02-25 | 1000.00 | RM/Ref3        | Reliable Motors  |
-            | 2018-01-30 | 1000.00 | RM/Ref3        | Reliable Motors  |
-            | 2017-12-27 | 1000.00 | RM/Ref3        | Reliable Motors  |
-            | 2017-11-29 | 1000.00 | RM/Ref3        | Reliable Motors  |
-            | 2017-10-27 | 1000.00 | RM/Ref3        | Reliable Motors  |
-            | 2017-09-25 | 1000.00 | QE/Ref4        | Quality Estates  |
-            | 2017-08-28 | 1000.00 | QE/Ref4        | Quality Estates  |
-            | 2017-07-27 | 1000.00 | RM/Ref3        | Reliable Motors  |
-            | 2017-06-30 | 1000.00 | RM/Ref3        | Reliable Motors  |
-            | 2017-05-29 | 1000.00 | RM/Ref3        | Reliable Motors  |
+            | 2018-04-21 |  500.00 | RM/Ref3        | Reliable Motors  |
+            | 2018-03-27 |  500.00 | RM/Ref3        | Reliable Motors  |
+
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO - Applicant        | WE345065B  |
@@ -199,24 +140,25 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Application Raised Date | 2018-05-23 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200                                                                |
-            | Category                  | B                                                                  |
-            | Financial requirement met | false                                                              |
-            | Failure Reason            | Below Threshold                                                    |
-            | Application Raised date   | 2018-05-23                                                         |
-            | Assessment Start Date     | 2017-05-23                                                         |
-            | National Insurance Number | WE345065B                                                          |
-            | National Insurance Number | HJ372689H                                                          |
-            | Threshold                 | 18600                                                              |
-            | Employer Name             | Flying Pizza Ltd, Flowers 4U Ltd, Reliable Motors, Quality Estates |
+            | HTTP Status               | 200              |
+            | Category                  | B                |
+            | Financial requirement met | false            |
+            | Failure Reason            | Below Threshold  |
+            | Application Raised date   | 2018-05-23       |
+            | Assessment Start Date     | 2017-05-23       |
+            | NINO - Applicant          | WE345065B        |
+            | NINO - Partner            | HJ372689H        |
+            | Threshold                 | 18600            |
+            | Employer Name - Applicant | Flying Pizza Ltd |
+            | Employer Name - Partner   | Reliable Motors  |
 
         ##############
 
-    Scenario: 07 Cheryl has one dependent. Her income history shows a payment that meets the employment check in the immediate 32 days (2017-11-09) and payments in all the 12 months prior that do not meet the annual threshold
+    Scenario: One dependent. Employment check met. Annual check not met.
 
-        Given HMRC has the following income records:
+        Given HMRC has the following income records:   FIX DATES
             | Date       | Amount  | PAYE Reference | Employer         |
-            | 2017-11-09 | 1550.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-09 | 1866.67 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-30 | 1866.67 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 1866.67 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-31 | 1866.67 | FP/Ref1        | Flying Pizza Ltd |
@@ -227,7 +169,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | 2017-08-25 | 1866.67 | FP/Ref1        | Flying Pizza Ltd |
             | 2017-07-28 | 1866.67 | FP/Ref1        | Flying Pizza Ltd |
             | 2017-06-30 | 1866.67 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-05-26 | 2183.29 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-05-26 | 1866.62 | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | DF765678S  |
@@ -240,17 +182,17 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Failure Reason            | Below Threshold  |
             | Application Raised date   | 2017-12-10       |
             | Assessment Start Date     | 2016-12-10       |
-            | National Insurance Number | DF765678S        |
+            | NINO                      | DF765678S        |
             | Threshold                 | 22400            |
             | Employer Name             | Flying Pizza Ltd |
 
-                ##############
+    ##############
 
-    Scenario: 08 Ashan has two dependents. His income history shows a payment that meets the employment check in the immediate 32 days (2017-11-09) and payments in all the 12 months prior that do not meet the annual threshold
+    Scenario: Two dependent. Employment check met. Annual check not met.
 
-        Given HMRC has the following income records:
+        Given HMRC has the following income records: FIX DATES
             | Date       | Amount  | PAYE Reference | Employer         |
-            | 2017-11-09 | 1550.00 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-09 | 2066.67 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-30 | 2066.67 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 2066.67 | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-31 | 2066.67 | FP/Ref1        | Flying Pizza Ltd |
@@ -261,7 +203,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | 2017-08-25 | 2066.67 | FP/Ref1        | Flying Pizza Ltd |
             | 2017-07-28 | 2066.67 | FP/Ref1        | Flying Pizza Ltd |
             | 2017-06-30 | 2066.67 | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-05-26 | 2583.29 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-05-26 | 2066.62 | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | DF765678S  |
@@ -274,6 +216,62 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Failure Reason            | Below Threshold  |
             | Application Raised date   | 2017-12-10       |
             | Assessment Start Date     | 2016-12-10       |
-            | National Insurance Number | DF765678S        |
+            | NINO                      | DF765678S        |
             | Threshold                 | 24800            |
             | Employer Name             | Flying Pizza Ltd |
+
+    ##############
+
+    Scenario: Three dependents. Employment check met. Annual check met.
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | PAYE Reference | Employer         |
+            | 2018-04-09 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-30 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-27 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-09-29 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-08-25 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-07-28 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-30 | 2266.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-05-26 | 2266.62 | FP/Ref1        | Flying Pizza Ltd |
+
+        When the Income Proving v2 TM Family API is invoked with the following:
+            | NINO                    | DF765678S  |
+            | Application Raised Date | 2018-04-30 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200              |
+            | Category                  | B                |
+            | Financial requirement met | true             |
+            | Application Raised date   | 2017-12-10       |
+            | Assessment Start Date     | 2016-12-10       |
+            | NINO                      | DF765678S        |
+            | Threshold                 | 27200            |
+            | Employer Name             | Flying Pizza Ltd |
+
+    ##############
+
+    Scenario: Seven dependents. Employment check met. Annual check met.
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | PAYE Reference | Employer         |
+            | 2018-04-09 | 3066.67 | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-30 | 3066.66 | FP/Ref2        | Tresco's         |
+
+        When the Income Proving v2 TM Family API is invoked with the following:
+            | NINO                    | DF765678S  |
+            | Application Raised Date | 2018-04-30 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200                        |
+            | Category                  | B                          |
+            | Financial requirement met | true                       |
+            | Application Raised date   | 2017-12-10                 |
+            | Assessment Start Date     | 2016-12-10                 |
+            | NINO                      | DF765678S                  |
+            | Threshold                 | 36800                      |
+            | Employer Name             | Flying Pizza Ltd, Tresco's |

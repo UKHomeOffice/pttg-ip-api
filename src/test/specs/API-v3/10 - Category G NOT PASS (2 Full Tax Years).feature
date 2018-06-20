@@ -59,7 +59,7 @@ Feature: Category G Financial Requirement - Self-Assessment - Solo & Combined Ap
     Scenario: 03 Chrissy has no dependents. Her income history shows self assessment payments in the last two full tax years that do not meet the threshold and still does not even when supplemented with her partners.
 
 
-        Given HMRC has the following income records:
+        Given HMRC has the following income records
             | Date    | Amount   |
             | 2016-17 |  4650.00 |
             | 2015-16 |  4650.00 |
