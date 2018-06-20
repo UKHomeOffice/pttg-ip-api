@@ -50,7 +50,7 @@ public class FrequencyCalculator {
     }
 
     private static int numberOfDifferentFrequencyTypes(IncomeRecord incomeRecord) {
-        return incomeRecord.getIncome().stream().map(
+        return incomeRecord.paye().stream().map(
             income ->
                 hasMonthlyNumber(income) ?
                     NUMBER_TYPE.HAS_MONTHLY_NUMBER :
@@ -61,23 +61,23 @@ public class FrequencyCalculator {
     }
 
     private static boolean hasWeeklyNumber(Income income) {
-        return income.getWeekPayNumber() != null;
+        return income.weekPayNumber() != null;
     }
 
 
     private static Frequency calculateByMonthNumbers(IncomeRecord incomeRecord) {
-        if (incomeRecord.getIncome().stream().allMatch(FrequencyCalculator::hasMonthlyNumber)) {
+        if (incomeRecord.paye().stream().allMatch(FrequencyCalculator::hasMonthlyNumber)) {
             return Frequency.CALENDAR_MONTHLY;
         }
         return Frequency.UNKNOWN;
     }
 
     private static boolean hasMonthlyNumber(Income income) {
-        return income.getMonthPayNumber() != null;
+        return income.monthPayNumber() != null;
     }
 
     private static Frequency calculateByWeekNumbers(IncomeRecord incomeRecord) {
-        if (incomeRecord.getIncome().stream().allMatch(FrequencyCalculator::hasWeeklyNumber)) {
+        if (incomeRecord.paye().stream().allMatch(FrequencyCalculator::hasWeeklyNumber)) {
             if (hasConsecutiveWeekNumbers(incomeRecord)) {
                 return Frequency.WEEKLY;
             }
@@ -105,9 +105,9 @@ public class FrequencyCalculator {
 
     private static List<Integer> uniqueWeekNumbersSorted(IncomeRecord incomeRecord) {
         return new ArrayList<>(
-            incomeRecord.getIncome().
+            incomeRecord.paye().
                 stream().
-                map(Income::getWeekPayNumber).
+                map(Income::weekPayNumber).
                 collect(Collectors.toSet())).
             stream().
             sorted().
@@ -125,15 +125,15 @@ public class FrequencyCalculator {
     }
 
     private static Frequency calculateByPaymentNumbers(IncomeRecord incomeRecord) {
-        Optional<LocalDate> max = incomeRecord.getIncome().stream().map(Income::getPaymentDate).max(Comparator.naturalOrder());
-        Optional<LocalDate> min = incomeRecord.getIncome().stream().map(Income::getPaymentDate).min(Comparator.naturalOrder());
+        Optional<LocalDate> max = incomeRecord.paye().stream().map(Income::paymentDate).max(Comparator.naturalOrder());
+        Optional<LocalDate> min = incomeRecord.paye().stream().map(Income::paymentDate).min(Comparator.naturalOrder());
 
         if (!max.isPresent() || !min.isPresent()) {
             return Frequency.CALENDAR_MONTHLY;
         }
 
         long daysInRange =  DAYS.between(min.get(), max.get());
-        long numberOfPayments = incomeRecord.getIncome().size();
+        long numberOfPayments = incomeRecord.paye().size();
 
         if (numberOfPayments < 2) {
             return Frequency.CALENDAR_MONTHLY;

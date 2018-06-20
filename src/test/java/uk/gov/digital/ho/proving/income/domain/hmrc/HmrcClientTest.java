@@ -66,6 +66,7 @@ public class HmrcClientTest {
             .thenReturn(new ResponseEntity<>(new IncomeRecord(
                 emptyList(),
                 emptyList(),
+                emptyList(),
                 aIndividual()
             ), HttpStatus.OK));
 
@@ -86,8 +87,8 @@ public class HmrcClientTest {
                                                                 LocalDate.of(1965, Month.JULY, 19), "NE121212A")),
                                                     captorResponseBody.capture());
 
-        assertThat(captorResponseBody.getValue().getIncome()).isEmpty();
-        assertThat(captorResponseBody.getValue().getEmployments()).isEmpty();
+        assertThat(captorResponseBody.getValue().paye()).isEmpty();
+        assertThat(captorResponseBody.getValue().employments()).isEmpty();
     }
 
     @Test
@@ -177,8 +178,8 @@ public class HmrcClientTest {
         assertThat(captorEntity.getValue().getHeaders()).containsEntry(AUTHORIZATION, Arrays.asList("some basic auth"));
     }
 
-    private Individual aIndividual() {
-        return new Individual("Joe", "Bloggs", "NE121212C", LocalDate.now());
+    private HmrcIndividual aIndividual() {
+        return new HmrcIndividual("Joe", "Bloggs", "NE121212C", LocalDate.now());
     }
 
 

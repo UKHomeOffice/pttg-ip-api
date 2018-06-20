@@ -35,7 +35,7 @@ Feature: Pass - Category A Financial Requirement - with dependants - monthly
             | 2014-09-15 | 4166.67 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-15 | 4166.67 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | TL123456A  |
             | Application raised date | 2015-01-23 |
             | Dependants              | 1          |
@@ -67,7 +67,7 @@ Feature: Pass - Category A Financial Requirement - with dependants - monthly
             | 2015-08-02 | 3333.33 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2015-07-02 | 3333.33 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | SJ123456C  |
             | Application raised date | 2015-12-08 |
             | Dependants              | 3          |
@@ -98,7 +98,7 @@ Feature: Pass - Category A Financial Requirement - with dependants - monthly
             | 2014-09-30 | 5833.33 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-30 | 5833.33 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | WA987654B  |
             | Application raised date | 2015-02-28 |
             | Dependants              | 5          |

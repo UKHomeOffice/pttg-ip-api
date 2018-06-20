@@ -40,8 +40,8 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
                     | 2015-05-15 | 300.11 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
                     | 2015-05-08 | 300.11 |    01       |            | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | DV123456A  |
+        When the Income Proving v3 TM Family API is invoked with the following:
+            | NINO                    | SP123456A  |
             | Application Raised Date | 2015-11-03 |
 
         Then The Income Proving TM Family API provides the following result:
@@ -50,7 +50,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
             | Assessment start date     | 2015-05-05                   |
             | Application Raised date   | 2015-11-03                   |
-            | National Insurance Number | DV123456A                    |
+            | National Insurance Number | SP123456A                    |
             | Threshold                 | 357.69                       |
             | Employer Name             | Flying Pizza Ltd             |
 
@@ -92,7 +92,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
                     | 2015-05-15 | 400.99 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
                     | 2015-05-08 | 400.99 |    01       |            | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | PY123456B  |
             | Application Raised Date | 2015-11-03 |
 
@@ -142,7 +142,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
               | 2015-05-15 | 400.99 |    02       |            | FP/Ref2       | Crazy Pizza  Ltd |
               | 2015-05-08 | 400.99 |    01       |            | FP/Ref2       | Crazy Pizza  Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | RP123456C  |
             | Application Raised Date | 2015-11-03 |
 
@@ -191,7 +191,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
                     | 2015-05-22 | 357.70 |    03       |            | FP/Ref1       | Flying Pizza Ltd |
                     | 2015-05-15 | 357.70 |    02       |            | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | JJ123456A  |
             | Application Raised Date | 2015-11-03 |
 
@@ -265,7 +265,7 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
             | 2015-03-06 | 300.00 |    01       |             | FP/Ref2       | Flying Pizza Ltd |
             | 2015-03-06 | 260.60 |    01       |             | FP/Ref1       | Curry House Ltd  |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | GG987654A  |
             | Application Raised Date | 2015-09-03 |
 
@@ -320,7 +320,7 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
                     | 2015-05-08 | 357.00 |    01       |            | MP/Ref1       | Mambo Pizza Ltd  |
 
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | PJ123456A  |
             | Application Raised Date | 2015-11-03 |
 
@@ -365,8 +365,8 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
                     | 2015-06-05 | 658.50 |    05       |            | FP/Ref1       | Flying Pizza Ltd |
                     | 2015-05-29 | 658.50 |    04       |            | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | JF123456A  |
+        When the Income Proving v3 TM Family API is invoked with the following:
+            | NINO                    | PP123456A  |
             | Application Raised Date | 2015-11-03 |
 
         Then The Income Proving TM Family API provides the following result:
@@ -375,7 +375,7 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
             | Failure reason            | NOT_ENOUGH_RECORDS |
             | Assessment start date     | 2015-05-05         |
             | Application Raised date   | 2015-11-03         |
-            | National Insurance Number | JF123456A          |
+            | National Insurance Number | PP123456A          |
             | Threshold                 | 357.69             |
             | Employer Name             | Flying Pizza Ltd   |
 
@@ -407,8 +407,8 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
             | 2014-11-21 | 525.00  |    02       |            | FP/Ref1       | Flying Pizza Ltd |
             | 2014-11-14 | 525.00  |    01       |            | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | JF123456A  |
+        When the Income Proving v3 TM Family API is invoked with the following:
+            | NINO                    | PP123456A  |
             | Application Raised Date | 2015-05-12 |
 
 
@@ -418,6 +418,6 @@ Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He
                     | Failure reason            | PAY_FREQUENCY_CHANGE  |
                     | Assessment start date     | 2014-11-11            |
                     | Application Raised date   | 2015-05-12            |
-                    | National Insurance Number | JF123456A             |
+                    | National Insurance Number | PP123456A             |
                     | Threshold                 | 0                |
                     | Employer Name             | Flying Pizza Ltd      |

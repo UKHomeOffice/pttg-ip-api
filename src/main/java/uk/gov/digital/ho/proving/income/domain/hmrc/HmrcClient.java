@@ -60,17 +60,17 @@ public class HmrcClient {
                 IncomeRecord.class,
                 ImmutableMap.
                     <String, String>builder().
-                    put("firstName", identity.getFirstname()).
-                    put("lastName", identity.getLastname()).
-                    put("nino", identity.getNino()).
-                    put("dateOfBirth", identity.getDateOfBirth().format(DateTimeFormatter.ISO_DATE)).
+                    put("firstName", identity.firstname()).
+                    put("lastName", identity.lastname()).
+                    put("nino", identity.nino()).
+                    put("dateOfBirth", identity.dateOfBirth().format(DateTimeFormatter.ISO_DATE)).
                     put("fromDate", fromDate.format(DateTimeFormatter.ISO_DATE)).
                     put("toDate", toDate.format(DateTimeFormatter.ISO_DATE)).
                     build());
 
             serviceResponseLogger.record(identity, responseEntity.getBody());
 
-            log.info(String.format("Received %d incomes and %d employments ", responseEntity.getBody().getIncome().size(), responseEntity.getBody().getEmployments().size()));
+            log.info(String.format("Received %d incomes and %d employments ", responseEntity.getBody().paye().size(), responseEntity.getBody().employments().size()));
 
             return responseEntity.getBody();
 

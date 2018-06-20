@@ -7,7 +7,7 @@ Feature: Validation of the API fields and data
 
   Scenario: The API is not provided with an NINO (National Insurance Number)
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
+    When the Income Proving v3 TM Family API is invoked with the following:
       | NINO                    |            |
       | Application Raised Date | 2015-01-01 |
     Then The Income Proving TM Family API provides the following result:
@@ -17,7 +17,7 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides incorrect National Insurance Number prefixed with two digits
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
+    When the Income Proving v3 TM Family API is invoked with the following:
       | NINO                    | 11123456A  |
       | Application Raised Date | 2015-01-01 |
     Then The Income Proving TM Family API provides the following result:
@@ -27,7 +27,7 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides incorrect National Insurance Number with two characters in the middle
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
+    When the Income Proving v3 TM Family API is invoked with the following:
       | NINO                    | QQ12HR56A  |
       | Application Raised Date | 2015-01-01 |
     Then The Income Proving TM Family API provides the following result:
@@ -37,8 +37,8 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides incorrect National Insurance Number with the last digit being a number
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ1235560  |
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP1235560  |
       | Application Raised Date | 2015-01-01 |
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                           |
@@ -47,8 +47,8 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides incorrect National Insurance Number with the last digit not being a valid character
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ123556E  |
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP123556E  |
       | Application Raised Date | 2015-01-01 |
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                           |
@@ -57,7 +57,7 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides incorrect National Insurance Number as not 9 characters
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
+    When the Income Proving v3 TM Family API is invoked with the following:
       | NINO                    | QQ1235A    |
       | Application Raised Date | 2015-01-01 |
     Then The Income Proving TM Family API provides the following result:
@@ -69,8 +69,8 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides an incorrect Application Raised Date (Day format)
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ129956A  |
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP129956A  |
       | Application Raised Date | 2015-01-85 |
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status | 400                                                 |
@@ -79,8 +79,8 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides an incorrect Application Raised Date (Month format)
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ129956A  |
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP129956A  |
       | Application Raised Date | 2015-13-01 |
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status | 400                                                 |
@@ -89,8 +89,8 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides an incorrect Application Raised Date (Year format)
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ129956A  |
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP129956A  |
       | Application Raised Date | 201H-01-01 |
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                                                 |
@@ -99,8 +99,8 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides a blank Application Raised date
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ128856A |
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP128856A |
       | Application Raised Date |           |
     Then The Income Proving TM Family API provides the following result:
       | HTTP Status    | 400                                      |
@@ -110,8 +110,8 @@ Feature: Validation of the API fields and data
  #New scenario - Added 24.05.16
     Scenario: The API prevents a future date as the Application Raised Date
         Given A service is consuming the Income Proving TM Family API
-        When the Income Proving v2 TM Family API is invoked with the following:
-            | NINO                    | QQ125556A |
+        When the Income Proving v3 TM Family API is invoked with the following:
+            | NINO                    | SP125556A |
             | Application Raised Date | 2027-01-01 |
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status    | 400                                                |
@@ -123,8 +123,8 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides Dependants with a character
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ128856A  |
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP128856A  |
       | Application Raised Date | 2015-01-01 |
       | Dependants              | H          |
     Then The Income Proving TM Family API provides the following result:
@@ -134,8 +134,8 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides Dependants with a negative number
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ128856A  |
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP128856A  |
       | Application Raised Date | 2015-01-01 |
       | Dependants               | -3         |
     Then The Income Proving TM Family API provides the following result:
@@ -145,8 +145,8 @@ Feature: Validation of the API fields and data
 
   Scenario: The API provides Dependants with 3 digits
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ128856A  |
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP128856A  |
       | Application Raised Date | 2015-01-01 |
       | Dependants               | 100        |
     Then The Income Proving TM Family API provides the following result:
@@ -157,9 +157,10 @@ Feature: Validation of the API fields and data
 ###################################### Section - NINO does not exist ######################################
 
   Scenario: The API provides a NINO that does not exist in the system
-    Given HMRC has no matching record
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ128856A  |
+    Given A service is consuming the Income Proving TM Family API
+    And HMRC has no matching record
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP128856A  |
       | Application Raised Date | 2015-01-01 |
       | Dependants               | 3          |
     Then The Income Proving TM Family API provides the following result:
@@ -169,8 +170,8 @@ Feature: Validation of the API fields and data
 
   Scenario: The API is provided with a valid NINO and a future application raised date
     Given A service is consuming the Income Proving TM Family API
-    When the Income Proving v2 TM Family API is invoked with the following:
-      | NINO                    | QQ987654A  |
+    When the Income Proving v3 TM Family API is invoked with the following:
+      | NINO                    | SP987654A  |
       | Application Raised Date | 2026-12-21 |
       | Dependants               | 3          |
     Then The Income Proving TM Family API provides the following result:

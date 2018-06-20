@@ -1,16 +1,18 @@
 package uk.gov.digital.ho.proving.income.domain.hmrc;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
-@AllArgsConstructor
+import java.math.BigDecimal;
+
 @Getter
+@AllArgsConstructor
 @Accessors(fluent = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Employments {
+public class AnnualSelfAssessmentTaxReturn {
     @JsonProperty
-    private final Employer employer;
+    private final String taxYear;
+    @JsonProperty
+    private final BigDecimal selfEmploymentProfit;
 }

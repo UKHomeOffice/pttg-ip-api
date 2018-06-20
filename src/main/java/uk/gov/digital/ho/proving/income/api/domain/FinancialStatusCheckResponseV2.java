@@ -1,18 +1,18 @@
-package uk.gov.digital.ho.proving.income.api;
+package uk.gov.digital.ho.proving.income.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import uk.gov.digital.ho.proving.income.domain.Individual;
 
-public class FinancialStatusCheckResponse extends BaseResponse {
+@Deprecated
+public class FinancialStatusCheckResponseV2 extends BaseResponse {
 
-    @JsonInclude(Include.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private final Individual individual;
 
-    @JsonInclude(Include.NON_NULL)
-    private final CategoryCheck categoryCheck;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private final CategoryCheckV2 categoryCheck;
 
-    public FinancialStatusCheckResponse(ResponseStatus status, Individual individual, CategoryCheck categoryCheck) {
+    public FinancialStatusCheckResponseV2(ResponseStatus status, Individual individual, CategoryCheckV2 categoryCheck) {
         super(status);
         this.individual = individual;
         this.categoryCheck = categoryCheck;
@@ -23,7 +23,7 @@ public class FinancialStatusCheckResponse extends BaseResponse {
     }
 
 
-    public CategoryCheck getCategoryCheck() {
+    public CategoryCheckV2 getCategoryCheck() {
         return categoryCheck;
     }
 

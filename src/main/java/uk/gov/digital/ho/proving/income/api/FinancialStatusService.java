@@ -4,9 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.digital.ho.proving.income.api.domain.*;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
+import uk.gov.digital.ho.proving.income.domain.FinancialCheckResult;
 import uk.gov.digital.ho.proving.income.domain.Individual;
 import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient;
+import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcIndividual;
 import uk.gov.digital.ho.proving.income.domain.hmrc.Identity;
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord;
 
@@ -14,9 +17,7 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
@@ -24,8 +25,6 @@ import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.Frequency;
 import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.calculate;
-import static uk.gov.digital.ho.proving.income.api.NinoUtils.sanitiseNino;
-import static uk.gov.digital.ho.proving.income.api.NinoUtils.validateNino;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
@@ -35,57 +34,78 @@ public class FinancialStatusService {
 
     private final HmrcClient hmrcClient;
     private final AuditClient auditClient;
+    private final NinoUtils ninoUtils;
 
     private static final int MINIMUM_DEPENDANTS = 0;
     private static final int MAXIMUM_DEPENDANTS = 99;
 
     private static final int NUMBER_OF_DAYS = 182;
 
-    public FinancialStatusService(HmrcClient hmrcClient, AuditClient auditClient) {
+    public FinancialStatusService(HmrcClient hmrcClient, AuditClient auditClient, NinoUtils ninoUtils) {
         this.hmrcClient = hmrcClient;
         this.auditClient = auditClient;
+        this.ninoUtils = ninoUtils;
     }
 
+    @Deprecated
     @PostMapping(value = "/incomeproving/v2/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
+    public FinancialStatusCheckResponseV2 getFinancialStatusV2(@Valid @RequestBody FinancialStatusRequestV2 requestV2) {
+        Applicant applicant = new Applicant(requestV2.getForename(), requestV2.getSurname(), requestV2.getDateOfBirth(), requestV2.getNino());
+        FinancialStatusRequest request = new FinancialStatusRequest(Arrays.asList(applicant), requestV2.getDateOfBirth(), requestV2.getDependants());
+
+        FinancialStatusCheckResponse response = getFinancialStatus(request);
+
+        CategoryCheck categoryCheck = response.categoryChecks().get(0);
+        CategoryCheckV2 categoryCheckV2 = new CategoryCheckV2(categoryCheck.category(), categoryCheck.passed(), categoryCheck.failureReason(), categoryCheck.applicationRaisedDate(), categoryCheck.assessmentStartDate(), categoryCheck.threshold(), categoryCheck.individuals().get(0).employers());
+        FinancialStatusCheckResponseV2 responseV2 = new FinancialStatusCheckResponseV2(response.status(), response.individuals().get(0), categoryCheckV2);
+        return responseV2;
+    }
+
+    @PostMapping(value = "/incomeproving/v3/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
     public FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
 
-        log.info("Financial status check request received for {} - applicationRaisedDate = {}, dependents = {}", request.getNino(), request.getApplicationRaisedDate(), request.getDependants());
+        Applicant mainApplicant = request.applicants().get(0);
+
+        final String redactedNino = ninoUtils.redact(mainApplicant.nino());
+        log.info("Financial status check request received for {} - applicationRaisedDate = {}, dependents = {}", redactedNino, request.applicationRaisedDate(), request.dependants());
 
         UUID eventId = UUID.randomUUID();
 
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST,
                         eventId,
-                        auditData(request.getNino(), request.getForename(), request.getSurname(), request.getDateOfBirth(), request.getApplicationRaisedDate(), request.getDependants()));
+                        auditData(mainApplicant.nino(), mainApplicant.forename(), mainApplicant.surname(), mainApplicant.dateOfBirth(), request.applicationRaisedDate(), request.dependants()));
 
-        final String sanitisedNino = sanitiseNino(request.getNino());
-        validateNino(sanitisedNino);
-        validateDependents(request.getDependants());
-        validateApplicationRaisedDate(request.getApplicationRaisedDate());
+        final String sanitisedNino = ninoUtils.sanitise(mainApplicant.nino());
+        ninoUtils.validate(sanitisedNino);
 
-        LocalDate startSearchDate = request.getApplicationRaisedDate().minusDays(NUMBER_OF_DAYS);
+        validateDependents(request.dependants());
+        validateApplicationRaisedDate(request.applicationRaisedDate());
+
+        LocalDate startSearchDate = request.applicationRaisedDate().minusDays(NUMBER_OF_DAYS);
 
         IncomeRecord incomeRecord = hmrcClient.getIncomeRecord(
-            new Identity(request.getForename(), request.getSurname(), request.getDateOfBirth(), sanitisedNino),
+            new Identity(mainApplicant.forename(), mainApplicant.surname(), mainApplicant.dateOfBirth(), sanitisedNino),
             startSearchDate,
-            request.getApplicationRaisedDate());
+            request.applicationRaisedDate());
 
-        Individual individual = individualFromRequestAndRecord(request, incomeRecord.getIndividual(), sanitisedNino);
+        Individual individual = individualFromRequestAndRecord(request, incomeRecord.hmrcIndividual(), sanitisedNino);
 
-        FinancialStatusCheckResponse response = calculateResponse(request.getApplicationRaisedDate(), request.getDependants(), startSearchDate, incomeRecord, individual);
+        FinancialStatusCheckResponse response = calculateResponse(request.applicationRaisedDate(), request.dependants(), startSearchDate, incomeRecord, individual);
 
-        log.info("Financial status check result for {}", value("nino", request.getNino()));
+        log.info("Financial status check result for {}", value("nino", redactedNino));
 
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
 
         return response;
     }
 
-    private Individual individualFromRequestAndRecord(FinancialStatusRequest request, uk.gov.digital.ho.proving.income.domain.hmrc.Individual individual, String nino) {
-        if (individual != null) {
-            return new Individual(individual.getFirstName(), individual.getLastName(), nino);
+    private Individual individualFromRequestAndRecord(FinancialStatusRequest request, HmrcIndividual hmrcIndividual, String nino) {
+        if (hmrcIndividual != null) {
+            return new Individual(hmrcIndividual.firstName(), hmrcIndividual.lastName(), nino);
         }
         // for service backward compatibility echo back request if hmrc service returns no individual
-        return new Individual(request.getForename(), request.getSurname(), nino);
+        Applicant mainApplicant = request.applicants().get(0);
+        return new Individual(mainApplicant.forename(), mainApplicant.surname(), nino);
     }
 
     private FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
@@ -102,46 +122,49 @@ public class FinancialStatusService {
     }
 
     private FinancialStatusCheckResponse unableToCalculate(LocalDate applicationRaisedDate, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual, FinancialCheckValues reason) {
-        return new FinancialStatusCheckResponse(
-            successResponse(),
-            individual,
-            new CategoryCheck("A", false, reason, applicationRaisedDate, startSearchDate, BigDecimal.ZERO, incomeRecord.getEmployments().stream().map(employments -> employments.getEmployer().getName()).collect(Collectors.toList())));
+        List<String> employers = incomeRecord.employments().stream().map(employments -> employments.employer().name()).collect(Collectors.toList());
+        CheckedIndividual checkedIndividual = new CheckedIndividual(individual.nino(), employers);
+        CategoryCheck categoryCheck = new CategoryCheck("A", false, applicationRaisedDate, startSearchDate, reason, BigDecimal.ZERO, Arrays.asList(checkedIndividual));
+        return new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), Arrays.asList(categoryCheck));
     }
 
     private FinancialStatusCheckResponse weeklyCheck(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
-        FinancialCheckResult categoryAWeeklySalaried = IncomeValidator.validateCategoryAWeeklySalaried(incomeRecord.getIncome(), startSearchDate, applicationRaisedDate, dependants, incomeRecord.getEmployments());
-        if (categoryAWeeklySalaried.getFinancialCheckValue().equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)) {
-            return new FinancialStatusCheckResponse(
-                successResponse(),
-                individual,
-                new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate, categoryAWeeklySalaried.getThreshold(), categoryAWeeklySalaried.getEmployers()));
+        FinancialCheckResult categoryAWeeklySalaried =
+            IncomeValidator.validateCategoryAWeeklySalaried(
+                incomeRecord.paye(),
+                startSearchDate,
+                applicationRaisedDate,
+                dependants,
+                incomeRecord.employments(),
+                individual.nino());
+
+        CategoryCheck categoryCheck = null;
+        if (categoryAWeeklySalaried.financialCheckValue().equals(FinancialCheckValues.WEEKLY_SALARIED_PASSED)) {
+            categoryCheck = new CategoryCheck("A", true, applicationRaisedDate, startSearchDate, null, categoryAWeeklySalaried.threshold(), categoryAWeeklySalaried.individuals());
         } else {
-            return new FinancialStatusCheckResponse(
-                successResponse(),
-                individual,
-                new CategoryCheck("A", false, categoryAWeeklySalaried.getFinancialCheckValue(), applicationRaisedDate, startSearchDate, categoryAWeeklySalaried.getThreshold(), categoryAWeeklySalaried.getEmployers()));
+            categoryCheck = new CategoryCheck("A", false, applicationRaisedDate, startSearchDate, categoryAWeeklySalaried.financialCheckValue(), categoryAWeeklySalaried.threshold(), categoryAWeeklySalaried.individuals());
         }
+        return new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), Arrays.asList(categoryCheck));
+
     }
 
     FinancialStatusCheckResponse monthlyCheck(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
+        FinancialCheckResult categoryAMonthlySalaried =
+            IncomeValidator.validateCategoryAMonthlySalaried(
+                incomeRecord.deDuplicatedIncome(),
+                startSearchDate,
+                applicationRaisedDate,
+                dependants,
+                incomeRecord.employments(),
+                individual.nino());
 
-        FinancialCheckResult categoryAMonthlySalaried = IncomeValidator.validateCategoryAMonthlySalaried(incomeRecord.deDuplicatedIncome(),
-            startSearchDate,
-            applicationRaisedDate,
-            dependants,
-            incomeRecord.getEmployments());
-
-        if (categoryAMonthlySalaried.getFinancialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)) {
-            return new FinancialStatusCheckResponse(
-                successResponse(),
-                individual,
-                new CategoryCheck("A", true, null, applicationRaisedDate, startSearchDate,  categoryAMonthlySalaried.getThreshold(), categoryAMonthlySalaried.getEmployers()));
+        CategoryCheck categoryCheck = null;
+        if (categoryAMonthlySalaried.financialCheckValue().equals(FinancialCheckValues.MONTHLY_SALARIED_PASSED)) {
+            categoryCheck = new CategoryCheck("A", true, applicationRaisedDate, startSearchDate, null, categoryAMonthlySalaried.threshold(), categoryAMonthlySalaried.individuals());
         } else {
-            return new FinancialStatusCheckResponse(
-                successResponse(),
-                individual,
-                new CategoryCheck("A", false, categoryAMonthlySalaried.getFinancialCheckValue(), applicationRaisedDate, startSearchDate, categoryAMonthlySalaried.getThreshold(), categoryAMonthlySalaried.getEmployers()));
+            categoryCheck = new CategoryCheck("A", false, applicationRaisedDate, startSearchDate, categoryAMonthlySalaried.financialCheckValue(), categoryAMonthlySalaried.threshold(), categoryAMonthlySalaried.individuals());
         }
+        return new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), Arrays.asList(categoryCheck));
     }
 
     private ResponseStatus successResponse() {

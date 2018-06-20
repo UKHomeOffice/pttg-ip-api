@@ -22,7 +22,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | 2014-09-15 | 1600.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-15 | 1600.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | AA345678A  |
             | Application Raised Date | 2015-01-23 |
 
@@ -32,7 +32,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-25       |
             | Application Raised date   | 2015-01-23       |
             | National Insurance Number | AA345678A        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 #New Scenario -
@@ -51,7 +51,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | 2014-09-01 | 1550.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-01 | 1550.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | AA 12 34 56 B |
             | Application Raised Date | 2015-01-10    |
 
@@ -61,7 +61,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-12       |
             | Application Raised date   | 2015-01-10       |
             | National Insurance Number | AA123456B        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 
@@ -81,7 +81,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | 2014-08-28 | 2240.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-07-28 | 2240.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | BB123456B  |
             | Application Raised Date | 2015-01-23 |
 
@@ -91,7 +91,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-25       |
             | Application Raised date   | 2015-01-23       |
             | National Insurance Number | BB123456B        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 
@@ -111,7 +111,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | 2014-09-23 | 1551.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-23 | 1551.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | CC123456C  |
             | Application Raised Date | 2015-01-23 |
 
@@ -121,7 +121,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-25       |
             | Application Raised date   | 2015-01-23       |
             | National Insurance Number | CC123456C        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 
@@ -141,7 +141,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | 2014-09-01 | 3210.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-01 | 3210.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | CC123456B  |
             | Application Raised Date | 2015-01-09 |
 
@@ -151,7 +151,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-11       |
             | Application Raised date   | 2015-01-09       |
             | National Insurance Number | CC123456B        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 #New Scenario -
@@ -172,7 +172,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | 2014-09-15 | 1600.00 |            | 02           | FP/Ref1        | Flying Pizza Ltd |
             | 2014-08-15 | 1600.00 |            | 01           | FP/Ref1        | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | AA123456A  |
             | Application Raised Date | 2015-01-23 |
 
@@ -182,7 +182,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-25       |
             | Application Raised date   | 2015-01-23       |
             | National Insurance Number | AA123456A        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |
 
 
@@ -203,7 +203,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | 2014-09-01 | 1550.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
             | 2014-08-01 | 1750.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
 
-        When the Income Proving v2 TM Family API is invoked with the following:
+        When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | AA 12 34 56 B |
             | Application Raised Date | 2015-01-10    |
 
@@ -213,5 +213,5 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Assessment start date     | 2014-07-12       |
             | Application Raised date   | 2015-01-10       |
             | National Insurance Number | AA123456B        |
-            | Threshold                 | 1550.0           |
+            | Threshold                 | 1550.00          |
             | Employer Name             | Flying Pizza Ltd |

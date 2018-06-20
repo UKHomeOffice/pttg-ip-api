@@ -44,7 +44,7 @@ public class HmrcClientNotProductionResponseLoggerTest {
         ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(IncomeRecordServiceNotProductionResponseLogger.class);
         logger.addAppender(mockAppender);
 
-        stubIncomeRecord = new IncomeRecord(emptyList(), emptyList(), aIndividual());
+        stubIncomeRecord = new IncomeRecord(emptyList(), emptyList(), emptyList(), aIndividual());
 
         stubIdentity = new Identity("some firstname",
                                         "some lastname",
@@ -99,8 +99,8 @@ public class HmrcClientNotProductionResponseLoggerTest {
         assertThat(logEntry.get("incomeRecord")).isEqualTo(stubIncomeRecord);
     }
 
-    private Individual aIndividual() {
-        return new Individual("Joe", "Bloggs", "NE121212C", LocalDate.now());
+    private HmrcIndividual aIndividual() {
+        return new HmrcIndividual("Joe", "Bloggs", "NE121212C", LocalDate.now());
     }
 
 }

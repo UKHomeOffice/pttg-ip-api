@@ -137,7 +137,7 @@ public class ApiDocumentation {
                 .build();
 
         when(hmrcClient.getIncomeRecord(any(Identity.class), any(LocalDate.class), any(LocalDate.class)))
-            .thenReturn(new IncomeRecord(someIncomes(), someEmployments(), aIndividual()));
+            .thenReturn(new IncomeRecord(someIncomes(), new ArrayList<>(), someEmployments(), aIndividual()));
     }
 
 
@@ -306,7 +306,7 @@ public class ApiDocumentation {
             .then().assertThat().statusCode(is(200));
     }
 
-    private Individual aIndividual() {
-        return new Individual("Joe", "Bloggs", "NE121212C", LocalDate.now());
+    private HmrcIndividual aIndividual() {
+        return new HmrcIndividual("Joe", "Bloggs", "NE121212C", LocalDate.now());
     }
 }

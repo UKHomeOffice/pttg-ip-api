@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.proving.income.api;
+package uk.gov.digital.ho.proving.income.api.domain;
 
 public enum FinancialCheckValues {
     NON_CONSECUTIVE_MONTHS,

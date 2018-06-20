@@ -5,12 +5,14 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
+import uk.gov.digital.ho.proving.income.api.NinoUtils
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
+import uk.gov.digital.ho.proving.income.domain.hmrc.AnnualSelfAssessmentTaxReturn
 import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcClient
 import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
-import uk.gov.digital.ho.proving.income.domain.hmrc.Individual
+import uk.gov.digital.ho.proving.income.domain.hmrc.HmrcIndividual
 
 import java.time.LocalDate
 
@@ -19,7 +21,7 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
-import static uk.gov.digital.ho.proving.income.api.FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD
+import static uk.gov.digital.ho.proving.income.api.domain.FinancialCheckValues.MONTHLY_VALUE_BELOW_THRESHOLD
 import static uk.gov.digital.ho.proving.income.api.test.MockDataUtils.*
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE
@@ -29,20 +31,23 @@ class FinancialServiceSpec extends Specification {
 
     def mockIncomeRecordService = Mock(HmrcClient)
     def mockAuditClient = Mock(AuditClient)
+    def mockNinoUtils = Mock(NinoUtils)
 
-    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient)
+    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient, mockNinoUtils)
+
+    def emptyTaxes = new ArrayList<AnnualSelfAssessmentTaxReturn>()
 
     MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient)).build()
 
 
     def "valid NINO is looked up on the earnings service 2"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), getHmrcIndividual())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:
@@ -52,10 +57,14 @@ class FinancialServiceSpec extends Specification {
     }
 
     def "invalid nino is rejected"() {
+        given:
+        mockNinoUtils.sanitise("AA12345") >> "AA12345"
+        mockNinoUtils.validate("AA12345") >> { throw new IllegalArgumentException("Error: Invalid NINO") }
+
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA12345\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA12345\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
 
@@ -74,9 +83,9 @@ class FinancialServiceSpec extends Specification {
 
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:
@@ -88,9 +97,9 @@ class FinancialServiceSpec extends Specification {
 
     def "cannot submit less than zero dependants"() {
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":-1}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":-1}")
         )
 
         then:
@@ -101,12 +110,12 @@ class FinancialServiceSpec extends Specification {
 
     def "can submit more than zero dependants"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), getHmrcIndividual())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":1}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":1}")
         )
 
         then:
@@ -117,9 +126,9 @@ class FinancialServiceSpec extends Specification {
 
     def "invalid date is rejected"() {
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-nm\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-nm\",\"dependants\":0}")
         )
 
         then:
@@ -132,9 +141,9 @@ class FinancialServiceSpec extends Specification {
         String tomorrow = now().plusDays(1).format(ISO_LOCAL_DATE);
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2000-08-21\",\"applicationRaisedDate\":\"2028-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2000-08-21\"}],\"applicationRaisedDate\":\"2028-08-21\",\"dependants\":0}")
         )
 
         then:
@@ -145,19 +154,19 @@ class FinancialServiceSpec extends Specification {
 
     def "monthly payment uses 182 days in start date calculation"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), getHmrcIndividual())
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), getHmrcIndividual())
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\",\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":0}")
         )
 
         then:
 
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isOk())
-        jsonContent.categoryCheck.assessmentStartDate == "2015-03-25"
+        jsonContent.categoryChecks[0].assessmentStartDate == "2015-03-25"
 
     }
 
@@ -169,7 +178,9 @@ class FinancialServiceSpec extends Specification {
         def dependants = "1"
         def category = 'A'
 
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), new Individual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
+        mockNinoUtils.sanitise(nino) >> nino
+
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new HmrcIndividual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
 
         String requestType
         String requestEventId
@@ -183,9 +194,9 @@ class FinancialServiceSpec extends Specification {
         1 * mockAuditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, _, _) >> { args -> responseType = args[0]; responseEventId = args[1]; responseEvent = args[2]}
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\",\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":1}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":1}")
         )
 
         then:
@@ -203,53 +214,53 @@ class FinancialServiceSpec extends Specification {
 
         responseType == INCOME_PROVING_FINANCIAL_STATUS_RESPONSE.name()
         responseEvent['method'] == "get-financial-status"
-        responseEvent['response'].individual.title == ""
-        responseEvent['response'].individual.forename == "Marcus"
-        responseEvent['response'].individual.surname == "Jonesmen"
-        responseEvent['response'].individual.nino == nino
-        responseEvent['response'].categoryCheck.category == category
-        responseEvent['response'].categoryCheck.passed == false
-        responseEvent['response'].categoryCheck.applicationRaisedDate == "2015-09-23"
-        responseEvent['response'].categoryCheck.assessmentStartDate == "2015-03-25"
-        responseEvent['response'].categoryCheck.failureReason == MONTHLY_VALUE_BELOW_THRESHOLD
-        responseEvent['response'].categoryCheck.threshold == 1866.67
-        responseEvent['response'].categoryCheck.employers.size == 2
-        responseEvent['response'].categoryCheck.employers[0] == "Pizza Hut"
-        responseEvent['response'].categoryCheck.employers[1] == "Burger King"
-        responseEvent['response'].status.code == "100"
-        responseEvent['response'].status.message == "OK"
+        responseEvent['response'].individuals[0].title == ""
+        responseEvent['response'].individuals[0].forename == "Marcus"
+        responseEvent['response'].individuals[0].surname == "Jonesmen"
+        responseEvent['response'].individuals[0].nino == nino
+        responseEvent['response'].categoryChecks[0].category == category
+        responseEvent['response'].categoryChecks[0].passed == false
+        responseEvent['response'].categoryChecks[0].applicationRaisedDate == "2015-09-23"
+        responseEvent['response'].categoryChecks[0].assessmentStartDate == "2015-03-25"
+        responseEvent['response'].categoryChecks[0].failureReason == MONTHLY_VALUE_BELOW_THRESHOLD
+        responseEvent['response'].categoryChecks[0].threshold == 1866.67
+        responseEvent['response'].categoryChecks[0].individuals[0].employers.size == 2
+        responseEvent['response'].categoryChecks[0].individuals[0].employers[0] == "Pizza Hut"
+        responseEvent['response'].categoryChecks[0].individuals[0].employers[1] == "Burger King"
+        responseEvent['response'].status().code == "100"
+        responseEvent['response'].status().message == "OK"
     }
 
     def "individual details from HMRC are returned when present"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), new Individual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), new HmrcIndividual("Marcus", "Jonesmen", "NE121212A", LocalDate.now()))
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
-        jsonContent.individual.forename == "Marcus"
-        jsonContent.individual.surname == "Jonesmen"
+        jsonContent.individuals[0].forename == "Marcus"
+        jsonContent.individuals[0].surname == "Jonesmen"
     }
 
     def "individual details from request are returned when HMRC individual not present"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), getEmployments(), null)
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> new IncomeRecord(getConsecutiveIncomes2(), emptyTaxes, getEmployments(), null)
 
         when:
-        def response = mockMvc.perform(post("/incomeproving/v2/individual/financialstatus")
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\",\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
-        jsonContent.individual.forename == "Mark"
-        jsonContent.individual.surname == "Jones"
+        jsonContent.individuals[0].forename == "Mark"
+        jsonContent.individuals[0].surname == "Jones"
     }
 
 }

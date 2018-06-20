@@ -1,12 +1,12 @@
-package uk.gov.digital.ho.proving.income.api;
+package uk.gov.digital.ho.proving.income.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 
-
-public class FinancialStatusRequest {
+@Deprecated
+public class FinancialStatusRequestV2 {
     private final String nino;
     private final String forename;
     private final String surname;
@@ -15,7 +15,7 @@ public class FinancialStatusRequest {
     private final Integer dependants;
 
     @JsonCreator
-    public FinancialStatusRequest(@JsonProperty("nino") String nino, @JsonProperty("forename") String forename, @JsonProperty("surname") String surname, @JsonProperty("dateOfBirth") LocalDate dateOfBirth, @JsonProperty("applicationRaisedDate") LocalDate applicationRaisedDate, @JsonProperty("dependants") Integer dependants) {
+    public FinancialStatusRequestV2(@JsonProperty("nino") String nino, @JsonProperty("forename") String forename, @JsonProperty("surname") String surname, @JsonProperty("dateOfBirth") LocalDate dateOfBirth, @JsonProperty("applicationRaisedDate") LocalDate applicationRaisedDate, @JsonProperty("dependants") Integer dependants) {
         this.nino = nino;
         this.forename = forename;
         this.surname = surname;
