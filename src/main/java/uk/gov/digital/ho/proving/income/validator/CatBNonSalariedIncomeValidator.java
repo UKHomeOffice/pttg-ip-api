@@ -13,6 +13,6 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
-        return new IncomeValidationResult(IncomeValidationStatus.CATB_NON_SALARIED_PASSED, new SalariedThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold(), new ArrayList());
+        return new IncomeValidationResult(IncomeValidationStatus.CATB_NON_SALARIED_PASSED, new SalariedThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold(), new ArrayList(), incomeValidationRequest.applicationRaisedDate().minusYears(1));
     }
 }

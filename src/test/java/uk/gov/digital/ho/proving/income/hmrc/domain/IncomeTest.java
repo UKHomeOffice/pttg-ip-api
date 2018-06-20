@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.proving.income.hmrc.domain;
 
 import org.junit.Test;
-import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -6,21 +6,28 @@ import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
 import uk.gov.digital.ho.proving.income.api.NinoUtils
+import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck
+import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
-import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient
+import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn
+import uk.gov.digital.ho.proving.income.validator.IncomeValidationService
+import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus
+
+import java.time.LocalDate
+import java.time.Month
 
 import static java.time.LocalDate.now
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
-import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE
-import static uk.gov.digital.ho.proving.income.validator.TestData.getConsecutiveIncomes2;
+import static uk.gov.digital.ho.proving.income.validator.TestData.getConsecutiveIncomes2
+import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.MONTHLY_SALARIED_PASSED
 
 class FinancialServiceSpec extends Specification {
 
@@ -28,8 +35,9 @@ class FinancialServiceSpec extends Specification {
     def mockIncomeRecordService = Mock(HmrcClient)
     def mockAuditClient = Mock(AuditClient)
     def mockNinoUtils = Mock(NinoUtils)
+    def mockIncomeValidationService = Mock(IncomeValidationService)
 
-    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient, mockNinoUtils)
+    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient, mockNinoUtils, mockIncomeValidationService)
 
     def emptyTaxes = new ArrayList<AnnualSelfAssessmentTaxReturn>()
 
@@ -39,6 +47,7 @@ class FinancialServiceSpec extends Specification {
     def "valid NINO is looked up on the earnings service 2"() {
         given:
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord
+        1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
@@ -107,6 +116,7 @@ class FinancialServiceSpec extends Specification {
     def "can submit more than zero dependants"() {
         given:
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
+        1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
@@ -148,35 +158,18 @@ class FinancialServiceSpec extends Specification {
         jsonContent.status.message == "Error: applicationRaisedDate"
     }
 
-    def "monthly payment uses 182 days in start date calculation"() {
-        given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
-
-        when:
-        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"1980-01-13\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":0}")
-        )
-
-        then:
-
-        def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
-        response.andExpect(status().isOk())
-        jsonContent.categoryChecks[0].assessmentStartDate == "2015-03-25"
-
-    }
-
     def 'audits search inputs and response'() {
 
         given:
         def nino = 'AA123456A'
         def applicationRaisedDate = "2015-09-23"
-        def dependants = "1"
+        def dependants = "0"
         def category = 'A'
 
         mockNinoUtils.sanitise(nino) >> nino
 
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
+        1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         String requestType
         String requestEventId
@@ -192,7 +185,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Duncan\",\"surname\":\"Smith\",\"dateOfBirth\":\"1970-01-01\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":1}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Duncan\",\"surname\":\"Smith\",\"dateOfBirth\":\"1970-01-01\"}],\"applicationRaisedDate\":\"2015-09-23\",\"dependants\":0}")
         )
 
         then:
@@ -215,14 +208,13 @@ class FinancialServiceSpec extends Specification {
         responseEvent['response'].individuals[0].surname == "Smith"
         responseEvent['response'].individuals[0].nino == nino
         responseEvent['response'].categoryChecks[0].category == category
-        responseEvent['response'].categoryChecks[0].passed == false
-        responseEvent['response'].categoryChecks[0].applicationRaisedDate == "2015-09-23"
-        responseEvent['response'].categoryChecks[0].assessmentStartDate == "2015-03-25"
-        responseEvent['response'].categoryChecks[0].failureReason == MONTHLY_VALUE_BELOW_THRESHOLD
-        responseEvent['response'].categoryChecks[0].threshold == 1866.67
-        responseEvent['response'].categoryChecks[0].individuals[0].employers.size == 2
+        responseEvent['response'].categoryChecks[0].passed == true
+        responseEvent['response'].categoryChecks[0].applicationRaisedDate == "2017-08-21"
+        responseEvent['response'].categoryChecks[0].assessmentStartDate == "2017-02-21"
+        responseEvent['response'].categoryChecks[0].failureReason == MONTHLY_SALARIED_PASSED
+        responseEvent['response'].categoryChecks[0].threshold == 1550.00
+        responseEvent['response'].categoryChecks[0].individuals[0].employers.size() == 1
         responseEvent['response'].categoryChecks[0].individuals[0].employers[0] == "Pizza Hut"
-        responseEvent['response'].categoryChecks[0].individuals[0].employers[1] == "Burger King"
         responseEvent['response'].status().code == "100"
         responseEvent['response'].status().message == "OK"
     }
@@ -230,6 +222,7 @@ class FinancialServiceSpec extends Specification {
     def "individual details from HMRC are returned when present"() {
         given:
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
+        1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
@@ -246,6 +239,7 @@ class FinancialServiceSpec extends Specification {
     def "individual details from request are returned when HMRC individual not present"() {
         given:
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
+        1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
@@ -258,5 +252,44 @@ class FinancialServiceSpec extends Specification {
         jsonContent.individuals[0].forename == "Duncan"
         jsonContent.individuals[0].surname == "Smith"
     }
+
+    def "the income validator service is called"() {
+
+        given:
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord
+        1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
+
+        when:
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+        )
+
+        then:
+        def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
+        response.andExpect(status().isOk())
+        jsonContent.status.message == "OK"
+    }
+
+    def getValidCategoryChecks = {
+        List<CategoryCheck> categoryChecks = new ArrayList<>()
+
+        LocalDate applicationDate = LocalDate.of(2017, Month.AUGUST, 21)
+        LocalDate catAAssessmentStart = applicationDate.minusMonths(6)
+        LocalDate catBAssessmentStart = applicationDate.minusDays(365)
+
+        List<CheckedIndividual> checkedIndividuals = new ArrayList<>()
+        List<String> employers = Arrays.asList("Pizza Hut")
+        CheckedIndividual checkedIndividual = new CheckedIndividual("AA123456A", employers)
+        checkedIndividuals.add(checkedIndividual)
+
+        CategoryCheck catACheck = new CategoryCheck("A", true, applicationDate, catAAssessmentStart, IncomeValidationStatus.MONTHLY_SALARIED_PASSED, new BigDecimal("1550.00"), checkedIndividuals)
+        CategoryCheck catBCheck = new CategoryCheck("B", true, applicationDate, catBAssessmentStart, IncomeValidationStatus.CATB_NON_SALARIED_PASSED, new BigDecimal("18600.00"), checkedIndividuals)
+        categoryChecks.add(catACheck)
+        categoryChecks.add(catBCheck)
+
+        categoryChecks
+    }
+
 
 }

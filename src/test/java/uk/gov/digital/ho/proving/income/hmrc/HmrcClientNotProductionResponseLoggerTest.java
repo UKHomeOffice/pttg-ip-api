@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.digital.ho.proving.income.hmrc.IncomeRecordServiceNotProductionResponseLogger;
 import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;

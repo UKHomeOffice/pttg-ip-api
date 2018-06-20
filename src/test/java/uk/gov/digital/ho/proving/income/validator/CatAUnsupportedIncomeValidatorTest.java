@@ -23,9 +23,8 @@ public class CatAUnsupportedIncomeValidatorTest {
 
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = changedFrequencyPayments(raisedDate);
-        LocalDate pastDate = raisedDate.minusMonths(6);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.PAY_FREQUENCY_CHANGE);
@@ -37,9 +36,8 @@ public class CatAUnsupportedIncomeValidatorTest {
 
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = fortnightlyPayment(raisedDate);
-        LocalDate pastDate = raisedDate.minusMonths(6);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.UNKNOWN_PAY_FREQUENCY);

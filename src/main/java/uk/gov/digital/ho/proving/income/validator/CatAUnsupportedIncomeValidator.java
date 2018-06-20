@@ -15,13 +15,15 @@ import java.util.stream.Collectors;
 @Service
 public class CatAUnsupportedIncomeValidator implements IncomeValidator {
 
+    private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
+
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
         FrequencyCalculator.Frequency frequency = FrequencyCalculator.calculate(incomeValidationRequest.applicantIncomes().get(0).incomeRecord());
         ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncomes().get(0);
         List<String> employments = applicantIncome.employments().stream().map(e -> e.employer().name()).collect(Collectors.toList());
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
-        return new IncomeValidationResult(getStatus(frequency), BigDecimal.ZERO, Arrays.asList(checkedIndividual));
+        return new IncomeValidationResult(getStatus(frequency), BigDecimal.ZERO, Arrays.asList(checkedIndividual), incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS));
     }
 
     private IncomeValidationStatus getStatus(FrequencyCalculator.Frequency frequency) {

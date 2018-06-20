@@ -23,9 +23,8 @@ public class CatAWeeklyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getIncomesAboveThreshold2();
         LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.WEEKLY_SALARIED_PASSED);
@@ -36,9 +35,8 @@ public class CatAWeeklyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getIncomesExactly26AboveThreshold2();
         LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.WEEKLY_SALARIED_PASSED);
@@ -49,9 +47,8 @@ public class CatAWeeklyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getIncomesExactly26AboveThreshold2();
         LocalDate raisedDate = getDate(2015, Month.AUGUST, 10);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NOT_ENOUGH_RECORDS);
@@ -62,9 +59,8 @@ public class CatAWeeklyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getIncomesNotEnoughWeeks2();
         LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NOT_ENOUGH_RECORDS);
@@ -75,10 +71,8 @@ public class CatAWeeklyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getIncomesSomeBelowThreshold2();
         LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.WEEKLY_VALUE_BELOW_THRESHOLD);

@@ -48,9 +48,8 @@ public class IncomeValidatorTestIT {
     public void thatAllCategoryChecksArePerformed() {
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = contiguousMonthlyPayments(raisedDate);
-        LocalDate pastDate = raisedDate.minusMonths(6);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
 
         assertThat(categoryChecks.size()).isEqualTo(2)
@@ -67,6 +66,15 @@ public class IncomeValidatorTestIT {
         verifyZeroInteractions(catASalariedWeeklyIncomeValidator);
         verifyZeroInteractions(catAUnsupportedIncomeValidator);
 
+    }
+
+    @Test
+    public void thatMonthlyStartDateIsCalculated() {
+        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
+        List<ApplicantIncome> incomes = contiguousMonthlyPayments(raisedDate);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
     }
 
 }

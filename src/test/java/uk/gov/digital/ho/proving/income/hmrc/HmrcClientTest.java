@@ -19,8 +19,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions;
-import uk.gov.digital.ho.proving.income.hmrc.HmrcClient;
-import uk.gov.digital.ho.proving.income.hmrc.ServiceResponseLogger;
 import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;

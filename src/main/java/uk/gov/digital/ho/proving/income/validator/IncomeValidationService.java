@@ -34,7 +34,7 @@ public class IncomeValidationService {
             category,
             catAResult.status().isPassed(),
             incomeValidationRequest.applicationRaisedDate(),
-            incomeValidationRequest.assessmentStartDate(),
+            catAResult.assessmentStartDate(),
             catAResult.status(),
             catAResult.threshold(),
             catAResult.individuals());

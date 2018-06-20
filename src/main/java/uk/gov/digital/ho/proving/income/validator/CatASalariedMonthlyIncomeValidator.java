@@ -20,6 +20,7 @@ import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.
 @Service
 public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
+    private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
     private static final Integer NUMBER_OF_MONTHS = 6;
 
     @Override
@@ -38,19 +39,21 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
         SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(incomeValidationRequest.dependants());
         BigDecimal monthlyThreshold = thresholdCalculator.getMonthlyThreshold();
 
+        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
+
         IncomeValidationStatus status =
             financialCheckForMonthlySalaried(
                 removeDuplicates(applicantIncome.incomeRecord().paye()),
                 NUMBER_OF_MONTHS,
                 monthlyThreshold,
-                incomeValidationRequest.assessmentStartDate(),
+                assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
 
-        return new IncomeValidationResult(status, monthlyThreshold, Arrays.asList(checkedIndividual));
+        return new IncomeValidationResult(status, monthlyThreshold, Arrays.asList(checkedIndividual), assessmentStartDate);
     }
 
-    private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate lower, LocalDate upper) {
-        Stream<Income> individualIncome = filterIncomesByDates(incomes, lower, upper);
+    private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
+        Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
         List<Income> lastXMonths = individualIncome.limit(numOfMonths).collect(Collectors.toList());
         if (lastXMonths.size() >= numOfMonths) {
 

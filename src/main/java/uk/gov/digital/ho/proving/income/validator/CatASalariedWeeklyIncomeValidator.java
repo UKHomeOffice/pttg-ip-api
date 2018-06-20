@@ -18,6 +18,7 @@ import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.
 @Service
 public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
+    private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
     private final static Integer NUMBER_OF_WEEKS = 26;
 
     @Override
@@ -36,19 +37,21 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
         SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(incomeValidationRequest.dependants());
         BigDecimal weeklyThreshold = thresholdCalculator.getWeeklyThreshold();
 
+        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
+
         IncomeValidationStatus status =
             financialCheckForWeeklySalaried(
                 removeDuplicates(applicantIncome.incomeRecord().paye()),
                 NUMBER_OF_WEEKS,
                 weeklyThreshold,
-                incomeValidationRequest.assessmentStartDate(),
+                assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
 
-        return new IncomeValidationResult(status, weeklyThreshold, Arrays.asList(checkedIndividual));
+        return new IncomeValidationResult(status, weeklyThreshold, Arrays.asList(checkedIndividual), assessmentStartDate);
     }
 
-    private static IncomeValidationStatus financialCheckForWeeklySalaried(List<Income> incomes, int numOfWeeks, BigDecimal threshold, LocalDate lower, LocalDate upper) {
-        Stream<Income> individualIncome = filterIncomesByDates(incomes, lower, upper);
+    private static IncomeValidationStatus financialCheckForWeeklySalaried(List<Income> incomes, int numOfWeeks, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
+        Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
         List<Income> lastXWeeks = individualIncome.collect(Collectors.toList());
 
         if (lastXWeeks.size() >= numOfWeeks) {

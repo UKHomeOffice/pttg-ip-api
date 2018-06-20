@@ -23,9 +23,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = nonContiguousMonthlyPaymentsWithMultiplePaymentsPerMonthAndInsufficientQuantity(raisedDate);
-        LocalDate pastDate = raisedDate.minusMonths(6);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NOT_ENOUGH_RECORDS);
@@ -36,9 +35,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = nonContiguousMonthlyPaymentsWithMultiplePaymentsPerMonth(raisedDate);
-        LocalDate pastDate = raisedDate.minusMonths(6);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
@@ -49,9 +47,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsPerMonthAndInsufficientRangeOfMonths(raisedDate);
-        LocalDate pastDate = raisedDate.minusMonths(6);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
@@ -62,9 +59,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsInEarliestMonth(raisedDate);
-        LocalDate pastDate = raisedDate.minusMonths(6);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
@@ -75,9 +71,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsInMiddleMonth(raisedDate);
-        LocalDate pastDate = raisedDate.minusMonths(6);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
@@ -88,9 +83,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = contiguousMonthlyPayments(raisedDate);
-        LocalDate pastDate = raisedDate.minusMonths(6);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MONTHLY_SALARIED_PASSED);
@@ -101,9 +95,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getConsecutiveIncomes2();
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MONTHLY_SALARIED_PASSED);
@@ -114,9 +107,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getNoneConsecutiveIncomes2();
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
@@ -127,9 +119,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getNotEnoughConsecutiveIncomes2();
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NOT_ENOUGH_RECORDS);
@@ -140,9 +131,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getConsecutiveIncomesButDifferentEmployers2();
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MULTIPLE_EMPLOYERS);
@@ -155,9 +145,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getConsecutiveIncomesButLowAmounts2();
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD);
@@ -168,9 +157,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getConsecutiveIncomesWithDifferentMonthlyPayDay2();
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MONTHLY_SALARIED_PASSED);
@@ -181,9 +169,8 @@ public class CatAMonthlyIncomeValidatorTest {
 
         List<ApplicantIncome> incomes = getConsecutiveIncomesWithExactlyTheAmount2();
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
-        LocalDate pastDate = subtractDaysFromDate(raisedDate, days);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, pastDate, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MONTHLY_SALARIED_PASSED);

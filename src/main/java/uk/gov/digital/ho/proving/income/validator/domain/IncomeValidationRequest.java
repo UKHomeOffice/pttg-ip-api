@@ -17,11 +17,10 @@ import java.util.Map;
 @Accessors(fluent = true)
 public class IncomeValidationRequest {
     private List<ApplicantIncome> applicantIncomes;
-    private LocalDate assessmentStartDate;
     private LocalDate applicationRaisedDate;
     private Integer dependants;
 
-    public static IncomeValidationRequest create(LocalDate assessmentStartDate, LocalDate applicationRaisedDate, Map<Individual, IncomeRecord> incomeRecords, Integer dependants) {
+    public static IncomeValidationRequest create(LocalDate applicationRaisedDate, Map<Individual, IncomeRecord> incomeRecords, Integer dependants) {
         List<ApplicantIncome> applicantIncomes = new ArrayList<>();
         for(Individual individual : incomeRecords.keySet()) {
             IncomeRecord incomeRecord = incomeRecords.get(individual);
@@ -29,6 +28,6 @@ public class IncomeValidationRequest {
             ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord);
             applicantIncomes.add(applicantIncome);
         }
-        return new IncomeValidationRequest(applicantIncomes, assessmentStartDate, applicationRaisedDate, dependants);
+        return new IncomeValidationRequest(applicantIncomes, applicationRaisedDate, dependants);
     }
 }
