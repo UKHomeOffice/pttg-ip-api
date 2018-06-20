@@ -20,6 +20,7 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
     private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
     private final static Integer NUMBER_OF_WEEKS = 26;
+    private static final String CALCULATION_TYPE = "Category A Weekly single applicant";
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
@@ -47,7 +48,7 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
                 assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
 
-        return new IncomeValidationResult(status, weeklyThreshold, Arrays.asList(checkedIndividual), assessmentStartDate);
+        return new IncomeValidationResult(status, weeklyThreshold, Arrays.asList(checkedIndividual), assessmentStartDate, CALCULATION_TYPE);
     }
 
     private static IncomeValidationStatus financialCheckForWeeklySalaried(List<Income> incomes, int numOfWeeks, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {

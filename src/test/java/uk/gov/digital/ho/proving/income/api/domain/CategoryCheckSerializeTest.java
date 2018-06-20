@@ -19,7 +19,7 @@ public class CategoryCheckSerializeTest {
 
     @Test
     public void thatJsonIsDeserialized() throws IOException {
-        String json = "{\"category\": \"category-value\", \"passed\": \"false\", \"applicationRaisedDate\": \"2017-12-31\", \"assessmentStartDate\": \"2016-12-31\", \"failureReason\": \"NON_CONSECUTIVE_MONTHS\", \"threshold\": \"1560.50\", \"individuals\": []}";
+        String json = "{\"category\": \"category-value\", \"calculationType\": \"calculationType-value\", \"passed\": \"false\", \"applicationRaisedDate\": \"2017-12-31\", \"assessmentStartDate\": \"2016-12-31\", \"failureReason\": \"NON_CONSECUTIVE_MONTHS\", \"threshold\": \"1560.50\", \"individuals\": []}";
         CategoryCheck categoryCheck = objectMapper.readValue(json, CategoryCheck.class);
 
         assertThat(categoryCheck).isNotNull();
@@ -35,11 +35,11 @@ public class CategoryCheckSerializeTest {
 
     @Test
     public void thatObjectIsSerialized() throws IOException {
-        CategoryCheck categoryCheck = new CategoryCheck("category-value", false, LocalDate.of(2017, Month.DECEMBER, 31), LocalDate.of(2016, Month.DECEMBER, 31), IncomeValidationStatus.NON_CONSECUTIVE_MONTHS, new BigDecimal("1560.50"), new ArrayList<>());
+        CategoryCheck categoryCheck = new CategoryCheck("category-value", "calculationType-value", false, LocalDate.of(2017, Month.DECEMBER, 31), LocalDate.of(2016, Month.DECEMBER, 31), IncomeValidationStatus.NON_CONSECUTIVE_MONTHS, new BigDecimal("1560.50"), new ArrayList<>());
 
         String json = objectMapper.writeValueAsString(categoryCheck);
 
         assertThat(json).isNotNull();
-        assertThat(objectMapper.readTree(json)).isEqualTo(objectMapper.readTree("{\"category\": \"category-value\", \"passed\": false, \"applicationRaisedDate\": \"2017-12-31\", \"assessmentStartDate\": \"2016-12-31\", \"failureReason\": \"NON_CONSECUTIVE_MONTHS\", \"threshold\": \"1560.50\", \"individuals\": []}"));
+        assertThat(objectMapper.readTree(json)).isEqualTo(objectMapper.readTree("{\"category\": \"category-value\", \"calculationType\": \"calculationType-value\", \"passed\": false, \"applicationRaisedDate\": \"2017-12-31\", \"assessmentStartDate\": \"2016-12-31\", \"failureReason\": \"NON_CONSECUTIVE_MONTHS\", \"threshold\": \"1560.50\", \"individuals\": []}"));
     }
 }

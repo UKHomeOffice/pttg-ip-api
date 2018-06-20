@@ -20,6 +20,8 @@ import java.util.List;
 public class CategoryCheck {
     @JsonProperty(value = "category")
     private String category;
+    @JsonProperty(value = "calculationType")
+    private String calculationType;
     @JsonProperty(value = "passed")
     private boolean passed;
     @JsonProperty(value = "applicationRaisedDate")

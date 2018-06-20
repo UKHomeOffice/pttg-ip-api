@@ -208,6 +208,7 @@ class FinancialServiceSpec extends Specification {
         responseEvent['response'].individuals[0].surname == "Smith"
         responseEvent['response'].individuals[0].nino == nino
         responseEvent['response'].categoryChecks[0].category == category
+        responseEvent['response'].categoryChecks[0].calculationType == "Calc type"
         responseEvent['response'].categoryChecks[0].passed == true
         responseEvent['response'].categoryChecks[0].applicationRaisedDate == "2017-08-21"
         responseEvent['response'].categoryChecks[0].assessmentStartDate == "2017-02-21"
@@ -283,8 +284,8 @@ class FinancialServiceSpec extends Specification {
         CheckedIndividual checkedIndividual = new CheckedIndividual("AA123456A", employers)
         checkedIndividuals.add(checkedIndividual)
 
-        CategoryCheck catACheck = new CategoryCheck("A", true, applicationDate, catAAssessmentStart, IncomeValidationStatus.MONTHLY_SALARIED_PASSED, new BigDecimal("1550.00"), checkedIndividuals)
-        CategoryCheck catBCheck = new CategoryCheck("B", true, applicationDate, catBAssessmentStart, IncomeValidationStatus.CATB_NON_SALARIED_PASSED, new BigDecimal("18600.00"), checkedIndividuals)
+        CategoryCheck catACheck = new CategoryCheck("A", "Calc type", true, applicationDate, catAAssessmentStart, IncomeValidationStatus.MONTHLY_SALARIED_PASSED, new BigDecimal("1550.00"), checkedIndividuals)
+        CategoryCheck catBCheck = new CategoryCheck("B", "Calc type", true, applicationDate, catBAssessmentStart, IncomeValidationStatus.CATB_NON_SALARIED_PASSED, new BigDecimal("18600.00"), checkedIndividuals)
         categoryChecks.add(catACheck)
         categoryChecks.add(catBCheck)
 

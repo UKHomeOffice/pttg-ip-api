@@ -36,9 +36,9 @@ public class IncomeValidationServiceTest {
     @Test
     public void thatAllValidatorsAreCalled() {
         when(catASalariedIncomeValidator.validate(any(IncomeValidationRequest.class)))
-            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.MONTHLY_SALARIED_PASSED, BigDecimal.ONE, new ArrayList<>(), LocalDate.now()));
+            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.MONTHLY_SALARIED_PASSED, BigDecimal.ONE, new ArrayList<>(), LocalDate.now(), "Calc type"));
         when(catBNonSalariedIncomeValidator.validate(any(IncomeValidationRequest.class)))
-            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.CATB_NON_SALARIED_PASSED, BigDecimal.TEN, new ArrayList<>(), LocalDate.now()));
+            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.CATB_NON_SALARIED_PASSED, BigDecimal.TEN, new ArrayList<>(), LocalDate.now(), "Calc type"));
 
         IncomeValidationRequest request = new IncomeValidationRequest(new ArrayList<>(), LocalDate.now(), 0);
         incomeValidationService.validate(request);
@@ -50,9 +50,9 @@ public class IncomeValidationServiceTest {
     @Test
     public void thatCategoryIsReturned() {
         when(catASalariedIncomeValidator.validate(any(IncomeValidationRequest.class)))
-            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.MONTHLY_SALARIED_PASSED, BigDecimal.ONE, new ArrayList<>(), LocalDate.now()));
+            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.MONTHLY_SALARIED_PASSED, BigDecimal.ONE, new ArrayList<>(), LocalDate.now(), "Calc type"));
         when(catBNonSalariedIncomeValidator.validate(any(IncomeValidationRequest.class)))
-            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.CATB_NON_SALARIED_PASSED, BigDecimal.TEN, new ArrayList<>(), LocalDate.now()));
+            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.CATB_NON_SALARIED_PASSED, BigDecimal.TEN, new ArrayList<>(), LocalDate.now(), "Calc type"));
 
         IncomeValidationRequest request = new IncomeValidationRequest(new ArrayList<>(), LocalDate.now(), 0);
         List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
@@ -67,9 +67,9 @@ public class IncomeValidationServiceTest {
         final LocalDate assessmentStartDate = LocalDate.now().minusDays(2);
         final LocalDate applicationRaisedDate = LocalDate.now().minusDays(1);
         when(catASalariedIncomeValidator.validate(any(IncomeValidationRequest.class)))
-            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.MONTHLY_SALARIED_PASSED, BigDecimal.ONE, new ArrayList<>(), assessmentStartDate));
+            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.MONTHLY_SALARIED_PASSED, BigDecimal.ONE, new ArrayList<>(), assessmentStartDate, "Calc type"));
         when(catBNonSalariedIncomeValidator.validate(any(IncomeValidationRequest.class)))
-            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.CATB_NON_SALARIED_PASSED, BigDecimal.TEN, new ArrayList<>(), assessmentStartDate));
+            .thenReturn(new IncomeValidationResult(IncomeValidationStatus.CATB_NON_SALARIED_PASSED, BigDecimal.TEN, new ArrayList<>(), assessmentStartDate, "Calc type"));
 
         IncomeValidationRequest request = new IncomeValidationRequest(new ArrayList<>(), applicationRaisedDate, 0);
         List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
@@ -87,8 +87,8 @@ public class IncomeValidationServiceTest {
     @Test
     public void thatValidationResultsAreReturned() {
         CheckedIndividual checkedIndividual = new CheckedIndividual("NINO", ImmutableList.of("Employer1", "Employer2"));
-        IncomeValidationResult catAResult = new IncomeValidationResult(IncomeValidationStatus.MONTHLY_SALARIED_PASSED, BigDecimal.TEN, ImmutableList.of(checkedIndividual), LocalDate.now());
-        IncomeValidationResult catBResult = new IncomeValidationResult(IncomeValidationStatus.CATB_NON_SALARIED_PASSED, BigDecimal.TEN, new ArrayList<>(), LocalDate.now());
+        IncomeValidationResult catAResult = new IncomeValidationResult(IncomeValidationStatus.MONTHLY_SALARIED_PASSED, BigDecimal.TEN, ImmutableList.of(checkedIndividual), LocalDate.now(), "Calc type");
+        IncomeValidationResult catBResult = new IncomeValidationResult(IncomeValidationStatus.CATB_NON_SALARIED_PASSED, BigDecimal.TEN, new ArrayList<>(), LocalDate.now(), "Calc type");
         when(catASalariedIncomeValidator.validate(any(IncomeValidationRequest.class)))
             .thenReturn(catAResult);
         when(catBNonSalariedIncomeValidator.validate(any(IncomeValidationRequest.class)))

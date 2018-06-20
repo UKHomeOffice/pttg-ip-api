@@ -29,14 +29,15 @@ public class IncomeValidationService {
     }
 
     private CategoryCheck checkCategory(IncomeValidationRequest incomeValidationRequest, IncomeValidator incomeValidator, String category) {
-        IncomeValidationResult catAResult = incomeValidator.validate(incomeValidationRequest);
+        IncomeValidationResult result = incomeValidator.validate(incomeValidationRequest);
         return new CategoryCheck(
             category,
-            catAResult.status().isPassed(),
+            result.calculationType(),
+            result.status().isPassed(),
             incomeValidationRequest.applicationRaisedDate(),
-            catAResult.assessmentStartDate(),
-            catAResult.status(),
-            catAResult.threshold(),
-            catAResult.individuals());
+            result.assessmentStartDate(),
+            result.status(),
+            result.threshold(),
+            result.individuals());
     }
 }
