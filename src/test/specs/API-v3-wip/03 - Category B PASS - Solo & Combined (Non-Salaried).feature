@@ -123,10 +123,10 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | 2017-12-27 | 1000.00 |            | 09          | FP/Ref1        | Flying Pizza Ltd |
             | 2017-10-28 | 1000.00 |            | 07          | FP/Ref1        | Flying Pizza Ltd |
             | 2017-08-27 | 1000.00 |            | 05          | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-07-25 | 1000.00 |            | 04          | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-07-25 | 1000.00 |            | 04          | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-07-25 | 1000.00 |            | 04          | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-07-25 | 1300.00 |            | 04          | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-07-29 | 1000.00 | 18         |             | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-07-22 | 1000.00 | 17         |             | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-07-15 | 1000.00 | 16         |             | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-07-08 | 1300.00 | 15         |             | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO                    | AA345678A  |
