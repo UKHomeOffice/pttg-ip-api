@@ -27,11 +27,7 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
         ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncomes().get(0);
 
-        List<String> employments =
-            applicantIncome.employments()
-                .stream()
-                .map(e -> e.employer().name())
-                .collect(Collectors.toList());
+        List<String> employments = toEmployerNames(applicantIncome.employments());
 
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
 

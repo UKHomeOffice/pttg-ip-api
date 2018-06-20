@@ -68,13 +68,4 @@ public class IncomeValidatorTestIT {
 
     }
 
-    @Test
-    public void thatMonthlyStartDateIsCalculated() {
-        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
-        List<ApplicantIncome> incomes = contiguousMonthlyPayments(raisedDate);
-
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
-        List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
-    }
-
 }

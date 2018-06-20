@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.toEmployerNames;
+
 @Service
 public class CatAUnsupportedIncomeValidator implements IncomeValidator {
 
@@ -22,7 +24,7 @@ public class CatAUnsupportedIncomeValidator implements IncomeValidator {
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
         FrequencyCalculator.Frequency frequency = FrequencyCalculator.calculate(incomeValidationRequest.applicantIncomes().get(0).incomeRecord());
         ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncomes().get(0);
-        List<String> employments = applicantIncome.employments().stream().map(e -> e.employer().name()).collect(Collectors.toList());
+        List<String> employments = toEmployerNames(applicantIncome.employments());
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
         return new IncomeValidationResult(getStatus(frequency), BigDecimal.ZERO, Arrays.asList(checkedIndividual), incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS), CALCULATION_TYPE);
     }
