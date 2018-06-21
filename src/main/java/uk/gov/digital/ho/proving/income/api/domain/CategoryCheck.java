@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,6 +20,8 @@ import java.util.List;
 public class CategoryCheck {
     @JsonProperty(value = "category")
     private String category;
+    @JsonProperty(value = "calculationType")
+    private String calculationType;
     @JsonProperty(value = "passed")
     private boolean passed;
     @JsonProperty(value = "applicationRaisedDate")
@@ -26,7 +29,7 @@ public class CategoryCheck {
     @JsonProperty(value = "assessmentStartDate")
     private LocalDate assessmentStartDate;
     @JsonProperty(value = "failureReason")
-    private FinancialCheckValues failureReason;
+    private IncomeValidationStatus failureReason;
     @JsonProperty(value = "threshold")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigDecimal threshold;

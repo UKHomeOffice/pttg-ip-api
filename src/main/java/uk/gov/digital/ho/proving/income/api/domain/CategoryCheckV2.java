@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.proving.income.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ public class CategoryCheckV2 {
     private LocalDate assessmentStartDate;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private FinancialCheckValues failureReason;
+    private IncomeValidationStatus failureReason;
 
     private BigDecimal threshold;
 
@@ -29,7 +30,7 @@ public class CategoryCheckV2 {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public CategoryCheckV2(String category, boolean passed, FinancialCheckValues failureReason, LocalDate applicationRaisedDate, LocalDate assessmentStartDate, BigDecimal threshold, List<String> employers) {
+    public CategoryCheckV2(String category, boolean passed, IncomeValidationStatus failureReason, LocalDate applicationRaisedDate, LocalDate assessmentStartDate, BigDecimal threshold, List<String> employers) {
         this.category = category;
         this.passed = passed;
         this.applicationRaisedDate = applicationRaisedDate;
@@ -75,11 +76,11 @@ public class CategoryCheckV2 {
         this.assessmentStartDate = assessmentStartDate;
     }
 
-    public FinancialCheckValues getFailureReason() {
+    public IncomeValidationStatus getFailureReason() {
         return failureReason;
     }
 
-    public void setFailureReason(FinancialCheckValues failureReason) {
+    public void setFailureReason(IncomeValidationStatus failureReason) {
         this.failureReason = failureReason;
     }
 

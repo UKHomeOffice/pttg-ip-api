@@ -24,7 +24,13 @@ import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.servlet.DispatcherServlet
 import uk.gov.digital.ho.proving.income.ServiceRunner
 import uk.gov.digital.ho.proving.income.audit.AuditClient
-import uk.gov.digital.ho.proving.income.domain.hmrc.*
+import uk.gov.digital.ho.proving.income.hmrc.HmrcClient
+import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn
+import uk.gov.digital.ho.proving.income.hmrc.domain.Employer
+import uk.gov.digital.ho.proving.income.hmrc.domain.Employments
+import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual
+import uk.gov.digital.ho.proving.income.hmrc.domain.Income
+import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.proving.income.api
 
 import spock.lang.Specification
-import uk.gov.digital.ho.proving.income.domain.hmrc.Income
-import uk.gov.digital.ho.proving.income.domain.hmrc.IncomeRecord
+import uk.gov.digital.ho.proving.income.hmrc.domain.Income
+import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord
 
 import java.time.LocalDate
 import java.time.Month
@@ -12,8 +12,8 @@ import java.util.stream.Stream
 
 import static java.util.Collections.emptyList
 import static java.util.Collections.singletonList
-import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.Frequency.*
-import static uk.gov.digital.ho.proving.income.api.FrequencyCalculator.calculate
+import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.Frequency.*
+import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.calculate
 
 /**
  *
