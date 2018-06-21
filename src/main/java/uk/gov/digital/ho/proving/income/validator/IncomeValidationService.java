@@ -1,6 +1,6 @@
 package uk.gov.digital.ho.proving.income.validator;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
@@ -12,10 +12,16 @@ import java.util.List;
 @Service
 public class IncomeValidationService {
 
-    @Autowired
     private IncomeValidator catASalariedIncomeValidator;
-    @Autowired
     private IncomeValidator catBNonSalariedIncomeValidator;
+
+    public IncomeValidationService(
+        IncomeValidator catASalariedIncomeValidator,
+        IncomeValidator catBNonSalariedIncomeValidator
+    ) {
+        this.catASalariedIncomeValidator = catASalariedIncomeValidator;
+        this.catBNonSalariedIncomeValidator = catBNonSalariedIncomeValidator;
+    }
 
     public List<CategoryCheck> validate(IncomeValidationRequest incomeValidationRequest) {
 

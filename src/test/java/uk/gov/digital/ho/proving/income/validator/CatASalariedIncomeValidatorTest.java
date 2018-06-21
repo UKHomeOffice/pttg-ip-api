@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.validator;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,12 +27,17 @@ public class CatASalariedIncomeValidatorTest {
     @InjectMocks
     private CatASalariedIncomeValidator catASalariedIncomeValidator;
 
-    @Mock(name = "catASalariedMonthlyIncomeValidator")
+    @Mock
     private IncomeValidator monthlyValidator;
-    @Mock(name = "catASalariedWeeklyIncomeValidator")
+    @Mock
     private IncomeValidator weeklyValidator;
-    @Mock(name = "catAUnsupportedIncomeValidator")
+    @Mock
     private IncomeValidator unsupportedValidator;
+
+    @Before
+    public void setUp() {
+        catASalariedIncomeValidator = new CatASalariedIncomeValidator(monthlyValidator, weeklyValidator, unsupportedValidator);
+    }
 
     @Test
     public void thatMonthlyPaymentsCallMonthlyValidator() {

@@ -1,9 +1,9 @@
 package uk.gov.digital.ho.proving.income.validator;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck;
@@ -25,13 +25,17 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class IncomeValidationServiceTest {
 
-    @InjectMocks
     private IncomeValidationService incomeValidationService;
 
     @Mock
-    IncomeValidator catASalariedIncomeValidator;
+    CatASalariedIncomeValidator catASalariedIncomeValidator;
     @Mock
-    IncomeValidator catBNonSalariedIncomeValidator;
+    CatBNonSalariedIncomeValidator catBNonSalariedIncomeValidator;
+
+    @Before
+    public void setUp() {
+        incomeValidationService = new IncomeValidationService(catASalariedIncomeValidator, catBNonSalariedIncomeValidator);
+    }
 
     @Test
     public void thatAllValidatorsAreCalled() {

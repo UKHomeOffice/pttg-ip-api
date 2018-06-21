@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.validator;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
@@ -10,7 +11,6 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.toEmployerNames;
 
