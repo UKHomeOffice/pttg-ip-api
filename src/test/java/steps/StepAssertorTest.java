@@ -2,6 +2,7 @@ package steps;
 
 import com.jayway.restassured.response.Response;
 import cucumber.api.DataTable;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -25,9 +26,13 @@ public class StepAssertorTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
+    @Before
+    public void setUp() {
+        json = getJson();
+    }
+
     @Test
     public void thatHttpStatusIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("http response", "http status", "200"));
         DataTable dataTable = DataTable.create(rawData);
@@ -39,7 +44,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatResponseStatusCodeIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("status", "code", "100"));
         DataTable dataTable = DataTable.create(rawData);
@@ -49,7 +53,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatResponseStatusMessageIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("status", "message", "OK"));
         DataTable dataTable = DataTable.create(rawData);
@@ -59,7 +62,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatEmptyResponseObjectFails() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("", "key", "expected"));
         DataTable dataTable = DataTable.create(rawData);
@@ -72,7 +74,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatUnknownResponseObjectFails() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("unknown response object", "code", "expected"));
         DataTable dataTable = DataTable.create(rawData);
@@ -85,7 +86,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatUnknownKeyFails() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("Category X test", "unknown key", "expected"));
         DataTable dataTable = DataTable.create(rawData);
@@ -98,7 +98,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatMixedCaseDataTableIsHandled() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("StAtUs", "MeSsaGE", "oK"));
         DataTable dataTable = DataTable.create(rawData);
@@ -108,7 +107,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatApplicantNinoIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("Applicant", "National Insurance Number", "AA345678A"));
         DataTable dataTable = DataTable.create(rawData);
@@ -118,7 +116,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatPartnerNinoIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("Partner", "National Insurance Number", "BB345678B"));
         DataTable dataTable = DataTable.create(rawData);
@@ -128,7 +125,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatCatBNonSalariedPassedIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "financial requirement met", "true"));
         DataTable dataTable = DataTable.create(rawData);
@@ -138,7 +134,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatCatBNonSalariedApplicationRaisedDateIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "application raised date", "2018-05-23"));
         DataTable dataTable = DataTable.create(rawData);
@@ -148,7 +143,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatCatBNonSalariedAssessmentStartDateIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "assessment start date", "2017-05-23"));
         DataTable dataTable = DataTable.create(rawData);
@@ -158,7 +152,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatCatBNonSalariedFailureReasonIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "failure reason", "catb_non_salaried_passed"));
         DataTable dataTable = DataTable.create(rawData);
@@ -168,7 +161,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatCatBNonSalariedThresholdIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "threshold", "18600"));
         DataTable dataTable = DataTable.create(rawData);
@@ -178,7 +170,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatCatBNonSalariedApplicantEmployersIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "employer name - applicant", "Flying Pizza Ltd, Flowers 4U Ltd"));
         DataTable dataTable = DataTable.create(rawData);
@@ -188,7 +179,6 @@ public class StepAssertorTest {
 
     @Test
     public void thatCatBNonSalariedPartnerEmployersIsTested() {
-        json = getJson();
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "employer name - partner", "Flying Pizza Ltd"));
         DataTable dataTable = DataTable.create(rawData);
