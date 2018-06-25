@@ -18,7 +18,7 @@ import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.
 public class CatAUnsupportedIncomeValidator implements IncomeValidator {
 
     private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
-    private static final String CALCULATION_TYPE = "Category A unsupported pay frequency single applicant";
+    private static final String CALCULATION_TYPE = "Category A Unsupported Salary Frequency";
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {

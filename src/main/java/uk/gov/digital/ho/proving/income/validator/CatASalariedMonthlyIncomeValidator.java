@@ -22,7 +22,7 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
     private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
     private static final Integer NUMBER_OF_MONTHS = 6;
-    private static final String CALCULATION_TYPE = "Category A Monthly single applicant";
+    private static final String CALCULATION_TYPE = "Category A Monthly Salary";
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {

@@ -15,7 +15,6 @@ import static uk.gov.digital.ho.proving.income.validator.TestData.*;
 
 public class CatAWeeklyIncomeValidatorTest {
 
-    private int days = 182;
     private CatASalariedWeeklyIncomeValidator validator = new CatASalariedWeeklyIncomeValidator();
 
     @Test
@@ -28,6 +27,18 @@ public class CatAWeeklyIncomeValidatorTest {
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.WEEKLY_SALARIED_PASSED);
+    }
+
+    @Test
+    public void thatCalculationTypeIsOfRequiredFormatForStepAssertor() {
+
+        List<ApplicantIncome> incomes = getIncomesAboveThreshold2();
+        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult categoryAIndividual = validator.validate(request);
+
+        assertThat(categoryAIndividual.calculationType()).startsWith("Category ");
     }
 
     @Test
