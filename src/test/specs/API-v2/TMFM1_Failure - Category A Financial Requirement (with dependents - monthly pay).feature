@@ -28,29 +28,29 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
     She earns £2250.00 Monthly Gross Income EVERY of the 6 months
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
-            | 2015-01-15 | 2250.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-12-15 | 2250.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-15 | 2250.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-15 | 2250.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-15 | 2250.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-15 | 2250.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2015-01-15 | 2250.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-12-15 | 2250.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-11-15 | 2250.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-10-15 | 2250.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-09-15 | 2250.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-08-15 | 2250.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | SP123456B  |
+            | NINO - applicant        | SP123456B  |
             | Application Raised Date | 2015-02-03 |
             | Dependants              | 4          |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200                           |
-            | Financial requirement met | false                         |
-            | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
-            | Assessment start date     | 2014-08-05                    |
-            | Application Raised date   | 2015-02-03                    |
-            | National Insurance Number | SP123456B                     |
-            | Threshold                 | 2466.67                       |
-            | Employer Name             | Flying Pizza Ltd              |
+            | HTTP Response             | HTTP Status               | 200                           |
+            | Applicant                 | National Insurance Number | SP123456B                     |
+            | Category A Monthly Salary | Financial requirement met | false                         |
+            | Category A Monthly Salary | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
+            | Category A Monthly Salary | Assessment start date     | 2014-08-05                    |
+            | Category A Monthly Salary | Application Raised date   | 2015-02-03                    |
+            | Category A Monthly Salary | Threshold                 | 2466.67                       |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd              |
 
 #New scenario - Added in
     Scenario: Brian does not meet the Category A Financial Requirement (He has earned < the Cat A financial threshold)
@@ -61,28 +61,28 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
     He earns £1416.67 Monthly Gross Income EVERY of the 6 months prior to the Application Raised Date
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
-            | 2015-02-10 | 1416.67 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-01-10 | 1416.67 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-12-10 | 1416.67 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-10 | 1416.67 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-10 | 1416.67 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-10 | 1416.67 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2015-02-10 | 1416.67 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2015-01-10 | 1416.67 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-12-10 | 1416.67 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-11-10 | 1416.67 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-10-10 | 1416.67 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-09-10 | 1416.67 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | BS123456B  |
+            | NINO - applicant        | BS123456B  |
             | Application Raised Date | 2015-02-10 |
             | Dependants              | 2          |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200                           |
-            | Financial requirement met | false                         |
-            | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
-            | Assessment start date     | 2014-08-12                    |
-            | Application Raised date   | 2015-02-10                    |
-            | National Insurance Number | BS123456B                     |
-            | Threshold                 | 2066.67                       |
-            | Employer Name             | Flying Pizza Ltd              |
+            | HTTP Response             | HTTP Status               | 200                           |
+            | Applicant                 | National Insurance Number | BS123456B                     |
+            | Category A Monthly Salary | Financial requirement met | false                         |
+            | Category A Monthly Salary | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
+            | Category A Monthly Salary | Assessment start date     | 2014-08-12                    |
+            | Category A Monthly Salary | Application Raised date   | 2015-02-10                    |
+            | Category A Monthly Salary | Threshold                 | 2066.67                       |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd              |
 
 
 #New scenario - Added in SD102
@@ -95,28 +95,28 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
     He worked for a different employer before his current employer (Same company under new management, i.e - different company code)
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference| Employer         |
-            | 2015-09-03 | 2916.67 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-08-03 | 2916.67 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-07-03 | 2916.67 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-06-03 | 2916.67 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-05-03 | 2916.67 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-04-03 | 2916.67 |            | 01           | F/Ref1        | Flying           |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2015-09-03 | 2916.67 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2015-08-03 | 2916.67 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2015-07-03 | 2916.67 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2015-06-03 | 2916.67 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2015-05-03 | 2916.67 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2015-04-03 | 2916.67 |             | 01           | F/Ref1         | Flying           |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | SY987654C  |
+            | NINO - applicant        | SY987654C  |
             | Application Raised Date | 2015-09-03 |
             | Dependants              | 3          |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200                |
-            | Financial requirement met | false              |
-            | Failure reason            | MULTIPLE_EMPLOYERS   |
-            | Assessment start date     | 2015-03-05         |
-            | Application Raised date   | 2015-09-03         |
-            | National Insurance Number | SY987654C          |
-            | Threshold                 | 2266.67            |
-            | Employer Name             | Flying Pizza Ltd   |
+            | HTTP Response             | HTTP Status               | 200                       |
+            | Applicant                 | National Insurance Number | SY987654C                 |
+            | Category A Monthly Salary | Financial requirement met | false                     |
+            | Category A Monthly Salary | Failure reason            | MULTIPLE_EMPLOYERS        |
+            | Category A Monthly Salary | Assessment start date     | 2015-03-05                |
+            | Category A Monthly Salary | Application Raised date   | 2015-09-03                |
+            | Category A Monthly Salary | Threshold                 | 2266.67                   |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd , FLying |
 
 ###### New scenario 31st July
 
@@ -129,25 +129,25 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
     HMRC does not show enough records
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
-            | 2015-09-03 | 2916.67 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-08-03 | 2916.67 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-07-03 | 2916.67 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-06-03 | 2916.67 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2015-05-03 | 2916.67 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2015-09-03 | 2916.67 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2015-08-03 | 2916.67 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2015-07-03 | 2916.67 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2015-06-03 | 2916.67 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2015-05-03 | 2916.67 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
 
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | SY987654C  |
+            | NINO - applicant        | SY987654C  |
             | Application Raised Date | 2015-09-03 |
             | Dependants              | 3          |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200                |
-            | Financial requirement met | false              |
-            | Failure reason            | NOT_ENOUGH_RECORDS |
-            | Assessment start date     | 2015-03-05         |
-            | Application Raised date   | 2015-09-03         |
-            | National Insurance Number | SY987654C          |
-            | Threshold                 | 2266.67            |
-            | Employer Name             | Flying Pizza Ltd   |
+            | HTTP Response             | HTTP Status               | 200                |
+            | Applicant                 | National Insurance Number | SY987654C          |
+            | Category A Monthly Salary | Financial requirement met | false              |
+            | Category A Monthly Salary | Failure reason            | NOT_ENOUGH_RECORDS |
+            | Category A Monthly Salary | Assessment start date     | 2015-03-05         |
+            | Category A Monthly Salary | Application Raised date   | 2015-09-03         |
+            | Category A Monthly Salary | Threshold                 | 2266.67            |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd   |
