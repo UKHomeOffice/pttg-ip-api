@@ -4,7 +4,6 @@ import com.jayway.restassured.response.Response;
 import cucumber.api.DataTable;
 import gherkin.formatter.model.DataTableRow;
 import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -117,13 +117,13 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Application Raised Date | 2015-09-03 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Response             | HTTP Status               | 200                                   |
-            | Applicant                 | National Insurance Number | GG987654A                             |
-            | Category A Monthly Salary | Financial requirement met | false                                 |
-            | Category A Monthly Salary | Failure reason            | MULTIPLE_EMPLOYERS                    |
-            | Category A Monthly Salary | Assessment start date     | 2015-03-05                            |
-            | Category A Monthly Salary | Application Raised date   | 2015-09-03                            |
-            | Category A Monthly Salary | Threshold                 | 1550.00                               |
+            | HTTP Response             | HTTP Status               | 200                                  |
+            | Applicant                 | National Insurance Number | GG987654A                            |
+            | Category A Monthly Salary | Financial requirement met | false                                |
+            | Category A Monthly Salary | Failure reason            | MULTIPLE_EMPLOYERS                   |
+            | Category A Monthly Salary | Assessment start date     | 2015-03-05                           |
+            | Category A Monthly Salary | Application Raised date   | 2015-09-03                           |
+            | Category A Monthly Salary | Threshold                 | 1550.00                              |
             | Category A Monthly Salary | Employer Name - Applicant | Curry House Ltd, Office Supplies Ltd |
 
 #New scenario - Added on 25th July 2017

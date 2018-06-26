@@ -82,7 +82,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Category B non salaried | Application Raised date   | 2018-04-30       |
             | Category B non salaried | Assessment Start Date     | 2017-04-30       |
             | Category B non salaried | Threshold                 | 18600            |
-            | Category B non salaried | Employer Name - Applicant            | Flying Pizza Ltd |
+            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd |
 
        ##############
 

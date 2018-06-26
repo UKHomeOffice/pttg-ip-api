@@ -147,13 +147,13 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Application Raised Date | 2015-11-03 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Response            | HTTP Status               | 200                               |
-            | Applicant                | National Insurance Number | RP123456C                         |
-            | Category A Weekly Salary | Financial requirement met | false                             |
-            | Category A Weekly Salary | Failure reason            | MULTIPLE_EMPLOYERS                |
-            | Category A Weekly Salary | Assessment start date     | 2015-05-05                        |
-            | Category A Weekly Salary | Application Raised date   | 2015-11-03                        |
-            | Category A Weekly Salary | Threshold                 | 357.69                            |
+            | HTTP Response            | HTTP Status               | 200                                |
+            | Applicant                | National Insurance Number | RP123456C                          |
+            | Category A Weekly Salary | Financial requirement met | false                              |
+            | Category A Weekly Salary | Failure reason            | MULTIPLE_EMPLOYERS                 |
+            | Category A Weekly Salary | Assessment start date     | 2015-05-05                         |
+            | Category A Weekly Salary | Application Raised date   | 2015-11-03                         |
+            | Category A Weekly Salary | Threshold                 | 357.69                             |
             | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd, Crazy Pizza  Ltd |
 
 
