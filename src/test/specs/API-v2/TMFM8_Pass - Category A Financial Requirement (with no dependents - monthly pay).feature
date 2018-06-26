@@ -14,26 +14,26 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
     He earns £1600 Monthly Gross Income EVERY of the 6 months
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
-            | 2015-01-15 | 1600.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-12-15 | 1600.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-15 | 1600.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-15 | 1600.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-15 | 1600.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-15 | 1600.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2015-01-15 | 1600.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-12-15 | 1600.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-11-15 | 1600.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-10-15 | 1600.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-09-15 | 1600.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-08-15 | 1600.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | AA345678A  |
+            | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2015-01-23 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200              |
-            | Financial requirement met | true             |
-            | Assessment start date     | 2014-07-25       |
-            | Application Raised date   | 2015-01-23       |
-            | National Insurance Number | AA345678A        |
-            | Threshold                 | 1550.00          |
-            | Employer Name             | Flying Pizza Ltd |
+            | Applicant                 | National Insurance Number | AA345678A        |
+            | HTTP Response             | HTTP Status               | 200              |
+            | Category A Monthly Salary | Financial requirement met | true             |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-25       |
+            | Category A Monthly Salary | Application Raised date   | 2015-01-23       |
+            | Category A Monthly Salary | Threshold                 | 1550.00          |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
 
 #New Scenario -
     Scenario: Jon meets the Category A Financial Requirement (Caseworker enters the National Insurance Number with spaces)
@@ -43,26 +43,26 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
     He earns £1550 Monthly Gross Income EVERY of the 6 months
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
-            | 2015-01-01 | 1550.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-12-01 | 1550.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-01 | 1550.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-01 | 1550.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-01 | 1550.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-01 | 1550.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2015-01-01 | 1550.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-12-01 | 1550.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-11-01 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-10-01 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-09-01 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-08-01 | 1550.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | AA 12 34 56 B |
+            | NINO - Applicant        | AA 12 34 56 B |
             | Application Raised Date | 2015-01-10    |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200              |
-            | Financial requirement met | true             |
-            | Assessment start date     | 2014-07-12       |
-            | Application Raised date   | 2015-01-10       |
-            | National Insurance Number | AA123456B        |
-            | Threshold                 | 1550.00          |
-            | Employer Name             | Flying Pizza Ltd |
+            | HTTP Response             | HTTP Status               | 200              |
+            | Applicant                 | National Insurance Number | AA123456B        |
+            | Category A Monthly Salary | Financial requirement met | true             |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-12       |
+            | Category A Monthly Salary | Application Raised date   | 2015-01-10       |
+            | Category A Monthly Salary | Threshold                 | 1550.00          |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -73,26 +73,26 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
     He earns £2240 Monthly Gross Income EVERY of the 6 months
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
-            | 2014-12-28 | 2240.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-28 | 2240.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-28 | 2240.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-28 | 2240.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-28 | 2240.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-07-28 | 2240.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2014-12-28 | 2240.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-11-28 | 2240.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-10-28 | 2240.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-09-28 | 2240.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-08-28 | 2240.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-07-28 | 2240.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | BB123456B  |
+            | NINO - Applicant        | BB123456B  |
             | Application Raised Date | 2015-01-23 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200              |
-            | Financial requirement met | true             |
-            | Assessment start date     | 2014-07-25       |
-            | Application Raised date   | 2015-01-23       |
-            | National Insurance Number | BB123456B        |
-            | Threshold                 | 1550.00          |
-            | Employer Name             | Flying Pizza Ltd |
+            | HTTP Response             | HTTP Status               | 200              |
+            | Applicant                 | National Insurance Number | BB123456B        |
+            | Category A Monthly Salary | Financial requirement met | true             |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-25       |
+            | Category A Monthly Salary | Application Raised date   | 2015-01-23       |
+            | Category A Monthly Salary | Threshold                 | 1550.00          |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -103,26 +103,26 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
     He earns £1551 Monthly Gross Income EVERY 23rd of the month
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
-            | 2015-01-23 | 1551.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-12-23 | 1551.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-23 | 1551.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-23 | 1551.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-23 | 1551.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-23 | 1551.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2015-01-23 | 1551.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-12-23 | 1551.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-11-23 | 1551.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-10-23 | 1551.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-09-23 | 1551.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-08-23 | 1551.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | CC123456C  |
+            | NINO - Applicant        | CC123456C  |
             | Application Raised Date | 2015-01-23 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200              |
-            | Financial requirement met | true             |
-            | Assessment start date     | 2014-07-25       |
-            | Application Raised date   | 2015-01-23       |
-            | National Insurance Number | CC123456C        |
-            | Threshold                 | 1550.00          |
-            | Employer Name             | Flying Pizza Ltd |
+            | HTTP Response             | HTTP Status               | 200              |
+            | Applicant                 | National Insurance Number | CC123456C        |
+            | Category A Monthly Salary | Financial requirement met | true             |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-25       |
+            | Category A Monthly Salary | Application Raised date   | 2015-01-23       |
+            | Category A Monthly Salary | Threshold                 | 1550.00          |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -133,26 +133,26 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
     He earns £3210 Monthly Gross Income EVERY of the 6
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
-            | 2015-01-01 | 3210.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-12-01 | 3210.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-01 | 3210.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-01 | 3210.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-01 | 3210.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-01 | 3210.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2015-01-01 | 3210.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-12-01 | 3210.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-11-01 | 3210.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-10-01 | 3210.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-09-01 | 3210.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-08-01 | 3210.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | CC123456B  |
+            | NINO - Applicant        | CC123456B  |
             | Application Raised Date | 2015-01-09 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200              |
-            | Financial requirement met | true             |
-            | Assessment start date     | 2014-07-11       |
-            | Application Raised date   | 2015-01-09       |
-            | National Insurance Number | CC123456B        |
-            | Threshold                 | 1550.00          |
-            | Employer Name             | Flying Pizza Ltd |
+            | HTTP Response             | HTTP Status               | 200              |
+            | Applicant                 | National Insurance Number | CC123456B        |
+            | Category A Monthly Salary | Financial requirement met | true             |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-11       |
+            | Category A Monthly Salary | Application Raised date   | 2015-01-09       |
+            | Category A Monthly Salary | Threshold                 | 1550.00          |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
 
 #New Scenario -
     Scenario: Mark meets the Category A Financial Requirement
@@ -164,26 +164,26 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
     He earns £1600 Monthly Gross Income EVERY of the 6
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number | PAYE Reference | Employer         |
-            | 2015-01-15 | 1600.00 |            | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2014-12-17 | 1600.00 |            | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2014-11-15 | 1600.00 |            | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2014-10-30 | 1600.00 |            | 03           | FP/Ref1        | Flying Pizza Ltd |
-            | 2014-09-15 | 1600.00 |            | 02           | FP/Ref1        | Flying Pizza Ltd |
-            | 2014-08-15 | 1600.00 |            | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2015-01-15 | 1600.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-12-17 | 1600.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-11-15 | 1600.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-10-30 | 1600.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-09-15 | 1600.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-08-15 | 1600.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | AA123456A  |
+            | NINO - Applicant        | AA123456A  |
             | Application Raised Date | 2015-01-23 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200              |
-            | Financial requirement met | true             |
-            | Assessment start date     | 2014-07-25       |
-            | Application Raised date   | 2015-01-23       |
-            | National Insurance Number | AA123456A        |
-            | Threshold                 | 1550.00          |
-            | Employer Name             | Flying Pizza Ltd |
+            | HTTP Response             | HTTP Status               | 200              |
+            | Applicant                 | National Insurance Number | AA123456A        |
+            | Category A Monthly Salary | Financial requirement met | true             |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-25       |
+            | Category A Monthly Salary | Application Raised date   | 2015-01-23       |
+            | Category A Monthly Salary | Threshold                 | 1550.00          |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
 
 
     ###### New scenario - 27th July
@@ -195,23 +195,23 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
     He earns £1550 Monthly Gross Income EVERY of the 6 months
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number| Month Number| PAYE Reference | Employer         |
-            | 2015-01-01 | 1550.00 |            | 06           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-12-01 | 1650.00 |            | 05           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-11-01 | 1550.00 |            | 04           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-10-01 | 1950.00 |            | 03           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-09-01 | 1550.00 |            | 02           | FP/Ref1       | Flying Pizza Ltd |
-            | 2014-08-01 | 1750.00 |            | 01           | FP/Ref1       | Flying Pizza Ltd |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2015-01-01 | 1550.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-12-01 | 1650.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-11-01 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-10-01 | 1950.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-09-01 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2014-08-01 | 1750.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | AA 12 34 56 B |
+            | NINO - Applicant        | AA 12 34 56 B |
             | Application Raised Date | 2015-01-10    |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Status               | 200              |
-            | Financial requirement met | true             |
-            | Assessment start date     | 2014-07-12       |
-            | Application Raised date   | 2015-01-10       |
-            | National Insurance Number | AA123456B        |
-            | Threshold                 | 1550.00          |
-            | Employer Name             | Flying Pizza Ltd |
+            | HTTP Response             | HTTP Status               | 200              |
+            | Applicant                 | National Insurance Number | AA123456B        |
+            | Category A Monthly Salary | Financial requirement met | true             |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-12       |
+            | Category A Monthly Salary | Application Raised date   | 2015-01-10       |
+            | Category A Monthly Salary | Threshold                 | 1550.00          |
+            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |

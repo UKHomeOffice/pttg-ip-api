@@ -3,6 +3,7 @@ package steps
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.stubbing.Scenario
 import com.google.gson.Gson
 import com.jayway.restassured.http.ContentType
 import com.jayway.restassured.response.Response
@@ -25,12 +26,7 @@ import org.springframework.web.servlet.DispatcherServlet
 import uk.gov.digital.ho.proving.income.ServiceRunner
 import uk.gov.digital.ho.proving.income.audit.AuditClient
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient
-import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn
-import uk.gov.digital.ho.proving.income.hmrc.domain.Employer
-import uk.gov.digital.ho.proving.income.hmrc.domain.Employments
-import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual
-import uk.gov.digital.ho.proving.income.hmrc.domain.Income
-import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord
+import uk.gov.digital.ho.proving.income.hmrc.domain.*
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -46,17 +42,20 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
     private WireMockServer wireMockServer
 
-    @Autowired private ObjectMapper objectMapper
+    @Autowired
+    private ObjectMapper objectMapper
 
-    @Autowired private AuditClient auditClient
+    @Autowired
+    private AuditClient auditClient
 
-    @Autowired private HmrcClient hmrcClient
+    @Autowired
+    private HmrcClient hmrcClient
 
     @Value('${local.server.port}')
     private int port
 
     @Value('${hmrc.service.port}')
-    private int  hmrcServicePort
+    private int hmrcServicePort
 
     @Value('${pttg.audit.port}')
     private int auditServicePort
@@ -74,6 +73,8 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
             configureFor(wireMockServer.port())
             overrideClientPorts(wireMockServer.port())
             SuiteSetupDone = true
+        } else {
+            resetAllScenarios()
         }
     }
 
@@ -99,8 +100,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     String dependants = ""
     String applicationRaisedDate
     String fromDate = ""
-    String toDate =""
-
+    String toDate = ""
 
 
     String tocamelcase(String g) {
@@ -145,10 +145,10 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
             if (s.equalsIgnoreCase("application raised date")) {
                 applicationRaisedDate = entries.get(s)
             }
-            if (s.equalsIgnoreCase("nino")) {
+            if (s.equalsIgnoreCase("nino - applicant")) {
                 nino1 = entries.get(s)
             }
-            if (s.equalsIgnoreCase("nino2")) {
+            if (s.equalsIgnoreCase("nino - partner")) {
                 nino2 = entries.get(s)
             }
             if (s.equalsIgnoreCase("dependants")) {
@@ -158,22 +158,22 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
                 fromDate = entries.get(s)
 
             }
-            if(s.equalsIgnoreCase("To Date")){
+            if (s.equalsIgnoreCase("To Date")) {
                 toDate = entries.get(s)
             }
         }
     }
 
     //function to loop through three column table
-    def checkIncome(DataTable table){
+    def checkIncome(DataTable table) {
 
         List<List<String>> rawData = table.raw()
         def incomes = read(jsonAsString, "incomes")
-        assert(incomes.size() >= rawData.size() -1)
+        assert (incomes.size() >= rawData.size() - 1)
 
         String total = read(jsonAsString, "total")
 
-        int index =0
+        int index = 0
 
         for (List<String> row : rawData) {
 
@@ -190,39 +190,14 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
     /**
      prerequisites:
-     - BDD key can be transformed to valid jsonpath OR key name has been added to FeatureKeyMapper.java
+     - key name has been added to FeatureKeyMapper.java
      - Date values are in the format yyyy-mm-dd
      - boolean values are lowercase
      */
-    void validateJsonResult(DataTable arg) {
-        Map<String, String> entries = arg.asMap(String.class, String.class)
-        String[] tableKey = entries.keySet()
+    void validateJsonResult(DataTable dataTable) {
+        StepAssertor.validateJsonResult(resp, jsonAsString, dataTable);
 
-        for (String key : tableKey) {
-            switch (key) {
-                case "HTTP Status":
-                    assert entries.get(key) == resp.getStatusCode().toString()
-                    break
-                case "Employer Name":
-                    String jsonPath = FeatureKeyMapper.buildJsonPath(key).toString()
-                    String[] employers = entries.get(key).split(',')
-
-                    for(String t : employers) {
-
-                        assert read(jsonAsString, jsonPath).toString().contains(t)
-                    }
-
-                    break
-                default:
-                    String jsonPath = FeatureKeyMapper.buildJsonPath(key)
-                    assert entries.get(key) == read(jsonAsString, jsonPath).toString()
-                    println " :" + jsonPath
-                    println " :" + jsonAsString
-                    println " :" + entries.get(key)
-
-            }
-        }
-    }
+     }
 
     @Given("^A service is consuming the Income Proving TM Family API\$")
     void a_service_is_consuming_the_Income_Proving_TM_Family_API() {
@@ -234,10 +209,15 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     @When("^the Income Proving v3 TM Family API is invoked with the following:\$")
     void theIncomeProvingVTMFamilyAPIIsInvokedWithTheFollowing(DataTable params) throws Throwable {
         getTableData(params)
-        Map<String,String> jsonRequest = new HashMap<>();
+        Map<String, String> jsonRequest = new HashMap<>();
         jsonRequest.put("applicationRaisedDate", applicationRaisedDate);
         jsonRequest.put("dependants", dependants);
-        jsonRequest.put("individuals", getSingleApplicantJson(nino1))
+
+        def applicants = getSingleApplicantJson(nino1)
+        if (nino2 != null && !nino2.isEmpty()) {
+            applicants.addAll(getSingleApplicantJson(nino2, "Marie", "Surname", "1980-02-15"))
+        }
+        jsonRequest.put("individuals", applicants)
 
         resp = given().contentType(ContentType.JSON).body(new Gson().toJson(jsonRequest)).post(APP_HOST + "/v3/individual/financialstatus")
 
@@ -245,7 +225,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
         println "HMRC Json" + jsonAsString
     }
 
-    def getSingleApplicantJson(nino="nino", forename="Mark", surname="Surname", dateOfBirth="1980-01-13") {
+    def getSingleApplicantJson(nino = "nino", forename = "Mark", surname = "Surname", dateOfBirth = "1980-01-13") {
         Map<String, String> applicant = new HashMap<>()
         applicant.put("nino", nino)
         applicant.put("forename", forename)
@@ -270,7 +250,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     void the_Income_Proving_v2_API_is_invoked_with_the_following(DataTable arg1) throws Throwable {
         getTableData(arg1)
 
-        Map<String,String> jsonRequest = new HashMap<>();
+        Map<String, String> jsonRequest = new HashMap<>();
         jsonRequest.put("nino", nino1);
         jsonRequest.put("forename", "Mark");
         jsonRequest.put("surname", "Surname");
@@ -300,30 +280,66 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     @Given("^HMRC has the following income records:\$")
     void hmrcHasTheFollowingIncomeRecords(DataTable incomeRecords) throws Throwable {
 
-        stubFor(WireMock.post(urlMatching("/audit.*")).
+        stubFor(post(urlMatching("/audit.*")).
             willReturn(aResponse().withStatus(200)))
 
         List<Income> income = incomeRecords.
             raw().
             stream().
             skip(1).
-            map({row -> toIncome(row)}).
+            map({ row -> toIncome(row) }).
             collect()
 
         List<Employments> employments = incomeRecords.
             raw().
             stream().
             skip(1).
-            map({row -> toEmployment(row)}).
+            map({ row -> toEmployment(row) }).
             collect().
-            unique {e1, e2 -> e1.employer.payeReference <=> e2.employer.payeReference}
+            unique { e1, e2 -> e1.employer.payeReference <=> e2.employer.payeReference }
 
         IncomeRecord incomeRecord = new IncomeRecord(income, new ArrayList<AnnualSelfAssessmentTaxReturn>(), employments, new HmrcIndividual("Joe", "Bloggs", "NE121212A", LocalDate.now()))
         String data = objectMapper.writeValueAsString(incomeRecord)
-        stubFor(WireMock.get(urlMatching("/income.*")).
+        stubFor(get(urlMatching("/income.*")).
+            inScenario("hmrc applicants").
+            whenScenarioStateIs(Scenario.STARTED).
             willReturn(aResponse().
                 withHeader("Content-Type", "application/json").
-                withBody(data)))
+                withBody(data)).
+            willSetStateTo("main applicant returned"))
+        incomeRecords.raw()
+    }
+
+    @Given("^the applicants partner has the following income records:\$")
+    void applicantsPartnerHasTheFollowingIncomeRecords(DataTable incomeRecords) throws Throwable {
+
+        stubFor(post(urlMatching("/audit.*")).
+            willReturn(aResponse().withStatus(200)))
+
+        List<Income> income = incomeRecords.
+            raw().
+            stream().
+            skip(1).
+            map({ row -> toIncome(row) }).
+            collect()
+
+        List<Employments> employments = incomeRecords.
+            raw().
+            stream().
+            skip(1).
+            map({ row -> toEmployment(row) }).
+            collect().
+            unique { e1, e2 -> e1.employer.payeReference <=> e2.employer.payeReference }
+
+        IncomeRecord incomeRecord = new IncomeRecord(income, new ArrayList<AnnualSelfAssessmentTaxReturn>(), employments, new HmrcIndividual("Jane", "Bloggs", "OP232323B", LocalDate.now()))
+        String data = objectMapper.writeValueAsString(incomeRecord)
+        stubFor(get(urlMatching("/income.*")).
+            inScenario("hmrc applicants").
+            whenScenarioStateIs("main applicant returned").
+            willReturn(aResponse().
+                withHeader("Content-Type", "application/json").
+                withBody(data)).
+            willSetStateTo("finished"))
         incomeRecords.raw()
     }
 

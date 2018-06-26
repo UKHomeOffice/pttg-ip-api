@@ -20,7 +20,7 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
     private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
     private final static Integer NUMBER_OF_WEEKS = 26;
-    private static final String CALCULATION_TYPE = "Category A Weekly single applicant";
+    private static final String CALCULATION_TYPE = "Category A Weekly Salary";
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {

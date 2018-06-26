@@ -44,4 +44,17 @@ public class CatAUnsupportedIncomeValidatorTest {
 
     }
 
+    @Test
+    public void thatCalculationTypeIsOfRequiredFormatForStepAssertor() {
+
+        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
+        List<ApplicantIncome> incomes = changedFrequencyPayments(raisedDate);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult categoryAIndividual = validator.validate(request);
+
+        assertThat(categoryAIndividual.calculationType()).startsWith("Category ");
+
+    }
+
 }
