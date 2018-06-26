@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions;
@@ -151,10 +152,25 @@ public class HmrcClientTest {
         assertThat(captorUrlTemplate.getValue()).contains("toDate={toDate}");
     }
 
-    @Test(expected = ApplicationExceptions.EarningsServiceNoUniqueMatchException.class)
-    public void forbiddenShouldBeMappedToNoMatch() {
+    @Test(expected = HttpStatusCodeException.class)
+    public void forbiddenShouldNotBeMappedToNoMatch() {
         when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
             .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
+
+        service.getIncomeRecord(
+            new Identity(
+                "John",
+                "Smith",
+                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+            LocalDate.of(2017, Month.JANUARY, 1),
+            LocalDate.of(2017, Month.JULY, 1)
+        );
+    }
+
+    @Test(expected = ApplicationExceptions.EarningsServiceNoUniqueMatchException.class)
+    public void notFoundShouldBeMappedToNoMatch() {
+        when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
+            .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         service.getIncomeRecord(
             new Identity(
