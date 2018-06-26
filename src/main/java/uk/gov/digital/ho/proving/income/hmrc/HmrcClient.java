@@ -105,7 +105,7 @@ public class HmrcClient {
     }
 
     private boolean isNotFound(HttpStatusCodeException e) {
-        return e.getStatusCode() != null && e.getStatusCode() == HttpStatus.FORBIDDEN;
+        return e.getStatusCode() == HttpStatus.NOT_FOUND;
     }
 
     private HttpHeaders generateRestHeaders() {

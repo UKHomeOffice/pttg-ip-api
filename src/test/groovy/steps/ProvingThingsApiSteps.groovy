@@ -363,6 +363,6 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
         stubFor(WireMock.get(urlMatching("/income.*")).
             willReturn(aResponse().
                 withHeader("Content-Type", "application/json").
-                withStatus(403)))
+                withStatus(404)))
     }
 }
