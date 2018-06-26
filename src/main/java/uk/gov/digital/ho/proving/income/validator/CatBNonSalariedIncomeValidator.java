@@ -3,15 +3,17 @@ package uk.gov.digital.ho.proving.income.validator;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
-import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
+import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,5 +43,16 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
             checkedIndividuals,
             assessmentStartDate,
             CALCULATION_TYPE);
+    }
+
+    public Map<Integer, BigDecimal> aggregateMonthlyIncome(List<Income> incomes) {
+        return incomes.stream()
+            .sorted(Comparator.comparing(Income::paymentDate))
+            .collect(
+                Collectors.toMap(
+                    Income::yearAndMonth,
+                    Income::payment,
+                    BigDecimal::add,
+                    LinkedHashMap::new));
     }
 }

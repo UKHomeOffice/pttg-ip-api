@@ -27,4 +27,8 @@ public class Income {
     private Integer weekPayNumber;
     @JsonProperty
     private String employerPayeReference;
+
+    public int yearAndMonth() {
+        return paymentDate.getYear() * 100 + paymentDate.getMonthValue();
+    }
 }
