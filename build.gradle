@@ -127,7 +127,6 @@ dependencies {
 
     testCompile "org.springframework.restdocs:spring-restdocs-core:$springRestDocsVersion"
     testCompile "org.springframework.restdocs:spring-restdocs-restassured:$springRestDocsVersion"
-    testCompile 'org.projectlombok:lombok:1.16.12'
 }
 
 test {
