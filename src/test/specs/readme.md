@@ -4,4 +4,4 @@ Please check the StepAssertor class to see how the response objects are identifi
 
 Please see the StepAssertorTest class to see the StepAssertor in action.
 
-IMPORTANT - if the response format from the service changes, update the json in the StepAssertor to an example in the new format.  Then fix all the tests it breaks.
+IMPORTANT - if the response format from the service changes, update the json in the StepAssertorTest to an example in the new format.  Then fix all the tests it breaks.
