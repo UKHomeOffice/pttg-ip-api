@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class AnnualisedAverageCalculator {
 
-    private static final int MONTHS_PER_YEAR = 12;
+    private static final Integer MONTHS_PER_YEAR = 12;
 
     public static BigDecimal calculate(Map<Integer, BigDecimal> aggregatedMonthlyIncome) {
         if(aggregatedMonthlyIncome.size() == 0) {
@@ -15,8 +15,8 @@ public class AnnualisedAverageCalculator {
 
         BigDecimal total = aggregatedMonthlyIncome.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal monthlyAverage = total.divide(BigDecimal.valueOf(aggregatedMonthlyIncome.size()));
-
-        return monthlyAverage.multiply(BigDecimal.valueOf(MONTHS_PER_YEAR));
+        return total
+            .multiply(BigDecimal.valueOf(MONTHS_PER_YEAR))
+            .divide(BigDecimal.valueOf(aggregatedMonthlyIncome.size()), 2, RoundingMode.HALF_UP);
     }
 }
