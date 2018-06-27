@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -71,8 +72,8 @@ public class FinancialStatusService {
         UUID eventId = UUID.randomUUID();
 
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST,
-                        eventId,
-                        auditData(mainApplicant.nino(), mainApplicant.forename(), mainApplicant.surname(), mainApplicant.dateOfBirth(), request.applicationRaisedDate(), request.dependants()));
+            eventId,
+            auditData(mainApplicant.nino(), mainApplicant.forename(), mainApplicant.surname(), mainApplicant.dateOfBirth(), request.applicationRaisedDate(), request.dependants()));
 
         final String sanitisedNino = ninoUtils.sanitise(mainApplicant.nino());
         ninoUtils.validate(sanitisedNino);
@@ -82,20 +83,41 @@ public class FinancialStatusService {
 
         LocalDate startSearchDate = request.applicationRaisedDate().minusDays(NUMBER_OF_DAYS_INCOME);
 
-        IncomeRecord incomeRecord = hmrcClient.getIncomeRecord(
-            new Identity(mainApplicant.forename(), mainApplicant.surname(), mainApplicant.dateOfBirth(), sanitisedNino),
-            startSearchDate,
-            request.applicationRaisedDate());
+        Map<Individual, IncomeRecord> incomeRecords = getIncomeRecords(request, mainApplicant, sanitisedNino, startSearchDate);
 
-        Individual individual = individualFromRequestAndRecord(request, incomeRecord.hmrcIndividual(), sanitisedNino);
-
-        FinancialStatusCheckResponse response = calculateResponse(request.applicationRaisedDate(), request.dependants(), startSearchDate, incomeRecord, individual);
+        FinancialStatusCheckResponse response = calculateResponse(request.applicationRaisedDate(), request.dependants(), startSearchDate, incomeRecords);
 
         log.info("Financial status check result for {}", value("nino", redactedNino));
 
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
 
         return response;
+    }
+
+    private Map<Individual, IncomeRecord> getIncomeRecords(FinancialStatusRequest request, Applicant mainApplicant, String sanitisedNino, LocalDate startSearchDate) {
+        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
+
+        IncomeRecord applicantIncomeRecord = hmrcClient.getIncomeRecord(
+            new Identity(mainApplicant.forename(), mainApplicant.surname(), mainApplicant.dateOfBirth(), sanitisedNino),
+            startSearchDate,
+            request.applicationRaisedDate());
+
+        incomeRecords.put(individualFromRequestAndRecord(request, applicantIncomeRecord.hmrcIndividual(), sanitisedNino), applicantIncomeRecord);
+
+        if (request.applicants().size() > 1) {
+            Applicant partner = request.applicants().get(1);
+            final String partnerSanitisedNino = ninoUtils.sanitise(partner.nino());
+            ninoUtils.validate(partnerSanitisedNino);
+
+            IncomeRecord partnerIncomeRecord = hmrcClient.getIncomeRecord(
+                new Identity(partner.forename(), partner.surname(), partner.dateOfBirth(), partnerSanitisedNino),
+                startSearchDate,
+                request.applicationRaisedDate());
+
+            incomeRecords.put(individualFromRequestAndRecord(request, partnerIncomeRecord.hmrcIndividual(), partnerSanitisedNino), partnerIncomeRecord);
+        }
+
+        return incomeRecords;
     }
 
     private Individual individualFromRequestAndRecord(FinancialStatusRequest request, HmrcIndividual hmrcIndividual, String nino) {
@@ -107,12 +129,11 @@ public class FinancialStatusService {
         return new Individual(mainApplicant.forename(), mainApplicant.surname(), nino);
     }
 
-    private FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, IncomeRecord incomeRecord, Individual individual) {
+    private FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, Map<Individual, IncomeRecord> incomeRecords) {
 
-        FinancialStatusCheckResponse response = new FinancialStatusCheckResponse(successResponse(), Arrays.asList(individual), new ArrayList<>());
+        List<Individual> individuals = incomeRecords.entrySet().stream().map(e -> e.getKey()).collect(Collectors.toList());
+        FinancialStatusCheckResponse response = new FinancialStatusCheckResponse(successResponse(), individuals, new ArrayList<>());
 
-        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
-        incomeRecords.put(individual, incomeRecord);
         IncomeValidationRequest incomeValidationRequest = IncomeValidationRequest.create(applicationRaisedDate, incomeRecords, dependants);
 
         response.categoryChecks().addAll(incomeValidationService.validate(incomeValidationRequest));
