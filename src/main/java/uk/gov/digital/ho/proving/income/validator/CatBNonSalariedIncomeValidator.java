@@ -45,14 +45,4 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
             CALCULATION_TYPE);
     }
 
-    public Map<Integer, BigDecimal> aggregateMonthlyIncome(List<Income> incomes) {
-        return incomes.stream()
-            .sorted(Comparator.comparing(Income::paymentDate))
-            .collect(
-                Collectors.toMap(
-                    Income::yearAndMonth,
-                    Income::payment,
-                    BigDecimal::add,
-                    LinkedHashMap::new));
-    }
 }
