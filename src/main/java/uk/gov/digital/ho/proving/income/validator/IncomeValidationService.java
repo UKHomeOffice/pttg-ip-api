@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.proving.income.validator;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
