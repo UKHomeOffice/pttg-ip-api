@@ -85,18 +85,6 @@ public class StepAssertorTest {
     }
 
     @Test
-    public void thatUnknownKeyFails() {
-
-        List<List<String>> rawData = Arrays.asList(Arrays.asList("Category X test", "unknown key", "expected"));
-        DataTable dataTable = DataTable.create(rawData);
-
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("The key was not recognised");
-
-        StepAssertor.validateJsonResult(response, json, dataTable);
-    }
-
-    @Test
     public void thatMixedCaseDataTableIsHandled() {
 
         List<List<String>> rawData = Arrays.asList(Arrays.asList("StAtUs", "MeSsaGE", "oK"));
@@ -171,7 +159,7 @@ public class StepAssertorTest {
     @Test
     public void thatCatBNonSalariedApplicantEmployersIsTested() {
 
-        List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "employer name - applicant", "Flying Pizza Ltd, Flowers 4U Ltd"));
+        List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "employer name - AA345678A", "Flying Pizza Ltd, Flowers 4U Ltd"));
         DataTable dataTable = DataTable.create(rawData);
 
         StepAssertor.validateJsonResult(response, json, dataTable);
@@ -180,7 +168,25 @@ public class StepAssertorTest {
     @Test
     public void thatCatBNonSalariedPartnerEmployersIsTested() {
 
-        List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "employer name - partner", "Flying Pizza Ltd"));
+        List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "employer name - BB345678B", "Flying Pizza Ltd"));
+        DataTable dataTable = DataTable.create(rawData);
+
+        StepAssertor.validateJsonResult(response, json, dataTable);
+    }
+
+    @Test
+    public void thatCatBNonSalariedCatCheckNinoIsTested() {
+
+        List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "nino - applicant", "AA345678A"));
+        DataTable dataTable = DataTable.create(rawData);
+
+        StepAssertor.validateJsonResult(response, json, dataTable);
+    }
+
+    @Test
+    public void thatCatBNonSalariedCatCheckNinoPartnerIsTested() {
+
+        List<List<String>> rawData = Arrays.asList(Arrays.asList("Category B non salaried", "nino - partner", "BB345678B"));
         DataTable dataTable = DataTable.create(rawData);
 
         StepAssertor.validateJsonResult(response, json, dataTable);

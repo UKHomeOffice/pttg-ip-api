@@ -51,7 +51,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - weekly p
             | Category A Weekly Salary | Assessment start date     | 2015-05-31       |
             | Category A Weekly Salary | Application Raised date   | 2015-11-29       |
             | Category A Weekly Salary | Threshold                 | 357.69           |
-            | Category A Weekly Salary | Employer Name - APplicant | Flying Pizza Ltd |
+            | Category A Weekly Salary | Employer Name - MH123456A | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -100,7 +100,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - weekly p
             | Category A Weekly Salary | Assessment start date     | 2014-10-10       |
             | Category A Weekly Salary | Application Raised date   | 2015-04-10       |
             | Category A Weekly Salary | Threshold                 | 357.69           |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Weekly Salary | Employer Name - SP123456C | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -149,5 +149,5 @@ Feature: Pass - Category A Financial Requirement - with no dependents - weekly p
             | Category A Weekly Salary | Assessment start date     | 2014-12-28       |
             | Category A Weekly Salary | Application Raised date   | 2015-06-28       |
             | Category A Weekly Salary | Threshold                 | 357.69           |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Weekly Salary | Employer Name - PP123456A | Flying Pizza Ltd |
 

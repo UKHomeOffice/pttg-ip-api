@@ -38,7 +38,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Category B non salaried | Application Raised date   | 2018-04-30       |
             | Category B non salaried | Assessment Start Date     | 2017-04-30       |
             | Category B non salaried | Threshold                 | 18600            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd |
 
     ##############
 
@@ -61,7 +61,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Category B non salaried | Application Raised date   | 2018-04-30       |
             | Category B non salaried | Assessment Start Date     | 2017-04-30       |
             | Category B non salaried | Threshold                 | 18600            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd |
 
     ##############
 
@@ -82,7 +82,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Category B non salaried | Application Raised date   | 2018-04-30       |
             | Category B non salaried | Assessment Start Date     | 2017-04-30       |
             | Category B non salaried | Threshold                 | 18600            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd |
 
        ##############
 
@@ -104,7 +104,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Category B non salaried | Application Raised date   | 2018-04-30       |
             | Category B non salaried | Assessment Start Date     | 2017-04-30       |
             | Category B non salaried | Threshold                 | 18600            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd |
 
 
     ##############
@@ -135,7 +135,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Category B non salaried | Application Raised date   | 2018-04-30       |
             | Category B non salaried | Assessment Start Date     | 2017-04-30       |
             | Category B non salaried | Threshold                 | 18600            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd |
 
     ##############
 
@@ -167,7 +167,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Category B non salaried | Application Raised date   | 2018-05-23                       |
             | Category B non salaried | Assessment Start Date     | 2017-05-23                       |
             | Category B non salaried | Threshold                 | 18600                            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd, Flowers 4U Ltd |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd, Flowers 4U Ltd |
 
      ##############
 
@@ -205,7 +205,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
 
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
-            | NINO - Partner          | FD345678A  |
+            | NINO - Partner          | BB345678B  |
             | Application Raised Date | 2018-05-23 |
 
         Then The Income Proving TM Family API provides the following result:
@@ -213,15 +213,15 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Status                  | code                      | 100                              |
             | Status                  | message                   | OK                               |
             | Applicant               | National Insurance Number | AA345678A                        |
-            | Partner                 | National Insurance Number | FD345678A                        |
+            | Partner                 | National Insurance Number | BB345678B                        |
             | Category B non salaried | Financial requirement met | true                             |
             | Category B non salaried | Application Raised date   | 2018-05-23                       |
             | Category B non salaried | Assessment Start Date     | 2017-05-23                       |
             | Category B non salaried | NINO - Applicant          | AA345678A                        |
-            | Category B non salaried | NINO - Partner            | FD345678A                        |
+            | Category B non salaried | NINO - Partner            | BB345678B                        |
             | Category B non salaried | Threshold                 | 18600                            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd, Flowers 4U Ltd |
-            | Category B non salaried | Employer Name - Partner   | Reliable Motors, Quality Estates |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd, Flowers 4U Ltd |
+            | Category B non salaried | Employer Name - BB345678B | Reliable Motors, Quality Estates |
 
     ##############
 
@@ -237,19 +237,19 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
 
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
-            | NINO - Partner          | FD345678A  |
+            | NINO - Partner          | BB345678B  |
             | Application Raised Date | 2018-05-23 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200              |
             | Applicant               | National Insurance Number | AA345678A        |
-            | Partner                 | National Insurance Number | FD345678A        |
+            | Partner                 | National Insurance Number | BB345678B        |
             | Category B non salaried | Financial requirement met | true             |
             | Category B non salaried | Application Raised date   | 2018-05-23       |
             | Category B non salaried | Assessment Start Date     | 2017-05-23       |
             | Category B non salaried | Threshold                 | 18600            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd |
-            | Category B non salaried | Employer Name - Partner   | The Home Office  |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd |
+            | Category B non salaried | Employer Name - BB345678B | The Home Office  |
 
     ##############
 
@@ -273,15 +273,16 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2018-04-30 |
+            | Dependants              | 1          |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200              |
             | Applicant               | National Insurance Number | AA345678A        |
             | Category B non salaried | Financial requirement met | true             |
             | Category B non salaried | Application Raised date   | 2018-04-30       |
-            | Category B non salaried | Assessment Start Date     | 2016-12-10       |
+            | Category B non salaried | Assessment Start Date     | 2017-04-30       |
             | Category B non salaried | Threshold                 | 22400            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd |
 
     ##############
 
@@ -305,15 +306,16 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2018-04-30 |
+            | Dependants              | 2          |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200              |
             | Applicant               | National Insurance Number | AA345678A        |
             | Category B non salaried | Financial requirement met | true             |
-            | Category B non salaried | Application Raised date   | 2017-12-10       |
-            | Category B non salaried | Assessment Start Date     | 2016-12-10       |
+            | Category B non salaried | Application Raised date   | 2018-04-30       |
+            | Category B non salaried | Assessment Start Date     | 2017-04-30       |
             | Category B non salaried | Threshold                 | 24800            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd |
 
     ##############
 
@@ -337,15 +339,16 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2018-04-30 |
+            | Dependants              | 3          |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200              |
             | Applicant               | National Insurance Number | AA345678A        |
             | Category B non salaried | Financial requirement met | true             |
-            | Category B non salaried | Application Raised date   | 2017-12-10       |
-            | Category B non salaried | Assessment Start Date     | 2016-12-10       |
+            | Category B non salaried | Application Raised date   | 2018-04-30       |
+            | Category B non salaried | Assessment Start Date     | 2017-04-30       |
             | Category B non salaried | Threshold                 | 27200            |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd |
 
     ##############
 
@@ -364,7 +367,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | HTTP Response           | HTTP Status               | 200                        |
             | Applicant               | National Insurance Number | AA345678A                  |
             | Category B non salaried | Financial requirement met | true                       |
-            | Category B non salaried | Application Raised date   | 2017-12-10                 |
-            | Category B non salaried | Assessment Start Date     | 2016-12-10                 |
-            | Category B non salaried | Threshold                 | 36800                      |
-            | Category B non salaried | Employer Name - Applicant | Flying Pizza Ltd, Tresco's |
+            | Category B non salaried | Application Raised date   | 2018-04-30                 |
+            | Category B non salaried | Assessment Start Date     | 2017-04-30                 |
+            | Category B non salaried | Threshold                 | 18600                      |
+            | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd, Tresco's |

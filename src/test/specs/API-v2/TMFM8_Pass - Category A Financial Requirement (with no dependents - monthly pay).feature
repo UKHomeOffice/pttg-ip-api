@@ -33,7 +33,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2014-07-25       |
             | Category A Monthly Salary | Application Raised date   | 2015-01-23       |
             | Category A Monthly Salary | Threshold                 | 1550.00          |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Monthly Salary | Employer Name - AA345678A | Flying Pizza Ltd |
 
 #New Scenario -
     Scenario: Jon meets the Category A Financial Requirement (Caseworker enters the National Insurance Number with spaces)
@@ -62,7 +62,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2014-07-12       |
             | Category A Monthly Salary | Application Raised date   | 2015-01-10       |
             | Category A Monthly Salary | Threshold                 | 1550.00          |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Monthly Salary | Employer Name - AA123456B | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -92,7 +92,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2014-07-25       |
             | Category A Monthly Salary | Application Raised date   | 2015-01-23       |
             | Category A Monthly Salary | Threshold                 | 1550.00          |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Monthly Salary | Employer Name - BB123456B | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -122,7 +122,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2014-07-25       |
             | Category A Monthly Salary | Application Raised date   | 2015-01-23       |
             | Category A Monthly Salary | Threshold                 | 1550.00          |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Monthly Salary | Employer Name - CC123456C | Flying Pizza Ltd |
 
 
 #New Scenario -
@@ -152,7 +152,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2014-07-11       |
             | Category A Monthly Salary | Application Raised date   | 2015-01-09       |
             | Category A Monthly Salary | Threshold                 | 1550.00          |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Monthly Salary | Employer Name - CC123456B | Flying Pizza Ltd |
 
 #New Scenario -
     Scenario: Mark meets the Category A Financial Requirement
@@ -183,7 +183,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2014-07-25       |
             | Category A Monthly Salary | Application Raised date   | 2015-01-23       |
             | Category A Monthly Salary | Threshold                 | 1550.00          |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Monthly Salary | Employer Name - AA123456A | Flying Pizza Ltd |
 
 
     ###### New scenario - 27th July
@@ -214,4 +214,4 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2014-07-12       |
             | Category A Monthly Salary | Application Raised date   | 2015-01-10       |
             | Category A Monthly Salary | Threshold                 | 1550.00          |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Monthly Salary | Employer Name - AA123456B | Flying Pizza Ltd |

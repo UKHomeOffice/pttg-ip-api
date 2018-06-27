@@ -50,7 +50,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2014-08-05                    |
             | Category A Monthly Salary | Application Raised date   | 2015-02-03                    |
             | Category A Monthly Salary | Threshold                 | 2466.67                       |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd              |
+            | Category A Monthly Salary | Employer Name - SP123456B | Flying Pizza Ltd              |
 
 #New scenario - Added in
     Scenario: Brian does not meet the Category A Financial Requirement (He has earned < the Cat A financial threshold)
@@ -82,7 +82,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2014-08-12                    |
             | Category A Monthly Salary | Application Raised date   | 2015-02-10                    |
             | Category A Monthly Salary | Threshold                 | 2066.67                       |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd              |
+            | Category A Monthly Salary | Employer Name - BS123456B | Flying Pizza Ltd              |
 
 
 #New scenario - Added in SD102
@@ -116,7 +116,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2015-03-05                |
             | Category A Monthly Salary | Application Raised date   | 2015-09-03                |
             | Category A Monthly Salary | Threshold                 | 2266.67                   |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd , FLying |
+            | Category A Monthly Salary | Employer Name - SY987654C | Flying Pizza Ltd , FLying |
 
 ###### New scenario 31st July
 
@@ -150,4 +150,4 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | Category A Monthly Salary | Assessment start date     | 2015-03-05         |
             | Category A Monthly Salary | Application Raised date   | 2015-09-03         |
             | Category A Monthly Salary | Threshold                 | 2266.67            |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd   |
+            | Category A Monthly Salary | Employer Name - SY987654C | Flying Pizza Ltd   |

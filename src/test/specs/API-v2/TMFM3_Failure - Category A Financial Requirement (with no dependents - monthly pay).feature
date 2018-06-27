@@ -35,7 +35,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Category A Monthly Salary | Assessment start date     | 2014-07-17                    |
             | Category A Monthly Salary | Application Raised date   | 2015-01-15                    |
             | Category A Monthly Salary | Threshold                 | 1550.00                       |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd              |
+            | Category A Monthly Salary | Employer Name - JL123456A | Flying Pizza Ltd              |
 
 ###New Scenario -
     Scenario: Francois does not meet the Category A Financial Requirement (He has earned < the Cat A financial threshold)
@@ -65,7 +65,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Category A Monthly Salary | Assessment start date     | 2014-09-27                    |
             | Category A Monthly Salary | Application Raised date   | 2015-03-28                    |
             | Category A Monthly Salary | Threshold                 | 1550.00                       |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd              |
+            | Category A Monthly Salary | Employer Name - AP123456B | Flying Pizza Ltd              |
 
 #New Scenario -
     Scenario: Kumar does not meet the Category A employment duration Requirement (He has worked for his current employer for only 3 months)
@@ -93,7 +93,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Category A Monthly Salary | Assessment start date     | 2015-01-02         |
             | Category A Monthly Salary | Application Raised date   | 2015-07-03         |
             | Category A Monthly Salary | Threshold                 | 1550.00            |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd   |
+            | Category A Monthly Salary | Employer Name - KS123456C | Flying Pizza Ltd   |
 
 #New scenario - Added on 25th July 2017
     Scenario: Alan Partridge does not meet the Category A employment duration Requirement
@@ -124,7 +124,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Category A Monthly Salary | Assessment start date     | 2015-03-05                           |
             | Category A Monthly Salary | Application Raised date   | 2015-09-03                           |
             | Category A Monthly Salary | Threshold                 | 1550.00                              |
-            | Category A Monthly Salary | Employer Name - Applicant | Curry House Ltd, Office Supplies Ltd |
+            | Category A Monthly Salary | Employer Name - GG987654A | Curry House Ltd, Office Supplies Ltd |
 
 #New scenario - Added on 25th July 2017
     Scenario: David Jones does not meet the Category A employment duration Requirement (Despite passing the financial threshold he has two current active employers)
@@ -159,7 +159,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Category A Monthly Salary | Assessment start date     | 2015-03-05                    |
             | Category A Monthly Salary | Application Raised date   | 2015-09-03                    |
             | Category A Monthly Salary | Threshold                 | 1550.00                       |
-            | Category A Monthly Salary | Employer Name - Applicant | Curry House Ltd, Johns Chippy |
+            | Category A Monthly Salary | Employer Name - AA987654A | Curry House Ltd, Johns Chippy |
 
 #New scenario - Added on 24th July 2017
     Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement
@@ -191,7 +191,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Category A Unsupported Salary Frequency | Assessment start date     | 2015-05-24           |
             | Category A Unsupported Salary Frequency | Application Raised date   | 2015-11-22           |
             | Category A Unsupported Salary Frequency | Threshold                 | 0                    |
-            | Category A Unsupported Salary Frequency | Employer Name - Applicant | Flying Pizza Ltd     |
+            | Category A Unsupported Salary Frequency | Employer Name - JW984624A | Flying Pizza Ltd     |
 
 ######## New scenario 27th July
 
@@ -221,7 +221,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Category A Monthly Salary | Assessment start date     | 2014-07-17         |
             | Category A Monthly Salary | Application Raised date   | 2015-01-15         |
             | Category A Monthly Salary | Threshold                 | 1550.00            |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd   |
+            | Category A Monthly Salary | Employer Name - JL123456A | Flying Pizza Ltd   |
 
 
 ####### New scenario - 31st July
