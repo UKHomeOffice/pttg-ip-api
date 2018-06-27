@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static uk.gov.digital.ho.proving.income.validator.TestData.*;
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CatASalariedIncomeValidatorTest {

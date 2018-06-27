@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE
-import static uk.gov.digital.ho.proving.income.validator.TestData.getConsecutiveIncomes2
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.getConsecutiveIncomes2
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.MONTHLY_SALARIED_PASSED
 
 class FinancialServiceSpec extends Specification {
