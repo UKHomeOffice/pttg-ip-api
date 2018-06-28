@@ -52,7 +52,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-05-05                   |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03                   |
             | Category A Weekly Salary | Threshold                 | 357.69                       |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd             |
+            | Category A Weekly Salary | Employer Name - SP123456A | Flying Pizza Ltd             |
 
 
 
@@ -104,7 +104,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-05-05                   |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03                   |
             | Category A Weekly Salary | Threshold                 | 357.69                       |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd             |
+            | Category A Weekly Salary | Employer Name - PY123456B | Flying Pizza Ltd             |
 
 #New Scenario -
     Scenario: Raj Patel does not meet the Category A employment duration Requirement (He has worked for his current employer for only 3 months)
@@ -154,7 +154,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-05-05                         |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03                         |
             | Category A Weekly Salary | Threshold                 | 357.69                             |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd, Crazy Pizza  Ltd |
+            | Category A Weekly Salary | Employer Name - RP123456C | Flying Pizza Ltd, Crazy Pizza  Ltd |
 
 
 #New Scenario -
@@ -203,7 +203,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-05-05         |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03         |
             | Category A Weekly Salary | Threshold                 | 357.69             |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd   |
+            | Category A Weekly Salary | Employer Name - JJ123456A | Flying Pizza Ltd   |
 
 
     Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He currently works for two employers)
@@ -277,7 +277,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-03-05                        |
             | Category A Weekly Salary | Application Raised date   | 2015-09-03                        |
             | Category A Weekly Salary | Threshold                 | 357.69                            |
-            | Category A Weekly Salary | Employer Name - Applicant | Curry House Ltd, Flying Pizza Ltd |
+            | Category A Weekly Salary | Employer Name - GG987654A | Curry House Ltd, Flying Pizza Ltd |
 
 
 
@@ -330,7 +330,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-05-05                        |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03                        |
             | Category A Weekly Salary | Threshold                 | 357.69                            |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd, Mambo Pizza Ltd |
+            | Category A Weekly Salary | Employer Name - PJ123456A | Flying Pizza Ltd, Mambo Pizza Ltd |
 
 #New Scenario -
     Scenario: Jo Francis does not meet the Category A employment duration Requirement (He has worked for his current employer for less than 6 months)
@@ -375,7 +375,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-05-05         |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03         |
             | Category A Weekly Salary | Threshold                 | 357.69             |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd   |
+            | Category A Weekly Salary | Employer Name - PP123456A | Flying Pizza Ltd   |
 
 
     Scenario: Jenny Francis does not meet the Category A Employment Payment Frequency Requirement
@@ -418,4 +418,4 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Category A Unsupported Salary Frequency | Assessment start date     | 2014-11-11           |
             | Category A Unsupported Salary Frequency | Application Raised date   | 2015-05-12           |
             | Category A Unsupported Salary Frequency | Threshold                 | 0                    |
-            | Category A Unsupported Salary Frequency | Employer Name - Applicant | Flying Pizza Ltd     |
+            | Category A Unsupported Salary Frequency | Employer Name - PP123456A | Flying Pizza Ltd     |

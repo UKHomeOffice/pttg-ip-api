@@ -11,7 +11,7 @@ import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.digital.ho.proving.income.validator.TestData.*;
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.*;
 
 
 public class CatAUnsupportedIncomeValidatorTest {

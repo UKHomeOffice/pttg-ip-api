@@ -17,8 +17,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static uk.gov.digital.ho.proving.income.validator.TestData.contiguousMonthlyPayments;
-import static uk.gov.digital.ho.proving.income.validator.TestData.getDate;
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.contiguousMonthlyPayments;
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.getDate;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {

@@ -10,7 +10,8 @@ public enum IncomeValidationStatus {
     PAY_FREQUENCY_CHANGE(false),
     MULTIPLE_EMPLOYERS(false),
     UNKNOWN_PAY_FREQUENCY(false),
-    CATB_NON_SALARIED_PASSED(true);
+    CATB_NON_SALARIED_PASSED(true),
+    CATB_NON_SALARIED_BELOW_THRESHOLD(false);
 
     private boolean passed;
 

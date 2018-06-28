@@ -11,7 +11,7 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TestData {
+public class CatASalariedTestData {
 
     final static String PIZZA_HUT = "Pizza Hut";
     final static String BURGER_KING = "Burger King";
@@ -58,7 +58,7 @@ public class TestData {
     }
 
     private static List<ApplicantIncome> getApplicantIncomes(List<Income> paye, Employer... employers) {
-        List<Employments> employments = Arrays.stream(employers).map(employer -> new Employments(employer)).collect(Collectors.toList());
+        List<Employments> employments = Arrays.stream(employers).map(Employments::new).collect(Collectors.toList());
         IncomeRecord incomeRecord = new IncomeRecord(paye, new ArrayList<>(), employments, HMRC_INDIVIDUAL);
         return ImmutableList.of(new ApplicantIncome(APPLICANT, incomeRecord));
     }
@@ -377,8 +377,7 @@ public class TestData {
     }
 
     public static LocalDate getDate(int year, Month month, int day) {
-        LocalDate localDate = LocalDate.of(year,month,day);
-        return localDate;
+        return LocalDate.of(year,month,day);
     }
 
     public static LocalDate subtractDaysFromDate(LocalDate date, long days) {

@@ -70,7 +70,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-05-05                   |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03                   |
             | Category A Weekly Salary | Threshold                 | 523.08                       |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd             |
+            | Category A Weekly Salary | Employer Name - AP123456C | Flying Pizza Ltd             |
 
 
 #New scenario - Added in SD126
@@ -119,7 +119,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-05-05         |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03         |
             | Category A Weekly Salary | Threshold                 | 476.92             |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd   |
+            | Category A Weekly Salary | Employer Name - JL123456D | Flying Pizza Ltd   |
 
 #New scenario - Added in
     Scenario: Gary Goldstein does not meet the Category A employment duration Requirement (He has worked for his current employer for only 20 weeks)
@@ -170,7 +170,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-03-05                        |
             | Category A Weekly Salary | Application Raised date   | 2015-09-03                        |
             | Category A Weekly Salary | Threshold                 | 523.08                            |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd, Curry House Ltd |
+            | Category A Weekly Salary | Employer Name - GG987654A | Flying Pizza Ltd, Curry House Ltd |
 
 #New scenario - Added on 24th July 2017
     Scenario: Terry Pilchard does not meet the Category A Employment Requirement (He currently works for two employers)
@@ -247,7 +247,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Category A Weekly Salary | Assessment start date     | 2015-03-05                        |
             | Category A Weekly Salary | Application Raised date   | 2015-09-03                        |
             | Category A Weekly Salary | Threshold                 | 523.08                            |
-            | Category A Weekly Salary | Employer Name - Applicant | Curry House Ltd, Flying Pizza Ltd |
+            | Category A Weekly Salary | Employer Name - GG987654A | Curry House Ltd, Flying Pizza Ltd |
 
 #New scenario - Added on 24th July 2017
     Scenario: Benedict Smythe does not meet the Category A Employment Payment Frequency Requirement
@@ -288,7 +288,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Category A Unsupported Salary Frequency | Assessment start date     | 2015-05-24           |
             | Category A Unsupported Salary Frequency | Application Raised date   | 2015-11-22           |
             | Category A Unsupported Salary Frequency | Threshold                 | 0                    |
-            | Category A Unsupported Salary Frequency | Employer Name - Applicant | Flying Pizza Ltd     |
+            | Category A Unsupported Salary Frequency | Employer Name - JW984624A | Flying Pizza Ltd     |
 
 
 ####### New scenario - 31st July

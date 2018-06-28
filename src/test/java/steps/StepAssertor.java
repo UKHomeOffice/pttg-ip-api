@@ -25,8 +25,7 @@ public class StepAssertor {
         KEY_MAP.put("financial requirement met", "passed");
         KEY_MAP.put("failure reason", "failureReason");
         KEY_MAP.put("threshold", "threshold");
-        KEY_MAP.put("employer name - applicant", "individuals[0].employers");
-        KEY_MAP.put("employer name - partner", "individuals[1].employers");
+        KEY_MAP.put("dependants", "dependants");
 
     }
 
@@ -45,9 +44,11 @@ public class StepAssertor {
 
             if (testResponseStatus(json, responseObject, key, expected)) continue;
 
-            if (testApplicants(json, responseObject, key, expected)) continue;
+            if (testNinos(json, responseObject, key, expected.toUpperCase())) continue;
 
             if (testApplicantEmployees(json, responseObject, key, expected)) continue;
+
+            if (testCategoryCheckNinos(json, responseObject, key, expected.toUpperCase())) continue;
 
             if (testCategoryCheck(json, responseObject, key, expected)) continue;
 
@@ -76,28 +77,41 @@ public class StepAssertor {
 
     private static boolean testApplicantEmployees(String json, String responseObject, String key, String expected) {
         if (key.contains("employer name")) {
-            String jsonPath = "$.categoryChecks..[?(@.calculationType == '" + responseObject + "')]." + KEY_MAP.get(key);
+            String nino = key.replace("employer name -", "").trim().toUpperCase();
+            String jsonPath = "$.categoryChecks..[?(@.calculationType == '" + responseObject + "')].individuals..[?(@.nino == '" + nino + "')].employers";
             JSONArray employersWrapper = read(json, jsonPath);
+
             List<String> employers = new ArrayList<>();
             Iterator it = ((JSONArray) employersWrapper.get(0)).iterator();
             while (it.hasNext()) {
                 employers.add(it.next().toString().toLowerCase());
             }
             List<String> requiredEmployers = Arrays.stream(expected.split(",")).map(String::trim).collect(Collectors.toList());
-            assertTrue(employers.size() == requiredEmployers.size(), String.format("%s %s: expected %d employers but actual was %d\nJSON: %s", responseObject, key, requiredEmployers.size(), employers.size(), json));
-            assertTrue(employers.containsAll(requiredEmployers), String.format("%s %s: expected employers %s but actual was %s\nJSON: %s", responseObject, key, requiredEmployers, employers, json));
+
+            assertTrue(employers.size() == requiredEmployers.size(),
+                String.format("%s %s: expected %d employers but actual was %d\nJSON: %s", responseObject, key, requiredEmployers.size(), employers.size(), json));
+            assertTrue(employers.containsAll(requiredEmployers),
+                String.format("%s %s: expected employers %s but actual was %s\nJSON: %s", responseObject, key, requiredEmployers, employers, json));
             return true;
         }
         return false;
     }
 
-    private static boolean testApplicants(String json, String responseObject, String key, String expected) {
+    private static boolean testCategoryCheckNinos(String json, String responseObject, String key, String expected) {
+        if (responseObject.startsWith("Category ") && key.contains("nino")) {
+            String jsonPath = "$.categoryChecks..[?(@.calculationType == '" + responseObject + "')].individuals..[?(@.nino == '" + expected + "')]";
+            JSONArray jsonData = read(json, jsonPath);
+            assertTrue(jsonData.size() > 0, String.format("%s %s: Unable to find category check nino %s\nJSON: %s", responseObject, key, expected, json));
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean testNinos(String json, String responseObject, String key, String expected) {
         if (responseObject.toLowerCase().equals("applicant") || responseObject.toLowerCase().equals("partner")) {
-            String jsonPath = "$.individuals";
-            jsonPath += responseObject.toLowerCase().equals("applicant") ? "[0]." : "[1].";
-            jsonPath += KEY_MAP.get(key);
-            String actual = read(json, jsonPath).toString().toLowerCase();
-            assertTrue(expected.equals(actual), String.format("%s %s: expected %s but actual was %s\nJSON: %s", responseObject, key, expected, actual, json));
+            String jsonPath = "$.individuals..[?(@.nino == '" + expected + "')].nino";
+            JSONArray jsonData = read(json, jsonPath);
+            assertTrue(jsonData.size() > 0, String.format("%s %s: Unable to find nino %s\nJSON: %s", responseObject, key, expected, json));
             return true;
         }
         return false;
@@ -127,10 +141,6 @@ public class StepAssertor {
     private static void validateTestParameters(String responseObject, String key, String expected) {
         if (responseObject.equals("")) {
             throw new IllegalArgumentException("No response object provided for key " + key + " with data " + expected);
-        }
-
-        if (!KEY_MAP.containsKey(key)) {
-            throw new IllegalArgumentException(String.format("The key was not recognised: %s", key));
         }
     }
 }

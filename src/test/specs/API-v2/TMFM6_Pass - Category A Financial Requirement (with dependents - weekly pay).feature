@@ -65,7 +65,7 @@ Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
             | Category A Weekly Salary | Assessment start date     | 2015-08-25       |
             | Category A Weekly Salary | Application Raised date   | 2016-02-23       |
             | Category A Weekly Salary | Threshold                 | 430.77           |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Weekly Salary | Employer Name - TS123456A | Flying Pizza Ltd |
 
 #New scenario - Added in SD126
     Scenario: Jennifer Toure meets the Category A Financial Requirement with 3 Dependants
@@ -114,7 +114,7 @@ Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
             | Category A Weekly Salary | Assessment start date     | 2015-06-05       |
             | Category A Weekly Salary | Application Raised date   | 2015-12-04       |
             | Category A Weekly Salary | Threshold                 | 523.08           |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Weekly Salary | Employer Name - JT123456C | Flying Pizza Ltd |
 
 #New scenario - Added in
     Scenario: Lela Vasquez meets the Category A Financial Requirement with 5 Dependants
@@ -163,4 +163,4 @@ Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
             | Category A Weekly Salary | Assessment start date     | 2015-01-21       |
             | Category A Weekly Salary | Application Raised date   | 2015-07-22       |
             | Category A Weekly Salary | Threshold                 | 615.38           |
-            | Category A Weekly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Weekly Salary | Employer Name - PS987654B | Flying Pizza Ltd |

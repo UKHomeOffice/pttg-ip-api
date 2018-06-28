@@ -47,7 +47,7 @@ Feature: Pass - Category A Financial Requirement - with dependants - monthly
             | Category A Monthly Salary | Assessment start date     | 2014-07-25       |
             | Category A Monthly Salary | Application Raised date   | 2015-01-23       |
             | Category A Monthly Salary | Threshold                 | 1866.67          |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Monthly Salary | Employer Name - TL123456A | Flying Pizza Ltd |
 
 #New scenario -
     Scenario: Scarlett Jones meets the Category A Financial Requirement with 3 dependant
@@ -78,7 +78,7 @@ Feature: Pass - Category A Financial Requirement - with dependants - monthly
             | Category A Monthly Salary | Assessment start date     | 2015-06-09       |
             | Category A Monthly Salary | Application Raised date   | 2015-12-08       |
             | Category A Monthly Salary | Threshold                 | 2266.67          |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Monthly Salary | Employer Name - SJ123456C | Flying Pizza Ltd |
 #New scenario -
     Scenario: Wasim Mohammed meets the Category A Financial Requirement with 5 dependants
 
@@ -108,4 +108,4 @@ Feature: Pass - Category A Financial Requirement - with dependants - monthly
             | Category A Monthly Salary | Assessment start date     | 2014-08-30       |
             | Category A Monthly Salary | Application Raised date   | 2015-02-28       |
             | Category A Monthly Salary | Threshold                 | 2666.67          |
-            | Category A Monthly Salary | Employer Name - Applicant | Flying Pizza Ltd |
+            | Category A Monthly Salary | Employer Name - WA987654B | Flying Pizza Ltd |
