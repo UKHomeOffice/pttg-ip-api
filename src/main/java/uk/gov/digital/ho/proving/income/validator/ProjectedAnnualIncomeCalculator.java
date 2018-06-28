@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
 
-public class AnnualisedAverageCalculator {
+public class ProjectedAnnualIncomeCalculator {
 
     private static final Integer MONTHS_PER_YEAR = 12;
 

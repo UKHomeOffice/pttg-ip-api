@@ -75,7 +75,7 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
                 .flatMap(applicantIncome -> applicantIncome.incomeRecord().paye().stream())
                 .collect(Collectors.toList());
         Map<Integer, BigDecimal> monthlyIncomes = MonthlyIncomeAggregator.aggregateMonthlyIncome(incomes);
-        return AnnualisedAverageCalculator.calculate(monthlyIncomes);
+        return ProjectedAnnualIncomeCalculator.calculate(monthlyIncomes);
     }
 
     private List<CheckedIndividual> getCheckedIndividuals(IncomeValidationRequest incomeValidationRequest) {
