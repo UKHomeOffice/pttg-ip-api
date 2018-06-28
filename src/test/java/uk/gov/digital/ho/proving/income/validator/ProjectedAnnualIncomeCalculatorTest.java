@@ -104,4 +104,17 @@ public class ProjectedAnnualIncomeCalculatorTest {
         assertThat(projectedYearlyIncome.scale()).isEqualTo(2);
     }
 
+
+    @Test
+    public void thatZeroIncomeMonhtsAreIgnored() {
+        Map<Integer, BigDecimal> aggregatedMonthlyIncome = new LinkedHashMap<>();
+        aggregatedMonthlyIncome.put(201804, new BigDecimal("1500.00"));
+        aggregatedMonthlyIncome.put(201803, new BigDecimal("0.00"));
+        aggregatedMonthlyIncome.put(201802, new BigDecimal("1500.00"));
+
+        BigDecimal projectedYearlyIncome = ProjectedAnnualIncomeCalculator.calculate(aggregatedMonthlyIncome);
+
+        assertThat(projectedYearlyIncome).isEqualTo(new BigDecimal("1500.00").multiply(BigDecimal.valueOf(12)));
+    }
+
 }
