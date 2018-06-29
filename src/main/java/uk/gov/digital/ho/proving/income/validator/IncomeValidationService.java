@@ -13,13 +13,16 @@ public class IncomeValidationService {
 
     private IncomeValidator catASalariedIncomeValidator;
     private IncomeValidator catBNonSalariedIncomeValidator;
+    private IncomeValidator employmentCheckIncomeValidator;
 
     public IncomeValidationService(
         IncomeValidator catASalariedIncomeValidator,
-        IncomeValidator catBNonSalariedIncomeValidator
+        IncomeValidator catBNonSalariedIncomeValidator,
+        IncomeValidator employmentCheckIncomeValidator
     ) {
         this.catASalariedIncomeValidator = catASalariedIncomeValidator;
         this.catBNonSalariedIncomeValidator = catBNonSalariedIncomeValidator;
+        this.employmentCheckIncomeValidator = employmentCheckIncomeValidator;
     }
 
     public List<CategoryCheck> validate(IncomeValidationRequest incomeValidationRequest) {
@@ -27,10 +30,14 @@ public class IncomeValidationService {
         List<CategoryCheck> categoryChecks = new ArrayList<>();
 
         categoryChecks.add(checkCategory(incomeValidationRequest, catASalariedIncomeValidator, "A"));
-        categoryChecks.add(checkCategory(incomeValidationRequest, catBNonSalariedIncomeValidator, "B"));
+
+        CategoryCheck catBNonSalariedCategoryCheck = checkCategory(incomeValidationRequest, employmentCheckIncomeValidator, "B");
+        if (catBNonSalariedCategoryCheck.passed()) {
+            catBNonSalariedCategoryCheck = checkCategory(incomeValidationRequest, catBNonSalariedIncomeValidator, "B");
+        }
+        categoryChecks.add(catBNonSalariedCategoryCheck);
 
         return categoryChecks;
-
     }
 
     private CategoryCheck checkCategory(IncomeValidationRequest incomeValidationRequest, IncomeValidator incomeValidator, String category) {

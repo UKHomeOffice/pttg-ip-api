@@ -27,7 +27,9 @@ import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.ge
     CatASalariedMonthlyIncomeValidator.class,
     CatASalariedWeeklyIncomeValidator.class,
     CatAUnsupportedIncomeValidator.class,
-    CatBNonSalariedIncomeValidator.class})
+    CatBNonSalariedIncomeValidator.class,
+    EmploymentCheckIncomeValidator.class
+})
 public class IncomeValidatorTestIT {
 
     @Autowired
@@ -43,6 +45,8 @@ public class IncomeValidatorTestIT {
     private IncomeValidator catAUnsupportedIncomeValidator;
     @SpyBean(CatBNonSalariedIncomeValidator.class)
     private IncomeValidator catBNonSalariedIncomeValidator;
+    @SpyBean(EmploymentCheckIncomeValidator.class)
+    private IncomeValidator employmentCheckIncomeValidator;
 
     @Test
     public void thatAllCategoryChecksArePerformed() {
@@ -61,6 +65,7 @@ public class IncomeValidatorTestIT {
 
         verify(catASalariedIncomeValidator).validate(request);
         verify(catASalariedMonthlyIncomeValidator).validate(request);
+        verify(employmentCheckIncomeValidator).validate(request);
         verify(catBNonSalariedIncomeValidator).validate(request);
 
         verifyZeroInteractions(catASalariedWeeklyIncomeValidator);
