@@ -64,8 +64,8 @@ public class StepAssertor {
     }
 
     private static boolean testHttpResponse(Response response, String responseObject, String key, String expected) {
-        if (responseObject.toLowerCase().equals("http response")) {
-            if (key.toLowerCase().equals("http status")) {
+        if (responseObject.equalsIgnoreCase("http response")) {
+            if (key.equalsIgnoreCase("http status")) {
                 String actual = Integer.valueOf(response.getStatusCode()).toString();
                 assertTrue(expected.equals(actual), String.format("Http Status: expected %s but actual was %s", expected, actual));
                 return true;
@@ -75,20 +75,20 @@ public class StepAssertor {
     }
 
     private static boolean testResponseStatus(String json, String responseObject, String key, String expected) {
-        if (responseObject.toLowerCase().equals("status")) {
+        if (responseObject.equalsIgnoreCase("status")) {
             String jsonPath = "$.status." + key;
-            String actual = read(json, jsonPath).toString().toLowerCase();
-            assertTrue(expected.equals(actual), String.format("Response status %s: expected %s but actual was %s\nJSON: %s", key, expected, actual, json));
+            String actual = read(json, jsonPath).toString();
+            assertTrue(expected.equalsIgnoreCase(actual), String.format("Response status %s: expected %s but actual was %s\nJSON: %s", key, expected, actual, json));
             return true;
         }
         return false;
     }
 
     private static boolean testNinos(String json, String responseObject, String key, String expected) {
-        if (responseObject.toLowerCase().equals("applicant") || responseObject.toLowerCase().equals("partner")) {
+        if (responseObject.equalsIgnoreCase("applicant") || responseObject.equalsIgnoreCase("partner")) {
             String jsonPath = getIndividualNinoJsonPath(expected);
             JSONArray jsonData = read(json, jsonPath);
-            assertTrue(jsonData.size() > 0, String.format("%s %s: Unable to find nino %s\nJSON: %s", responseObject, key, expected, json));
+            assertTrue(!jsonData.isEmpty(), String.format("%s %s: Unable to find nino %s\nJSON: %s", responseObject, key, expected, json));
             return true;
         }
         return false;
@@ -116,7 +116,7 @@ public class StepAssertor {
         if (responseObject.startsWith("Category ") && key.contains("nino")) {
             String jsonPath = getCategoryCheckNinoJsonPath(responseObject, expected);
             JSONArray jsonData = read(json, jsonPath);
-            assertTrue(jsonData.size() > 0, String.format("%s %s: Unable to find category check nino %s\nJSON: %s", responseObject, key, expected, json));
+            assertTrue(!jsonData.isEmpty(), String.format("%s %s: Unable to find category check nino %s\nJSON: %s", responseObject, key, expected, json));
             return true;
         }
         return false;
@@ -126,10 +126,10 @@ public class StepAssertor {
         if (responseObject.startsWith("Category ")) {
             String jsonPath = getCategoryCheckPropertyJsonPath(responseObject, key);
             JSONArray jsonData = read(json, jsonPath);
-            String actual = jsonData.get(0).toString().toLowerCase();
+            String actual = jsonData.get(0).toString();
 
-            assertTrue(jsonData.size() > 0, String.format("%s %s: Unable to find category check\nJSON: %s", responseObject, key, json));
-            assertTrue(expected.equals(actual), String.format("%s %s: expected %s but actual was %s\nJSON: %s", responseObject, key, expected, actual, json));
+            assertTrue(!jsonData.isEmpty(), String.format("%s %s: Unable to find category check\nJSON: %s", responseObject, key, json));
+            assertTrue(expected.equalsIgnoreCase(actual), String.format("%s %s: expected %s but actual was %s\nJSON: %s", responseObject, key, expected, actual, json));
             return true;
         }
         return false;
@@ -137,12 +137,10 @@ public class StepAssertor {
 
 
     private static List<String> getEmployersList(JSONArray employersWrapper) {
-        List<String> employers = new ArrayList<>();
-        Iterator it = ((JSONArray) employersWrapper.get(0)).iterator();
-        while (it.hasNext()) {
-            employers.add(it.next().toString().toLowerCase());
-        }
-        return employers;
+        return ((JSONArray) employersWrapper.get(0))
+            .stream()
+            .map(it -> it.toString().toLowerCase())
+            .collect(Collectors.toList());
     }
 
 

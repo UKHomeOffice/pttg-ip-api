@@ -94,6 +94,9 @@ public class FinancialStatusService {
     }
 
     private void validateApplicants(List<Applicant> applicants) {
+        if (applicants == null) {
+            throw new IllegalArgumentException("Error: applicant not passed");
+        }
         if (applicants.size() == 0) {
             throw new IllegalArgumentException("Error: zero applicants");
         }

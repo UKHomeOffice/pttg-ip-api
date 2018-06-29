@@ -54,11 +54,11 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
 
         LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusYears(ASSESSMENT_START_YEARS_BEFORE);
 
-        BigDecimal annualisedAverage = getAnnualisedAverage(incomeValidationRequest);
+        BigDecimal projectedAnnualIncome = getProjectedAnnualIncome(incomeValidationRequest);
 
         BigDecimal yearlyThreshold = new SalariedThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
 
-        IncomeValidationStatus result = annualisedAverage.compareTo(yearlyThreshold) >= 0 ? CATB_NON_SALARIED_PASSED : CATB_NON_SALARIED_BELOW_THRESHOLD;
+        IncomeValidationStatus result = projectedAnnualIncome.compareTo(yearlyThreshold) >= 0 ? CATB_NON_SALARIED_PASSED : CATB_NON_SALARIED_BELOW_THRESHOLD;
 
         return new IncomeValidationResult(
             result,
@@ -68,7 +68,7 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
             CALCULATION_TYPE);
     }
 
-    private BigDecimal getAnnualisedAverage(IncomeValidationRequest incomeValidationRequest) {
+    private BigDecimal getProjectedAnnualIncome(IncomeValidationRequest incomeValidationRequest) {
         List<Income> incomes =
             incomeValidationRequest.applicantIncomes()
                 .stream()
