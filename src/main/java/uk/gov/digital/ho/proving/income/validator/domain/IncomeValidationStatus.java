@@ -11,7 +11,9 @@ public enum IncomeValidationStatus {
     MULTIPLE_EMPLOYERS(false),
     UNKNOWN_PAY_FREQUENCY(false),
     CATB_NON_SALARIED_PASSED(true),
-    CATB_NON_SALARIED_BELOW_THRESHOLD(false);
+    CATB_NON_SALARIED_BELOW_THRESHOLD(false),
+    EMPLOYMENT_CHECK_PASSED(true),
+    EMPLOYMENT_CHECK_FAILED(false);
 
     private boolean passed;
 
