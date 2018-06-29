@@ -64,6 +64,7 @@ public class FinancialStatusService {
     @PostMapping(value = "/incomeproving/v3/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
     public FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
 
+        validateApplicants(request.applicants());
         Applicant mainApplicant = request.applicants().get(0);
 
         final String redactedNino = ninoUtils.redact(mainApplicant.nino());
@@ -77,12 +78,10 @@ public class FinancialStatusService {
 
         final String sanitisedNino = ninoUtils.sanitise(mainApplicant.nino());
         ninoUtils.validate(sanitisedNino);
-
         validateDependents(request.dependants());
         validateApplicationRaisedDate(request.applicationRaisedDate());
 
         LocalDate startSearchDate = request.applicationRaisedDate().minusDays(NUMBER_OF_DAYS_INCOME);
-
         Map<Individual, IncomeRecord> incomeRecords = getIncomeRecords(request, mainApplicant, sanitisedNino, startSearchDate);
 
         FinancialStatusCheckResponse response = calculateResponse(request.applicationRaisedDate(), request.dependants(), startSearchDate, incomeRecords);
@@ -92,6 +91,18 @@ public class FinancialStatusService {
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
 
         return response;
+    }
+
+    private void validateApplicants(List<Applicant> applicants) {
+        if (applicants == null) {
+            throw new IllegalArgumentException("Error: applicant not passed");
+        }
+        if (applicants.size() == 0) {
+            throw new IllegalArgumentException("Error: zero applicants");
+        }
+        if (applicants.size() > 2) {
+            throw new IllegalArgumentException("Error: more than 2 applicants");
+        }
     }
 
     private Map<Individual, IncomeRecord> getIncomeRecords(FinancialStatusRequest request, Applicant mainApplicant, String sanitisedNino, LocalDate startSearchDate) {
