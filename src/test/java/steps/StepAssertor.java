@@ -123,7 +123,7 @@ public class StepAssertor {
     }
 
     private static boolean testCategoryCheck(String json, String responseObject, String key, String expected) {
-        if (responseObject.startsWith("Category ")) {
+        if (responseObject.startsWith("Category ") || responseObject.equalsIgnoreCase("Employment Check")) {
             String jsonPath = getCategoryCheckPropertyJsonPath(responseObject, key);
             JSONArray jsonData = read(json, jsonPath);
             String actual = jsonData.get(0).toString();
