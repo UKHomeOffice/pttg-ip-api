@@ -29,21 +29,21 @@ public class IncomeValidationService {
 
         List<CategoryCheck> categoryChecks = new ArrayList<>();
 
-        categoryChecks.add(checkCategory(incomeValidationRequest, catASalariedIncomeValidator, "A"));
+        categoryChecks.add(checkCategory(incomeValidationRequest, catASalariedIncomeValidator));
 
-        CategoryCheck catBNonSalariedCategoryCheck = checkCategory(incomeValidationRequest, employmentCheckIncomeValidator, "B");
+        CategoryCheck catBNonSalariedCategoryCheck = checkCategory(incomeValidationRequest, employmentCheckIncomeValidator);
         if (catBNonSalariedCategoryCheck.passed()) {
-            catBNonSalariedCategoryCheck = checkCategory(incomeValidationRequest, catBNonSalariedIncomeValidator, "B");
+            catBNonSalariedCategoryCheck = checkCategory(incomeValidationRequest, catBNonSalariedIncomeValidator);
         }
         categoryChecks.add(catBNonSalariedCategoryCheck);
 
         return categoryChecks;
     }
 
-    private CategoryCheck checkCategory(IncomeValidationRequest incomeValidationRequest, IncomeValidator incomeValidator, String category) {
+    private CategoryCheck checkCategory(IncomeValidationRequest incomeValidationRequest, IncomeValidator incomeValidator) {
         IncomeValidationResult result = incomeValidator.validate(incomeValidationRequest);
         return new CategoryCheck(
-            category,
+            result.category(),
             result.calculationType(),
             result.status().isPassed(),
             incomeValidationRequest.applicationRaisedDate(),

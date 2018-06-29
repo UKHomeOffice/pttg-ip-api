@@ -22,6 +22,7 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
 
     public static final String CALCULATION_TYPE = "Employment Check";
     public static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 32;
+    private static final String CATEGORY = "B";
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
@@ -68,6 +69,7 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
             monthlyThreshold,
             getCheckedIndividuals(incomeValidationRequest),
             assessmentStartDate,
+            CATEGORY,
             CALCULATION_TYPE);
     }
 

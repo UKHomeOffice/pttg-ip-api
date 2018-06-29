@@ -19,5 +19,6 @@ public class IncomeValidationResult {
     private BigDecimal threshold;
     private List<CheckedIndividual> individuals;
     private LocalDate assessmentStartDate;
+    private String category;
     private String calculationType;
 }

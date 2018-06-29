@@ -22,6 +22,8 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
 
     public static final String CALCULATION_TYPE = "Category B non salaried";
     public static final Integer ASSESSMENT_START_YEARS_BEFORE = 1;
+    private static final String CATEGORY = "B";
+
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
@@ -65,6 +67,7 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
             yearlyThreshold,
             getCheckedIndividuals(incomeValidationRequest),
             assessmentStartDate,
+            CATEGORY,
             CALCULATION_TYPE);
     }
 

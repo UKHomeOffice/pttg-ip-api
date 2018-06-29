@@ -19,6 +19,7 @@ public class CatAUnsupportedIncomeValidator implements IncomeValidator {
 
     private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
     private static final String CALCULATION_TYPE = "Category A Unsupported Salary Frequency";
+    private static final String CATEGORY = "A";
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
@@ -26,7 +27,7 @@ public class CatAUnsupportedIncomeValidator implements IncomeValidator {
         ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncomes().get(0);
         List<String> employments = toEmployerNames(applicantIncome.employments());
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
-        return new IncomeValidationResult(getStatus(frequency), BigDecimal.ZERO, Arrays.asList(checkedIndividual), incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS), CALCULATION_TYPE);
+        return new IncomeValidationResult(getStatus(frequency), BigDecimal.ZERO, Arrays.asList(checkedIndividual), incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS), CATEGORY, CALCULATION_TYPE);
     }
 
     private IncomeValidationStatus getStatus(FrequencyCalculator.Frequency frequency) {
