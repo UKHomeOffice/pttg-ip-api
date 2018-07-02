@@ -306,5 +306,16 @@ public class EmploymentCheckIncomeValidatorTest {
             .withFailMessage("The checked individual should have the correct employer");
     }
 
+    @Test
+    public void thatCalculationTypeIsOfRequiredFormatForStepAssertor() {
+        LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
+        List<ApplicantIncome> incomes = noIncome(raisedDate);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult result = validator.validate(request);
+
+        assertThat(result.calculationType()).isEqualTo("Employment Check");
+    }
+
 
 }
