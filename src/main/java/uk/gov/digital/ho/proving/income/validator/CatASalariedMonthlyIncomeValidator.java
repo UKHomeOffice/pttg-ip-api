@@ -23,6 +23,7 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
     private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
     private static final Integer NUMBER_OF_MONTHS = 6;
     private static final String CALCULATION_TYPE = "Category A Monthly Salary";
+    private static final String CATEGORY = "A";
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
@@ -46,7 +47,7 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
                 assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
 
-        return new IncomeValidationResult(status, monthlyThreshold, Arrays.asList(checkedIndividual), assessmentStartDate, CALCULATION_TYPE);
+        return new IncomeValidationResult(status, monthlyThreshold, Arrays.asList(checkedIndividual), assessmentStartDate, CATEGORY, CALCULATION_TYPE);
     }
 
     private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {

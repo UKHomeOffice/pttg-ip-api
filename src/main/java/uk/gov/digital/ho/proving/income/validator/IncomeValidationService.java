@@ -13,30 +13,37 @@ public class IncomeValidationService {
 
     private IncomeValidator catASalariedIncomeValidator;
     private IncomeValidator catBNonSalariedIncomeValidator;
+    private IncomeValidator employmentCheckIncomeValidator;
 
     public IncomeValidationService(
         IncomeValidator catASalariedIncomeValidator,
-        IncomeValidator catBNonSalariedIncomeValidator
+        IncomeValidator catBNonSalariedIncomeValidator,
+        IncomeValidator employmentCheckIncomeValidator
     ) {
         this.catASalariedIncomeValidator = catASalariedIncomeValidator;
         this.catBNonSalariedIncomeValidator = catBNonSalariedIncomeValidator;
+        this.employmentCheckIncomeValidator = employmentCheckIncomeValidator;
     }
 
     public List<CategoryCheck> validate(IncomeValidationRequest incomeValidationRequest) {
 
         List<CategoryCheck> categoryChecks = new ArrayList<>();
 
-        categoryChecks.add(checkCategory(incomeValidationRequest, catASalariedIncomeValidator, "A"));
-        categoryChecks.add(checkCategory(incomeValidationRequest, catBNonSalariedIncomeValidator, "B"));
+        categoryChecks.add(checkCategory(incomeValidationRequest, catASalariedIncomeValidator));
+
+        CategoryCheck catBNonSalariedCategoryCheck = checkCategory(incomeValidationRequest, employmentCheckIncomeValidator);
+        if (catBNonSalariedCategoryCheck.passed()) {
+            catBNonSalariedCategoryCheck = checkCategory(incomeValidationRequest, catBNonSalariedIncomeValidator);
+        }
+        categoryChecks.add(catBNonSalariedCategoryCheck);
 
         return categoryChecks;
-
     }
 
-    private CategoryCheck checkCategory(IncomeValidationRequest incomeValidationRequest, IncomeValidator incomeValidator, String category) {
+    private CategoryCheck checkCategory(IncomeValidationRequest incomeValidationRequest, IncomeValidator incomeValidator) {
         IncomeValidationResult result = incomeValidator.validate(incomeValidationRequest);
         return new CategoryCheck(
-            category,
+            result.category(),
             result.calculationType(),
             result.status().isPassed(),
             incomeValidationRequest.applicationRaisedDate(),

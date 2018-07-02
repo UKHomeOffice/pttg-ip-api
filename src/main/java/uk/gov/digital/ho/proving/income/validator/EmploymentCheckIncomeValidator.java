@@ -11,28 +11,23 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD;
-import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_PASSED;
+import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.EMPLOYMENT_CHECK_FAILED;
+import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.EMPLOYMENT_CHECK_PASSED;
 
 @Service
-public class CatBNonSalariedIncomeValidator implements IncomeValidator {
+public class EmploymentCheckIncomeValidator implements IncomeValidator {
 
-    public static final String CALCULATION_TYPE = "Category B non salaried";
-    public static final Integer ASSESSMENT_START_YEARS_BEFORE = 1;
+
+    public static final String CALCULATION_TYPE = "Employment Check";
+    public static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 32;
     private static final String CATEGORY = "B";
-
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
-        IncomeValidationResult result = doValidation(incomeValidationRequest);
-        if (result.status().isPassed()) {
-            return result;
-        }
-
-        if(!incomeValidationRequest.isJointRequest()) {
+        if (!incomeValidationRequest.isJointRequest()) {
+            IncomeValidationResult result = doValidation(incomeValidationRequest);
             return result;
         }
 
@@ -42,43 +37,40 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
             return applicantOnlyResult;
         }
 
+
         IncomeValidationRequest partnerOnlyRequest = incomeValidationRequest.toPartnerOnly();
         IncomeValidationResult partnerOnlyResult = doValidation(partnerOnlyRequest);
         if (partnerOnlyResult.status().isPassed()) {
             return partnerOnlyResult;
         }
 
-        return result;
-
+        IncomeValidationResult jointResult = doValidation(incomeValidationRequest);
+        return jointResult;
     }
+
 
     private IncomeValidationResult doValidation(IncomeValidationRequest incomeValidationRequest) {
 
-        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusYears(ASSESSMENT_START_YEARS_BEFORE);
+        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
 
-        BigDecimal projectedAnnualIncome = getProjectedAnnualIncome(incomeValidationRequest);
+        BigDecimal monthlyThreshold = new SalariedThresholdCalculator(incomeValidationRequest.dependants()).getMonthlyThreshold();
 
-        BigDecimal yearlyThreshold = new SalariedThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
+        BigDecimal earningsSinceAssessmentStart =
+            incomeValidationRequest.applicantIncomes().stream()
+                .flatMap(applicantIncome -> applicantIncome.incomeRecord().paye().stream())
+                .filter(income -> ! income.paymentDate().isBefore(assessmentStartDate))
+                .map(Income::payment)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        IncomeValidationStatus result = projectedAnnualIncome.compareTo(yearlyThreshold) >= 0 ? CATB_NON_SALARIED_PASSED : CATB_NON_SALARIED_BELOW_THRESHOLD;
+        IncomeValidationStatus result = earningsSinceAssessmentStart.compareTo(monthlyThreshold) >= 0 ? EMPLOYMENT_CHECK_PASSED : EMPLOYMENT_CHECK_FAILED;
 
         return new IncomeValidationResult(
             result,
-            yearlyThreshold,
+            monthlyThreshold,
             getCheckedIndividuals(incomeValidationRequest),
             assessmentStartDate,
             CATEGORY,
             CALCULATION_TYPE);
-    }
-
-    private BigDecimal getProjectedAnnualIncome(IncomeValidationRequest incomeValidationRequest) {
-        List<Income> incomes =
-            incomeValidationRequest.applicantIncomes()
-                .stream()
-                .flatMap(applicantIncome -> applicantIncome.incomeRecord().paye().stream())
-                .collect(Collectors.toList());
-        Map<Integer, BigDecimal> monthlyIncomes = MonthlyIncomeAggregator.aggregateMonthlyIncome(incomes);
-        return ProjectedAnnualIncomeCalculator.calculate(monthlyIncomes);
     }
 
     private List<CheckedIndividual> getCheckedIndividuals(IncomeValidationRequest incomeValidationRequest) {

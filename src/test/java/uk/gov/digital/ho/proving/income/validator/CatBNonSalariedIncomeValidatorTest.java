@@ -271,4 +271,16 @@ public class CatBNonSalariedIncomeValidatorTest {
             .withFailMessage("The individual returned should be the partner");
     }
 
+    @Test
+    public void thatCalculationTypeIsOfRequiredFormatForStepAssertor() {
+        LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
+        List<ApplicantIncome> incomes = singleMonthlyPaymentAboveNoDependantsThreshold(raisedDate);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult result = validator.validate(request);
+
+        assertThat(result.calculationType()).startsWith("Category ");
+    }
+
+
 }
