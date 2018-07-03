@@ -1,22 +1,30 @@
 package uk.gov.digital.ho.proving.income.api;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
+import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusCheckResponse;
 import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusRequest;
+import uk.gov.digital.ho.proving.income.api.domain.Individual;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient;
+import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
+import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import uk.gov.digital.ho.proving.income.validator.IncomeValidationService;
 import utils.LogCapturer;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -38,7 +46,7 @@ public class FinancialStatusServiceTest {
     private NinoUtils mockNinoUtils;
 
     @Mock
-    private IncomeValidationService incomeValidationService;
+    private IncomeValidationService mockIncomeValidationService;
 
     @Test
     public void shouldNeverLogSuppliedNino() {
@@ -72,4 +80,52 @@ public class FinancialStatusServiceTest {
             assertThat(logMessage).doesNotContain(realNino);
         }
     }
+
+    @Test
+    public void shouldReturnCorrectIndividualNamesIfIndividualNotReturnedFromHmrc() {
+        when(mockNinoUtils.sanitise("A")).thenReturn("A");
+        when(mockNinoUtils.sanitise("B")).thenReturn("B");
+        when(mockHmrcClient.getIncomeRecord(eq(getApplicantIdentity()), any(LocalDate.class), any(LocalDate.class)))
+            .thenReturn(getApplicantIncomeRecord());
+        when(mockHmrcClient.getIncomeRecord(eq(getPartnerIdentity()), any(LocalDate.class), any(LocalDate.class)))
+            .thenReturn(getPartnerIncomeRecord());
+
+
+        Applicant applicant = new Applicant("applicant", "surname", LocalDate.now(), "A");
+        Applicant partner = new Applicant("partner", "surname", LocalDate.now(), "B");
+        List<Applicant> applicants = ImmutableList.of(applicant, partner);
+        FinancialStatusRequest request = new FinancialStatusRequest(applicants, LocalDate.now(), 0);
+
+        FinancialStatusCheckResponse response = service.getFinancialStatus(request);
+
+        assertThat(response.individuals().size()).isEqualTo(2).withFailMessage("The correct number of individuals should be returned");
+
+        Optional<Individual> applicantIndividual = response.individuals().stream().filter(individual -> individual.nino().equals("A")).findFirst();
+        Optional<Individual> partnerIndividual = response.individuals().stream().filter(individual -> individual.nino().equals("B")).findFirst();
+
+        assertThat(applicantIndividual.isPresent()).withFailMessage("The applicant's nino should exist in the list of individuals");
+        assertThat(applicantIndividual.get().forename()).isEqualTo("applicant").withFailMessage("The applicant's name should be returned");
+
+        assertThat(partnerIndividual.isPresent()).withFailMessage("The partner's nino should exist in the list of individuals");
+        assertThat(partnerIndividual.get().forename()).isEqualTo("partner").withFailMessage("The partner's name should be returned");
+    }
+
+    private Identity getApplicantIdentity() {
+        return new Identity("applicant", "surname", LocalDate.now(), "A");
+    }
+
+    private IncomeRecord getApplicantIncomeRecord() {
+        Income income = new Income(BigDecimal.ONE, LocalDate.now(), 1, null, "E1");
+        return new IncomeRecord(ImmutableList.of(income), new ArrayList<>(), new ArrayList(), null);
+    }
+
+    private Identity getPartnerIdentity() {
+        return new Identity("partner", "surname", LocalDate.now(), "B");
+    }
+
+    private IncomeRecord getPartnerIncomeRecord() {
+        Income income = new Income(BigDecimal.ONE, LocalDate.now(), 1, null, "E2");
+        return new IncomeRecord(ImmutableList.of(income), new ArrayList<>(), new ArrayList(), null);
+    }
+
 }
