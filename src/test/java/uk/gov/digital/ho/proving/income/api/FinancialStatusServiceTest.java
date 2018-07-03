@@ -10,6 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
 import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusCheckResponse;
 import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusRequest;
+import uk.gov.digital.ho.proving.income.api.domain.Individual;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -97,10 +99,15 @@ public class FinancialStatusServiceTest {
         FinancialStatusCheckResponse response = service.getFinancialStatus(request);
 
         assertThat(response.individuals().size()).isEqualTo(2).withFailMessage("The correct number of individuals should be returned");
-        assertThat(response.individuals().get(0).forename()).isEqualTo("applicant").withFailMessage("The applicant's name should be returned");
-        assertThat(response.individuals().get(0).nino()).isEqualTo("A").withFailMessage("The applicant's nino should be returned");
-        assertThat(response.individuals().get(1).forename()).isEqualTo("partner").withFailMessage("The partner's name should be returned");
-        assertThat(response.individuals().get(1).nino()).isEqualTo("B").withFailMessage("The partner's nino should be returned");
+
+        Optional<Individual> applicantIndividual = response.individuals().stream().filter(individual -> individual.nino().equals("A")).findFirst();
+        Optional<Individual> partnerIndividual = response.individuals().stream().filter(individual -> individual.nino().equals("B")).findFirst();
+
+        assertThat(applicantIndividual.isPresent()).withFailMessage("The applicant's nino should exist in the list of individuals");
+        assertThat(applicantIndividual.get().forename()).isEqualTo("applicant").withFailMessage("The applicant's name should be returned");
+
+        assertThat(partnerIndividual.isPresent()).withFailMessage("The partner's nino should exist in the list of individuals");
+        assertThat(partnerIndividual.get().forename()).isEqualTo("partner").withFailMessage("The partner's name should be returned");
     }
 
     private Identity getApplicantIdentity() {
