@@ -6,12 +6,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.proving.income.api.domain.*;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
-import uk.gov.digital.ho.proving.income.validator.IncomeValidationService;
-import uk.gov.digital.ho.proving.income.api.domain.Individual;
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient;
 import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
+import uk.gov.digital.ho.proving.income.validator.IncomeValidationService;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 
 import javax.validation.Valid;
@@ -113,7 +112,7 @@ public class FinancialStatusService {
             startSearchDate,
             request.applicationRaisedDate());
 
-        incomeRecords.put(individualFromRequestAndRecord(request, applicantIncomeRecord.hmrcIndividual(), sanitisedNino), applicantIncomeRecord);
+        incomeRecords.put(individualFromRequestAndRecord(mainApplicant, applicantIncomeRecord.hmrcIndividual(), sanitisedNino), applicantIncomeRecord);
 
         if (request.applicants().size() > 1) {
             Applicant partner = request.applicants().get(1);
@@ -125,19 +124,18 @@ public class FinancialStatusService {
                 startSearchDate,
                 request.applicationRaisedDate());
 
-            incomeRecords.put(individualFromRequestAndRecord(request, partnerIncomeRecord.hmrcIndividual(), partnerSanitisedNino), partnerIncomeRecord);
+            incomeRecords.put(individualFromRequestAndRecord(partner, partnerIncomeRecord.hmrcIndividual(), partnerSanitisedNino), partnerIncomeRecord);
         }
 
         return incomeRecords;
     }
 
-    private Individual individualFromRequestAndRecord(FinancialStatusRequest request, HmrcIndividual hmrcIndividual, String nino) {
+    private Individual individualFromRequestAndRecord(Applicant applicant, HmrcIndividual hmrcIndividual, String nino) {
         if (hmrcIndividual != null) {
             return new Individual(hmrcIndividual.firstName(), hmrcIndividual.lastName(), nino);
         }
         // for service backward compatibility echo back request if hmrc service returns no individual
-        Applicant mainApplicant = request.applicants().get(0);
-        return new Individual(mainApplicant.forename(), mainApplicant.surname(), nino);
+        return new Individual(applicant.forename(), applicant.surname(), nino);
     }
 
     private FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LocalDate startSearchDate, Map<Individual, IncomeRecord> incomeRecords) {
