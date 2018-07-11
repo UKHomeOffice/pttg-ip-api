@@ -361,8 +361,24 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     @Given("^HMRC has no matching record\$")
     void hmrcHasNoMatchingRecord() throws Throwable {
         stubFor(WireMock.get(urlMatching("/income.*")).
+            inScenario("hmrc applicants").
+            whenScenarioStateIs(Scenario.STARTED).
             willReturn(aResponse().
                 withHeader("Content-Type", "application/json").
-                withStatus(404)))
+                withStatus(404)).
+            willSetStateTo("main applicant returned"))
+
+    }
+
+    @Given("^the applicants partner has no matching record\$")
+    void partnerHasNoMatchingRecord() throws Throwable {
+        stubFor(WireMock.get(urlMatching("/income.*")).
+            inScenario("hmrc applicants").
+            whenScenarioStateIs("main applicant returned").
+            willReturn(aResponse().
+                withHeader("Content-Type", "application/json").
+                withStatus(404)).
+            willSetStateTo("finished"))
+
     }
 }

@@ -96,7 +96,26 @@ class FinancialServiceSpec extends Specification {
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isNotFound())
-        jsonContent.status.message == "Resource not found"
+        jsonContent.status.message == "Resource not found: AA123456A"
+
+    }
+
+    def "unknown partner nino shows correct nino in error message"() {
+        given:
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { getConsecutiveIncomes2().get(0).incomeRecord }
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException() }
+
+
+        when:
+        def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}, {\\\"nino\\\":\\\"BB123456B\\\",\\\"forename\\\":\\\"Marie\\\",\\\"surname\\\":\\\"Jones\\\",\\\"dateOfBirth\\\":\\\"2017-08-22\\\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+        )
+
+        then:
+        def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
+        response.andExpect(status().isNotFound())
+        jsonContent.status.message == "Resource not found: BB123456B"
 
     }
 
