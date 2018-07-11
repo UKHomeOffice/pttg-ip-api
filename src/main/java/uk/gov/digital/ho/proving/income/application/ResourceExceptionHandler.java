@@ -77,8 +77,9 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(value = ApplicationExceptions.EarningsServiceNoUniqueMatchException.class)
     public ResponseEntity<BaseResponse> handle(ApplicationExceptions.EarningsServiceNoUniqueMatchException e, WebRequest request) {
         log.error(append("errorCode", "0009"), "Could not retrieve earning details.", e);
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, UUID.randomUUID(), auditData(new BaseResponse(new ResponseStatus("0009", "Resource not found"))));
-        return buildErrorResponse(httpHeaders(), "0009", "Resource not found", HttpStatus.NOT_FOUND);
+        String errorMessage = String.format("Resource not found: %s", e.nino());
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, UUID.randomUUID(), auditData(new BaseResponse(new ResponseStatus("0009", errorMessage))));
+        return buildErrorResponse(httpHeaders(), "0009", errorMessage, HttpStatus.NOT_FOUND);
     }
 
     private Map<String, Object> auditData(BaseResponse response) {

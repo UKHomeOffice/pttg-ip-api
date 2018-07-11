@@ -17,6 +17,13 @@ public interface ApplicationExceptions {
     }
 
     class EarningsServiceNoUniqueMatchException extends RuntimeException {
+        private String nino;
+        public EarningsServiceNoUniqueMatchException(String nino) {
+            this.nino = nino;
+        }
+        public String nino() {
+            return nino;
+        }
     }
 
     class InvalidNationalInsuranceNumber extends IllegalArgumentException {

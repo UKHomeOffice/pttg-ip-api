@@ -13,6 +13,7 @@ import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient
 import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn
+import uk.gov.digital.ho.proving.income.hmrc.domain.Identity
 import uk.gov.digital.ho.proving.income.validator.IncomeValidationService
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus
 
@@ -84,7 +85,7 @@ class FinancialServiceSpec extends Specification {
 
     def "unknown nino yields HTTP Not Found (404)"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException() }
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException("AA123456A") }
 
 
         when:
@@ -102,14 +103,20 @@ class FinancialServiceSpec extends Specification {
 
     def "unknown partner nino shows correct nino in error message"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { getConsecutiveIncomes2().get(0).incomeRecord }
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException() }
+        def APPLICANT_NINO = "AA123456A"
+        def PARTNER_NINO = "BB123456B"
+        def applicant = new Identity("Mark", "Jones", LocalDate.of(2017, 8, 21), APPLICANT_NINO)
+        def partner = new Identity("Marie", "Jones", LocalDate.of(2017, 8, 22), PARTNER_NINO)
+        1 * mockIncomeRecordService.getIncomeRecord(applicant, _, _) >> { getConsecutiveIncomes2().get(0).incomeRecord }
+        1 * mockIncomeRecordService.getIncomeRecord(partner, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException("BB123456B") }
+        mockNinoUtils.sanitise(APPLICANT_NINO) >> APPLICANT_NINO
+        mockNinoUtils.sanitise(PARTNER_NINO) >> PARTNER_NINO
 
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}, {\\\"nino\\\":\\\"BB123456B\\\",\\\"forename\\\":\\\"Marie\\\",\\\"surname\\\":\\\"Jones\\\",\\\"dateOfBirth\\\":\\\"2017-08-22\\\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}, {\"nino\":\"BB123456B\",\"forename\":\"Marie\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-22\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
         )
 
         then:
