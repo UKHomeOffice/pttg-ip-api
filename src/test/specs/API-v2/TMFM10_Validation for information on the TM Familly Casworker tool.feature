@@ -166,7 +166,7 @@ Feature: Validation of the API fields and data
         Then The Income Proving TM Family API provides the following result:
             | Http Response | HTTP Status | 404                           |
             | Status        | code        | 0009                          |
-            | Status        | message     | Resource not found: SP128856A |
+            | Status        | message     | Resource not found: SP128**** |
 
     Scenario: The partner's NINO is not found by HMRC, correct NINO is reported in error
         Given HMRC has the following income records:
@@ -180,7 +180,7 @@ Feature: Validation of the API fields and data
         Then The Income Proving TM Family API provides the following result:
             | Http Response | HTTP Status | 404                           |
             | Status        | code        | 0009                          |
-            | Status        | message     | Resource not found: BB345678A |
+            | Status        | message     | Resource not found: BB345**** |
 
     Scenario: The API is provided with a valid NINO and a future application raised date
         Given A service is consuming the Income Proving TM Family API

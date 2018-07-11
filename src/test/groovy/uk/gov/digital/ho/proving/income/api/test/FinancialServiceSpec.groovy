@@ -42,7 +42,7 @@ class FinancialServiceSpec extends Specification {
 
     def emptyTaxes = new ArrayList<AnnualSelfAssessmentTaxReturn>()
 
-    MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient)).build()
+    MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient, mockNinoUtils)).build()
 
 
     def "valid NINO is looked up on the earnings service 2"() {
@@ -85,7 +85,9 @@ class FinancialServiceSpec extends Specification {
 
     def "unknown nino yields HTTP Not Found (404)"() {
         given:
+        mockNinoUtils.sanitise("AA123456A") >> "AA123456A"
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException("AA123456A") }
+        2 * mockNinoUtils.redact("AA123456A") >> "AA123****"
 
 
         when:
@@ -97,20 +99,23 @@ class FinancialServiceSpec extends Specification {
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isNotFound())
-        jsonContent.status.message == "Resource not found: AA123456A"
+        jsonContent.status.message == "Resource not found: AA123****"
 
     }
 
     def "unknown partner nino shows correct nino in error message"() {
         given:
         def APPLICANT_NINO = "AA123456A"
+        def APPLICANT_NINO_REDACTED = "AA123****"
         def PARTNER_NINO = "BB123456B"
+        def PARTNER_NINO_REDACTED = "BB123****"
         def applicant = new Identity("Mark", "Jones", LocalDate.of(2017, 8, 21), APPLICANT_NINO)
         def partner = new Identity("Marie", "Jones", LocalDate.of(2017, 8, 22), PARTNER_NINO)
         1 * mockIncomeRecordService.getIncomeRecord(applicant, _, _) >> { getConsecutiveIncomes2().get(0).incomeRecord }
-        1 * mockIncomeRecordService.getIncomeRecord(partner, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException("BB123456B") }
+        1 * mockIncomeRecordService.getIncomeRecord(partner, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException(PARTNER_NINO) }
         mockNinoUtils.sanitise(APPLICANT_NINO) >> APPLICANT_NINO
         mockNinoUtils.sanitise(PARTNER_NINO) >> PARTNER_NINO
+        1 * mockNinoUtils.redact(PARTNER_NINO) >> PARTNER_NINO_REDACTED
 
 
         when:
@@ -122,7 +127,7 @@ class FinancialServiceSpec extends Specification {
         then:
         def jsonContent = new JsonSlurper().parseText(response.andReturn().response.getContentAsString())
         response.andExpect(status().isNotFound())
-        jsonContent.status.message == "Resource not found: BB123456B"
+        jsonContent.status.message == "Resource not found: " + PARTNER_NINO_REDACTED
 
     }
 
