@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import uk.gov.digital.ho.proving.income.api.NinoUtils;
 import uk.gov.digital.ho.proving.income.api.domain.BaseResponse;
 import uk.gov.digital.ho.proving.income.api.domain.ResponseStatus;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.AuditDataException;
@@ -31,9 +32,11 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 public class ResourceExceptionHandler {
 
     private final AuditClient auditClient;
+    private final NinoUtils ninoUtils;
 
-    public ResourceExceptionHandler(AuditClient auditClient) {
+    public ResourceExceptionHandler(AuditClient auditClient, NinoUtils ninoUtils) {
         this.auditClient = auditClient;
+        this.ninoUtils = ninoUtils;
     }
 
 
@@ -75,10 +78,11 @@ public class ResourceExceptionHandler {
     }
 
     @ExceptionHandler(value = ApplicationExceptions.EarningsServiceNoUniqueMatchException.class)
-    public ResponseEntity<BaseResponse> handle(ApplicationExceptions.EarningsServiceNoUniqueMatchException e, WebRequest request) {
+    public ResponseEntity<BaseResponse> handle(ApplicationExceptions.EarningsServiceNoUniqueMatchException e) {
         log.error(append("errorCode", "0009"), "Could not retrieve earning details.", e);
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, UUID.randomUUID(), auditData(new BaseResponse(new ResponseStatus("0009", "Resource not found"))));
-        return buildErrorResponse(httpHeaders(), "0009", "Resource not found", HttpStatus.NOT_FOUND);
+        String errorMessage = String.format("Resource not found: %s", ninoUtils.redact(e.nino()));
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, UUID.randomUUID(), auditData(new BaseResponse(new ResponseStatus("0009", errorMessage))));
+        return buildErrorResponse(httpHeaders(), "0009", errorMessage, HttpStatus.NOT_FOUND);
     }
 
     private Map<String, Object> auditData(BaseResponse response) {

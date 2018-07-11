@@ -79,7 +79,7 @@ public class HmrcClient {
         } catch (HttpStatusCodeException e) {
             if (isNotFound(e)) {
                 log.error("Income Service found no match");
-                throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException();
+                throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException(identity.nino());
             }
             log.error("Income Service failed", e);
             throw e;

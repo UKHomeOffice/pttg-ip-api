@@ -164,9 +164,23 @@ Feature: Validation of the API fields and data
             | Application Raised Date | 2015-01-01 |
             | Dependants              | 3          |
         Then The Income Proving TM Family API provides the following result:
-            | Http Response | HTTP Status | 404                |
-            | Status        | code        | 0009               |
-            | Status        | message     | Resource not found |
+            | Http Response | HTTP Status | 404                           |
+            | Status        | code        | 0009                          |
+            | Status        | message     | Resource not found: SP128**** |
+
+    Scenario: The partner's NINO is not found by HMRC, correct NINO is reported in error
+        Given HMRC has the following income records:
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2018-04-09 | 3066.67 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+        And the applicants partner has no matching record
+        When the Income Proving v3 TM Family API is invoked with the following:
+            | NINO - Applicant        | AA345678A  |
+            | NINO - Partner          | BB345678A  |
+            | Application Raised Date | 2015-01-01 |
+        Then The Income Proving TM Family API provides the following result:
+            | Http Response | HTTP Status | 404                           |
+            | Status        | code        | 0009                          |
+            | Status        | message     | Resource not found: BB345**** |
 
     Scenario: The API is provided with a valid NINO and a future application raised date
         Given A service is consuming the Income Proving TM Family API

@@ -227,7 +227,7 @@ public class HmrcClientTest {
 
         thrown.expect(ApplicationExceptions.EarningsServiceNoUniqueMatchException.class);
 
-        ApplicationExceptions.EarningsServiceNoUniqueMatchException exception = new ApplicationExceptions.EarningsServiceNoUniqueMatchException();
+        ApplicationExceptions.EarningsServiceNoUniqueMatchException exception = new ApplicationExceptions.EarningsServiceNoUniqueMatchException("nino");
 
         service.getIncomeRecordFailureRecovery(exception);
     }

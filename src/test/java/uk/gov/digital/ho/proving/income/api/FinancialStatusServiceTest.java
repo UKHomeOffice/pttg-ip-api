@@ -11,6 +11,7 @@ import uk.gov.digital.ho.proving.income.api.domain.Applicant;
 import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusCheckResponse;
 import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusRequest;
 import uk.gov.digital.ho.proving.income.api.domain.Individual;
+import uk.gov.digital.ho.proving.income.application.ApplicationExceptions;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
@@ -64,8 +65,8 @@ public class FinancialStatusServiceTest {
         when(mockFinancialStatusRequest.applicationRaisedDate()).thenReturn(fiveDaysAgo);
         when(mockHmrcClient.getIncomeRecord(any(), any(), any())).thenReturn(mock(IncomeRecord.class));
 
-        LogCapturer<FinancialStatusService> logCapturer = LogCapturer.forClass(FinancialStatusService.class);
-        logCapturer.start();
+            LogCapturer<FinancialStatusService> logCapturer = LogCapturer.forClass(FinancialStatusService.class);
+            logCapturer.start();
 
         // when
         service.getFinancialStatus(mockFinancialStatusRequest);
