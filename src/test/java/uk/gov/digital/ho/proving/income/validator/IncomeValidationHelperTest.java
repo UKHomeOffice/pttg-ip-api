@@ -19,7 +19,7 @@ public class IncomeValidationHelperTest {
     @Test
     public void thatCheckedIndividualsRetainOrder() {
         List<ApplicantIncome> applicantIncomes = new ArrayList<>();
-        IntStream.range(0, 1000000).forEach(i -> {
+        IntStream.range(0, 10000).forEach(i -> {
             String is = Integer.toString(i);
             Applicant applicant = new Applicant(is, is, LocalDate.now(), is);
             IncomeRecord incomeRecord = new IncomeRecord(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HmrcIndividual(is, is, is, LocalDate.now()));
