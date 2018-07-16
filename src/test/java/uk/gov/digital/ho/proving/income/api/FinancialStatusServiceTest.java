@@ -132,15 +132,4 @@ public class FinancialStatusServiceTest {
         return categoryChecks;
     }
 
-    private List<CategoryCheck> getCategoryChecksOutOfOrder() {
-        List<CheckedIndividual> checkedIndividuals = new ArrayList<>();
-        CheckedIndividual partner = new CheckedIndividual("B", Collections.unmodifiableList(Arrays.asList("E2")));
-        checkedIndividuals.add(partner);
-        CheckedIndividual applicant = new CheckedIndividual("A", Collections.unmodifiableList(Arrays.asList("E1")));
-        checkedIndividuals.add(applicant);
-        CategoryCheck categoryCheck = new CategoryCheck("B", "Test", false, LocalDate.now(), LocalDate.now(), IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD, BigDecimal.TEN, checkedIndividuals);
-        List<CategoryCheck> categoryChecks = Collections.unmodifiableList(Arrays.asList(categoryCheck));
-        return categoryChecks;
-    }
-
 }
