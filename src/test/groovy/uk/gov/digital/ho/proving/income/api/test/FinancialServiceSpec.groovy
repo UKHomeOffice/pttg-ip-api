@@ -4,6 +4,7 @@ import groovy.json.JsonSlurper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
+import uk.gov.digital.ho.proving.income.api.FinancialStatusResource
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
 import uk.gov.digital.ho.proving.income.api.NinoUtils
 import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck
@@ -12,7 +13,6 @@ import uk.gov.digital.ho.proving.income.application.ApplicationExceptions
 import uk.gov.digital.ho.proving.income.application.ResourceExceptionHandler
 import uk.gov.digital.ho.proving.income.audit.AuditClient
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient
-import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity
 import uk.gov.digital.ho.proving.income.validator.IncomeValidationService
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus
@@ -38,12 +38,10 @@ class FinancialServiceSpec extends Specification {
     def mockNinoUtils = Mock(NinoUtils)
     def mockIncomeValidationService = Mock(IncomeValidationService)
 
-    def financialStatusController = new FinancialStatusService(mockIncomeRecordService, mockAuditClient, mockNinoUtils, mockIncomeValidationService)
-
-    def emptyTaxes = new ArrayList<AnnualSelfAssessmentTaxReturn>()
+    def financialStatusServiceHelper = new FinancialStatusService(mockIncomeRecordService, mockIncomeValidationService)
+    def financialStatusController = new FinancialStatusResource(financialStatusServiceHelper, mockAuditClient, mockNinoUtils)
 
     MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient, mockNinoUtils)).build()
-
 
     def "valid NINO is looked up on the earnings service 2"() {
         given:
@@ -87,7 +85,7 @@ class FinancialServiceSpec extends Specification {
         given:
         mockNinoUtils.sanitise("AA123456A") >> "AA123456A"
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException("AA123456A") }
-        2 * mockNinoUtils.redact("AA123456A") >> "AA123****"
+        1 * mockNinoUtils.redact("AA123456A") >> "AA123****"
 
 
         when:
