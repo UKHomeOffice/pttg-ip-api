@@ -91,8 +91,8 @@ public class FinancialStatusResourceTest {
         return new Individual("partner", "surname", "B");
     }
 
-    private Map<Individual, IncomeRecord> getIncomeRecords() {
-        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
+    private LinkedHashMap<Individual, IncomeRecord> getIncomeRecords() {
+        LinkedHashMap<Individual, IncomeRecord> incomeRecords = new LinkedHashMap<>();
         incomeRecords.put(getApplicantIndividual(), getApplicantIncomeRecord());
         incomeRecords.put(getPartnerIndividual(), getPartnerIncomeRecord());
         return incomeRecords;

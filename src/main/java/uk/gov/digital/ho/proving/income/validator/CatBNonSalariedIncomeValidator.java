@@ -2,7 +2,6 @@ package uk.gov.digital.ho.proving.income.validator;
 
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
-import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
@@ -65,7 +64,7 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
         return new IncomeValidationResult(
             result,
             yearlyThreshold,
-            getCheckedIndividuals(incomeValidationRequest),
+            IncomeValidationHelper.getCheckedIndividuals(incomeValidationRequest.applicantIncomes()),
             assessmentStartDate,
             CATEGORY,
             CALCULATION_TYPE);
@@ -79,17 +78,6 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
                 .collect(Collectors.toList());
         Map<Integer, BigDecimal> monthlyIncomes = MonthlyIncomeAggregator.aggregateMonthlyIncome(incomes);
         return ProjectedAnnualIncomeCalculator.calculate(monthlyIncomes);
-    }
-
-    private List<CheckedIndividual> getCheckedIndividuals(IncomeValidationRequest incomeValidationRequest) {
-        return incomeValidationRequest.applicantIncomes()
-            .stream()
-            .map(applicantIncome ->
-                new CheckedIndividual(
-                    applicantIncome.applicant().nino(),
-                    IncomeValidationHelper.toEmployerNames(applicantIncome.incomeRecord().employments())
-                ))
-            .collect(Collectors.toList());
     }
 
 }

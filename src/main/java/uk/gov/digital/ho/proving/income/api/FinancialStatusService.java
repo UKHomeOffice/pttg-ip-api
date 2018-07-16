@@ -13,11 +13,7 @@ import uk.gov.digital.ho.proving.income.validator.IncomeValidationService;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class FinancialStatusService {
@@ -30,8 +26,8 @@ public class FinancialStatusService {
         this.incomeValidationService = incomeValidationService;
     }
 
-    Map<Individual, IncomeRecord> getIncomeRecords(List<Applicant> applicants, LocalDate startSearchDate, LocalDate applicationRaisedDate) {
-        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
+    LinkedHashMap<Individual, IncomeRecord> getIncomeRecords(List<Applicant> applicants, LocalDate startSearchDate, LocalDate applicationRaisedDate) {
+        LinkedHashMap<Individual, IncomeRecord> incomeRecords = new LinkedHashMap<>();
 
         for (Applicant applicant : applicants) {
 
@@ -48,7 +44,10 @@ public class FinancialStatusService {
 
     FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, Map<Individual, IncomeRecord> incomeRecords) {
 
-        List<Individual> individuals = incomeRecords.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList());
+        List<Individual> individuals = new LinkedList<>();
+        for (Individual individual: incomeRecords.keySet()) {
+            individuals.add(individual);
+        }
         FinancialStatusCheckResponse response = new FinancialStatusCheckResponse(successResponse(), individuals, new ArrayList<>());
 
         IncomeValidationRequest incomeValidationRequest = IncomeValidationRequest.create(applicationRaisedDate, incomeRecords, dependants);

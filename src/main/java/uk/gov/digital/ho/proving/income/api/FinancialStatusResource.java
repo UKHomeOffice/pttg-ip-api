@@ -63,7 +63,7 @@ public class FinancialStatusResource {
 
         UUID eventId = UUID.randomUUID();
         LocalDate startSearchDate = request.applicationRaisedDate().minusDays(NUMBER_OF_DAYS_INCOME);
-        Map<Individual, IncomeRecord> incomeRecords = financialStatusService.getIncomeRecords(applicants, startSearchDate, request.applicationRaisedDate());
+        LinkedHashMap<Individual, IncomeRecord> incomeRecords = financialStatusService.getIncomeRecords(applicants, startSearchDate, request.applicationRaisedDate());
 
         String redactedNino = ninoUtils.redact(applicants.get(0).nino());
         log.info("Financial status check request received for {} - applicationRaisedDate = {}, dependents = {}",

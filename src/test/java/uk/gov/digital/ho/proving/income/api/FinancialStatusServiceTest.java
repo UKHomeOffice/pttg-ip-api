@@ -44,12 +44,9 @@ public class FinancialStatusServiceTest {
             .thenReturn(getPartnerIncomeRecord());
         when(mockIncomeValidationService.validate(any())).thenReturn(getCategoryChecks());
 
-        Applicant applicant = new Applicant("applicant", "surname", LocalDate.now(), "A");
-        Applicant partner = new Applicant("partner", "surname", LocalDate.now(), "B");
-        List<Applicant> applicants = ImmutableList.of(applicant, partner);
-        FinancialStatusRequest request = new FinancialStatusRequest(applicants, LocalDate.now(), 0);
 
         FinancialStatusCheckResponse response = financialStatusService.calculateResponse(LocalDate.now(), 0, getIncomeRecords());
+
 
         assertThat(response.individuals().size()).isEqualTo(2).withFailMessage("The correct number of individuals should be returned");
 
@@ -69,12 +66,8 @@ public class FinancialStatusServiceTest {
             .thenReturn(getApplicantIncomeRecord());
         when(mockHmrcClient.getIncomeRecord(eq(getPartnerIdentity()), any(LocalDate.class), any(LocalDate.class)))
             .thenReturn(getPartnerIncomeRecord());
-        when(mockIncomeValidationService.validate(any())).thenReturn(getCategoryChecksOutOfOrder());
+        when(mockIncomeValidationService.validate(any())).thenReturn(getCategoryChecks());
 
-        Applicant applicant = new Applicant("applicant", "surname", LocalDate.now(), "A");
-        Applicant partner = new Applicant("partner", "surname", LocalDate.now(), "B");
-        List<Applicant> applicants = ImmutableList.of(applicant, partner);
-        FinancialStatusRequest request = new FinancialStatusRequest(applicants, LocalDate.now(), 0);
 
         FinancialStatusCheckResponse response = financialStatusService.calculateResponse(LocalDate.now(), 0, getIncomeRecordsOutOfOrder());
 
@@ -106,7 +99,7 @@ public class FinancialStatusServiceTest {
     }
 
     private Identity getPartnerIdentity() {
-        return new Identity("partner", "surname", LocalDate.now(), "B");
+        return new Identity("apartner", "surname", LocalDate.now(), "B");
     }
 
     private IncomeRecord getPartnerIncomeRecord() {
@@ -114,8 +107,8 @@ public class FinancialStatusServiceTest {
         return new IncomeRecord(ImmutableList.of(income), new ArrayList<>(), new ArrayList(), null);
     }
 
-    private Map<Individual, IncomeRecord> getIncomeRecords() {
-        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
+    private LinkedHashMap<Individual, IncomeRecord> getIncomeRecords() {
+        LinkedHashMap<Individual, IncomeRecord> incomeRecords = new LinkedHashMap<>();
         incomeRecords.put(getApplicantIndividual(), getApplicantIncomeRecord());
         incomeRecords.put(getPartnerIndividual(), getPartnerIncomeRecord());
         return incomeRecords;
