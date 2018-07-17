@@ -149,8 +149,8 @@ public class CatAMonthlyIncomeValidatorTestToo {
         HmrcIndividual hmrcIndividual = aIndividual();
         Applicant applicant = new Applicant(hmrcIndividual.firstName(), hmrcIndividual.lastName(), LocalDate.now(), hmrcIndividual.nino());
         IncomeRecord incomeRecord = new IncomeRecord(incomeWithDuplicates, taxReturns, employments, hmrcIndividual);
-        ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord);
         LocalDate applicationRaisedDate = MIDDLE_OF_CURRENT_MONTH.minusDays(1);
+        ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord);
         IncomeValidationRequest request = new IncomeValidationRequest(ImmutableList.of(applicantIncome), applicationRaisedDate, 0);
 
         IncomeValidationResult result = service.validate(request);
