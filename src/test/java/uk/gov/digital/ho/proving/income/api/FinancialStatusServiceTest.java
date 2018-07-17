@@ -1,103 +1,52 @@
 package uk.gov.digital.ho.proving.income.api;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.digital.ho.proving.income.api.domain.Applicant;
-import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusCheckResponse;
-import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusRequest;
-import uk.gov.digital.ho.proving.income.api.domain.Individual;
-import uk.gov.digital.ho.proving.income.application.ApplicationExceptions;
-import uk.gov.digital.ho.proving.income.audit.AuditClient;
+import uk.gov.digital.ho.proving.income.api.domain.*;
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import uk.gov.digital.ho.proving.income.validator.IncomeValidationService;
-import utils.LogCapturer;
+import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FinancialStatusServiceTest {
 
     @InjectMocks
-    private FinancialStatusService service;
+    private FinancialStatusService financialStatusService;
 
     @Mock
     private HmrcClient mockHmrcClient;
 
     @Mock
-    private AuditClient mockAuditClient;
-
-    @Mock
-    private NinoUtils mockNinoUtils;
-
-    @Mock
     private IncomeValidationService mockIncomeValidationService;
 
-    @Test
-    public void shouldNeverLogSuppliedNino() {
-        // given
-        String realNino = "RealNino";
-        FinancialStatusRequest mockFinancialStatusRequest = mock(FinancialStatusRequest.class);
-        Applicant applicant = new Applicant("forename", "surname", LocalDate.now(), realNino);
-        List<Applicant> applicants = Arrays.asList(applicant);
-        when(mockFinancialStatusRequest.applicants()).thenReturn(applicants);
-
-        when(mockNinoUtils.redact(realNino)).thenReturn("RedactedNino");
-        when(mockNinoUtils.sanitise(realNino)).thenReturn("SanitisedNino");
-
-        LocalDate fiveDaysAgo = LocalDate.now().minusDays(5);
-        when(mockFinancialStatusRequest.applicationRaisedDate()).thenReturn(fiveDaysAgo);
-        when(mockHmrcClient.getIncomeRecord(any(), any(), any())).thenReturn(mock(IncomeRecord.class));
-
-            LogCapturer<FinancialStatusService> logCapturer = LogCapturer.forClass(FinancialStatusService.class);
-            logCapturer.start();
-
-        // when
-        service.getFinancialStatus(mockFinancialStatusRequest);
-
-        // then
-        verify(mockNinoUtils, atLeastOnce()).redact(realNino);
-
-        // verify log outputs never contain the `real` nino
-        List<ILoggingEvent> allLogEvents = logCapturer.getAllEvents();
-        for (final ILoggingEvent logEvent : allLogEvents) {
-            final String logMessage = logEvent.getFormattedMessage();
-            assertThat(logMessage).doesNotContain(realNino);
-        }
-    }
 
     @Test
     public void shouldReturnCorrectIndividualNamesIfIndividualNotReturnedFromHmrc() {
-        when(mockNinoUtils.sanitise("A")).thenReturn("A");
-        when(mockNinoUtils.sanitise("B")).thenReturn("B");
         when(mockHmrcClient.getIncomeRecord(eq(getApplicantIdentity()), any(LocalDate.class), any(LocalDate.class)))
             .thenReturn(getApplicantIncomeRecord());
         when(mockHmrcClient.getIncomeRecord(eq(getPartnerIdentity()), any(LocalDate.class), any(LocalDate.class)))
             .thenReturn(getPartnerIncomeRecord());
+        when(mockIncomeValidationService.validate(any())).thenReturn(getCategoryChecks());
 
 
-        Applicant applicant = new Applicant("applicant", "surname", LocalDate.now(), "A");
-        Applicant partner = new Applicant("partner", "surname", LocalDate.now(), "B");
-        List<Applicant> applicants = ImmutableList.of(applicant, partner);
-        FinancialStatusRequest request = new FinancialStatusRequest(applicants, LocalDate.now(), 0);
+        FinancialStatusCheckResponse response = financialStatusService.calculateResponse(LocalDate.now(), 0, getIncomeRecords());
 
-        FinancialStatusCheckResponse response = service.getFinancialStatus(request);
 
         assertThat(response.individuals().size()).isEqualTo(2).withFailMessage("The correct number of individuals should be returned");
 
@@ -111,6 +60,31 @@ public class FinancialStatusServiceTest {
         assertThat(partnerIndividual.get().forename()).isEqualTo("partner").withFailMessage("The partner's name should be returned");
     }
 
+    @Test
+    public void shouldReturnIndividualsInCorrectOrder() {
+        when(mockHmrcClient.getIncomeRecord(eq(getApplicantIdentity()), any(LocalDate.class), any(LocalDate.class)))
+            .thenReturn(getApplicantIncomeRecord());
+        when(mockHmrcClient.getIncomeRecord(eq(getPartnerIdentity()), any(LocalDate.class), any(LocalDate.class)))
+            .thenReturn(getPartnerIncomeRecord());
+        when(mockIncomeValidationService.validate(any())).thenReturn(getCategoryChecks());
+
+
+        FinancialStatusCheckResponse response = financialStatusService.calculateResponse(LocalDate.now(), 0, getIncomeRecordsOutOfOrder());
+
+
+        assertThat(response.individuals().size()).isEqualTo(2).withFailMessage("The correct number of individuals should be returned");
+        assertThat(response.individuals().get(0).nino()).isEqualTo("A").withFailMessage("The applicant should be returned first");
+        assertThat(response.individuals().get(1).nino()).isEqualTo("B").withFailMessage("The partner should be returned second");
+
+        assertThat(response.categoryChecks().get(0).individuals().get(0).nino()).isEqualTo("A").withFailMessage("The applicant should be first in the category check");
+        assertThat(response.categoryChecks().get(0).individuals().get(1).nino()).isEqualTo("B").withFailMessage("The partner should be second in the category check");
+
+    }
+
+    private Individual getApplicantIndividual() {
+        return new Individual("applicant", "surname", "A");
+    }
+
     private Identity getApplicantIdentity() {
         return new Identity("applicant", "surname", LocalDate.now(), "A");
     }
@@ -120,13 +94,42 @@ public class FinancialStatusServiceTest {
         return new IncomeRecord(ImmutableList.of(income), new ArrayList<>(), new ArrayList(), null);
     }
 
+    private Individual getPartnerIndividual() {
+        return new Individual("partner", "surname", "B");
+    }
+
     private Identity getPartnerIdentity() {
-        return new Identity("partner", "surname", LocalDate.now(), "B");
+        return new Identity("apartner", "surname", LocalDate.now(), "B");
     }
 
     private IncomeRecord getPartnerIncomeRecord() {
         Income income = new Income(BigDecimal.ONE, LocalDate.now(), 1, null, "E2");
         return new IncomeRecord(ImmutableList.of(income), new ArrayList<>(), new ArrayList(), null);
+    }
+
+    private LinkedHashMap<Individual, IncomeRecord> getIncomeRecords() {
+        LinkedHashMap<Individual, IncomeRecord> incomeRecords = new LinkedHashMap<>();
+        incomeRecords.put(getApplicantIndividual(), getApplicantIncomeRecord());
+        incomeRecords.put(getPartnerIndividual(), getPartnerIncomeRecord());
+        return incomeRecords;
+    }
+
+    private Map<Individual, IncomeRecord> getIncomeRecordsOutOfOrder() {
+        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
+        incomeRecords.put(getPartnerIndividual(), getPartnerIncomeRecord());
+        incomeRecords.put(getApplicantIndividual(), getApplicantIncomeRecord());
+        return incomeRecords;
+    }
+
+    private List<CategoryCheck> getCategoryChecks() {
+        List<CheckedIndividual> checkedIndividuals = new ArrayList<>();
+        CheckedIndividual applicant = new CheckedIndividual("A", Collections.unmodifiableList(Arrays.asList("E1")));
+        checkedIndividuals.add(applicant);
+        CheckedIndividual partner = new CheckedIndividual("B", Collections.unmodifiableList(Arrays.asList("E2")));
+        checkedIndividuals.add(partner);
+        CategoryCheck categoryCheck = new CategoryCheck("B", "Test", false, LocalDate.now(), LocalDate.now(), IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD, BigDecimal.TEN, checkedIndividuals);
+        List<CategoryCheck> categoryChecks = Collections.unmodifiableList(Arrays.asList(categoryCheck));
+        return categoryChecks;
     }
 
 }

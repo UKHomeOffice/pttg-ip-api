@@ -1,35 +1,22 @@
 package uk.gov.digital.ho.proving.income.validator;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.digital.ho.proving.income.api.FinancialStatusService;
-import uk.gov.digital.ho.proving.income.api.NinoUtils;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
-import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck;
-import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusRequest;
-import uk.gov.digital.ho.proving.income.api.domain.Individual;
-import uk.gov.digital.ho.proving.income.audit.AuditClient;
-import uk.gov.digital.ho.proving.income.hmrc.HmrcClient;
 import uk.gov.digital.ho.proving.income.hmrc.domain.*;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
-import utils.LogCapturer;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CatAMonthlyIncomeValidatorTestToo {
@@ -162,8 +149,8 @@ public class CatAMonthlyIncomeValidatorTestToo {
         HmrcIndividual hmrcIndividual = aIndividual();
         Applicant applicant = new Applicant(hmrcIndividual.firstName(), hmrcIndividual.lastName(), LocalDate.now(), hmrcIndividual.nino());
         IncomeRecord incomeRecord = new IncomeRecord(incomeWithDuplicates, taxReturns, employments, hmrcIndividual);
-        ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord);
         LocalDate applicationRaisedDate = MIDDLE_OF_CURRENT_MONTH.minusDays(1);
+        ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord);
         IncomeValidationRequest request = new IncomeValidationRequest(ImmutableList.of(applicantIncome), applicationRaisedDate, 0);
 
         IncomeValidationResult result = service.validate(request);
