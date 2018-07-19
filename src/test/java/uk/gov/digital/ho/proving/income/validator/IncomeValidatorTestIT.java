@@ -13,6 +13,7 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -58,10 +59,13 @@ public class IncomeValidatorTestIT {
 
         assertThat(categoryChecks.size()).isEqualTo(2)
             .withFailMessage("There should be 2 category checks performed");
-        assertThat(categoryChecks.get(0).category()).isEqualTo("A")
-            .withFailMessage("The category A check should return a result");
-        assertThat(categoryChecks.get(1).category()).isEqualTo("B")
-            .withFailMessage("The category B check should return a result");
+
+        List<String> returnedCategories = categoryChecks.stream()
+            .map(CategoryCheck::category)
+            .collect(Collectors.toList());
+
+        assertThat(returnedCategories).withFailMessage("The category A check should return a result").contains("A");
+        assertThat(returnedCategories).withFailMessage("The category B check should return a result").contains("B");
 
         verify(catASalariedIncomeValidator).validate(request);
         verify(catASalariedMonthlyIncomeValidator).validate(request);

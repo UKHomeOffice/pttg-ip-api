@@ -17,11 +17,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.*;
+import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_PASSED;
+import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.MONTHLY_SALARIED_PASSED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IncomeValidationServiceTest {
@@ -29,32 +31,28 @@ public class IncomeValidationServiceTest {
     private IncomeValidationService incomeValidationService;
 
     @Mock
-    CatASalariedIncomeValidator catASalariedIncomeValidator;
+    private CatASalariedIncomeValidator catASalariedIncomeValidator;
+
     @Mock
-    CatBNonSalariedIncomeValidator catBNonSalariedIncomeValidator;
-    @Mock
-    EmploymentCheckIncomeValidator employmentCheckIncomeValidator;
+    private CatBNonSalariedIncomeValidator catBNonSalariedIncomeValidator;
 
     @Before
     public void setUp() {
-        incomeValidationService = new IncomeValidationService(catASalariedIncomeValidator, catBNonSalariedIncomeValidator, employmentCheckIncomeValidator);
+        incomeValidationService = new IncomeValidationService(newArrayList(catASalariedIncomeValidator, catBNonSalariedIncomeValidator));
     }
 
     @Test
     public void thatAllValidatorsAreCalled() {
         IncomeValidationResult catAResult = getResult(MONTHLY_SALARIED_PASSED, "A");
         IncomeValidationResult catBResult = getResult(CATB_NON_SALARIED_PASSED, "B");
-        IncomeValidationResult employmentCheckResult = getResult(EMPLOYMENT_CHECK_PASSED, "B");
 
         when(catASalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catAResult);
         when(catBNonSalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catBResult);
-        when(employmentCheckIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(employmentCheckResult);
 
         IncomeValidationRequest request = new IncomeValidationRequest(new ArrayList<>(), LocalDate.now(), 0);
         incomeValidationService.validate(request);
 
         verify(catASalariedIncomeValidator).validate(request);
-        verify(employmentCheckIncomeValidator).validate(request);
         verify(catBNonSalariedIncomeValidator).validate(request);
     }
 
@@ -62,11 +60,9 @@ public class IncomeValidationServiceTest {
     public void thatCategoryIsReturned() {
         IncomeValidationResult catAResult = getResult(MONTHLY_SALARIED_PASSED, "A");
         IncomeValidationResult catBResult = getResult(CATB_NON_SALARIED_PASSED, "B");
-        IncomeValidationResult employmentCheckResult = getResult(EMPLOYMENT_CHECK_PASSED, "B");
 
         when(catASalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catAResult);
         when(catBNonSalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catBResult);
-        when(employmentCheckIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(employmentCheckResult);
 
         IncomeValidationRequest request = new IncomeValidationRequest(new ArrayList<>(), LocalDate.now(), 0);
         List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
@@ -83,11 +79,9 @@ public class IncomeValidationServiceTest {
 
         IncomeValidationResult catAResult = getResultWithStartDate(MONTHLY_SALARIED_PASSED, "A", assessmentStartDate);
         IncomeValidationResult catBResult = getResultWithStartDate(CATB_NON_SALARIED_PASSED, "B", assessmentStartDate);
-        IncomeValidationResult employmentCheckResult = getResultWithStartDate(EMPLOYMENT_CHECK_PASSED, "B", assessmentStartDate);
 
         when(catASalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catAResult);
         when(catBNonSalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catBResult);
-        when(employmentCheckIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(employmentCheckResult);
 
         IncomeValidationRequest request = new IncomeValidationRequest(new ArrayList<>(), applicationRaisedDate, 0);
         List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
@@ -108,11 +102,9 @@ public class IncomeValidationServiceTest {
 
         IncomeValidationResult catAResult = getResultWithIndividual(MONTHLY_SALARIED_PASSED, "A",checkedIndividual);
         IncomeValidationResult catBResult = getResultWithIndividual(CATB_NON_SALARIED_PASSED, "B", checkedIndividual);
-        IncomeValidationResult employmentCheckResult = getResultWithIndividual(EMPLOYMENT_CHECK_PASSED, "B", checkedIndividual);
 
         when(catASalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catAResult);
         when(catBNonSalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catBResult);
-        when(employmentCheckIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(employmentCheckResult);
 
         IncomeValidationRequest request = new IncomeValidationRequest(new ArrayList<>(), LocalDate.now(), 0);
         List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
@@ -127,33 +119,12 @@ public class IncomeValidationServiceTest {
     }
 
     @Test
-    public void thatEmploymentCheckFailAlsoFailsCategoryBNonSalariedCheck() {
-        IncomeValidationResult catAResult = getResult(MONTHLY_SALARIED_PASSED, "A");
-        IncomeValidationResult catBResult = getResult(CATB_NON_SALARIED_PASSED, "B");
-        IncomeValidationResult employmentCheckResult = getResult(EMPLOYMENT_CHECK_FAILED, "B");
-
-        when(catASalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catAResult);
-        when(catBNonSalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catBResult);
-        when(employmentCheckIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(employmentCheckResult);
-
-        IncomeValidationRequest request = new IncomeValidationRequest(new ArrayList<>(), LocalDate.now(), 0);
-        List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
-
-        assertThat(categoryChecks.get(1).passed()).isFalse()
-            .withFailMessage("The category B check should fail if the employment check fails");
-        assertThat(categoryChecks.get(1).failureReason()).isEqualTo(EMPLOYMENT_CHECK_FAILED)
-            .withFailMessage("The category B check should indicate employment check failed");
-    }
-
-    @Test
     public void thatEmploymentCheckPassIsOverriddenByCategoryBNonSalariedCheck() {
         IncomeValidationResult catAResult = getResult(MONTHLY_SALARIED_PASSED, "A");
         IncomeValidationResult catBResult = getResult(CATB_NON_SALARIED_PASSED, "B");
-        IncomeValidationResult employmentCheckResult = getResult(EMPLOYMENT_CHECK_PASSED, "B");
 
         when(catASalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catAResult);
         when(catBNonSalariedIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(catBResult);
-        when(employmentCheckIncomeValidator.validate(any(IncomeValidationRequest.class))).thenReturn(employmentCheckResult);
 
         IncomeValidationRequest request = new IncomeValidationRequest(new ArrayList<>(), LocalDate.now(), 0);
         List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);

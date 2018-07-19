@@ -17,21 +17,37 @@ import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidation
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_PASSED;
 
 @Service
-public class CatBNonSalariedIncomeValidator implements IncomeValidator {
+public class CatBNonSalariedIncomeValidator implements CategoryIncomeValidator {
 
-    public static final String CALCULATION_TYPE = "Category B non salaried";
-    public static final Integer ASSESSMENT_START_YEARS_BEFORE = 1;
+    private static final String CALCULATION_TYPE = "Category B non salaried";
+    private static final Integer ASSESSMENT_START_YEARS_BEFORE = 1;
     private static final String CATEGORY = "B";
 
+    private final EmploymentCheckIncomeValidator employmentCheckIncomeValidator;
+
+    public CatBNonSalariedIncomeValidator(EmploymentCheckIncomeValidator employmentCheckIncomeValidator) {
+        this.employmentCheckIncomeValidator = employmentCheckIncomeValidator;
+    }
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
+        IncomeValidationResult employmentCheckResult = employmentCheckIncomeValidator.validate(incomeValidationRequest);
+
+        boolean passedEmploymentCheck = employmentCheckResult.status().isPassed();
+        if (passedEmploymentCheck) {
+            return validateNonSalariedIncome(incomeValidationRequest);
+        } else {
+            return employmentCheckResult;
+        }
+    }
+
+    private IncomeValidationResult validateNonSalariedIncome(IncomeValidationRequest incomeValidationRequest) {
         IncomeValidationResult result = doValidation(incomeValidationRequest);
         if (result.status().isPassed()) {
             return result;
         }
 
-        if(!incomeValidationRequest.isJointRequest()) {
+        if (!incomeValidationRequest.isJointRequest()) {
             return result;
         }
 
@@ -48,7 +64,6 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
         }
 
         return result;
-
     }
 
     private IncomeValidationResult doValidation(IncomeValidationRequest incomeValidationRequest) {
