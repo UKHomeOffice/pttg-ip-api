@@ -86,9 +86,14 @@ public class StepAssertor {
 
     private static boolean testNinos(String json, String responseObject, String key, String expected) {
         if (responseObject.equalsIgnoreCase("applicant") || responseObject.equalsIgnoreCase("partner")) {
-            String jsonPath = getIndividualNinoJsonPath(expected);
-            JSONArray jsonData = read(json, jsonPath);
-            assertTrue(!jsonData.isEmpty(), String.format("%s %s: Unable to find nino %s\nJSON: %s", responseObject, key, expected, json));
+            int index = 0;
+            if (responseObject.equalsIgnoreCase("partner")) {
+                index = 1;
+            }
+
+            String jsonPath = String.format("$.individuals[%d].nino", index);
+            String applicantNino = read(json, jsonPath);
+            assertTrue(applicantNino.equalsIgnoreCase(expected), String.format("%s %s: %s nino did not match expected nino %s\nJSON: %s", responseObject, key, responseObject, expected, json));
             return true;
         }
         return false;
@@ -150,10 +155,6 @@ public class StepAssertor {
 
     private static String getApplicantEmployeesJsonPath(String responseObject, String nino) {
         return "$.categoryChecks..[?(@.calculationType == '" + responseObject + "')].individuals..[?(@.nino == '" + nino + "')].employers";
-    }
-
-    private static String getIndividualNinoJsonPath(String expected) {
-        return "$.individuals..[?(@.nino == '" + expected + "')].nino";
     }
 
     private static String getCategoryCheckNinoJsonPath(String responseObject, String expected) {
