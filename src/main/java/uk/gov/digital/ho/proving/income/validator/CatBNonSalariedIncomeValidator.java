@@ -79,7 +79,7 @@ public class CatBNonSalariedIncomeValidator implements CategoryIncomeValidator {
         return new IncomeValidationResult(
             result,
             yearlyThreshold,
-            IncomeValidationHelper.getCheckedIndividuals(incomeValidationRequest.allIncome()),
+            incomeValidationRequest.getCheckedIndividuals(),
             assessmentStartDate,
             CATEGORY,
             CALCULATION_TYPE);

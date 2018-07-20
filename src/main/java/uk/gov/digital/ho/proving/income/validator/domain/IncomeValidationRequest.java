@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.validator.domain;
 import jersey.repackaged.com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
+import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.api.domain.Individual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class IncomeValidationRequest {
@@ -26,6 +28,13 @@ public class IncomeValidationRequest {
             applicantIncomes.add(applicantIncome);
         }
         return new IncomeValidationRequest(applicantIncomes, applicationRaisedDate, dependants);
+    }
+
+    public List<CheckedIndividual> getCheckedIndividuals() {
+        return allIncome()
+            .stream()
+            .map(CheckedIndividual::from)
+            .collect(Collectors.toList());
     }
 
     public LocalDate applicationRaisedDate() {

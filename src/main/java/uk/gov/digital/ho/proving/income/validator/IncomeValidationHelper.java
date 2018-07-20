@@ -1,10 +1,8 @@
 package uk.gov.digital.ho.proving.income.validator;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Employments;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
-import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.EmploymentCheck;
 
 import java.math.BigDecimal;
@@ -33,8 +31,12 @@ public class IncomeValidationHelper {
         return period.toTotalMonths();
 
     }
+
     static List<String> toEmployerNames(List<Employments> employments) {
-        return employments.stream().map(employment -> employment.employer().name()).distinct().collect(Collectors.toList());
+        return employments.stream()
+            .map(employment -> employment.employer().name())
+            .distinct()
+            .collect(Collectors.toList());
     }
 
     static EmploymentCheck checkIncomesPassThresholdWithSameEmployer(List<Income> incomes, BigDecimal threshold) {
@@ -57,17 +59,6 @@ public class IncomeValidationHelper {
         return incomes.stream()
             .sorted((income1, income2) -> income2.paymentDate().compareTo(income1.paymentDate()))
             .filter(income -> isDateInRange(income.paymentDate(), lower, upper));
-    }
-
-    static List<CheckedIndividual> getCheckedIndividuals(List<ApplicantIncome> applicantIncomes) {
-        return applicantIncomes
-            .stream()
-            .map(applicantIncome ->
-                new CheckedIndividual(
-                    applicantIncome.applicant().nino(),
-                    IncomeValidationHelper.toEmployerNames(applicantIncome.incomeRecord().employments())
-                ))
-            .collect(Collectors.toList());
     }
 
     private static boolean isDateInRange(LocalDate date, LocalDate lower, LocalDate upper) {

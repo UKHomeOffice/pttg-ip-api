@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.proving.income.validator.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Getter
+@Builder
 @Accessors(fluent = true)
 @ToString
 public class IncomeValidationResult {

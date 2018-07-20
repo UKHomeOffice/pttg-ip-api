@@ -3,11 +3,16 @@ package uk.gov.digital.ho.proving.income.validator.domain;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import uk.gov.digital.ho.proving.income.api.domain.Applicant;
+import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
+import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
+import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.getDate;
@@ -104,5 +109,25 @@ public class IncomeValidationRequestTest {
             .withFailMessage("The partner's nino should be the same as the second applicant on the joint request")
             .isEqualTo(request.partnerIncome().applicant().nino());
 
+    }
+
+    @Test
+    public void thatCheckedIndividualsRetainOrder() {
+        List<ApplicantIncome> applicantIncomes = new ArrayList<>();
+        IntStream.range(0, 10000).forEach(i -> {
+            String is = Integer.toString(i);
+            Applicant applicant = new Applicant(is, is, LocalDate.now(), is);
+            IncomeRecord incomeRecord = new IncomeRecord(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HmrcIndividual(is, is, is, LocalDate.now()));
+            applicantIncomes.add(new ApplicantIncome(applicant, incomeRecord));
+        });
+
+        IncomeValidationRequest incomeValidationRequest = new IncomeValidationRequest(applicantIncomes, LocalDate.now(), 0);
+        List<CheckedIndividual> checkedIndividuals = incomeValidationRequest.getCheckedIndividuals();
+
+        Integer lastNino = -1;
+        for (CheckedIndividual checkedIndividual : checkedIndividuals) {
+            assertThat(lastNino.compareTo(Integer.parseInt(checkedIndividual.nino()))).isLessThan(0).withFailMessage(String.format("The checkedIndividual nino %s appeared before %s", lastNino, checkedIndividual.nino()));
+            lastNino = Integer.parseInt(checkedIndividual.nino());
+        }
     }
 }
