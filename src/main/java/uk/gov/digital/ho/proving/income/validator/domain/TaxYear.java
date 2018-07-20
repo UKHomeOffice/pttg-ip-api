@@ -40,7 +40,6 @@ public class TaxYear {
         return new TaxYear(startOfTaxYear);
     }
 
-    // TODO
     public static void validate(String taxYear) {
         Matcher matcher = TAX_YEAR_PATTERN.matcher(taxYear);
         if (matcher.matches()) {

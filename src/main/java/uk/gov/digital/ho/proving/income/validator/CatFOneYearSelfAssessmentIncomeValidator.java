@@ -10,7 +10,7 @@ import java.time.Clock;
 import java.util.List;
 
 @Service
-public class CatFOneYearSelfAssessmentIncomeValidator implements IncomeValidator {
+public class CatFOneYearSelfAssessmentIncomeValidator implements CategoryIncomeValidator {
 
     private static final String CATEGORY = "F";
     private static final String CALCULATION_TYPE = "Category F Self-Assessment Income";

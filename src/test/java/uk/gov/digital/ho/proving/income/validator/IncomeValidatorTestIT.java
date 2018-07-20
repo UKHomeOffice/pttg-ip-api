@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.digital.ho.proving.income.ServiceRunner;
 import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
@@ -23,13 +24,7 @@ import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.ge
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
-    IncomeValidationService.class,
-    CatASalariedIncomeValidator.class,
-    CatASalariedMonthlyIncomeValidator.class,
-    CatASalariedWeeklyIncomeValidator.class,
-    CatAUnsupportedIncomeValidator.class,
-    CatBNonSalariedIncomeValidator.class,
-    EmploymentCheckIncomeValidator.class
+    ServiceRunner.class
 })
 public class IncomeValidatorTestIT {
 
@@ -48,6 +43,8 @@ public class IncomeValidatorTestIT {
     private IncomeValidator catBNonSalariedIncomeValidator;
     @SpyBean(EmploymentCheckIncomeValidator.class)
     private IncomeValidator employmentCheckIncomeValidator;
+    @SpyBean(CatFOneYearSelfAssessmentIncomeValidator.class)
+    private CatFOneYearSelfAssessmentIncomeValidator catFOneYearSelfAssessmentIncomeValidator;
 
     @Test
     public void thatAllCategoryChecksArePerformed() {
@@ -57,24 +54,33 @@ public class IncomeValidatorTestIT {
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
 
-        assertThat(categoryChecks.size()).isEqualTo(2)
-            .withFailMessage("There should be 2 category checks performed");
+        assertThat(categoryChecks.size())
+            .withFailMessage("There should be 3 category checks performed")
+            .isEqualTo(3);
 
         List<String> returnedCategories = categoryChecks.stream()
             .map(CategoryCheck::category)
             .collect(Collectors.toList());
 
-        assertThat(returnedCategories).withFailMessage("The category A check should return a result").contains("A");
-        assertThat(returnedCategories).withFailMessage("The category B check should return a result").contains("B");
+        assertThat(returnedCategories)
+            .withFailMessage("The category A check should return a result")
+            .contains("A");
+
+        assertThat(returnedCategories)
+            .withFailMessage("The category B check should return a result")
+            .contains("B");
+
+        assertThat(returnedCategories)
+            .withFailMessage("The category F check should return a result")
+            .contains("F");
 
         verify(catASalariedIncomeValidator).validate(request);
         verify(catASalariedMonthlyIncomeValidator).validate(request);
         verify(employmentCheckIncomeValidator).validate(request);
         verify(catBNonSalariedIncomeValidator).validate(request);
+        verify(catFOneYearSelfAssessmentIncomeValidator).validate(request);
 
         verifyZeroInteractions(catASalariedWeeklyIncomeValidator);
         verifyZeroInteractions(catAUnsupportedIncomeValidator);
-
     }
-
 }
