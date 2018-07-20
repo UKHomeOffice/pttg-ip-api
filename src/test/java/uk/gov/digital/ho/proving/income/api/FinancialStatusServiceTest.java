@@ -69,15 +69,15 @@ public class FinancialStatusServiceTest {
         when(mockIncomeValidationService.validate(any())).thenReturn(getCategoryChecks());
 
 
-        FinancialStatusCheckResponse response = financialStatusService.calculateResponse(LocalDate.now(), 0, getIncomeRecordsOutOfOrder());
+        FinancialStatusCheckResponse response = financialStatusService.calculateResponse(LocalDate.now(), 0, getIncomeRecords());
 
 
         assertThat(response.individuals().size()).isEqualTo(2).withFailMessage("The correct number of individuals should be returned");
-        assertThat(response.individuals().get(0).nino()).isEqualTo("A").withFailMessage("The applicant should be returned first");
-        assertThat(response.individuals().get(1).nino()).isEqualTo("B").withFailMessage("The partner should be returned second");
+        assertThat(response.individuals().get(0).nino()).withFailMessage("The applicant should be returned first").isEqualTo("A");
+        assertThat(response.individuals().get(1).nino()).withFailMessage("The partner should be returned second").isEqualTo("B");
 
-        assertThat(response.categoryChecks().get(0).individuals().get(0).nino()).isEqualTo("A").withFailMessage("The applicant should be first in the category check");
-        assertThat(response.categoryChecks().get(0).individuals().get(1).nino()).isEqualTo("B").withFailMessage("The partner should be second in the category check");
+        assertThat(response.categoryChecks().get(0).individuals().get(0).nino()).withFailMessage("The applicant should be first in the category check").isEqualTo("A");
+        assertThat(response.categoryChecks().get(0).individuals().get(1).nino()).withFailMessage("The partner should be second in the category check").isEqualTo("B");
 
     }
 
@@ -111,13 +111,6 @@ public class FinancialStatusServiceTest {
         LinkedHashMap<Individual, IncomeRecord> incomeRecords = new LinkedHashMap<>();
         incomeRecords.put(getApplicantIndividual(), getApplicantIncomeRecord());
         incomeRecords.put(getPartnerIndividual(), getPartnerIncomeRecord());
-        return incomeRecords;
-    }
-
-    private Map<Individual, IncomeRecord> getIncomeRecordsOutOfOrder() {
-        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
-        incomeRecords.put(getPartnerIndividual(), getPartnerIncomeRecord());
-        incomeRecords.put(getApplicantIndividual(), getApplicantIncomeRecord());
         return incomeRecords;
     }
 
