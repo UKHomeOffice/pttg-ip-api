@@ -42,12 +42,10 @@ public class FinancialStatusService {
         return incomeRecords;
     }
 
-    FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, Map<Individual, IncomeRecord> incomeRecords) {
+    FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LinkedHashMap<Individual, IncomeRecord> incomeRecords) {
 
-        List<Individual> individuals = new LinkedList<>();
-        for (Individual individual: incomeRecords.keySet()) {
-            individuals.add(individual);
-        }
+        List<Individual> individuals = new LinkedList<>(incomeRecords.keySet());
+
         FinancialStatusCheckResponse response = new FinancialStatusCheckResponse(successResponse(), individuals, new ArrayList<>());
 
         IncomeValidationRequest incomeValidationRequest = IncomeValidationRequest.create(applicationRaisedDate, incomeRecords, dependants);
