@@ -26,8 +26,9 @@ public class IncomeValidationRequestTest {
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
 
-        assertThat(request.isJointRequest()).isTrue()
-            .withFailMessage("The request should be a joint request");
+        assertThat(request.isJointRequest())
+            .withFailMessage("The request should be a joint request")
+            .isTrue();
     }
 
     @Test
@@ -37,8 +38,9 @@ public class IncomeValidationRequestTest {
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
 
-        assertThat(request.isJointRequest()).isFalse()
-            .withFailMessage("The request should not be a joint request");
+        assertThat(request.isJointRequest())
+            .withFailMessage("The request should not be a joint request")
+            .isFalse();
     }
 
     @Test
@@ -62,12 +64,14 @@ public class IncomeValidationRequestTest {
 
         IncomeValidationRequest applicantRequest = request.toApplicantOnly();
 
-        assertThat(applicantRequest.applicantIncomes().size()).isEqualTo(1)
-            .withFailMessage("There should only be a single applicant");
-        ApplicantIncome applicantIncome = applicantRequest.applicantIncomes().get(0);
-        assertThat(applicantIncome.applicant().nino()).isEqualTo(request.applicantIncomes().get(0).applicant().nino())
-            .withFailMessage("The applicant nino should be the same as the first applicant on the joint request");
+        assertThat(applicantRequest.allIncome().size())
+            .withFailMessage("There should only be a single applicant")
+            .isEqualTo(1);
 
+        ApplicantIncome applicantIncome = applicantRequest.applicantIncome();
+        assertThat(applicantIncome.applicant().nino())
+            .withFailMessage("The applicant nino should be the same as the first applicant on the joint request")
+            .isEqualTo(request.applicantIncome().applicant().nino());
     }
 
     @Test
@@ -91,12 +95,14 @@ public class IncomeValidationRequestTest {
 
         IncomeValidationRequest partnerRequest = request.toPartnerOnly();
 
-        assertThat(partnerRequest.applicantIncomes().size()).isEqualTo(1)
-            .withFailMessage("There should only be a single applicant");
-        ApplicantIncome applicantIncome = partnerRequest.applicantIncomes().get(0);
-        assertThat(applicantIncome.applicant().nino()).isEqualTo(request.applicantIncomes().get(1).applicant().nino())
-            .withFailMessage("The partner's nino should be the same as the second applicant on the joint request");
+        assertThat(partnerRequest.allIncome().size())
+            .withFailMessage("There should only be a single applicant")
+            .isEqualTo(1);
+
+        ApplicantIncome applicantIncome = partnerRequest.applicantIncome();
+        assertThat(applicantIncome.applicant().nino())
+            .withFailMessage("The partner's nino should be the same as the second applicant on the joint request")
+            .isEqualTo(request.partnerIncome().applicant().nino());
 
     }
-
 }

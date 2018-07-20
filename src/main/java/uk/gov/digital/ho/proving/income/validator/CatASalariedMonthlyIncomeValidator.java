@@ -28,7 +28,7 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
 
-        ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncomes().get(0);
+        ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncome();
 
         List<String> employments = toEmployerNames(applicantIncome.employments());
 

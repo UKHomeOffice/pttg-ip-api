@@ -2,8 +2,6 @@ package uk.gov.digital.ho.proving.income.validator.domain;
 
 import jersey.repackaged.com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
 import uk.gov.digital.ho.proving.income.api.domain.Individual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
@@ -14,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
-@Getter
-@Accessors(fluent = true)
 public class IncomeValidationRequest {
     private List<ApplicantIncome> applicantIncomes;
     private LocalDate applicationRaisedDate;
@@ -23,7 +19,7 @@ public class IncomeValidationRequest {
 
     public static IncomeValidationRequest create(LocalDate applicationRaisedDate, Map<Individual, IncomeRecord> incomeRecords, Integer dependants) {
         List<ApplicantIncome> applicantIncomes = new ArrayList<>();
-        for(Individual individual : incomeRecords.keySet()) {
+        for (Individual individual : incomeRecords.keySet()) {
             IncomeRecord incomeRecord = incomeRecords.get(individual);
             Applicant applicant = new Applicant(individual.forename(), individual.surname(), incomeRecord.dateOfBirth(), individual.nino());
             ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord);
@@ -32,26 +28,55 @@ public class IncomeValidationRequest {
         return new IncomeValidationRequest(applicantIncomes, applicationRaisedDate, dependants);
     }
 
-    public boolean isJointRequest() {
+    public LocalDate applicationRaisedDate() {
+        return applicationRaisedDate;
+    }
+
+    public Integer dependants() {
+        return dependants;
+    }
+
+    private boolean containsApplicant() {
+        return applicantIncomes.size() > 0;
+    }
+
+    private boolean containsPartner() {
         return applicantIncomes.size() > 1;
     }
 
-    public IncomeValidationRequest toApplicantOnly() {
-        if(applicantIncomes.size() < 1) {
-            throw new IllegalStateException("There are no applicants");
-        }
+    public boolean isJointRequest() {
+        return containsPartner();
+    }
 
-        ApplicantIncome applicantIncome = applicantIncomes.get(0);
-        return new IncomeValidationRequest(ImmutableList.of(applicantIncome), applicationRaisedDate, dependants);
+    public List<ApplicantIncome> allIncome() {
+        return ImmutableList.copyOf(applicantIncomes);
+    }
+
+    public ApplicantIncome applicantIncome() {
+        if (containsApplicant()) {
+            return applicantIncomes.get(0);
+        }
+        throw new IllegalStateException("There are no applicants");
+    }
+
+    public ApplicantIncome partnerIncome() {
+        if (containsPartner()) {
+            return applicantIncomes.get(1);
+        }
+        throw new IllegalStateException("There is no partner");
+    }
+
+    public IncomeValidationRequest toApplicantOnly() {
+        if (containsApplicant()) {
+            return new IncomeValidationRequest(ImmutableList.of(applicantIncome()), applicationRaisedDate, dependants);
+        }
+        throw new IllegalStateException("There are no applicants");
     }
 
     public IncomeValidationRequest toPartnerOnly() {
-        if(applicantIncomes.size() < 2) {
-            throw new IllegalStateException("There is no partner");
+        if (containsPartner()) {
+            return new IncomeValidationRequest(ImmutableList.of(partnerIncome()), applicationRaisedDate, dependants);
         }
-
-        ApplicantIncome partnerIncome = applicantIncomes.get(1);
-        return new IncomeValidationRequest(ImmutableList.of(partnerIncome), applicationRaisedDate, dependants);
+        throw new IllegalStateException("There is no partner");
     }
-
 }

@@ -56,7 +56,7 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
         BigDecimal monthlyThreshold = new SalariedThresholdCalculator(incomeValidationRequest.dependants()).getMonthlyThreshold();
 
         BigDecimal earningsSinceAssessmentStart =
-            incomeValidationRequest.applicantIncomes().stream()
+            incomeValidationRequest.allIncome().stream()
                 .flatMap(applicantIncome -> applicantIncome.incomeRecord().paye().stream())
                 .filter(income -> ! income.paymentDate().isBefore(assessmentStartDate))
                 .map(Income::payment)
@@ -74,7 +74,7 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
     }
 
     private List<CheckedIndividual> getCheckedIndividuals(IncomeValidationRequest incomeValidationRequest) {
-        return incomeValidationRequest.applicantIncomes()
+        return incomeValidationRequest.allIncome()
             .stream()
             .map(applicantIncome ->
                 new CheckedIndividual(

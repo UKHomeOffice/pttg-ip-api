@@ -24,7 +24,7 @@ public class CatASalariedIncomeValidator implements CategoryIncomeValidator {
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
 
-        switch (FrequencyCalculator.calculate(incomeValidationRequest.applicantIncomes().get(0).incomeRecord())) {
+        switch (FrequencyCalculator.calculate(incomeValidationRequest.applicantIncome().incomeRecord())) {
             case CALENDAR_MONTHLY:
                 return catASalariedMonthlyIncomeValidator.validate(incomeValidationRequest);
             case WEEKLY:

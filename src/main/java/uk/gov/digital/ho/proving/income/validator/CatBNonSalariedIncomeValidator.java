@@ -79,7 +79,7 @@ public class CatBNonSalariedIncomeValidator implements CategoryIncomeValidator {
         return new IncomeValidationResult(
             result,
             yearlyThreshold,
-            IncomeValidationHelper.getCheckedIndividuals(incomeValidationRequest.applicantIncomes()),
+            IncomeValidationHelper.getCheckedIndividuals(incomeValidationRequest.allIncome()),
             assessmentStartDate,
             CATEGORY,
             CALCULATION_TYPE);
@@ -87,7 +87,7 @@ public class CatBNonSalariedIncomeValidator implements CategoryIncomeValidator {
 
     private BigDecimal getProjectedAnnualIncome(IncomeValidationRequest incomeValidationRequest) {
         List<Income> incomes =
-            incomeValidationRequest.applicantIncomes()
+            incomeValidationRequest.allIncome()
                 .stream()
                 .flatMap(applicantIncome -> applicantIncome.incomeRecord().paye().stream())
                 .collect(Collectors.toList());
