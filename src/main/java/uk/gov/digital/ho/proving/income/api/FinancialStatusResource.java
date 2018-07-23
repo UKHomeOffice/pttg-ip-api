@@ -43,18 +43,19 @@ public class FinancialStatusResource {
 
         List<Applicant> applicants = sanitiseApplicants(request.applicants());
 
-        validateApplicants(applicants);
-        validateDependents(request.dependants());
-        validateApplicationRaisedDate(request.applicationRaisedDate());
-
         UUID eventId = UUID.randomUUID();
-        LocalDate startSearchDate = request.applicationRaisedDate().minusDays(NUMBER_OF_DAYS_INCOME);
-        LinkedHashMap<Individual, IncomeRecord> incomeRecords = financialStatusService.getIncomeRecords(applicants, startSearchDate, request.applicationRaisedDate());
-
         String redactedNino = ninoUtils.redact(applicants.get(0).nino());
         log.info("Financial status check request received for {} - applicationRaisedDate = {}, dependents = {}",
             redactedNino, request.applicationRaisedDate(), request.dependants());
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, eventId, auditData(applicants.get(0), request.applicationRaisedDate(), request.dependants()));
+
+        validateApplicants(applicants);
+        validateDependents(request.dependants());
+        validateApplicationRaisedDate(request.applicationRaisedDate());
+
+        LocalDate startSearchDate = request.applicationRaisedDate().minusDays(NUMBER_OF_DAYS_INCOME);
+        LinkedHashMap<Individual, IncomeRecord> incomeRecords = financialStatusService.getIncomeRecords(applicants, startSearchDate, request.applicationRaisedDate());
+
 
         FinancialStatusCheckResponse response = financialStatusService.calculateResponse(request.applicationRaisedDate(), request.dependants(), incomeRecords);
 
