@@ -9,7 +9,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
     #             Applications with one dependant will be required to meet an amended threshold value of £22,400 within the last full tax year
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800 within the last full tax year
 
-    Scenario: 01 Charlotte has no dependents. Her income history shows a self assessment payment in the last full tax year that meets the threshold.
+    Scenario: No dependents. Self-Assessment payment in the last full tax year that meets the threshold.
 
 
         Given HMRC has the following income records:
@@ -30,7 +30,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     ############
 
-    Scenario: 02 Teresa has no dependents. Her income history shows a self assessment payment in the last full tax year that does not meet the threshold but does when combined with her partners.
+    Scenario: No dependents. Self-Assessment payment in the last full tax year that does not meet the threshold but does when combined with partner.
 
 
         Given HMRC has the following income records:
@@ -44,7 +44,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO - Applicant        | JH345343A  |
             | NINO - Partner          | KD722941V  |
-            | Application Raised Date | 2018-04-30 |
+            | Application Raised Date | 2017-04-06 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Status               | 200              |
@@ -55,10 +55,36 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
             | National Insurance Number | KD722941V        |
             | Threshold                 | 18600            |
 
+        ############
+
+    Scenario: No dependents. No Self-Assessment payment in the last full tax year from main applicant but passes when supplemented with partner.
+
+
+        Given HMRC has the following income records:
+            | Date    | Amount   |
+            | 2016-17 |    00.00 |
+
+        And the applicants partner has the following income records:
+            | Date    | Amount   |
+            | 2016-17 | 18600.00 |
+
+        When the Income Proving v2 TM Family API is invoked with the following:
+            | NINO - Applicant        | IO346368A  |
+            | NINO - Partner          | GH876545G  |
+            | Application Raised Date | 2017-04-06 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200                     |
+            | Category                  | F                       |
+            | Financial requirement met | true                    |
+            | Application Raised date   | 2017-04-06              |
+            | National Insurance Number | IO346368A               |
+            | National Insurance Number | GH876545G               |
+            | Threshold                 | 18600                   |
 
     ############
 
-    Scenario: 03 Jermaine has one dependent. His income history shows a self assessment payment in the last full tax year that meets the threshold.
+    Scenario: One dependent. Self-Assessment payment in the last full tax year that meets the threshold.
 
 
         Given HMRC has the following income records:
@@ -79,7 +105,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     ############
 
-    Scenario: 04 Belinda has two dependents. Her income history shows a self assessment payment in the last full tax year that meets the threshold.
+    Scenario: Two dependents. Self-Assessment payment in the last full tax year that meets the threshold.
 
 
         Given HMRC has the following income records:
@@ -97,3 +123,24 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
             | Application Raised date   | 2018-04-30       |
             | National Insurance Number | PP345212A        |
             | Threshold                 | 24800            |
+
+    ############
+
+    Scenario: No dependents. Application made 1 day before the end of the current tax year meaning Self-Assessment payment is 12 months ago. Threshold is met.
+
+
+        Given HMRC has the following income records:
+            | Date    | Amount   |
+            | 2016-17 | 18600.00 |
+
+        When the Income Proving v2 TM Family API is invoked with the following:
+            | NINO                    | PP345212A  |
+            | Application Raised Date | 2018-04-05 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Status               | 200              |
+            | Category                  | F                |
+            | Financial requirement met | true             |
+            | Application Raised date   | 2018-04-35       |
+            | National Insurance Number | PP345212A        |
+            | Threshold                 | 18600            |
