@@ -276,6 +276,24 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
         checkIncome(expectedResult)
     }
 
+    @Given("^HMRC has the following Self Assessment Returns for nino (.+?):\$")
+    void hmrcHasTheFollowingSelfAssessmentReturnsForNino(String nino, DataTable dataTable) {
+        def selfAssessmentReturns = dataTable.asList(AnnualSelfAssessmentTaxReturn.class)
+
+        def individual = new HmrcIndividual("Joe", "Bloggs", nino, null)
+        def incomeRecord = new IncomeRecord([], selfAssessmentReturns, [], individual)
+
+        def responseData = objectMapper.writeValueAsString(incomeRecord)
+        stubFor(get(urlMatching("/income.*"))
+            .withQueryParam("nino", matching(nino))
+            .willReturn(aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(responseData))
+        )
+
+        stubFor(post(urlMatching("/audit.*")).
+            willReturn(aResponse().withStatus(200)))
+    }
 
     @Given("^HMRC has the following income records:\$")
     void hmrcHasTheFollowingIncomeRecords(DataTable incomeRecords) throws Throwable {
