@@ -372,3 +372,4 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Category B non salaried | Assessment Start Date     | 2017-04-30                 |
             | Category B non salaried | Threshold                 | 36800                      |
             | Category B non salaried | Employer Name - AA345678A | Flying Pizza Ltd, Tresco's |
+

@@ -432,3 +432,36 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | National Insurance Number | WA888878S        |
             | Threshold                 | 24800            |
             | Employer Name             | Flying Pizza Ltd |
+
+##############
+
+    Scenario: Category B. No dependents. Annual Check Met. Multiple payments in the month at the end of the assessment range. (To Test Adding of multiple payments in a month)
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2018-03-27 | 1550.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-30 | 1550.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-28 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-12-31 | 1550.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-29 | 1550.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-30 | 1550.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-09-27 | 1550.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-08-30 | 1550.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-07-28 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-06-31 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-05-29 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-04-30 |    0.01 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-04-30 | 1549.99 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+
+        When the Income Proving v3 TM Family API is invoked with the following:
+            | NINO - Applicant        | AA345678A  |
+            | Application Raised Date | 2018-04-30 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Response       | HTTP Status               | 200              |
+            | Applicant           | National Insurance Number | AA345678A        |
+            | Category B salaried | Financial requirement met | true             |
+            | Category B salaried | Application Raised date   | 2018-04-30       |
+            | Category B salaried | Assessment Start Date     | 2017-04-30       |
+            | Category B salaried | Threshold                 | 18600            |
+            | Category B salaried | Employer Name - AA345678A | Flying Pizza Ltd |
