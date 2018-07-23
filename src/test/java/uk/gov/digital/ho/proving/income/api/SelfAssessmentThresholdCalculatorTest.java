@@ -9,12 +9,12 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 public class SelfAssessmentThresholdCalculatorTest {
 
     private static final int[] EXPECTED_THRESHOLDS = {18_600, 22_400, 24_800, 27_200, 29_600, 32_000};
+    private SelfAssessmentThresholdCalculator thresholdCalculator = new SelfAssessmentThresholdCalculator();
 
     @Test
     public void shouldReturnExpectedThresholds() {
         for (int i = 0; i < EXPECTED_THRESHOLDS.length; i++) {
-            SelfAssessmentThresholdCalculator thresholdCalculator = new SelfAssessmentThresholdCalculator(i);
-            BigDecimal actualThreshold = thresholdCalculator.threshold();
+            BigDecimal actualThreshold = thresholdCalculator.threshold(i);
 
             BigDecimal expectedThreshold = BigDecimal.valueOf(EXPECTED_THRESHOLDS[i]);
             assertThat(actualThreshold)
@@ -25,6 +25,6 @@ public class SelfAssessmentThresholdCalculatorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfDependantsLessThanZero() {
-        new SelfAssessmentThresholdCalculator(-1);
+        thresholdCalculator.threshold(-1);
     }
 }

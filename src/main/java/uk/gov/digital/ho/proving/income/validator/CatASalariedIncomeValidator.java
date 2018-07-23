@@ -5,7 +5,7 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 
 @Service
-public class CatASalariedIncomeValidator implements CategoryIncomeValidator {
+public class CatASalariedIncomeValidator implements ActiveIncomeValidator {
 
     private IncomeValidator catASalariedMonthlyIncomeValidator;
     private IncomeValidator catASalariedWeeklyIncomeValidator;

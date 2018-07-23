@@ -17,7 +17,7 @@ import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidation
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_PASSED;
 
 @Service
-public class CatBNonSalariedIncomeValidator implements CategoryIncomeValidator {
+public class CatBNonSalariedIncomeValidator implements ActiveIncomeValidator {
 
     private static final String CALCULATION_TYPE = "Category B non salaried";
     private static final Integer ASSESSMENT_START_YEARS_BEFORE = 1;

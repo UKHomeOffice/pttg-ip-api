@@ -10,12 +10,13 @@ import java.time.Clock;
 import java.util.List;
 
 @Service
-public class CatFOneYearSelfAssessmentIncomeValidator implements CategoryIncomeValidator {
+public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeValidator {
 
     private static final String CATEGORY = "F";
     private static final String CALCULATION_TYPE = "Category F Self-Assessment Income";
 
     private final Clock clock;
+    private final SelfAssessmentThresholdCalculator selfAssessmentThresholdCalculator = new SelfAssessmentThresholdCalculator();
 
     public CatFOneYearSelfAssessmentIncomeValidator(Clock clock) {
         this.clock = clock;
@@ -31,16 +32,15 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements CategoryIncomeV
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
         List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns = getAnnualSelfAssessmentTaxReturns(incomeValidationRequest);
-
-        BigDecimal threshold = new SelfAssessmentThresholdCalculator(incomeValidationRequest.dependants()).threshold();
+        BigDecimal threshold = selfAssessmentThresholdCalculator.threshold(incomeValidationRequest.dependants());
 
         IncomeValidationStatus status = IncomeValidationStatus.SELF_ASSESSMENT_ONE_YEAR_FAILED;
 
         if (!previousYearsTaxReturns.isEmpty()) {
             BigDecimal totalSelfAssessmentProfit = getTotalIncome(previousYearsTaxReturns);
 
-            boolean isSufficientIncome = totalSelfAssessmentProfit.compareTo(threshold) > 0;
-            if (isSufficientIncome) {
+            boolean hasSufficientIncome = totalSelfAssessmentProfit.compareTo(threshold) >= 0;
+            if (hasSufficientIncome) {
                 status = IncomeValidationStatus.SELF_ASSESSMENT_ONE_YEAR_PASSED;
             }
         }

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import uk.gov.digital.ho.proving.income.hmrc.domain.Employer;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Employments;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 
@@ -23,7 +22,7 @@ public class CheckedIndividual {
     @JsonProperty(value = "employers")
     private List<String> employers;
 
-    public static CheckedIndividual from(ApplicantIncome applicantIncome) {
+    public static CheckedIndividual fromApplicantIncome(ApplicantIncome applicantIncome) {
         String nino = applicantIncome.applicant().nino();
         List<Employments> employments = applicantIncome.employments();
 

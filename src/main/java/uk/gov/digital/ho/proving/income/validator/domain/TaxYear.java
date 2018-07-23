@@ -1,12 +1,12 @@
 package uk.gov.digital.ho.proving.income.validator.domain;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.experimental.Accessors;
 
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
+import java.time.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,15 +17,15 @@ import java.util.regex.Pattern;
 public class TaxYear {
     private static final Pattern TAX_YEAR_PATTERN = Pattern.compile("^\\d{4}\\s*?-\\d{2,4}$");
 
-    private static final int END_DAY_OF_MONTH = 5;
-    private static final int START_DAY_OF_MONTH = 6;
+    private static final MonthDay TAX_YEAR_START_MONTH_DAY = MonthDay.of(Month.APRIL, 6);
+    private static final MonthDay TAX_YEAR_END_MONTH_DAY = MonthDay.of(Month.APRIL, 5);
 
     private final LocalDate start;
     private final LocalDate end;
 
     private TaxYear(Year startYear) {
-        this.start = startOfCurrentTaxYearInCurrentYear(startYear);
-        this.end = start.plusYears(1).withDayOfMonth(END_DAY_OF_MONTH);
+        this.start = startYear.atMonthDay(TAX_YEAR_START_MONTH_DAY);
+        this.end = startYear.plusYears(1).atMonthDay(TAX_YEAR_END_MONTH_DAY);
     }
 
     public static TaxYear from(Clock clock) {
@@ -41,11 +41,14 @@ public class TaxYear {
     }
 
     public static void validate(String taxYear) {
-        Matcher matcher = TAX_YEAR_PATTERN.matcher(taxYear);
-        if (matcher.matches()) {
-            return;
+        if (isInvalidTaxYear(taxYear)) {
+            throw new IllegalArgumentException(String.format("Invalid Tax Year format [%s], expected format [YYYY-YY] or [YYYY-YYYY]", taxYear));
         }
-        throw new IllegalArgumentException(String.format("Invalid Tax Year format [%s], expected format [YYYY-YY] or [YYYY-YYYY]", taxYear));
+    }
+
+    private static boolean isInvalidTaxYear(String taxYear) {
+        Matcher matcher = TAX_YEAR_PATTERN.matcher(taxYear);
+        return !matcher.matches();
     }
 
     private static Year startYear(String taxYear) {
@@ -54,7 +57,7 @@ public class TaxYear {
     }
 
     private static Year startYear(Clock clock) {
-        LocalDate startOfTaxYear = startOfTaxYearInCurrentYear(clock);
+        LocalDate startOfTaxYear = Year.now(clock).atMonthDay(TAX_YEAR_START_MONTH_DAY);
 
         LocalDate now = LocalDate.now(clock);
         if (now.isBefore(startOfTaxYear)) {
@@ -62,14 +65,6 @@ public class TaxYear {
         }
 
         return Year.from(startOfTaxYear);
-    }
-
-    private static LocalDate startOfTaxYearInCurrentYear(Clock clock) {
-        return startOfCurrentTaxYearInCurrentYear(Year.now(clock));
-    }
-
-    private static LocalDate startOfCurrentTaxYearInCurrentYear(Year year) {
-        return year.atMonth(Month.APRIL).atDay(START_DAY_OF_MONTH);
     }
 
     public TaxYear previousTaxYear() {

@@ -15,7 +15,7 @@ public class IncomeValidationService {
 
     private final List<IncomeValidator> incomeValidators;
 
-    public IncomeValidationService(List<CategoryIncomeValidator> incomeValidators) {
+    public IncomeValidationService(List<ActiveIncomeValidator> incomeValidators) {
         this.incomeValidators = unmodifiableList(incomeValidators);
     }
 

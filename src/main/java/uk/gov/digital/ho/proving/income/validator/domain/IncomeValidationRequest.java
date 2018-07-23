@@ -33,7 +33,7 @@ public class IncomeValidationRequest {
     public List<CheckedIndividual> getCheckedIndividuals() {
         return allIncome()
             .stream()
-            .map(CheckedIndividual::from)
+            .map(CheckedIndividual::fromApplicantIncome)
             .collect(Collectors.toList());
     }
 
