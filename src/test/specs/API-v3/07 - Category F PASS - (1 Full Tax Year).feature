@@ -24,7 +24,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
             | Category F Self-Assessment Income | Threshold                 | 18600      |
             | Applicant                         | National Insurance Number | TK047457B  |
 
-    Scenario: 02 Teresa has no dependents. Her income history shows a self assessment payment in the last full tax year that does not meet the threshold but does when combined with her partners
+    Scenario: Teresa has no dependents and her self assessment returns is below the threshold but passes when combined with her partners
         Given HMRC has the following Self Assessment Returns for nino OB666650A:
             | TaxYear | Self Employment Profit |
             | 2017-18 | 9300.00                |

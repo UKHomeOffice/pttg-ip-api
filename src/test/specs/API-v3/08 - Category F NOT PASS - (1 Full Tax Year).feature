@@ -41,7 +41,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
             | Category F Self-Assessment Income | Threshold                 | 18600                           |
             | Applicant                         | National Insurance Number | AE412225C                       |
 
-    Scenario: 03 Lizzie has no dependents. Her income history shows a self assessment payment in the last full tax year that does not meet the threshold and still does not even when supplemented with her partners
+    Scenario: Lizzie has no dependants and the income from her and her partners self assessment returns does not meet the threshold
         Given HMRC has the following Self Assessment Returns for nino ZW723343A:
             | TaxYear | Self Employment Profit |
             | 2016-17 | 9299.99                |
