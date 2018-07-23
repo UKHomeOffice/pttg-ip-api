@@ -85,7 +85,7 @@ class FinancialServiceSpec extends Specification {
         given:
         mockNinoUtils.sanitise("AA123456A") >> "AA123456A"
         1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException("AA123456A") }
-        1 * mockNinoUtils.redact("AA123456A") >> "AA123****"
+        2 * mockNinoUtils.redact("AA123456A") >> "AA123****"
 
 
         when:
