@@ -9,7 +9,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
     #             Applications with one dependant will be required to meet an amended threshold value of £22,400 within the last full tax year
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800 within the last full tax year
 
-    Scenario: 01 Claire has no dependents. Her income history shows a self assessment payment in the last full tax year that does not meet the threshold
+    Scenario: No dependents. Self-Assessment payment in the last full tax year that does not meet the threshold
         Given HMRC has the following Self Assessment Returns for nino SP123456A:
             | TaxYear | Self Employment Profit |
             | 2017-18 | 18599.99               |
@@ -25,12 +25,13 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
             | Category F Self-Assessment Income | Threshold                 | 18600                           |
             | Applicant                         | National Insurance Number | SP123456A                       |
 
-    Scenario: 02 Fred has no dependents. His income history shows a self assessment payment in a tax year after the last full tax year that meets the threshold
-        Given HMRC has the following Self Assessment Returns for nino AE412225C:
+    Scenario: No dependents. Self-Assessment payment in a tax year after the last full tax year that meets the threshold
+        Given HMRC has the following Self Assessment Returns for nino NM616732D:
             | TaxYear | Self Employment Profit |
+            | 2017-18 |    00.00               |
             | 2016-17 | 18600.00               |
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO - Applicant        | AE412225C  |
+            | NINO - Applicant        | NM616732D  |
             | Application Raised Date | 2018-04-06 |
             | Dependants              | 0          |
         Then The Income Proving TM Family API provides the following result:
@@ -39,9 +40,9 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
             | Category F Self-Assessment Income | Failure Reason            | SELF_ASSESSMENT_ONE_YEAR_FAILED |
             | Category F Self-Assessment Income | Application Raised date   | 2018-04-06                      |
             | Category F Self-Assessment Income | Threshold                 | 18600                           |
-            | Applicant                         | National Insurance Number | AE412225C                       |
+            | Applicant                         | National Insurance Number | NM616732D                       |
 
-    Scenario: Lizzie has no dependants and the income from her and her partners self assessment returns does not meet the threshold
+    Scenario: No dependents. Self-Assessment payment in the last full tax year that does not meet the threshold and still does not even when supplemented with a partner
         Given HMRC has the following Self Assessment Returns for nino ZW723343A:
             | TaxYear | Self Employment Profit |
             | 2016-17 | 9299.99                |
@@ -62,7 +63,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
             | Applicant                         | National Insurance Number | ZW723343A                       |
             | Partner                           | National Insurance Number | BZ483260B                       |
 
-    Scenario: 04 Gerald has one dependent. His income history shows a self assessment payment in the last full tax year that does not meet the threshold
+    Scenario: One dependent. Self-Assessment payment in the last full tax year that does not meet the threshold
         Given HMRC has the following Self Assessment Returns for nino KH802177D:
             | TaxYear | Self Employment Profit |
             | 2017-18 | 22399.99               |
@@ -78,7 +79,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
             | Category F Self-Assessment Income | Threshold                 | 22400                           |
             | Applicant                         | National Insurance Number | KH802177D                       |
 
-    Scenario: 05 Donna has two dependents. Her income history shows a self assessment payment in the last full tax year that does not meet the threshold
+    Scenario: Two dependents. Self-Assessment payment in the last full tax year that does not meet the threshold
         Given HMRC has the following Self Assessment Returns for nino SN332780B:
             | TaxYear | Self Employment Profit |
             | 2017-18 | 24799.99               |

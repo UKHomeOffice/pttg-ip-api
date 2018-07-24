@@ -10,13 +10,13 @@ Feature: Category G Financial Requirement - Self-Assessment - Solo & Combined Ap
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800 within the last full tax year
 
 
-    Scenario: 01 Doris has no dependents. Her income history shows self assessment payments in the last two full tax years that do not meet the threshold.
+    Scenario: No dependents. Self-Assessment payments in the last two full tax years that do not meet the threshold.
 
 
         Given HMRC has the following income records:
             | Date    | Amount   |
             | 2017-18 | 18599.98 |
-            | 2016-17 |    00.01 |
+            | 2016-17 | 18600.01 |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | RF892878A  |
@@ -33,13 +33,14 @@ Feature: Category G Financial Requirement - Self-Assessment - Solo & Combined Ap
 
          ############
 
-    Scenario: 02 Timmy has no dependents. His income history shows a self assessment payment in the immediate tax year but nothing in the next consecutive tax year.
+    Scenario: No dependents. His income history shows a self assessment payment in the immediate tax year and in the next consecutive tax year but fails when averaged, and ignoring the third year which would make it pass.
 
 
         Given HMRC has the following income records:
             | Date    | Amount   |
-            | 2016-17 | 18599.99 |
-            | 2015-16 |    00.01 |
+            | 2017-18 |  9300.00 |
+            | 2016-17 |  9300.00 |
+            | 2015-16 | 37200.00 |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | TT821878B  |
@@ -56,18 +57,18 @@ Feature: Category G Financial Requirement - Self-Assessment - Solo & Combined Ap
 
         ############
 
-    Scenario: 03 Chrissy has no dependents. Her income history shows self assessment payments in the last two full tax years that do not meet the threshold and still does not even when supplemented with her partners.
+    Scenario: No dependents. Self-Assessment payments in the last two full tax years that do not meet the threshold and still does not even when supplemented with her partners.
 
 
         Given HMRC has the following income records
             | Date    | Amount   |
-            | 2016-17 |  4650.00 |
-            | 2015-16 |  4650.00 |
+            | 2016-17 |  9300.00 |
+            | 2015-16 |  9300.00 |
 
         And the applicants partner has the following income records:
             | Date    | Amount   |
-            | 2016-17 |  4650.00 |
-            | 2015-16 |  4649.99 |
+            | 2016-17 |  9300.00 |
+            | 2015-16 |  9299.99 |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO - Applicant        | AA123468A  |
@@ -86,12 +87,12 @@ Feature: Category G Financial Requirement - Self-Assessment - Solo & Combined Ap
 
          ############
 
-    Scenario: 04 Cecil has one dependent. His income history shows self assessment payments in the last two full tax years that do not meet the threshold.
+    Scenario: One dependent. Self-Assessment payments in the last two full tax years that do not meet the threshold.
 
 
         Given HMRC has the following income records:
             | Date    | Amount   |
-            | 2017-18 | 22399.98 |
+            | 2017-18 | 44799.98 |
             | 2016-17 |    00.01 |
 
         When the Income Proving v2 TM Family API is invoked with the following:
@@ -109,13 +110,13 @@ Feature: Category G Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     ###########
 
-    Scenario: 05 Sharon has two dependents. Her income history shows self assessment payments in the last two full tax years that do not meet the threshold.
+    Scenario: Two dependents. Self-Assessment payments in the last two full tax years that do not meet the threshold.
 
 
         Given HMRC has the following income records:
             | Date    | Amount   |
             | 2017-18 |    00.01 |
-            | 2016-18 | 24799.98 |
+            | 2016-18 | 49599.98 |
 
         When the Income Proving v2 TM Family API is invoked with the following:
             | NINO                    | LL111299C  |

@@ -6,7 +6,7 @@ import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxRetur
 import uk.gov.digital.ho.proving.income.validator.domain.*;
 
 import java.math.BigDecimal;
-import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -15,12 +15,7 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
     private static final String CATEGORY = "F";
     private static final String CALCULATION_TYPE = "Category F Self-Assessment Income";
 
-    private final Clock clock;
     private final SelfAssessmentThresholdCalculator selfAssessmentThresholdCalculator = new SelfAssessmentThresholdCalculator();
-
-    public CatFOneYearSelfAssessmentIncomeValidator(Clock clock) {
-        this.clock = clock;
-    }
 
     private static boolean isFromTaxYear(AnnualSelfAssessmentTaxReturn annualSelfAssessmentTaxReturn, TaxYear taxYear) {
         String rawTaxYear = annualSelfAssessmentTaxReturn.taxYear();
@@ -45,11 +40,12 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
             }
         }
 
+        LocalDate applicationRaisedDate = incomeValidationRequest.applicationRaisedDate();
         return IncomeValidationResult.builder()
             .status(status)
             .threshold(threshold)
             .individuals(incomeValidationRequest.getCheckedIndividuals())
-            .assessmentStartDate(previousTaxYear().start())
+            .assessmentStartDate(previousTaxYear(applicationRaisedDate).start())
             .category(CATEGORY)
             .calculationType(CALCULATION_TYPE)
             .build();
@@ -63,22 +59,23 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
     }
 
     private List<AnnualSelfAssessmentTaxReturn> getAnnualSelfAssessmentTaxReturns(IncomeValidationRequest incomeValidationRequest) {
+        LocalDate applicationRaisedDate = incomeValidationRequest.applicationRaisedDate();
         ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncome();
 
-        List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns = getPreviousYearsTaxReturns(applicantIncome);
+        List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns = getPreviousYearsTaxReturns(applicantIncome, applicationRaisedDate);
 
         if (incomeValidationRequest.isJointRequest()) {
             ApplicantIncome partnerIncome = incomeValidationRequest.partnerIncome();
-            previousYearsTaxReturns.addAll(getPreviousYearsTaxReturns(partnerIncome));
+            previousYearsTaxReturns.addAll(getPreviousYearsTaxReturns(partnerIncome, applicationRaisedDate));
         }
 
         return previousYearsTaxReturns;
     }
 
-    private List<AnnualSelfAssessmentTaxReturn> getPreviousYearsTaxReturns(ApplicantIncome applicantIncome) {
+    private List<AnnualSelfAssessmentTaxReturn> getPreviousYearsTaxReturns(ApplicantIncome applicantIncome, LocalDate applicationRaisedDate) {
         List<AnnualSelfAssessmentTaxReturn> annualSelfAssessmentTaxReturns = applicantIncome.incomeRecord().selfAssessment();
 
-        TaxYear previousTaxYear = previousTaxYear();
+        TaxYear previousTaxYear = previousTaxYear(applicationRaisedDate);
         annualSelfAssessmentTaxReturns.removeIf(selfAssessmentReturn -> !isFromTaxYear(selfAssessmentReturn, previousTaxYear));
 
         if (annualSelfAssessmentTaxReturns.size() > 4) {
@@ -88,8 +85,8 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
         return annualSelfAssessmentTaxReturns;
     }
 
-    private TaxYear previousTaxYear() {
-        TaxYear currentTaxYear = TaxYear.from(clock);
+    private TaxYear previousTaxYear(LocalDate applicationRaisedDate) {
+        TaxYear currentTaxYear = TaxYear.from(applicationRaisedDate);
         return currentTaxYear.previousTaxYear();
     }
 }

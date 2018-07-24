@@ -28,8 +28,8 @@ public class TaxYear {
         this.end = startYear.plusYears(1).atMonthDay(TAX_YEAR_END_MONTH_DAY);
     }
 
-    public static TaxYear from(Clock clock) {
-        Year startYear = startYear(clock);
+    public static TaxYear from(LocalDate localDate) {
+        Year startYear = startYear(localDate);
         return new TaxYear(startYear);
     }
 
@@ -56,11 +56,10 @@ public class TaxYear {
         return Year.of(startYear);
     }
 
-    private static Year startYear(Clock clock) {
-        LocalDate startOfTaxYear = Year.now(clock).atMonthDay(TAX_YEAR_START_MONTH_DAY);
+    private static Year startYear(LocalDate localDate) {
+        LocalDate startOfTaxYear = Year.from(localDate).atMonthDay(TAX_YEAR_START_MONTH_DAY);
 
-        LocalDate now = LocalDate.now(clock);
-        if (now.isBefore(startOfTaxYear)) {
+        if (localDate.isBefore(startOfTaxYear)) {
             startOfTaxYear = startOfTaxYear.minusYears(1);
         }
 
