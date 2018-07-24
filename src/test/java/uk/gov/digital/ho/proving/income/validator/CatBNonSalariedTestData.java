@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.proving.income.validator;
 
 import com.google.common.collect.ImmutableList;
-import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
 import uk.gov.digital.ho.proving.income.hmrc.domain.*;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
@@ -51,7 +51,7 @@ public class CatBNonSalariedTestData {
     public static List<ApplicantIncome> singleMonthlyPaymentAboveNoDependantsThreshold(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
 
         incomes.add(new Income(monthlyIncome, raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -61,7 +61,7 @@ public class CatBNonSalariedTestData {
     public static List<ApplicantIncome> singleMonthlyPaymentBelowNoDependantsThreshold(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().subtract(amount("0.01"));
 
         incomes.add(new Income(monthlyIncome, raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -71,7 +71,7 @@ public class CatBNonSalariedTestData {
     public static List<ApplicantIncome> singleMonthlyPaymentEqualsNoDependantsThreshold(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         incomes.add(new Income(monthlyIncome, raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -81,7 +81,7 @@ public class CatBNonSalariedTestData {
     public static List<ApplicantIncome> multipleMonthlyPaymentsBelowNoDependantsThreshold(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome1 = thresholdCalculator.getMonthlyThreshold().subtract(amount("50.00"));
         BigDecimal monthlyIncome2 = thresholdCalculator.getMonthlyThreshold().add(amount("49.99"));
 
@@ -93,7 +93,7 @@ public class CatBNonSalariedTestData {
     public static List<ApplicantIncome> multipleMonthlyPaymentsEqualsNoDependantsThreshold(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome1 = thresholdCalculator.getMonthlyThreshold().subtract(amount("50.00"));
         BigDecimal monthlyIncome2 = thresholdCalculator.getMonthlyThreshold().add(amount("50.00"));
 
@@ -105,7 +105,7 @@ public class CatBNonSalariedTestData {
     public static List<ApplicantIncome> singleMonthlyPaymentEqualsSingleDependantThreshold(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(1);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(1);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         incomes.add(new Income(monthlyIncome, raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -115,7 +115,7 @@ public class CatBNonSalariedTestData {
     public static List<ApplicantIncome> singleMonthlyPaymentBelowSingleDependantThreshold(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(1);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(1);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().subtract(amount("0.01"));
 
         incomes.add(new Income(monthlyIncome, raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -125,7 +125,7 @@ public class CatBNonSalariedTestData {
     public static List<ApplicantIncome> singleMonthlyPaymentEqualsThreeDependantsThreshold(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(3);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(3);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         incomes.add(new Income(monthlyIncome, raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -135,7 +135,7 @@ public class CatBNonSalariedTestData {
     public static List<ApplicantIncome> singleMonthlyPaymentBelowThreeDependantsThreshold(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(3);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(3);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().subtract(amount("0.01"));
 
         incomes.add(new Income(monthlyIncome, raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -145,7 +145,7 @@ public class CatBNonSalariedTestData {
     public static List<ApplicantIncome> multipleMonthlyPaymentSameMonthEqualsNoDependantsThreshold(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().divide(new BigDecimal(4));
 
         incomes.add(new Income(monthlyIncome, raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -161,7 +161,7 @@ public class CatBNonSalariedTestData {
 
         List<Income> applicantIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         applicantIncomes.add(new Income(monthlyIncome, raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -179,7 +179,7 @@ public class CatBNonSalariedTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         applicantIncomes.add(new Income(monthlyIncome.divide(new BigDecimal(2)), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -197,7 +197,7 @@ public class CatBNonSalariedTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         applicantIncomes.add(new Income(monthlyIncome.divide(new BigDecimal(2)), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -215,7 +215,7 @@ public class CatBNonSalariedTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         applicantIncomes.add(new Income(monthlyIncome.divide(new BigDecimal(2)), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -235,7 +235,7 @@ public class CatBNonSalariedTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         applicantIncomes.add(new Income(monthlyIncome, raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -253,7 +253,7 @@ public class CatBNonSalariedTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         applicantIncomes.add(new Income(monthlyIncome.subtract(amount("0.01")), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));

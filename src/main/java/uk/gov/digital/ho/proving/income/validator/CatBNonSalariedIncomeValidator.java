@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.proving.income.validator;
 
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
@@ -72,7 +72,7 @@ public class CatBNonSalariedIncomeValidator implements ActiveIncomeValidator {
 
         BigDecimal projectedAnnualIncome = getProjectedAnnualIncome(incomeValidationRequest);
 
-        BigDecimal yearlyThreshold = new SalariedThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
+        BigDecimal yearlyThreshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
 
         IncomeValidationStatus result = projectedAnnualIncome.compareTo(yearlyThreshold) >= 0 ? CATB_NON_SALARIED_PASSED : CATB_NON_SALARIED_BELOW_THRESHOLD;
 

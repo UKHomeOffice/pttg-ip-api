@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.proving.income.validator;
 
 import org.junit.Test;
-import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
@@ -32,7 +32,7 @@ public class EmploymentCheckIncomeValidatorTest {
             .withFailMessage("The correct calculation type should be returned");
         assertThat(result.assessmentStartDate()).isEqualTo(raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS))
             .withFailMessage("The assessment start date should be the correct number of days before the raised date");
-        assertThat(result.threshold()).isEqualTo(new SalariedThresholdCalculator(0).getMonthlyThreshold())
+        assertThat(result.threshold()).isEqualTo(new IncomeThresholdCalculator(0).getMonthlyThreshold())
             .withFailMessage("The monthly threshold should be returned");
     }
 

@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.proving.income.validator;
 
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
@@ -53,7 +53,7 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
 
         LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
 
-        BigDecimal monthlyThreshold = new SalariedThresholdCalculator(incomeValidationRequest.dependants()).getMonthlyThreshold();
+        BigDecimal monthlyThreshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).getMonthlyThreshold();
 
         BigDecimal earningsSinceAssessmentStart =
             incomeValidationRequest.allIncome().stream()

@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
@@ -67,7 +67,7 @@ public class CatBNonSalariedIncomeValidatorTest {
             .withFailMessage("The correct calculation should be returned");
         assertThat(result.assessmentStartDate()).isEqualTo(raisedDate.minusYears(1))
             .withFailMessage("The assessment start date should be 1 year before the raised date");
-        assertThat(result.threshold()).isEqualTo(new SalariedThresholdCalculator(0).yearlyThreshold())
+        assertThat(result.threshold()).isEqualTo(new IncomeThresholdCalculator(0).yearlyThreshold())
             .withFailMessage("The yearly threshold should be returned");
     }
 

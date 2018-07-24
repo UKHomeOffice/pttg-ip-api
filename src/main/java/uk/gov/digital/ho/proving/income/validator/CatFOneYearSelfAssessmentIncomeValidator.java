@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.proving.income.validator;
 
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.proving.income.api.SelfAssessmentThresholdCalculator;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn;
 import uk.gov.digital.ho.proving.income.validator.domain.*;
 
@@ -15,8 +15,6 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
     private static final String CATEGORY = "F";
     private static final String CALCULATION_TYPE = "Category F Self-Assessment Income";
 
-    private final SelfAssessmentThresholdCalculator selfAssessmentThresholdCalculator = new SelfAssessmentThresholdCalculator();
-
     private static boolean isFromTaxYear(AnnualSelfAssessmentTaxReturn annualSelfAssessmentTaxReturn, TaxYear taxYear) {
         String rawTaxYear = annualSelfAssessmentTaxReturn.taxYear();
         TaxYear returnTaxYear = TaxYear.of(rawTaxYear);
@@ -27,7 +25,8 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
         List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns = getAnnualSelfAssessmentTaxReturns(incomeValidationRequest);
-        BigDecimal threshold = selfAssessmentThresholdCalculator.threshold(incomeValidationRequest.dependants());
+
+        BigDecimal threshold = getThreshold(incomeValidationRequest);
 
         IncomeValidationStatus status = IncomeValidationStatus.SELF_ASSESSMENT_ONE_YEAR_FAILED;
 
@@ -49,6 +48,10 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
             .category(CATEGORY)
             .calculationType(CALCULATION_TYPE)
             .build();
+    }
+
+    private BigDecimal getThreshold(IncomeValidationRequest incomeValidationRequest) {
+        return new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
     }
 
     private BigDecimal getTotalIncome(List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns) {
@@ -77,10 +80,6 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
 
         TaxYear previousTaxYear = previousTaxYear(applicationRaisedDate);
         annualSelfAssessmentTaxReturns.removeIf(selfAssessmentReturn -> !isFromTaxYear(selfAssessmentReturn, previousTaxYear));
-
-        if (annualSelfAssessmentTaxReturns.size() > 4) {
-            throw new IllegalArgumentException(String.format("Should never have more than four tax returns in a year, got %d", annualSelfAssessmentTaxReturns.size()));
-        }
 
         return annualSelfAssessmentTaxReturns;
     }

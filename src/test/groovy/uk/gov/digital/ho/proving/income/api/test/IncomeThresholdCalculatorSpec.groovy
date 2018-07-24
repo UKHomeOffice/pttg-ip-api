@@ -1,19 +1,15 @@
 package uk.gov.digital.ho.proving.income.api.test
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import spock.lang.Specification
-import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator
 
-class ThresholdCalculatorSpec extends Specification {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ThresholdCalculatorSpec.class);
+class IncomeThresholdCalculatorSpec extends Specification {
 
     def "throw error for negative number of dependants"() {
         given:
-        SalariedThresholdCalculator calculator
+        IncomeThresholdCalculator calculator
         when:
-        calculator = new SalariedThresholdCalculator(-1);
+        calculator = new IncomeThresholdCalculator(-1);
         BigDecimal threshold = calculator.getMonthlyThreshold()
         then:
         thrown IllegalArgumentException
@@ -21,7 +17,7 @@ class ThresholdCalculatorSpec extends Specification {
 
     def "calculate thresholds for zero dependant"() {
         given:
-        SalariedThresholdCalculator calculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator calculator = new IncomeThresholdCalculator(0);
         when:
         BigDecimal threshold = calculator.getMonthlyThreshold()
         then:
@@ -30,7 +26,7 @@ class ThresholdCalculatorSpec extends Specification {
 
     def "calculate thresholds for one dependant"() {
         given:
-        SalariedThresholdCalculator calculator = new SalariedThresholdCalculator(1);
+        IncomeThresholdCalculator calculator = new IncomeThresholdCalculator(1);
         when:
         BigDecimal threshold = calculator.getMonthlyThreshold()
         then:
@@ -39,7 +35,7 @@ class ThresholdCalculatorSpec extends Specification {
 
     def "calculate thresholds for two dependant"() {
         given:
-        SalariedThresholdCalculator calculator = new SalariedThresholdCalculator(2);
+        IncomeThresholdCalculator calculator = new IncomeThresholdCalculator(2);
         when:
         BigDecimal threshold = calculator.getMonthlyThreshold()
         then:
@@ -48,7 +44,7 @@ class ThresholdCalculatorSpec extends Specification {
 
     def "calculate thresholds for three dependant"() {
         given:
-        SalariedThresholdCalculator calculator = new SalariedThresholdCalculator(3)
+        IncomeThresholdCalculator calculator = new IncomeThresholdCalculator(3)
         when:
         BigDecimal threshold = calculator.getMonthlyThreshold()
         then:
@@ -57,7 +53,7 @@ class ThresholdCalculatorSpec extends Specification {
 
     def "calculate thresholds for four dependant"() {
         given:
-        SalariedThresholdCalculator calculator = new SalariedThresholdCalculator(4)
+        IncomeThresholdCalculator calculator = new IncomeThresholdCalculator(4)
         when:
         BigDecimal threshold = calculator.getMonthlyThreshold()
         then:
@@ -66,7 +62,7 @@ class ThresholdCalculatorSpec extends Specification {
 
     def "calculate thresholds for five dependant"() {
         given:
-        SalariedThresholdCalculator calculator = new SalariedThresholdCalculator(5)
+        IncomeThresholdCalculator calculator = new IncomeThresholdCalculator(5)
         when:
         BigDecimal threshold = calculator.getMonthlyThreshold()
         then:
@@ -75,7 +71,7 @@ class ThresholdCalculatorSpec extends Specification {
 
     def "calculate thresholds for six dependant"() {
         given:
-        SalariedThresholdCalculator calculator = new SalariedThresholdCalculator(6)
+        IncomeThresholdCalculator calculator = new IncomeThresholdCalculator(6)
         when:
         BigDecimal threshold = calculator.getMonthlyThreshold()
         then:
@@ -84,7 +80,7 @@ class ThresholdCalculatorSpec extends Specification {
 
     def "calculate thresholds for seven dependant"() {
         given:
-        SalariedThresholdCalculator calculator = new SalariedThresholdCalculator(7)
+        IncomeThresholdCalculator calculator = new IncomeThresholdCalculator(7)
         when:
         BigDecimal threshold = calculator.getMonthlyThreshold()
         then:

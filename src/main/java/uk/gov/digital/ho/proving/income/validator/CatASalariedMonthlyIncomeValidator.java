@@ -2,7 +2,7 @@ package uk.gov.digital.ho.proving.income.validator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.validator.domain.*;
@@ -34,7 +34,7 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(incomeValidationRequest.dependants());
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(incomeValidationRequest.dependants());
         BigDecimal monthlyThreshold = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
