@@ -63,12 +63,17 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
             .stream()
             .map(ApplicantIncome::incomeRecord)
             .flatMap(incomeRecord -> incomeRecord.selfAssessment().stream())
-            .filter(annualSelfAssessmentTaxReturn -> annualSelfAssessmentTaxReturn.isFromTaxYear(previousTaxYear))
+            .filter(annualSelfAssessmentTaxReturn -> isFromTaxYear(annualSelfAssessmentTaxReturn, previousTaxYear))
             .collect(toList());
     }
 
     private TaxYear previousTaxYear(LocalDate applicationRaisedDate) {
         TaxYear currentTaxYear = TaxYear.from(applicationRaisedDate);
         return currentTaxYear.previousTaxYear();
+    }
+
+    public boolean isFromTaxYear(AnnualSelfAssessmentTaxReturn annualSelfAssessmentTaxReturn, TaxYear taxYear) {
+        String returnTaxYear = annualSelfAssessmentTaxReturn.taxYear();
+        return TaxYear.of(returnTaxYear).equals(taxYear);
     }
 }
