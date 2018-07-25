@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.proving.income.validator;
 
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
@@ -17,21 +17,37 @@ import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidation
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_PASSED;
 
 @Service
-public class CatBNonSalariedIncomeValidator implements IncomeValidator {
+public class CatBNonSalariedIncomeValidator implements ActiveIncomeValidator {
 
-    public static final String CALCULATION_TYPE = "Category B non salaried";
-    public static final Integer ASSESSMENT_START_YEARS_BEFORE = 1;
+    private static final String CALCULATION_TYPE = "Category B non salaried";
+    private static final Integer ASSESSMENT_START_YEARS_BEFORE = 1;
     private static final String CATEGORY = "B";
 
+    private final EmploymentCheckIncomeValidator employmentCheckIncomeValidator;
+
+    public CatBNonSalariedIncomeValidator(EmploymentCheckIncomeValidator employmentCheckIncomeValidator) {
+        this.employmentCheckIncomeValidator = employmentCheckIncomeValidator;
+    }
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
+        IncomeValidationResult employmentCheckResult = employmentCheckIncomeValidator.validate(incomeValidationRequest);
+
+        boolean passedEmploymentCheck = employmentCheckResult.status().isPassed();
+        if (passedEmploymentCheck) {
+            return validateNonSalariedIncome(incomeValidationRequest);
+        } else {
+            return employmentCheckResult;
+        }
+    }
+
+    private IncomeValidationResult validateNonSalariedIncome(IncomeValidationRequest incomeValidationRequest) {
         IncomeValidationResult result = doValidation(incomeValidationRequest);
         if (result.status().isPassed()) {
             return result;
         }
 
-        if(!incomeValidationRequest.isJointRequest()) {
+        if (!incomeValidationRequest.isJointRequest()) {
             return result;
         }
 
@@ -48,7 +64,6 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
         }
 
         return result;
-
     }
 
     private IncomeValidationResult doValidation(IncomeValidationRequest incomeValidationRequest) {
@@ -57,14 +72,14 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
 
         BigDecimal projectedAnnualIncome = getProjectedAnnualIncome(incomeValidationRequest);
 
-        BigDecimal yearlyThreshold = new SalariedThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
+        BigDecimal yearlyThreshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
 
         IncomeValidationStatus result = projectedAnnualIncome.compareTo(yearlyThreshold) >= 0 ? CATB_NON_SALARIED_PASSED : CATB_NON_SALARIED_BELOW_THRESHOLD;
 
         return new IncomeValidationResult(
             result,
             yearlyThreshold,
-            IncomeValidationHelper.getCheckedIndividuals(incomeValidationRequest.applicantIncomes()),
+            incomeValidationRequest.getCheckedIndividuals(),
             assessmentStartDate,
             CATEGORY,
             CALCULATION_TYPE);
@@ -72,7 +87,7 @@ public class CatBNonSalariedIncomeValidator implements IncomeValidator {
 
     private BigDecimal getProjectedAnnualIncome(IncomeValidationRequest incomeValidationRequest) {
         List<Income> incomes =
-            incomeValidationRequest.applicantIncomes()
+            incomeValidationRequest.allIncome()
                 .stream()
                 .flatMap(applicantIncome -> applicantIncome.incomeRecord().paye().stream())
                 .collect(Collectors.toList());

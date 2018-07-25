@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.proving.income.validator;
 
 import com.google.common.collect.ImmutableList;
-import uk.gov.digital.ho.proving.income.api.SalariedThresholdCalculator;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
 import uk.gov.digital.ho.proving.income.hmrc.domain.*;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
@@ -67,7 +67,7 @@ public class EmploymentCheckTestData {
     public static List<ApplicantIncome> incomePriorToAssessmentStart(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -79,7 +79,7 @@ public class EmploymentCheckTestData {
     public static List<ApplicantIncome> singleIncomeOnAssessmentStartDay(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -91,7 +91,7 @@ public class EmploymentCheckTestData {
     public static List<ApplicantIncome> singleIncomeAfterAssessmentStartDay(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -103,7 +103,7 @@ public class EmploymentCheckTestData {
     public static List<ApplicantIncome> incomeBeforeAndAfterAssessmentStartDay(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -116,7 +116,7 @@ public class EmploymentCheckTestData {
     public static List<ApplicantIncome> multipleIncomeOnAssessmentStartDay(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -129,7 +129,7 @@ public class EmploymentCheckTestData {
     public static List<ApplicantIncome> singleIncomeBelowThresholdOnAssessmentStartDay(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().subtract(BigDecimal.ONE);
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -141,7 +141,7 @@ public class EmploymentCheckTestData {
     public static List<ApplicantIncome> singleIncomeWithSingleDependantOnAssessmentStartDate(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(1);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(1);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -153,7 +153,7 @@ public class EmploymentCheckTestData {
     public static List<ApplicantIncome> singleIncomeWithTwoDependantsOnAssessmentStartDate(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(2);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(2);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().min(BigDecimal.ONE);
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -167,7 +167,7 @@ public class EmploymentCheckTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -185,7 +185,7 @@ public class EmploymentCheckTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -203,7 +203,7 @@ public class EmploymentCheckTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -222,7 +222,7 @@ public class EmploymentCheckTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -241,7 +241,7 @@ public class EmploymentCheckTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);
@@ -262,7 +262,7 @@ public class EmploymentCheckTestData {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        SalariedThresholdCalculator thresholdCalculator = new SalariedThresholdCalculator(0);
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
         LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS);

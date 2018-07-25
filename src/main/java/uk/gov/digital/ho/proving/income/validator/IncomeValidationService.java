@@ -5,51 +5,28 @@ import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.unmodifiableList;
 
 @Service
 public class IncomeValidationService {
 
-    private IncomeValidator catASalariedIncomeValidator;
-    private IncomeValidator catBNonSalariedIncomeValidator;
-    private IncomeValidator employmentCheckIncomeValidator;
+    private final List<IncomeValidator> incomeValidators;
 
-    public IncomeValidationService(
-        IncomeValidator catASalariedIncomeValidator,
-        IncomeValidator catBNonSalariedIncomeValidator,
-        IncomeValidator employmentCheckIncomeValidator
-    ) {
-        this.catASalariedIncomeValidator = catASalariedIncomeValidator;
-        this.catBNonSalariedIncomeValidator = catBNonSalariedIncomeValidator;
-        this.employmentCheckIncomeValidator = employmentCheckIncomeValidator;
+    public IncomeValidationService(List<ActiveIncomeValidator> incomeValidators) {
+        this.incomeValidators = unmodifiableList(incomeValidators);
     }
 
     public List<CategoryCheck> validate(IncomeValidationRequest incomeValidationRequest) {
-
-        List<CategoryCheck> categoryChecks = new ArrayList<>();
-
-        categoryChecks.add(checkCategory(incomeValidationRequest, catASalariedIncomeValidator));
-
-        CategoryCheck catBNonSalariedCategoryCheck = checkCategory(incomeValidationRequest, employmentCheckIncomeValidator);
-        if (catBNonSalariedCategoryCheck.passed()) {
-            catBNonSalariedCategoryCheck = checkCategory(incomeValidationRequest, catBNonSalariedIncomeValidator);
-        }
-        categoryChecks.add(catBNonSalariedCategoryCheck);
-
-        return categoryChecks;
+        return incomeValidators.stream()
+            .map(incomeValidator -> checkCategory(incomeValidationRequest, incomeValidator))
+            .collect(Collectors.toList());
     }
 
     private CategoryCheck checkCategory(IncomeValidationRequest incomeValidationRequest, IncomeValidator incomeValidator) {
         IncomeValidationResult result = incomeValidator.validate(incomeValidationRequest);
-        return new CategoryCheck(
-            result.category(),
-            result.calculationType(),
-            result.status().isPassed(),
-            incomeValidationRequest.applicationRaisedDate(),
-            result.assessmentStartDate(),
-            result.status(),
-            result.threshold(),
-            result.individuals());
+        return CategoryCheck.from(result, incomeValidationRequest.applicationRaisedDate());
     }
 }
