@@ -9,27 +9,21 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeValidator {
 
     private static final String CATEGORY = "F";
     private static final String CALCULATION_TYPE = "Category F Self-Assessment Income";
 
-    private static boolean isFromTaxYear(AnnualSelfAssessmentTaxReturn annualSelfAssessmentTaxReturn, TaxYear taxYear) {
-        String rawTaxYear = annualSelfAssessmentTaxReturn.taxYear();
-        TaxYear returnTaxYear = TaxYear.of(rawTaxYear);
-
-        return returnTaxYear.equals(taxYear);
-    }
-
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
-        List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns = getAnnualSelfAssessmentTaxReturns(incomeValidationRequest);
-
-        BigDecimal threshold = getThreshold(incomeValidationRequest);
-
         IncomeValidationStatus status = IncomeValidationStatus.SELF_ASSESSMENT_ONE_YEAR_FAILED;
 
+        BigDecimal threshold = getThreshold(incomeValidationRequest.dependants());
+
+        List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns = getSelfAssessmentReturnsFromPreviousTaxYear(incomeValidationRequest);
         if (!previousYearsTaxReturns.isEmpty()) {
             BigDecimal totalSelfAssessmentProfit = getTotalIncome(previousYearsTaxReturns);
 
@@ -50,8 +44,8 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
             .build();
     }
 
-    private BigDecimal getThreshold(IncomeValidationRequest incomeValidationRequest) {
-        return new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
+    private BigDecimal getThreshold(Integer dependants) {
+        return new IncomeThresholdCalculator(dependants).yearlyThreshold();
     }
 
     private BigDecimal getTotalIncome(List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns) {
@@ -61,27 +55,16 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
             .get();
     }
 
-    private List<AnnualSelfAssessmentTaxReturn> getAnnualSelfAssessmentTaxReturns(IncomeValidationRequest incomeValidationRequest) {
+    private List<AnnualSelfAssessmentTaxReturn> getSelfAssessmentReturnsFromPreviousTaxYear(IncomeValidationRequest incomeValidationRequest) {
         LocalDate applicationRaisedDate = incomeValidationRequest.applicationRaisedDate();
-        ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncome();
-
-        List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns = getPreviousYearsTaxReturns(applicantIncome, applicationRaisedDate);
-
-        if (incomeValidationRequest.isJointRequest()) {
-            ApplicantIncome partnerIncome = incomeValidationRequest.partnerIncome();
-            previousYearsTaxReturns.addAll(getPreviousYearsTaxReturns(partnerIncome, applicationRaisedDate));
-        }
-
-        return previousYearsTaxReturns;
-    }
-
-    private List<AnnualSelfAssessmentTaxReturn> getPreviousYearsTaxReturns(ApplicantIncome applicantIncome, LocalDate applicationRaisedDate) {
-        List<AnnualSelfAssessmentTaxReturn> annualSelfAssessmentTaxReturns = applicantIncome.incomeRecord().selfAssessment();
-
         TaxYear previousTaxYear = previousTaxYear(applicationRaisedDate);
-        annualSelfAssessmentTaxReturns.removeIf(selfAssessmentReturn -> !isFromTaxYear(selfAssessmentReturn, previousTaxYear));
 
-        return annualSelfAssessmentTaxReturns;
+        return incomeValidationRequest.allIncome()
+            .stream()
+            .map(ApplicantIncome::incomeRecord)
+            .flatMap(incomeRecord -> incomeRecord.selfAssessment().stream())
+            .filter(annualSelfAssessmentTaxReturn -> annualSelfAssessmentTaxReturn.isFromTaxYear(previousTaxYear))
+            .collect(toList());
     }
 
     private TaxYear previousTaxYear(LocalDate applicationRaisedDate) {
