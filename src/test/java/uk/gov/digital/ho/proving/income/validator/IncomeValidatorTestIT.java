@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.digital.ho.proving.income.ServiceRunner;
 import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
@@ -23,9 +22,7 @@ import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.co
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.getDate;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {
-    ServiceRunner.class
-})
+@SpringBootTest
 public class IncomeValidatorTestIT {
 
     @Autowired

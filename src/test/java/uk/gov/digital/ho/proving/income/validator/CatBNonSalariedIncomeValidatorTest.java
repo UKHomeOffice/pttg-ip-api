@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.proving.income.validator;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
@@ -32,12 +32,8 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Mock
     private EmploymentCheckIncomeValidator employmentCheckIncomeValidator;
 
+    @InjectMocks
     private CatBNonSalariedIncomeValidator validator;
-
-    @Before
-    public void setUp() {
-        validator = new CatBNonSalariedIncomeValidator(employmentCheckIncomeValidator);
-    }
 
     public void employmentCheckPasses() {
         IncomeValidationResult incomeValidationResult = mock(IncomeValidationResult.class);

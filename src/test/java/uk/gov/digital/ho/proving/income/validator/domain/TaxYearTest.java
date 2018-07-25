@@ -2,13 +2,12 @@ package uk.gov.digital.ho.proving.income.validator.domain;
 
 import org.junit.Test;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.Month;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TaxYearTest {
-    private static final ZoneId UTC = ZoneId.of("UTC");
-
     private static void assertStartDateIs(TaxYear taxYear, LocalDate expectedStart, LocalDate localDate) {
         assertThat(taxYear.start())
             .withFailMessage("Given date [%s], expected start of tax year to be [%s] but was [%s]", localDate, expectedStart, taxYear.start())
@@ -31,10 +30,6 @@ public class TaxYearTest {
         assertThat(taxYear.end())
             .withFailMessage("Given raw input is [%s], expected end of tax year to be [%s] but was [%s]", rawTaxYear, expectedEnd, taxYear.end())
             .isEqualTo(expectedEnd);
-    }
-
-    private static long getEpochSecondsAtMidday(LocalDate localDate) {
-        return localDate.atTime(12, 0).toEpochSecond(ZoneOffset.UTC);
     }
 
     @Test
