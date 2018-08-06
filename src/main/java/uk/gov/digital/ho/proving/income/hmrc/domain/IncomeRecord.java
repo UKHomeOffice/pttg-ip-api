@@ -23,7 +23,7 @@ public class IncomeRecord {
     @JsonProperty
     private List<Employments> employments;
     @JsonProperty
-    private HmrcIndividual hmrcIndividual;
+    private HmrcIndividual individual;
 
     public List<Income> deDuplicatedIncome() {
 
@@ -33,7 +33,7 @@ public class IncomeRecord {
     }
 
     public LocalDate dateOfBirth() {
-        return hmrcIndividual != null?hmrcIndividual.dateOfBirth():null;
+        return individual != null? individual.dateOfBirth():null;
     }
 }
 
