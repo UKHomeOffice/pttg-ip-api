@@ -36,7 +36,7 @@ public class FinancialStatusService {
                 startSearchDate,
                 applicationRaisedDate);
 
-            incomeRecords.put(individualFromRequestAndRecord(applicant, incomeRecord.hmrcIndividual(), applicant.nino()), incomeRecord);
+            incomeRecords.put(individualFromRequestAndRecord(applicant, incomeRecord.individual(), applicant.nino()), incomeRecord);
         }
 
         return incomeRecords;
