@@ -24,7 +24,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | 2017-11-30 | 1000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | AA345678A  |
+            | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
@@ -50,12 +50,12 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | 2017-10-30 | 500.00  |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | FD345678A  |
+            | NINO - Applicant        | GE345678A  |
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response             | HTTP Status               | 200              |
-            | Applicant                 | National Insurance Number | FD345678A        |
+            | Applicant                 | National Insurance Number | GE345678A        |
             | Category A Non-Salaried   | Financial requirement met | true             |
             | Category A Non-Salaried   | Application Raised date   | 2018-04-30       |
             | Category A Non-Salaried   | Threshold                 | 18600            |
@@ -76,16 +76,16 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | 2017-10-30 |  500.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | VB345678A  |
+            | NINO - Applicant        | EB345678A  |
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200                              |
-            | Applicant               | National Insurance Number | VB345678A                        |
+            | Applicant               | National Insurance Number | EB345678A                        |
             | Category A Non-Salaried | Financial requirement met | true                             |
             | Category A Non-Salaried | Application Raised date   | 2018-04-30                       |
             | Category A Non-Salaried | Threshold                 | 18600                            |
-            | Category A Non-Salaried | Employer Name - VB345678A | Flying Pizza Ltd, Flowers 4U Ltd |
+            | Category A Non-Salaried | Employer Name - EB345678A | Flying Pizza Ltd, Flowers 4U Ltd |
 
 ############
 
@@ -97,7 +97,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | JH573849A  |
+            | NINO - Applicant        | JH573849A  |
             | Application Raised Date | 2017-12-30 |
 
         Then The Income Proving TM Family API provides the following result:
@@ -118,7 +118,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | KL927581A  |
+            | NINO - Applicant        | KL927581A  |
             | Application Raised Date | 2017-12-30 |
 
         Then The Income Proving TM Family API provides the following result:
@@ -147,12 +147,12 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | 2017-04-07 | 500.00  |             | 01           | FP/Ref2        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | AB889357A  |
+            | NINO - Applicant        | AB889357A  |
             | Application Raised Date | 2017-09-30 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status                | 200              |
-            | Applicant               | National Insurance Number  | AAB889357A       |
+            | Applicant               | National Insurance Number  | AB889357A        |
             | Category A Non-Salaried | Financial requirement met  | true             |
             | Category A Non-Salaried | Application Raised date    | 2017-09-30       |
             | Category A Non-Salaried | Threshold                  | 18600            |
@@ -170,7 +170,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | 2017-08-31 |  200.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | LA345628A  |
+            | NINO - Applicant        | LA345628A  |
             | Application Raised Date | 2018-01-31 |
 
         Then The Income Proving TM Family API provides the following result:
@@ -193,7 +193,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | 2017-08-31 | 5000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO                    | PL327678A  |
+            | NINO - Applicant        | PL327678A  |
             | Application Raised Date | 2018-01-31 |
 
         Then The Income Proving TM Family API provides the following result:
@@ -227,19 +227,19 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | 2017-11-26 |  100.00 |             | 01           | HO/Ref9        | The Home Office  |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO - Applicant        | QS317678A  |
-            | NINO - Partner          | GF374820B  |
+            | NINO - Applicant        | SS317678A  |
+            | NINO - Partner          | GG374820B  |
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200              |
-            | Applicant               | National Insurance Number | QS317678A        |
-            | Applicant               | National Insurance Number | GF374820B        |
+            | Applicant               | National Insurance Number | SS317678A        |
+            | Partner               | National Insurance Number | GG374820B        |
             | Category A Non-Salaried | Financial requirement met | true             |
             | Category A Non-Salaried | Application Raised date   | 2018-04-30       |
             | Category A Non-Salaried | Threshold                 | 18600            |
-            | Category A Non-Salaried | Employer Name - QS317678A | Flying Pizza Ltd |
-            | Category A Non-Salaried | Employer Name - GF374820B | The Home Office  |
+            | Category A Non-Salaried | Employer Name - SS317678A | Flying Pizza Ltd |
+            | Category A Non-Salaried | Employer Name - GG374820B | The Home Office  |
 
 ############
 
@@ -260,16 +260,16 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | 2017-11-28 |  300.00 |             | 01           | HO/Ref9        | The Home Office  |
 
         When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO - Applicant        | JD345678A  |
+            | NINO - Applicant        | JR345678A  |
             | NINO - Partner          | GH428174C  |
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200              |
-            | Applicant               | National Insurance Number | JD345678A        |
-            | Applicant               | National Insurance Number | GH428174C        |
+            | Applicant               | National Insurance Number | JR345678A        |
+            | Partner               | National Insurance Number | GH428174C        |
             | Category A Non-Salaried | Financial requirement met | true             |
             | Category A Non-Salaried | Application Raised date   | 2018-04-30       |
             | Category A Non-Salaried | Threshold                 | 18600            |
-            | Category A Non-Salaried | Employer Name - JD345678A | Flying Pizza Ltd |
+            | Category A Non-Salaried | Employer Name - JR345678A | Flying Pizza Ltd |
             | Category A Non-Salaried | Employer Name - GH428174C | The Home Office  |
