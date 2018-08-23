@@ -234,7 +234,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200              |
             | Applicant               | National Insurance Number | SS317678A        |
-            | Partner               | National Insurance Number | GG374820B        |
+            | Partner                 | National Insurance Number | GG374820B        |
             | Category A Non-Salaried | Financial requirement met | true             |
             | Category A Non-Salaried | Application Raised date   | 2018-04-30       |
             | Category A Non-Salaried | Threshold                 | 18600            |
@@ -267,7 +267,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200              |
             | Applicant               | National Insurance Number | JR345678A        |
-            | Partner               | National Insurance Number | GH428174C        |
+            | Partner                 | National Insurance Number | GH428174C        |
             | Category A Non-Salaried | Financial requirement met | true             |
             | Category A Non-Salaried | Application Raised date   | 2018-04-30       |
             | Category A Non-Salaried | Threshold                 | 18600            |

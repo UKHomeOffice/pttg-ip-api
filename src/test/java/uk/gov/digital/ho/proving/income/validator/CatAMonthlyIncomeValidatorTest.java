@@ -147,8 +147,8 @@ public class CatAMonthlyIncomeValidatorTest {
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MULTIPLE_EMPLOYERS);
-        assertThat(categoryAIndividual.individuals().get(0).employers()).contains(BURGER_KING);
-        assertThat(categoryAIndividual.individuals().get(0).employers()).contains(PIZZA_HUT);
+        assertThat(categoryAIndividual.individuals().get(0).employers()).contains(CatASharedTestData.BURGER_KING);
+        assertThat(categoryAIndividual.individuals().get(0).employers()).contains(CatASharedTestData.PIZZA_HUT);
     }
 
     @Test
