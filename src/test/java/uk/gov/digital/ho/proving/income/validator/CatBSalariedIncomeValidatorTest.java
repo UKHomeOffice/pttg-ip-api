@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.validator.CatBSalariedTestData.twelveMonthsOverThreshold;
 import static uk.gov.digital.ho.proving.income.validator.CatBSalariedTestData.twelveMonthsOverThresholdApplicantInJoint;
+import static uk.gov.digital.ho.proving.income.validator.CatBSalariedTestData.twelveMonthsOverThresholdPartnerInJoint;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.EMPLOYMENT_CHECK_FAILED;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.EMPLOYMENT_CHECK_PASSED;
 
@@ -69,11 +70,15 @@ public class CatBSalariedIncomeValidatorTest {
 
         List<ApplicantIncome> applicantIncomes = twelveMonthsOverThresholdApplicantInJoint(applicationDate);
         assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
-
     }
 
     @Test
-    public void checkPassesIf12MonthsOverThresholdForPartnerJointApplication() {}
+    public void checkPassesIf12MonthsOverThresholdForPartnerJointApplication() {
+        employmentCheckPasses();
+
+        List<ApplicantIncome> applicantIncomes = twelveMonthsOverThresholdPartnerInJoint(applicationDate);
+        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
+    }
 
     @Test
     public void checkPassesIf12MonthsOverThresholdCombinedForJointApplication() {}
