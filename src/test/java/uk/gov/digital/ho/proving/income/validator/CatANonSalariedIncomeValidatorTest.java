@@ -81,21 +81,41 @@ public class CatANonSalariedIncomeValidatorTest {
 
     @Test
     public void sufficientNonSalariedIncomeOnlyWith2EmployersFails() {
-        fail("Not yet implemented");
+        List<ApplicantIncome> applicantIncomes = sufficientNonSalariedButOnlyFor2Employers(applicationRaisedDate);
+        IncomeValidationRequest request = new IncomeValidationRequest(applicantIncomes, applicationRaisedDate, 0);
+
+        IncomeValidationResult validationResult = validator.validate(request);
+
+        assertThat(validationResult.status()).isEqualTo(IncomeValidationStatus.MULTIPLE_EMPLOYERS);
     }
 
     @Test
     public void sufficientNonSalariedIncomeFor1OutOf2EmployersPasses() {
-        fail("Not yet implemented");
+        List<ApplicantIncome> applicantIncomes = sufficientNonSalariedFor1Of2Employers(applicationRaisedDate);
+        IncomeValidationRequest request = new IncomeValidationRequest(applicantIncomes, applicationRaisedDate, 0);
+
+        IncomeValidationResult validationResult = validator.validate(request);
+
+        assertThat(validationResult.status()).isEqualTo(IncomeValidationStatus.CATA_NON_SALARIED_PASSED);
     }
 
     @Test
     public void sufficientNonSalariedIncomeWithPartnerPasses() {
-        fail("Not yet implemented");
+        List<ApplicantIncome> applicantIncomes = sufficientNonSalariedWithPartner(applicationRaisedDate);
+        IncomeValidationRequest request = new IncomeValidationRequest(applicantIncomes, applicationRaisedDate, 0);
+
+        IncomeValidationResult validationResult = validator.validate(request);
+
+        assertThat(validationResult.status()).isEqualTo(IncomeValidationStatus.CATA_NON_SALARIED_PASSED);
     }
 
     @Test
     public void insufficientNonSalariedIncomeEvenWithPartnerFails() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    public void sufficientSalariedWithPartnerFor1Of2EmployersEachPasses() {
         fail("Not yet implemented");
     }
 
