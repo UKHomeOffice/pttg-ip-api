@@ -80,7 +80,7 @@ public class CatBNonSalariedIncomeValidatorTest {
         assertThat(result.individuals().size()).isEqualTo(1)
             .withFailMessage("A single checked individual should be returned");
         CheckedIndividual individual = result.individuals().get(0);
-        assertThat(individual.nino()).isEqualTo(CatBNonSalariedTestData.NINO)
+        assertThat(individual.nino()).isEqualTo(CatBSharedTestData.NINO)
             .withFailMessage("The checked individual should have the correct nino");
         assertThat(individual.employers().size()).isEqualTo(1)
             .withFailMessage("The checked individual should have a single employer");
@@ -242,7 +242,7 @@ public class CatBNonSalariedIncomeValidatorTest {
             .withFailMessage("Two checked individuals should be returned");
 
         CheckedIndividual applicant = result.individuals().get(0);
-        assertThat(applicant.nino()).isEqualTo(CatBNonSalariedTestData.NINO)
+        assertThat(applicant.nino()).isEqualTo(CatBSharedTestData.NINO)
             .withFailMessage("The checked individual should have the correct nino");
         assertThat(applicant.employers().size()).isEqualTo(1)
             .withFailMessage("The checked individual should have a single employer");
@@ -250,7 +250,7 @@ public class CatBNonSalariedIncomeValidatorTest {
             .withFailMessage("The checked individual should have the correct employer");
 
         CheckedIndividual partner = result.individuals().get(1);
-        assertThat(partner.nino()).isEqualTo(CatBNonSalariedTestData.NINO_PARTNER)
+        assertThat(partner.nino()).isEqualTo(CatBSharedTestData.NINO_PARTNER)
             .withFailMessage("The checked individual should have the correct nino");
         assertThat(partner.employers().size()).isEqualTo(1)
             .withFailMessage("The checked individual should have a single employer");
@@ -314,7 +314,7 @@ public class CatBNonSalariedIncomeValidatorTest {
             .withFailMessage("The income validation should have passed");
         assertThat(result.individuals().size()).isEqualTo(1)
             .withFailMessage("There should be only one applicant returned");
-        assertThat(result.individuals().get(0).nino()).isEqualTo(CatBNonSalariedTestData.NINO)
+        assertThat(result.individuals().get(0).nino()).isEqualTo(CatBSharedTestData.NINO)
             .withFailMessage("The individual returned should be the first applicant");
     }
 
@@ -332,7 +332,7 @@ public class CatBNonSalariedIncomeValidatorTest {
             .withFailMessage("The income validation should have passed");
         assertThat(result.individuals().size()).isEqualTo(1)
             .withFailMessage("There should be only one applicant returned");
-        assertThat(result.individuals().get(0).nino()).isEqualTo(CatBNonSalariedTestData.NINO_PARTNER)
+        assertThat(result.individuals().get(0).nino()).isEqualTo(CatBSharedTestData.NINO_PARTNER)
             .withFailMessage("The individual returned should be the partner");
     }
 
