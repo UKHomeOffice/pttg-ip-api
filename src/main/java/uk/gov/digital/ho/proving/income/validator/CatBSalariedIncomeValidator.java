@@ -8,8 +8,10 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.isSuccessiveMonths;
@@ -17,7 +19,7 @@ import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.
 @Service
 public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
 
-    public static final int INCOME_PERIOD_START_DATE_YEARS_AGO = 1;
+    private static final int INCOME_PERIOD_START_DATE_YEARS_AGO = 1;
     private static final String CALCULATION_TYPE = "Category B salaried";
     private static final String CATEGORY = "B";
 
@@ -34,49 +36,48 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
             return employmentCheckValidation;
         }
 
-        LocalDate incomePeriodStartDate = getApplicationStartDate(incomeValidationRequest); // TODO OJR 2018/08/24 Check this cut off correct - probably a test
-
-        IncomeValidationResult applicantResult = validateForApplicant(incomeValidationRequest, incomePeriodStartDate);
+        IncomeValidationResult applicantResult = validateForApplicant(incomeValidationRequest);
         if (applicantResult.status().isPassed() || !incomeValidationRequest.isJointRequest()) {
             return applicantResult;
         }
-        IncomeValidationResult partnerResult = validateForPartner(incomeValidationRequest, incomePeriodStartDate);
+        IncomeValidationResult partnerResult = validateForPartner(incomeValidationRequest);
         if (partnerResult.status().isPassed()) {
             return partnerResult;
         }
-        return validateForJoint(incomeValidationRequest, incomePeriodStartDate);
+        return validateForJoint(incomeValidationRequest);
     }
 
     private LocalDate getApplicationStartDate(IncomeValidationRequest incomeValidationRequest) {
         return incomeValidationRequest.applicationRaisedDate().minusYears(INCOME_PERIOD_START_DATE_YEARS_AGO);
     }
 
-    private IncomeValidationResult validateForApplicant(IncomeValidationRequest incomeValidationRequest, LocalDate incomePeriodStartDate) {
-        return validateForIndividual(incomeValidationRequest, incomePeriodStartDate, incomeValidationRequest.applicantIncome().incomeRecord().paye());
+    private IncomeValidationResult validateForApplicant(IncomeValidationRequest incomeValidationRequest) {
+        return validateForIndividual(incomeValidationRequest, incomeValidationRequest.applicantIncome().incomeRecord().paye());
     }
 
-    private IncomeValidationResult validateForPartner(IncomeValidationRequest incomeValidationRequest, LocalDate incomePeriodStartDate) {
-        return validateForIndividual(incomeValidationRequest, incomePeriodStartDate, incomeValidationRequest.partnerIncome().incomeRecord().paye());
+    private IncomeValidationResult validateForPartner(IncomeValidationRequest incomeValidationRequest) {
+        return validateForIndividual(incomeValidationRequest, incomeValidationRequest.partnerIncome().incomeRecord().paye());
     }
 
-    private IncomeValidationResult validateForJoint(IncomeValidationRequest incomeValidationRequest, LocalDate incomePeriodStartDate) {
-        // TODO OJR 2018/08/24 This is probably not the way to do it as it's probably required that each individual has 12 months each
-        // and it's just the added values that must be over the threshold
+    private IncomeValidationResult validateForJoint(IncomeValidationRequest incomeValidationRequest) {
         List<Income> jointPaye = incomeValidationRequest.applicantIncome().incomeRecord().paye();
         jointPaye.addAll(incomeValidationRequest.partnerIncome().incomeRecord().paye());
-        return validateForIndividual(incomeValidationRequest, incomePeriodStartDate, jointPaye);
+        return validateForIndividual(incomeValidationRequest, jointPaye);
     }
 
 
-    private IncomeValidationResult validateForIndividual(IncomeValidationRequest incomeValidationRequest, LocalDate incomePeriodStartDate, List<Income> paye) {
-
-        paye.sort(Comparator.comparingInt(Income::yearAndMonth));
-        paye = paye.stream().filter(income -> !income.paymentDate().isBefore(incomePeriodStartDate)).collect(Collectors.toList());
-
+    private IncomeValidationResult validateForIndividual(IncomeValidationRequest incomeValidationRequest, List<Income> paye) {
         if (paye.size() < 12) {
             return validationResult(incomeValidationRequest, IncomeValidationStatus.NOT_ENOUGH_RECORDS);
         }
-        if (monthMissing(paye)) {
+
+        Map<Integer, List<Income>> collectedByMonth = paye.stream().collect(Collectors.groupingBy(Income::yearAndMonth));
+        List<List<Income>> monthlyIncomes = new ArrayList<>();
+        collectedByMonth.forEach((key, value) -> monthlyIncomes.add(value));
+        monthlyIncomes.sort(Comparator.comparingInt(monthlyIncome -> monthlyIncome.get(0).yearAndMonth()));
+
+
+        if (monthMissing(monthlyIncomes)) {
             return validationResult(incomeValidationRequest, IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
         }
 
@@ -94,9 +95,9 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
         );
     }
 
-    private boolean monthMissing(List<Income> incomeValidationRequest) {
-        for (int i = 0; i < incomeValidationRequest.size() - 1; i++) {
-            if (!isSuccessiveMonths(incomeValidationRequest.get(i + 1), incomeValidationRequest.get(i))) {
+    private boolean monthMissing(List<List<Income>> monthlyIncomes) {
+        for (int i = 0; i < monthlyIncomes.size() - 1; i++) {
+            if (!isSuccessiveMonths(monthlyIncomes.get(i + 1).get(0), monthlyIncomes.get(i).get(0))) {
                 return true;
             }
         }

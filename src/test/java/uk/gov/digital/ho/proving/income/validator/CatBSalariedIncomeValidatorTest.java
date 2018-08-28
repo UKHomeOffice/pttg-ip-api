@@ -110,6 +110,7 @@ public class CatBSalariedIncomeValidatorTest {
         assertStatus(applicantIncomes, IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
     }
 
+
     @Test
     public void checkPassesIfMonthMissingOnlyOneApplicantJointApplication() {
         employmentCheckPasses();
@@ -122,7 +123,12 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsIfMonthBelowThreshold() {}
 
     @Test
-    public void checkPassesMixedFrequencyButOverThreshold() {}
+    public void checkPassesMixedFrequencyButOverThreshold() {
+        employmentCheckPasses();
+
+        List<ApplicantIncome> applicantIncomes = mixedFrequencyButOverThreshold(applicationDate);
+        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
+    }
 
     @Test
     public void checkFailsMixedFrequencyButOneMonthMissing() {}

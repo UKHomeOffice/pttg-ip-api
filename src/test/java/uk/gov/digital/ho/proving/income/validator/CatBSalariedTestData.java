@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.validator;
 
+import com.google.common.collect.ImmutableList;
 import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
@@ -40,7 +41,7 @@ public class CatBSalariedTestData {
 
         List<ApplicantIncome> jointIncomes = new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
         jointIncomes.addAll(getPartnerIncomes(partnerIncomes, PIZZA_HUT_EMPLOYER));
-        return jointIncomes;
+        return ImmutableList.copyOf(jointIncomes);
     }
 
     static List<ApplicantIncome> twelveMonthsOverThresholdPartnerInJoint(final LocalDate applicationRaisedDate) {
@@ -57,7 +58,7 @@ public class CatBSalariedTestData {
 
         List<ApplicantIncome> jointIncomes = new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
         jointIncomes.addAll(getPartnerIncomes(partnerIncomes, PIZZA_HUT_EMPLOYER));
-        return jointIncomes;
+        return ImmutableList.copyOf(jointIncomes);
     }
 
     static List<ApplicantIncome> twelveMonthsOverThresholdCombinedInJoint(final LocalDate applicationRaisedDate) {
@@ -74,7 +75,7 @@ public class CatBSalariedTestData {
 
         List<ApplicantIncome> jointIncomes = new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
         jointIncomes.addAll(getPartnerIncomes(partnerIncomes, PIZZA_HUT_EMPLOYER));
-        return jointIncomes;
+        return ImmutableList.copyOf(jointIncomes);
     }
 
     static List<ApplicantIncome> jointApplicationMonthMissingBothApplicants(final LocalDate applicationRaisedDate) {
@@ -94,7 +95,7 @@ public class CatBSalariedTestData {
 
         List<ApplicantIncome> jointIncomes = new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
         jointIncomes.addAll(getPartnerIncomes(partnerIncomes, PIZZA_HUT_EMPLOYER));
-        return jointIncomes;
+        return ImmutableList.copyOf(jointIncomes);
     }
 
     static List<ApplicantIncome> jointApplicationMonthMissingOneApplicant(final LocalDate applicationRaisedDate) {
@@ -115,7 +116,7 @@ public class CatBSalariedTestData {
 
         List<ApplicantIncome> jointIncomes = new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
         jointIncomes.addAll(getPartnerIncomes(partnerIncomes, PIZZA_HUT_EMPLOYER));
-        return jointIncomes;
+        return ImmutableList.copyOf(jointIncomes);
     }
 
     static List<ApplicantIncome> monthMissingTooFewPayments(final LocalDate applicationRaisedDate) {
@@ -144,6 +145,33 @@ public class CatBSalariedTestData {
             applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
             applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
         }
+        return new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
+    }
+
+    static List<ApplicantIncome> mixedFrequencyButOverThreshold(final LocalDate applicationRaisedDate) {
+        List<Income> applicantIncomes = new ArrayList<>();
+
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
+        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().divide(amount("2")).add(amount("0.01"));
+        BigDecimal weeklyIncome = monthlyIncome.divide(amount("2"));
+
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate, 12, null, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(1), 11, null, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(2), 10, null, PIZZA_HUT_PAYE_REF));
+
+        applicantIncomes.add(new Income(weeklyIncome, applicationRaisedDate.minusMonths(3).withDayOfMonth(18), null, 16, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(weeklyIncome, applicationRaisedDate.minusMonths(3).withDayOfMonth(10), null, 14, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(weeklyIncome, applicationRaisedDate.minusMonths(3).withDayOfMonth(1), null, 13, PIZZA_HUT_PAYE_REF));
+
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(4), 8, null, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(5), 7, null, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(6), 6, null, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(7), 5, null, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(8), 4, null, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(9), 3, null, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(10), 2, null, PIZZA_HUT_PAYE_REF));
+        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(11), 1, null, PIZZA_HUT_PAYE_REF));
+
         return new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
     }
 }
