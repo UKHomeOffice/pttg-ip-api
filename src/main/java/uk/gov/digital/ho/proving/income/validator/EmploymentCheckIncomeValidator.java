@@ -51,7 +51,7 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
 
     private IncomeValidationResult doValidation(IncomeValidationRequest incomeValidationRequest) {
 
-        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
+        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS - 1);
 
         BigDecimal monthlyThreshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).getMonthlyThreshold();
 

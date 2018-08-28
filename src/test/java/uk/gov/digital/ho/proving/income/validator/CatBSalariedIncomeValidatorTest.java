@@ -51,7 +51,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void catBSalariedCheckFailsIfEmploymentCheckFails() {
         employmentCheckFails();
 
-        assertStatus(Collections.emptyList(), IncomeValidationStatus.EMPLOYMENT_CHECK_FAILED);
+        assertStatus(Collections.emptyList(), EMPLOYMENT_CHECK_FAILED);
     }
 
     @Test
@@ -120,7 +120,12 @@ public class CatBSalariedIncomeValidatorTest {
     }
 
     @Test
-    public void checkFailsIfMonthBelowThreshold() {}
+    public void checkFailsIfMonthBelowThreshold() {
+        employmentCheckPasses();
+
+        List<ApplicantIncome> applicantIncomes = monthBelowThreshold(applicationDate);
+        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_BELOW_THRESHOLD);
+    }
 
     @Test
     public void checkPassesMixedFrequencyButOverThreshold() {

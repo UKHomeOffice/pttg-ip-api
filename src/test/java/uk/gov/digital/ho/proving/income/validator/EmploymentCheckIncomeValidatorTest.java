@@ -30,8 +30,8 @@ public class EmploymentCheckIncomeValidatorTest {
 
         assertThat(result.calculationType()).isEqualTo(EmploymentCheckIncomeValidator.CALCULATION_TYPE)
             .withFailMessage("The correct calculation type should be returned");
-        assertThat(result.assessmentStartDate()).isEqualTo(raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS))
-            .withFailMessage("The assessment start date should be the correct number of days before the raised date");
+        assertThat(result.assessmentStartDate()).isEqualTo(raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS - 1))
+            .withFailMessage("The assessment start date should be the correct number of days before the raised date (inclusive of ARD)");
         assertThat(result.threshold()).isEqualTo(new IncomeThresholdCalculator(0).getMonthlyThreshold())
             .withFailMessage("The monthly threshold should be returned");
     }
@@ -97,19 +97,20 @@ public class EmploymentCheckIncomeValidatorTest {
 
     @Test
     public void thatIncomeEqualsThresholdPriorToAssessmentStartFails() {
-        LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
-        List<ApplicantIncome> incomes = incomePriorToAssessmentStart(raisedDate);
+        LocalDate raisedDate = getDate(2018, Month.MAY, 3);
+        List<ApplicantIncome> incomes = incomeOverThreshold(getDate(2018, Month.APRIL, 1));
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.EMPLOYMENT_CHECK_FAILED);
+
     }
 
     @Test
     public void thatIncomeEqualsThresholdOnAssessmentStartDayPasses() {
-        LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
-        List<ApplicantIncome> incomes = singleIncomeOnAssessmentStartDay(raisedDate);
+        LocalDate raisedDate = getDate(2018, Month.MAY, 3);
+        List<ApplicantIncome> incomes = incomeOverThreshold(getDate(2018, Month.APRIL, 2));
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult result = validator.validate(request);

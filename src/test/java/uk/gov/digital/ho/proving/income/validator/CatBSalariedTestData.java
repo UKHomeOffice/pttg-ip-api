@@ -13,7 +13,7 @@ import java.util.List;
 import static uk.gov.digital.ho.proving.income.validator.CatBNonSalariedTestData.PIZZA_HUT_PAYE_REF;
 import static uk.gov.digital.ho.proving.income.validator.CatBSharedTestData.*;
 
-public class CatBSalariedTestData {
+class CatBSalariedTestData {
 
     static List<ApplicantIncome> twelveMonthsOverThreshold(final LocalDate applicationRaisedDate) {
         List<Income> incomes = new ArrayList<>();
@@ -21,6 +21,23 @@ public class CatBSalariedTestData {
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
 
         for (int i = 0; i < 12; i++) {
+            incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
+        }
+
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> monthBelowThreshold(final LocalDate applicationRaisedDate) {
+        List<Income> incomes = new ArrayList<>();
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
+        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
+
+        for (int i = 0; i < 12; i++) {
+            if (i == 6) {
+                BigDecimal belowThresholdPayment = thresholdCalculator.getMonthlyThreshold().subtract(amount("0.01"));
+                incomes.add(new Income(belowThresholdPayment, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
+                continue;
+            }
             incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
         }
 
@@ -152,7 +169,7 @@ public class CatBSalariedTestData {
         List<Income> applicantIncomes = new ArrayList<>();
 
         IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().divide(amount("2")).add(amount("0.01"));
+        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
         BigDecimal weeklyIncome = monthlyIncome.divide(amount("2"));
 
         applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate, 12, null, PIZZA_HUT_PAYE_REF));

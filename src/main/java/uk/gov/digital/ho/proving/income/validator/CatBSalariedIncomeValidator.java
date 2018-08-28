@@ -7,6 +7,7 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -81,6 +82,10 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
             return validationResult(incomeValidationRequest, IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
         }
 
+        if (monthBelowThreshold(monthlyIncomes, getMonthlyThreshold(incomeValidationRequest))) {
+            return validationResult(incomeValidationRequest, IncomeValidationStatus.CATB_SALARIED_BELOW_THRESHOLD);
+        }
+
         return validationResult(incomeValidationRequest, IncomeValidationStatus.CATB_SALARIED_PASSED);
     }
 
@@ -102,5 +107,26 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
             }
         }
         return false;
+    }
+
+    private boolean monthBelowThreshold(List<List<Income>> monthlyIncomes, BigDecimal monthlyThreshold) {
+        for (List<Income> monthlyIncome : monthlyIncomes) {
+            BigDecimal totalMonthlyIncome = BigDecimal.ZERO;
+            for (Income income : monthlyIncome) {
+                totalMonthlyIncome = totalMonthlyIncome.add(income.payment());
+            }
+            if (isLessThan(totalMonthlyIncome, monthlyThreshold)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isLessThan(BigDecimal numberToCheck, BigDecimal target) {
+        return numberToCheck.compareTo(target) < 0;
+    }
+
+    private BigDecimal getMonthlyThreshold(IncomeValidationRequest incomeValidationRequest) {
+        return new IncomeThresholdCalculator(incomeValidationRequest.dependants()).getMonthlyThreshold();
     }
 }

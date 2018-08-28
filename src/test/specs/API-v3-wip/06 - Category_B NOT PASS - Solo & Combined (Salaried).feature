@@ -34,14 +34,14 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Response             | HTTP Status                    | 200                     |
-            | Applicant                 | National Insurance Number      | PL823678B               |
-            | Category B salaried       | Financial requirement met      | false                   |
-            | Category B salaried       | Failure Reason                 | EMPLOYMENT_CHECK_FAILED |
-            | Category B salaried       | Application Raised date        | 2018-04-30              |
-            | Category B salaried       | Assessment Start Date          | 2017-04-30              |
-            | Category B salaried       | Threshold                      | 18600                   |
-            | Category B salaried       | Employer Name - PL823678B      | Flying Pizza Ltd        |
+            | HTTP Response    | HTTP Status               | 200                     |
+            | Applicant        | National Insurance Number | PL823678B               |
+            | Employment Check | Financial requirement met | false                   |
+            | Employment Check | Failure Reason            | EMPLOYMENT_CHECK_FAILED |
+            | Employment Check | Application Raised date   | 2018-04-30              |
+            | Employment Check | Assessment Start Date     | 2018-03-30              |
+            | Employment Check | Threshold                 | 1550.00                 |
+            | Employment Check | Employer Name - PL823678B | Flying Pizza Ltd        |
 
      ##############
 
@@ -67,14 +67,14 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Response             | HTTP Status                    | 200                     |
-            | Applicant                 | National Insurance Number      | KK776546A               |
-            | Category B salaried       | Financial requirement met      | false                   |
-            | Category B salaried       | Failure Reason                 | EMPLOYMENT_CHECK_FAILED |
-            | Category B salaried       | Application Raised date        | 2018-04-30              |
-            | Category B salaried       | Assessment Start Date          | 2017-04-30              |
-            | Category B salaried       | Threshold                      | 18600                   |
-            | Category B salaried       | Employer Name - KK776546A      | Flying Pizza Ltd        |
+            | HTTP Response    | HTTP Status               | 200                     |
+            | Applicant        | National Insurance Number | KK776546A               |
+            | Employment Check | Financial requirement met | false                   |
+            | Employment Check | Failure Reason            | EMPLOYMENT_CHECK_FAILED |
+            | Employment Check | Application Raised date   | 2018-04-30              |
+            | Employment Check | Assessment Start Date     | 2018-03-30              |
+            | Employment Check | Threshold                 | 1550.00                 |
+            | Employment Check | Employer Name - KK776546A | Flying Pizza Ltd        |
         
     ##############
 

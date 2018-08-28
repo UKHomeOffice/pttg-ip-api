@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.contiguousMonthlyPayments;
@@ -37,7 +38,9 @@ public class IncomeValidatorTestIT {
     @SpyBean(CatAUnsupportedIncomeValidator.class)
     private IncomeValidator catAUnsupportedIncomeValidator;
     @SpyBean(CatBNonSalariedIncomeValidator.class)
-    private IncomeValidator catBNonSalariedIncomeValidator;
+    private IncomeValidator catBNonSalariedIncomeValidator
+        ;@SpyBean(CatBSalariedIncomeValidator.class)
+    private IncomeValidator catBSalariedIncomeValidator;
     @SpyBean(EmploymentCheckIncomeValidator.class)
     private IncomeValidator employmentCheckIncomeValidator;
     @SpyBean(CatFOneYearSelfAssessmentIncomeValidator.class)
@@ -52,8 +55,8 @@ public class IncomeValidatorTestIT {
         List<CategoryCheck> categoryChecks = incomeValidationService.validate(request);
 
         assertThat(categoryChecks.size())
-            .withFailMessage("There should be 3 category checks performed")
-            .isEqualTo(3);
+            .withFailMessage("There should be 4 category checks performed")
+            .isEqualTo(4);
 
         List<String> returnedCategories = categoryChecks.stream()
             .map(CategoryCheck::category)
@@ -73,7 +76,7 @@ public class IncomeValidatorTestIT {
 
         verify(catASalariedIncomeValidator).validate(request);
         verify(catASalariedMonthlyIncomeValidator).validate(request);
-        verify(employmentCheckIncomeValidator).validate(request);
+        verify(employmentCheckIncomeValidator, times(2)).validate(request); // Called for both CatB Salaried and Unsalaried TODO OJR 2018/08/28 - less than ideal
         verify(catBNonSalariedIncomeValidator).validate(request);
         verify(catFOneYearSelfAssessmentIncomeValidator).validate(request);
 

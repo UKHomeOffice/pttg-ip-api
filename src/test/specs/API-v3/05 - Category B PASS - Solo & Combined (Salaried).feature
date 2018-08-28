@@ -12,7 +12,8 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
     ##############
 
-    Scenario: 01 Celina has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days on the last possible day (2018-03-30) and payments in all the 12 months prior that meet the monthly threshold with the minimum amounts
+    # 01 Celina has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days on the last possible day (2018-03-30) and payments in all the 12 months prior that meet the monthly threshold with the minimum amounts
+    Scenario: No Dependents. Employment check met. 12 monthly payments over threshold.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -44,7 +45,8 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
     ##############
 
-    Scenario: 02 Robert has no dependents. His income history shows a payment that meets the employment check in the immediate 32 days at the earliest opportunity (2018-03-30) and payments in all 12 months that meet the monthly threshold with varying amounts
+    # 02 Robert has no dependents. His income history shows a payment that meets the employment check in the immediate 32 days at the earliest opportunity (2018-03-30) and payments in all 12 months that meet the monthly threshold with varying amounts
+    Scenario:  No dependents. Employment check met. 12 variable monthly payments over threshold
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -76,7 +78,8 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
     ##############
 
-    Scenario: 03 Charlotte has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days (2018-03-30) and payments in all 12 months that meet the monthly threshold with varying amounts and frequencies
+    # 03 Charlotte has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days (2018-03-30) and payments in all 12 months that meet the monthly threshold with varying amounts and frequencies
+    Scenario: No dependents. Employment check met. Payments of variable amount and frequency but over threshold.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -111,14 +114,16 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
     ##############
 
-    Scenario: 04 Crystal has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days made up of weekly frequencies (2018-03-30) with all other months meeting the threshold with variable amounts.
+    # 04 Crystal has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days made up of weekly frequencies (2018-03-30) with all other months meeting the threshold with variable amounts.
+    Scenario: No dependents. Employment check met by weekly payments. Other months over threshold but variable amounts.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
             | 2018-04-27 | 625.00  | 04          |              | FP/Ref1        | Flying Pizza Ltd |
             | 2018-04-20 | 387.50  | 03          |              | FP/Ref1        | Flying Pizza Ltd |
             | 2018-04-13 | 387.50  | 02          |              | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-03-06 | 150.00  | 49          |              | FP/Ref1        | Flying Pizza Ltd |
+            # TODO OJR: Get the below checked - we don't have enough payments for April if it's left unchanged?
+            | 2018-04-06 | 150.00  | 49          |              | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-30 | 2600.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 2500.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-26 | 2400.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
@@ -146,13 +151,15 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
        ##############
 
-    Scenario: 05 Kelly has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days with monthly and weekly frequencies (2018-03-30) and all the other months meeting the monthly threshold with the minimum amounts.
+    # 05 Kelly has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days with monthly and weekly frequencies (2018-03-30) and all the other months meeting the monthly threshold with the minimum amounts.
+    Scenario: No dependents. Monthly and weekly payments to meet employment check.  All other months just over threshold.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
             | 2018-04-30 | 1012.50 | 05          |              | FP/Ref1        | Flying Pizza Ltd |
             | 2018-04-13 | 387.50  | 02          |              | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-03-06 | 150.00  | 49          |              | FP/Ref1        | Flying Pizza Ltd |
+            # TODO OJR: Get the below checked - we don't have enough payments for April if it's left unchanged?
+            | 2018-04-06 | 150.00  | 49          |              | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-30 | 1550.00 | 52          |              | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 1550.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-26 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
@@ -180,7 +187,8 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
     ##############
 
-    Scenario: 06 Frederick has no dependents. His income history shows a payment that meets the employment check in the immediate 32 days (2018-03-30) and all the other months meeting the monthly threshold with the minimum amounts across multiple employers.
+    # 06 Frederick has no dependents. His income history shows a payment that meets the employment check in the immediate 32 days (2018-03-30) and all the other months meeting the monthly threshold with the minimum amounts across multiple employers.
+    Scenario: No dependents. Employment check met. Monthly payments just over threshold but multiple employers.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -212,37 +220,38 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
     ##############
 
-    Scenario: 07 Sally has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days (2018-03-30) and all the other months meeting the monthly threshold with the minimum amounts across two income streams.
+    # 07 Sally has no dependents. Her income history shows a payment that meets the employment check in the immediate 32 days (2018-03-30) and all the other months meeting the monthly threshold with the minimum amounts across two income streams.
+    Scenario: No dependents. Employment check met. Monthly payments from multiple employers over threshold when combined with partner.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
             | 2018-04-30 | 1550.00 |             | 01           | F4U/Ref2       | Flowers 4U Ltd   |
-            | 2018-03-30 |  775.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 |  775.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 |  775.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 |  775.00 |             | 09           | F4U/Ref2       | Flowers 4U Ltd   |
-            | 2017-11-30 |  775.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-27 |  775.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-09-29 |  775.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-08-25 |  775.00 |             | 05           | SA/Ref3        | Steve's Autos    |
-            | 2017-07-28 |  775.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-06-30 |  775.00 |             | 03           | SA/Ref3        | Steve's Autos    |
-            | 2017-05-26 |  775.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-30 | 775.00  |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 775.00  |             | 11           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 775.00  |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 775.00  |             | 09           | F4U/Ref2       | Flowers 4U Ltd   |
+            | 2017-11-30 | 775.00  |             | 08           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-27 | 775.00  |             | 07           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-09-29 | 775.00  |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-08-25 | 775.00  |             | 05           | SA/Ref3        | Steve's Autos    |
+            | 2017-07-28 | 775.00  |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-30 | 775.00  |             | 03           | SA/Ref3        | Steve's Autos    |
+            | 2017-05-26 | 775.00  |             | 02           | FP/Ref1        | Flying Pizza Ltd |
 
         And the applicants partner has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-21 |   00.00 |             | 01           | RM/Ref3        | Reliable Motors  |
-            | 2018-03-27 |  775.00 |             | 12           | RM/Ref3        | Reliable Motors  |
-            | 2018-02-25 |  775.00 |             | 11           | RM/Ref3        | Reliable Motors  |
-            | 2018-01-30 |  775.00 |             | 10           | RM/Ref3        | Reliable Motors  |
-            | 2017-12-27 |  775.00 |             | 09           | RM/Ref3        | Reliable Motors  |
-            | 2017-11-29 |  775.00 |             | 08           | RM/Ref3        | Reliable Motors  |
-            | 2017-10-27 |  775.00 |             | 07           | RM/Ref3        | Reliable Motors  |
-            | 2017-09-25 |  775.00 |             | 06           | QE/Ref4        | Quality Estates  |
-            | 2017-08-28 |  775.00 |             | 05           | QE/Ref4        | Quality Estates  |
-            | 2017-07-27 |  775.00 |             | 04           | RM/Ref3        | Reliable Motors  |
-            | 2017-06-30 |  775.00 |             | 03           | RM/Ref3        | Reliable Motors  |
-            | 2017-05-29 |  775.00 |             | 02           | RM/Ref3        | Reliable Motors  |
+            | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer        |
+            | 2018-04-21 | 00.00  |             | 01           | RM/Ref3        | Reliable Motors |
+            | 2018-03-27 | 775.00 |             | 12           | RM/Ref3        | Reliable Motors |
+            | 2018-02-25 | 775.00 |             | 11           | RM/Ref3        | Reliable Motors |
+            | 2018-01-30 | 775.00 |             | 10           | RM/Ref3        | Reliable Motors |
+            | 2017-12-27 | 775.00 |             | 09           | RM/Ref3        | Reliable Motors |
+            | 2017-11-29 | 775.00 |             | 08           | RM/Ref3        | Reliable Motors |
+            | 2017-10-27 | 775.00 |             | 07           | RM/Ref3        | Reliable Motors |
+            | 2017-09-25 | 775.00 |             | 06           | QE/Ref4        | Quality Estates |
+            | 2017-08-28 | 775.00 |             | 05           | QE/Ref4        | Quality Estates |
+            | 2017-07-27 | 775.00 |             | 04           | RM/Ref3        | Reliable Motors |
+            | 2017-06-30 | 775.00 |             | 03           | RM/Ref3        | Reliable Motors |
+            | 2017-05-29 | 775.00 |             | 02           | RM/Ref3        | Reliable Motors |
 
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | TY383678C  |
@@ -262,37 +271,38 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
     ##############
 
-    Scenario: 08 Sally has no dependents. Her income history does not shows a payment that meets the employment check in the immediate 32 days (2018-03-30) but her partner does. All the other months meeting the monthly threshold with the minimum amounts across two income streams.
+    # 08 Sally has no dependents. Her income history does not shows a payment that meets the employment check in the immediate 32 days (2018-03-30) but her partner does. All the other months meeting the monthly threshold with the minimum amounts across two income streams.
+    Scenario: No dependents. Employment check met but not met by partner. Monthly payments from multiple employers over threshold when combined with partner.
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-30 |   00.00 |             | 01           | F4U/Ref2       | Flowers 4U Ltd   |
-            | 2018-03-30 |  775.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 |  775.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 |  775.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 |  775.00 |             | 09           | F4U/Ref2       | Flowers 4U Ltd   |
-            | 2017-11-30 |  775.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-27 |  775.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-09-29 |  775.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-08-25 |  775.00 |             | 05           | SA/Ref3        | Steve's Autos    |
-            | 2017-07-28 |  775.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-06-30 |  775.00 |             | 03           | SA/Ref3        | Steve's Autos    |
-            | 2017-05-26 |  775.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2018-04-30 | 00.00  |             | 01           | F4U/Ref2       | Flowers 4U Ltd   |
+            | 2018-03-30 | 775.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 775.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 775.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 775.00 |             | 09           | F4U/Ref2       | Flowers 4U Ltd   |
+            | 2017-11-30 | 775.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-27 | 775.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-09-29 | 775.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-08-25 | 775.00 |             | 05           | SA/Ref3        | Steve's Autos    |
+            | 2017-07-28 | 775.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-30 | 775.00 |             | 03           | SA/Ref3        | Steve's Autos    |
+            | 2017-05-26 | 775.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
 
         And the applicants partner has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-21 | 1550.00 |             | 01           | RM/Ref3        | Reliable Motors  |
-            | 2018-03-27 |  775.00 |             | 12           | RM/Ref3        | Reliable Motors  |
-            | 2018-02-25 |  775.00 |             | 11           | RM/Ref3        | Reliable Motors  |
-            | 2018-01-30 |  775.00 |             | 10           | RM/Ref3        | Reliable Motors  |
-            | 2017-12-27 |  775.00 |             | 09           | RM/Ref3        | Reliable Motors  |
-            | 2017-11-29 |  775.00 |             | 08           | RM/Ref3        | Reliable Motors  |
-            | 2017-10-27 |  775.00 |             | 07           | RM/Ref3        | Reliable Motors  |
-            | 2017-09-25 |  775.00 |             | 06           | QE/Ref4        | Quality Estates  |
-            | 2017-08-28 |  775.00 |             | 05           | QE/Ref4        | Quality Estates  |
-            | 2017-07-27 |  775.00 |             | 04           | RM/Ref3        | Reliable Motors  |
-            | 2017-06-30 |  775.00 |             | 03           | RM/Ref3        | Reliable Motors  |
-            | 2017-05-29 |  775.00 |             | 02           | RM/Ref3        | Reliable Motors  |
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer        |
+            | 2018-04-21 | 1550.00 |             | 01           | RM/Ref3        | Reliable Motors |
+            | 2018-03-27 | 775.00  |             | 12           | RM/Ref3        | Reliable Motors |
+            | 2018-02-25 | 775.00  |             | 11           | RM/Ref3        | Reliable Motors |
+            | 2018-01-30 | 775.00  |             | 10           | RM/Ref3        | Reliable Motors |
+            | 2017-12-27 | 775.00  |             | 09           | RM/Ref3        | Reliable Motors |
+            | 2017-11-29 | 775.00  |             | 08           | RM/Ref3        | Reliable Motors |
+            | 2017-10-27 | 775.00  |             | 07           | RM/Ref3        | Reliable Motors |
+            | 2017-09-25 | 775.00  |             | 06           | QE/Ref4        | Quality Estates |
+            | 2017-08-28 | 775.00  |             | 05           | QE/Ref4        | Quality Estates |
+            | 2017-07-27 | 775.00  |             | 04           | RM/Ref3        | Reliable Motors |
+            | 2017-06-30 | 775.00  |             | 03           | RM/Ref3        | Reliable Motors |
+            | 2017-05-29 | 775.00  |             | 02           | RM/Ref3        | Reliable Motors |
 
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | TY383678C  |
@@ -312,37 +322,38 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
     ##############
 
-    Scenario: 09 Sally has no dependents. Her income history shows a payment that doesn't meet the employment check in the immediate 32 days (2018-03-30) but does when combined with her partners income. All the other months meeting the monthly threshold with the minimum amounts across two income streams.
+    # 09 Sally has no dependents. Her income history shows a payment that doesn't meet the employment check in the immediate 32 days (2018-03-30) but does when combined with her partners income. All the other months meeting the monthly threshold with the minimum amounts across two income streams.
+    Scenario: No dependents. Employment check only met when combined with partner.  Monthly payments over threshold when combined with partner.
 
         Given HMRC has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-30 |  775.00 |             | 01           | F4U/Ref2       | Flowers 4U Ltd   |
-            | 2018-03-30 |  775.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 |  775.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 |  775.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 |  775.00 |             | 07           | F4U/Ref2       | Flowers 4U Ltd   |
-            | 2017-11-30 |  775.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-27 |  775.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-09-29 |  775.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-08-25 |  775.00 |             | 04           | SA/Ref3        | Steve's Autos    |
-            | 2017-07-28 |  775.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-06-30 |  775.00 |             | 03           | SA/Ref3        | Steve's Autos    |
-            | 2017-05-26 |  775.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2018-04-30 | 775.00 |             | 01           | F4U/Ref2       | Flowers 4U Ltd   |
+            | 2018-03-30 | 775.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 775.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 775.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 775.00 |             | 07           | F4U/Ref2       | Flowers 4U Ltd   |
+            | 2017-11-30 | 775.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-27 | 775.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-09-29 | 775.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-08-25 | 775.00 |             | 04           | SA/Ref3        | Steve's Autos    |
+            | 2017-07-28 | 775.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-30 | 775.00 |             | 03           | SA/Ref3        | Steve's Autos    |
+            | 2017-05-26 | 775.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
 
         And the applicants partner has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-21 |  775.00 |             | 01           | RM/Ref3        | Reliable Motors  |
-            | 2018-03-27 |  775.00 |             | 12           | RM/Ref3        | Reliable Motors  |
-            | 2018-02-25 |  775.00 |             | 11           | RM/Ref3        | Reliable Motors  |
-            | 2018-01-30 |  775.00 |             | 09           | RM/Ref3        | Reliable Motors  |
-            | 2017-12-27 |  775.00 |             | 07           | RM/Ref3        | Reliable Motors  |
-            | 2017-11-29 |  775.00 |             | 05           | RM/Ref3        | Reliable Motors  |
-            | 2017-10-27 |  775.00 |             | 04           | RM/Ref3        | Reliable Motors  |
-            | 2017-09-25 |  775.00 |             | 04           | QE/Ref4        | Quality Estates  |
-            | 2017-08-28 |  775.00 |             | 04           | QE/Ref4        | Quality Estates  |
-            | 2017-07-27 |  775.00 |             | 04           | RM/Ref3        | Reliable Motors  |
-            | 2017-06-30 |  775.00 |             | 03           | RM/Ref3        | Reliable Motors  |
-            | 2017-05-29 |  775.00 |             | 02           | RM/Ref3        | Reliable Motors  |
+            | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer        |
+            | 2018-04-21 | 775.00 |             | 01           | RM/Ref3        | Reliable Motors |
+            | 2018-03-27 | 775.00 |             | 12           | RM/Ref3        | Reliable Motors |
+            | 2018-02-25 | 775.00 |             | 11           | RM/Ref3        | Reliable Motors |
+            | 2018-01-30 | 775.00 |             | 09           | RM/Ref3        | Reliable Motors |
+            | 2017-12-27 | 775.00 |             | 07           | RM/Ref3        | Reliable Motors |
+            | 2017-11-29 | 775.00 |             | 05           | RM/Ref3        | Reliable Motors |
+            | 2017-10-27 | 775.00 |             | 04           | RM/Ref3        | Reliable Motors |
+            | 2017-09-25 | 775.00 |             | 04           | QE/Ref4        | Quality Estates |
+            | 2017-08-28 | 775.00 |             | 04           | QE/Ref4        | Quality Estates |
+            | 2017-07-27 | 775.00 |             | 04           | RM/Ref3        | Reliable Motors |
+            | 2017-06-30 | 775.00 |             | 03           | RM/Ref3        | Reliable Motors |
+            | 2017-05-29 | 775.00 |             | 02           | RM/Ref3        | Reliable Motors |
 
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | TY383678C  |
@@ -362,7 +373,8 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
     ##############
 
-    Scenario: 10 Ryan has one dependent. His income history shows a payment that meets the employment check in the immediate 32 days on the last possible day (2018-03-30) and payments in all the 12 months prior that meet the monthly threshold with the minimum amounts
+    # 10 Ryan has one dependent. His income history shows a payment that meets the employment check in the immediate 32 days on the last possible day (2018-03-30) and payments in all the 12 months prior that meet the monthly threshold with the minimum amounts
+    Scenario: One dependent. Employment check met. Payments over threshold for all 12 previous months.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -395,7 +407,8 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
     ##############
 
-    Scenario: 11 Florence has two dependents. Her income history shows a payment that meets the employment check in the immediate 32 days on the last possible day (2018-03-30) and payments in all the 12 months prior that meet the monthly threshold with the minimum amounts
+    # 11 Florence has two dependents. Her income history shows a payment that meets the employment check in the immediate 32 days on the last possible day (2018-03-30) and payments in all the 12 months prior that meet the monthly threshold with the minimum amounts
+    Scenario: Two dependents. Employment check met on last possible day. Payments over threshold for all 12 previous months.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -428,11 +441,12 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
 
 ##############
 
-    Scenario: 12 Category B. No dependents. Annual Check Met. Multiple payments in the month at the end of the assessment range. (To Test Adding of multiple payments in a month)
+    # 12 Category B. No dependents. Annual Check Met. Multiple payments in the month at the end of the assessment range. (To Test Adding of multiple payments in a month)
+    Scenario: No dependents. Employment check met. Multiple payments on last day of month.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-03-29 | 1550.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-30 | 1550.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-30 | 1550.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-28 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-12-31 | 1550.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
@@ -443,7 +457,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | 2017-07-28 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-06-31 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-05-29 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-04-30 |    0.01 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-04-30 | 0.01    |             | 01           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-04-30 | 1549.99 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
