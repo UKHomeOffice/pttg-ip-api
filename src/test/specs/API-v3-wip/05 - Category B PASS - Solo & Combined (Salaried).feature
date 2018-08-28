@@ -51,7 +51,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | 2018-04-30 | 1550.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-30 | 2600.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 2500.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-01-26 | 2400.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-26 | 2400.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-12-29 | 2300.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-11-30 | 2200.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-10-27 | 2100.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
@@ -83,7 +83,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | 2018-04-30 | 1550.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-30 | 2600.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 2500.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-01-26 | 2400.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-26 | 2400.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-12-29 | 2300.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-11-30 | 2200.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-10-27 | 2100.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
@@ -121,7 +121,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | 2018-03-06 | 150.00  | 49          |              | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-30 | 2600.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 2500.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-01-26 | 2400.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-26 | 2400.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-12-29 | 2300.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-11-30 | 2200.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-10-27 | 2100.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
@@ -155,7 +155,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | 2018-03-06 | 150.00  | 49          |              | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-30 | 1550.00 | 52          |              | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 1550.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-01-26 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-26 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-12-29 | 1550.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-11-30 | 1550.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-10-27 | 1550.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |

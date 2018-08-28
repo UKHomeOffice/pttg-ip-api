@@ -19,9 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.digital.ho.proving.income.validator.CatBSalariedTestData.twelveMonthsOverThreshold;
-import static uk.gov.digital.ho.proving.income.validator.CatBSalariedTestData.twelveMonthsOverThresholdApplicantInJoint;
-import static uk.gov.digital.ho.proving.income.validator.CatBSalariedTestData.twelveMonthsOverThresholdPartnerInJoint;
+import static uk.gov.digital.ho.proving.income.validator.CatBSalariedTestData.*;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.EMPLOYMENT_CHECK_FAILED;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.EMPLOYMENT_CHECK_PASSED;
 
@@ -81,13 +79,47 @@ public class CatBSalariedIncomeValidatorTest {
     }
 
     @Test
-    public void checkPassesIf12MonthsOverThresholdCombinedForJointApplication() {}
+    public void checkPassesIf12MonthsOverThresholdCombinedForJointApplication() {
+        employmentCheckPasses();
+
+        List<ApplicantIncome> applicantIncomes = twelveMonthsOverThresholdCombinedInJoint(applicationDate);
+        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
+    }
 
     @Test
-    public void checkFailsIfMonthMissing() {}
+    public void checkFailsIfMonthMissingTooFewPayments() {
+        employmentCheckPasses();
+
+        List<ApplicantIncome> applicantIncomes = monthMissingTooFewPayments(applicationDate);
+        assertStatus(applicantIncomes, IncomeValidationStatus.NOT_ENOUGH_RECORDS);
+    }
 
     @Test
-    public void checkFailsIfMonthBelowThresholdMissing() {}
+    public void checkFailsIfMonthMissingButStillEnoughPayments() {
+        employmentCheckPasses();
+
+        List<ApplicantIncome> applicantIncomes = monthMissingButEnoughPayments(applicationDate);
+        assertStatus(applicantIncomes, IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
+    }
+
+    @Test
+    public void checkFailsIfMonthMissingBothApplicantsJointApplication() {
+        employmentCheckPasses();
+
+        List<ApplicantIncome> applicantIncomes = jointApplicationMonthMissingBothApplicants(applicationDate);
+        assertStatus(applicantIncomes, IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
+    }
+
+    @Test
+    public void checkPassesIfMonthMissingOnlyOneApplicantJointApplication() {
+        employmentCheckPasses();
+
+        List<ApplicantIncome> applicantIncomes = jointApplicationMonthMissingOneApplicant(applicationDate);
+        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
+    }
+
+    @Test
+    public void checkFailsIfMonthBelowThreshold() {}
 
     @Test
     public void checkPassesMixedFrequencyButOverThreshold() {}
