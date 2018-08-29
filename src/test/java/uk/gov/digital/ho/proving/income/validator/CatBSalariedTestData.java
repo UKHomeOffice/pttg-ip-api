@@ -2,7 +2,9 @@ package uk.gov.digital.ho.proving.income.validator;
 
 import com.google.common.collect.ImmutableList;
 import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
+import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
+import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 
 import java.math.BigDecimal;
@@ -28,6 +30,27 @@ class CatBSalariedTestData {
         }
 
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> twelveMonthsOverThresholdNoPaymentThisMonth(final LocalDate applicationRaisedDate) {
+        List<Income> incomes = new ArrayList<>();
+        BigDecimal monthlyIncome = incomeOverMonthlyThreshold(0);
+
+        for (int i = 0; i < 12; i++) {
+            incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i + 1), 12 - i, null, PIZZA_HUT_PAYE_REF));
+        }
+
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> twelveMonthsOverThresholdNotPaye(final LocalDate applicationRaisedDate) {
+        List<AnnualSelfAssessmentTaxReturn> saIncomes = new ArrayList<>();
+        BigDecimal saIncome = incomeOverMonthlyThreshold(0).multiply(amount("12"));
+
+        saIncomes.add(new AnnualSelfAssessmentTaxReturn("2018", saIncome));
+
+        IncomeRecord incomeRecord = new IncomeRecord(new ArrayList<>(), saIncomes, new ArrayList<>(), HMRC_INDIVIDUAL);
+        return ImmutableList.of(new ApplicantIncome(APPLICANT, incomeRecord));
     }
 
     static List<ApplicantIncome> twelveMonthsOverThresholdUnsorted(final LocalDate applicationRaisedDate) {

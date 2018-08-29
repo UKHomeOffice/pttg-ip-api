@@ -274,6 +274,22 @@ public class CatBSalariedIncomeValidatorTest {
         assertStatus(Collections.emptyList(), EMPLOYMENT_CHECK_FAILED);
     }
 
+    @Test
+    public void checkPassesWhenNoPaymentThisCalendarMonthButOtherwiseFine() {
+        employmentCheckPasses();
+
+        LocalDate earlyInMonthApplicationDate = LocalDate.of(2018, Month.JUNE, 2);
+        assertStatus(twelveMonthsOverThresholdNoPaymentThisMonth(earlyInMonthApplicationDate), CATB_SALARIED_PASSED);
+    }
+
+    @Test
+    public void checkFailsWhenIncomeNotPaye() {
+        employmentCheckPasses();
+
+        LocalDate earlyInMonthApplicationDate = LocalDate.of(2018, Month.JUNE, 2);
+        assertStatus(twelveMonthsOverThresholdNotPaye(earlyInMonthApplicationDate), NOT_ENOUGH_RECORDS);
+    }
+
     private void assertStatus(List<ApplicantIncome> applicantIncomes, IncomeValidationStatus status) {
         assertStatus(applicantIncomes, status, 0);
     }
