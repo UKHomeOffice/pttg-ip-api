@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.isSuccessiveMonths;
@@ -24,7 +23,7 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
     private static final String CALCULATION_TYPE = "Category B salaried";
     private static final String CATEGORY = "B";
 
-    private final EmploymentCheckIncomeValidator employmentCheckIncomeValidator; // TODO OJR 2018/08/28 Check that employment check rules same for Cat B as Cat A
+    private final EmploymentCheckIncomeValidator employmentCheckIncomeValidator;
 
     public CatBSalariedIncomeValidator(EmploymentCheckIncomeValidator employmentCheckIncomeValidator) {
         this.employmentCheckIncomeValidator = employmentCheckIncomeValidator;
@@ -41,15 +40,12 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
         if (applicantResult.status().isPassed() || !incomeValidationRequest.isJointRequest()) {
             return applicantResult;
         }
+
         IncomeValidationResult partnerResult = validateForPartner(incomeValidationRequest);
         if (partnerResult.status().isPassed()) {
             return partnerResult;
         }
         return validateForJoint(incomeValidationRequest);
-    }
-
-    private LocalDate getApplicationStartDate(IncomeValidationRequest incomeValidationRequest) {
-        return incomeValidationRequest.applicationRaisedDate().minusYears(INCOME_PERIOD_START_DATE_YEARS_AGO);
     }
 
     private IncomeValidationResult validateForApplicant(IncomeValidationRequest incomeValidationRequest) {
@@ -66,17 +62,16 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
         return validateForIndividual(incomeValidationRequest, jointPaye);
     }
 
-
     private IncomeValidationResult validateForIndividual(IncomeValidationRequest incomeValidationRequest, List<Income> paye) {
         if (paye.size() < 12) {
             return validationResult(incomeValidationRequest, IncomeValidationStatus.NOT_ENOUGH_RECORDS);
         }
 
-        Map<Integer, List<Income>> collectedByMonth = paye.stream().collect(Collectors.groupingBy(Income::yearAndMonth));
         List<List<Income>> monthlyIncomes = new ArrayList<>();
-        collectedByMonth.forEach((key, value) -> monthlyIncomes.add(value));
-        monthlyIncomes.sort(Comparator.comparingInt(monthlyIncome -> monthlyIncome.get(0).yearAndMonth()));
+        paye.stream().collect(Collectors.groupingBy(Income::yearAndMonth))
+            .forEach((yearAndMonth, income) -> monthlyIncomes.add(income));
 
+        monthlyIncomes.sort(Comparator.comparingInt(monthlyIncome -> monthlyIncome.get(0).yearAndMonth()));
 
         if (monthMissing(monthlyIncomes)) {
             return validationResult(incomeValidationRequest, IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
@@ -98,6 +93,10 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
             CATEGORY,
             CALCULATION_TYPE
         );
+    }
+
+    private LocalDate getApplicationStartDate(IncomeValidationRequest incomeValidationRequest) {
+        return incomeValidationRequest.applicationRaisedDate().minusYears(INCOME_PERIOD_START_DATE_YEARS_AGO);
     }
 
     private boolean monthMissing(List<List<Income>> monthlyIncomes) {

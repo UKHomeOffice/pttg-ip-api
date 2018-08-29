@@ -15,8 +15,13 @@ import java.util.stream.Collectors;
 
 class CatBSharedTestData {
 
-    final static Employer PIZZA_HUT_EMPLOYER = new Employer(CatBNonSalariedTestData.PIZZA_HUT, CatBNonSalariedTestData.PIZZA_HUT_PAYE_REF);
-    final static Employer BURGER_KING_EMPLOYER = new Employer(CatBNonSalariedTestData.BURGER_KING, CatBNonSalariedTestData.BURGER_KING_PAYE_REF);
+
+    final static String PIZZA_HUT = "Pizza Hut";
+    final static String BURGER_KING = "Burger King";
+    final static String PIZZA_HUT_PAYE_REF = "Pizza Hut/ref";
+    final static String BURGER_KING_PAYE_REF = "Pizza Hut/ref";
+    final static Employer PIZZA_HUT_EMPLOYER = new Employer(PIZZA_HUT, PIZZA_HUT_PAYE_REF);
+    final static Employer BURGER_KING_EMPLOYER = new Employer(BURGER_KING, BURGER_KING_PAYE_REF);
     final static String NINO = "AA123456A";
     final static String NINO_PARTNER = "BB123456B";
     final static LocalDate DOB = LocalDate.of(1970, Month.JANUARY, 1);

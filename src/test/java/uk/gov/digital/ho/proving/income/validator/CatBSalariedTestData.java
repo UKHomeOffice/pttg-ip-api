@@ -11,8 +11,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.digital.ho.proving.income.validator.CatBNonSalariedTestData.BURGER_KING_PAYE_REF;
-import static uk.gov.digital.ho.proving.income.validator.CatBNonSalariedTestData.PIZZA_HUT_PAYE_REF;
 import static uk.gov.digital.ho.proving.income.validator.CatBSharedTestData.*;
 
 class CatBSalariedTestData {
@@ -32,6 +30,25 @@ class CatBSalariedTestData {
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
+    static List<ApplicantIncome> twelveMonthsOverThresholdUnsorted(final LocalDate applicationRaisedDate) {
+        List<Income> incomes = new ArrayList<>();
+        BigDecimal monthlyIncome = incomeOverMonthlyThreshold(0);
+
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(10), 2, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(8), 4, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(11), 1, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(6), 6, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(9), 3, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(5), 7, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(2), 10, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(4), 8, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(7), 5, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(3), 9, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate, 12, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(1), 11, null, PIZZA_HUT_PAYE_REF));
+
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
+    }
 
     static List<ApplicantIncome> monthBelowThreshold(final LocalDate applicationRaisedDate) {
         return monthBelowThreshold(applicationRaisedDate, 0);

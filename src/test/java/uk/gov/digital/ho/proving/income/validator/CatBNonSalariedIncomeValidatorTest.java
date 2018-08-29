@@ -84,7 +84,7 @@ public class CatBNonSalariedIncomeValidatorTest {
             .withFailMessage("The checked individual should have the correct nino");
         assertThat(individual.employers().size()).isEqualTo(1)
             .withFailMessage("The checked individual should have a single employer");
-        assertThat(individual.employers().get(0)).isEqualTo(CatBNonSalariedTestData.PIZZA_HUT)
+        assertThat(individual.employers().get(0)).isEqualTo(CatBSharedTestData.PIZZA_HUT)
             .withFailMessage("The checked individual should have the correct employer");
     }
 
@@ -246,7 +246,7 @@ public class CatBNonSalariedIncomeValidatorTest {
             .withFailMessage("The checked individual should have the correct nino");
         assertThat(applicant.employers().size()).isEqualTo(1)
             .withFailMessage("The checked individual should have a single employer");
-        assertThat(applicant.employers().get(0)).isEqualTo(CatBNonSalariedTestData.PIZZA_HUT)
+        assertThat(applicant.employers().get(0)).isEqualTo(CatBSharedTestData.PIZZA_HUT)
             .withFailMessage("The checked individual should have the correct employer");
 
         CheckedIndividual partner = result.individuals().get(1);
@@ -254,7 +254,7 @@ public class CatBNonSalariedIncomeValidatorTest {
             .withFailMessage("The checked individual should have the correct nino");
         assertThat(partner.employers().size()).isEqualTo(1)
             .withFailMessage("The checked individual should have a single employer");
-        assertThat(partner.employers().get(0)).isEqualTo(CatBNonSalariedTestData.BURGER_KING)
+        assertThat(partner.employers().get(0)).isEqualTo(CatBSharedTestData.BURGER_KING)
             .withFailMessage("The checked individual should have the correct employer");
     }
 

@@ -60,11 +60,12 @@ public class CatBSalariedIncomeValidatorTest {
 
     @Test
     public void checkPassesUnsortedIncomeData() {
-
+        employmentCheckPasses();
+        assertStatus(twelveMonthsOverThresholdUnsorted(applicationDate), CATB_SALARIED_PASSED);
     }
 
     @Test
-    public void checkPassesIf12MonthsOverThresholdMultipleEmployersSolo() {
+    public void checkPassesIf12MonthsOverThresholdMultipleEmployers() {
         employmentCheckPasses();
         assertStatus(overThresholdMultipleEmployers(applicationDate), CATB_SALARIED_PASSED);
     }
@@ -78,7 +79,7 @@ public class CatBSalariedIncomeValidatorTest {
     @Test
     public void checkFailsIfMonthMissingTooFewPayments() {
         employmentCheckPasses();
-        assertStatus(monthMissingTooFewPayments(applicationDate), IncomeValidationStatus.NOT_ENOUGH_RECORDS);
+        assertStatus(monthMissingTooFewPayments(applicationDate), NOT_ENOUGH_RECORDS);
     }
 
     @Test
@@ -88,7 +89,7 @@ public class CatBSalariedIncomeValidatorTest {
     }
 
     @Test
-    public void checkPassesIf12MonthsOverThresholdForApplicantJointApplication() {
+    public void checkPassesIf12MonthsOverThresholdForJointApplication() {
         employmentCheckPasses();
         assertStatus(twelveMonthsOverThresholdJointApplication(applicationDate), CATB_SALARIED_PASSED);
     }
