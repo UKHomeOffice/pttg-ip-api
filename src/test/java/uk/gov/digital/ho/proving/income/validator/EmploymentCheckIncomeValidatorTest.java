@@ -98,7 +98,7 @@ public class EmploymentCheckIncomeValidatorTest {
     @Test
     public void thatIncomeEqualsThresholdPriorToAssessmentStartFails() {
         LocalDate raisedDate = getDate(2018, Month.MAY, 3);
-        List<ApplicantIncome> incomes = incomeOverThreshold(getDate(2018, Month.APRIL, 1));
+        List<ApplicantIncome> incomes = incomePriorToAssessmentStart(getDate(2018, Month.APRIL, 1));
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult result = validator.validate(request);
@@ -110,7 +110,7 @@ public class EmploymentCheckIncomeValidatorTest {
     @Test
     public void thatIncomeEqualsThresholdOnAssessmentStartDayPasses() {
         LocalDate raisedDate = getDate(2018, Month.MAY, 3);
-        List<ApplicantIncome> incomes = incomeOverThreshold(getDate(2018, Month.APRIL, 2));
+        List<ApplicantIncome> incomes = singleIncomeOnAssessmentStartDay(raisedDate);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult result = validator.validate(request);

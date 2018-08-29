@@ -38,8 +38,8 @@ public class IncomeValidatorTestIT {
     @SpyBean(CatAUnsupportedIncomeValidator.class)
     private IncomeValidator catAUnsupportedIncomeValidator;
     @SpyBean(CatBNonSalariedIncomeValidator.class)
-    private IncomeValidator catBNonSalariedIncomeValidator
-        ;@SpyBean(CatBSalariedIncomeValidator.class)
+    private IncomeValidator catBNonSalariedIncomeValidator;
+    @SpyBean(CatBSalariedIncomeValidator.class)
     private IncomeValidator catBSalariedIncomeValidator;
     @SpyBean(EmploymentCheckIncomeValidator.class)
     private IncomeValidator employmentCheckIncomeValidator;
@@ -76,7 +76,8 @@ public class IncomeValidatorTestIT {
 
         verify(catASalariedIncomeValidator).validate(request);
         verify(catASalariedMonthlyIncomeValidator).validate(request);
-        verify(employmentCheckIncomeValidator, times(2)).validate(request); // Called for both CatB Salaried and Unsalaried TODO OJR 2018/08/28 - less than ideal
+        verify(employmentCheckIncomeValidator, times(2)).validate(request); // Called for both CatB Salaried and Unsalaried
+        verify(catBSalariedIncomeValidator).validate(request);
         verify(catBNonSalariedIncomeValidator).validate(request);
         verify(catFOneYearSelfAssessmentIncomeValidator).validate(request);
 

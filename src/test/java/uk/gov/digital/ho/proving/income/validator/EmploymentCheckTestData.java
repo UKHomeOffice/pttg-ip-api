@@ -64,13 +64,27 @@ public class EmploymentCheckTestData {
         return allApplicantIncomes;
     }
 
-    static List<ApplicantIncome> incomeOverThreshold(LocalDate incomeDate) {
+    static List<ApplicantIncome> incomePriorToAssessmentStart(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
 
         IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
         BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
 
-        incomes.add(new Income(monthlyIncome, incomeDate, 1, null, PIZZA_HUT_PAYE_REF));
+        LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS - 1);
+
+        incomes.add(new Income(monthlyIncome, assessmentStartDate.minusDays(1), 1, null, PIZZA_HUT_PAYE_REF));
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> singleIncomeOnAssessmentStartDay(LocalDate raisedDate) {
+        List<Income> incomes = new ArrayList<>();
+
+        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
+        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold();
+
+        LocalDate assessmentStartDate = raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS - 1 - 1);
+
+        incomes.add(new Income(monthlyIncome, assessmentStartDate, 1, null, PIZZA_HUT_PAYE_REF));
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
