@@ -20,8 +20,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.validator.CatBSalariedTestData.*;
-import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.EMPLOYMENT_CHECK_FAILED;
-import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.EMPLOYMENT_CHECK_PASSED;
+import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CatBSalariedIncomeValidatorTest {
@@ -48,173 +47,238 @@ public class CatBSalariedIncomeValidatorTest {
     }
 
     @Test
+    public void checkPassesIf12MonthsOverThresholdApplicantOnly() {
+        employmentCheckPasses();
+        assertStatus(twelveMonthsOverThreshold(applicationDate), CATB_SALARIED_PASSED);
+    }
+
+    @Test
+    public void checkPassesMixedFrequencyButOverThreshold() {
+        employmentCheckPasses();
+        assertStatus(mixedFrequencyButOverThreshold(applicationDate), CATB_SALARIED_PASSED);
+    }
+
+    @Test
+    public void checkPassesUnsortedIncomeData() {
+
+    }
+
+    @Test
+    public void checkPassesIf12MonthsOverThresholdMultipleEmployersSolo() {
+        employmentCheckPasses();
+        assertStatus(overThresholdMultipleEmployers(applicationDate), CATB_SALARIED_PASSED);
+    }
+
+    @Test
+    public void checkFailsIfMonthMissingButStillEnoughPayments() {
+        employmentCheckPasses();
+        assertStatus(monthMissingButEnoughPayments(applicationDate), NON_CONSECUTIVE_MONTHS);
+    }
+
+    @Test
+    public void checkFailsIfMonthMissingTooFewPayments() {
+        employmentCheckPasses();
+        assertStatus(monthMissingTooFewPayments(applicationDate), IncomeValidationStatus.NOT_ENOUGH_RECORDS);
+    }
+
+    @Test
+    public void checkFailsIfMonthBelowThreshold() {
+        employmentCheckPasses();
+        assertStatus(monthBelowThreshold(applicationDate), CATB_SALARIED_BELOW_THRESHOLD);
+    }
+
+    @Test
+    public void checkPassesIf12MonthsOverThresholdForApplicantJointApplication() {
+        employmentCheckPasses();
+        assertStatus(twelveMonthsOverThresholdJointApplication(applicationDate), CATB_SALARIED_PASSED);
+    }
+
+    @Test
+    public void checkFailsIfMonthMissingBothApplicantsJointApplication() {
+        employmentCheckPasses();
+        assertStatus(jointApplicationMonthMissingBothApplicants(applicationDate), NON_CONSECUTIVE_MONTHS);
+    }
+
+    @Test
+    public void checkFailsIfMonthUnderThresholdForBothApplicantsInJoint() {
+        employmentCheckPasses();
+        assertStatus(jointApplicationMonthUnderThreshold(applicationDate), CATB_SALARIED_BELOW_THRESHOLD);
+    }
+
+    @Test
+    public void checkPassesFor1DependantIfOverThresholdSoloApplication() {
+        employmentCheckPasses();
+        final int dependants = 1;
+
+        assertStatus(twelveMonthsOverThreshold(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
+    }
+
+    @Test
+    public void checkFailsFor1DependantIfUnderThresholdSoloApplication() {
+        employmentCheckPasses();
+        final int dependants = 1;
+
+        assertStatus(monthBelowThreshold(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
+    }
+
+    @Test
+    public void checkPassesFor1DependantIfOverThresholdJointApplication() {
+        employmentCheckPasses();
+        final int dependants = 1;
+
+        assertStatus(twelveMonthsOverThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
+    }
+
+    @Test
+    public void checkFailsFor1DependantIfUnderThresholdJointApplication() {
+        employmentCheckPasses();
+        final int dependants = 1;
+
+        assertStatus(twelveMonthsUnderThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
+    }
+
+    @Test
+    public void checkPassesFor2DependantsIfOverThresholdSoloApplication() {
+        employmentCheckPasses();
+        final int dependants = 2;
+
+        assertStatus(twelveMonthsOverThreshold(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
+    }
+
+    @Test
+    public void checkFailsFor2DependantsIfUnderThresholdSoloApplication() {
+        employmentCheckPasses();
+        final int dependants = 2;
+
+        assertStatus(monthBelowThreshold(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
+    }
+
+    @Test
+    public void checkPassesFor2DependantsIfOverThresholdJointApplication() {
+        employmentCheckPasses();
+        final int dependants = 2;
+
+        assertStatus(twelveMonthsOverThresholdApplicantOnlyInJoint(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
+    }
+
+    @Test
+    public void checkFailsFor2DependantsIfUnderThresholdJointApplication() {
+        employmentCheckPasses();
+        final int dependants = 2;
+
+        assertStatus(twelveMonthsUnderThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
+    }
+
+    @Test
+    public void checkPassesFor3DependantsIfOverThresholdSoloApplication() {
+        employmentCheckPasses();
+        final int dependants = 3;
+
+        assertStatus(twelveMonthsOverThreshold(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
+    }
+
+    @Test
+    public void checkFailsFor3DependantsIfUnderThresholdSoloApplication() {
+        employmentCheckPasses();
+        final int dependants = 3;
+
+        assertStatus(monthBelowThreshold(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
+    }
+
+    @Test
+    public void checkPassesFor3DependantsIfOverThresholdJointApplication() {
+        employmentCheckPasses();
+        final int dependants = 3;
+
+        assertStatus(twelveMonthsOverThresholdApplicantOnlyInJoint(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
+    }
+
+    @Test
+    public void checkFailsFor3DependantsIfUnderThresholdJointApplication() {
+        employmentCheckPasses();
+        final int dependants = 3;
+
+        assertStatus(twelveMonthsUnderThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
+    }
+
+    @Test
+    public void checkPassesFor4DependantsIfOverThresholdSoloApplication() {
+        employmentCheckPasses();
+        final int dependants = 4;
+
+        assertStatus(twelveMonthsOverThreshold(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
+    }
+
+    @Test
+    public void checkFailsFor4DependantsIfUnderThresholdSoloApplication() {
+        employmentCheckPasses();
+        final int dependants = 4;
+
+        assertStatus(monthBelowThreshold(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
+    }
+
+    @Test
+    public void checkPassesFor4DependantsIfOverThresholdJointApplication() {
+        employmentCheckPasses();
+        final int dependants = 4;
+
+        assertStatus(twelveMonthsOverThresholdApplicantOnlyInJoint(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
+    }
+
+    @Test
+    public void checkFailsFor4DependantsIfUnderThresholdJointApplication() {
+        employmentCheckPasses();
+        final int dependants = 4;
+
+        assertStatus(twelveMonthsUnderThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
+    }
+
+
+    @Test
+    public void checkPassesFor5DependantsIfOverThresholdSoloApplication() {
+        employmentCheckPasses();
+        final int dependants = 5;
+
+        assertStatus(twelveMonthsOverThreshold(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
+    }
+
+    @Test
+    public void checkFailsFor5DependantsIfUnderThresholdSoloApplication() {
+        employmentCheckPasses();
+        final int dependants = 5;
+
+        assertStatus(monthBelowThreshold(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
+    }
+
+    @Test
+    public void checkPassesFor5DependantsIfOverThresholdJointApplication() {
+        employmentCheckPasses();
+        final int dependants = 5;
+
+        assertStatus(twelveMonthsOverThresholdApplicantOnlyInJoint(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
+    }
+
+    @Test
+    public void checkFailsFor5DependantsIfUnderThresholdJointApplication() {
+        employmentCheckPasses();
+        final int dependants = 5;
+
+        assertStatus(twelveMonthsUnderThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
+    }
+
+    @Test
     public void catBSalariedCheckFailsIfEmploymentCheckFails() {
         employmentCheckFails();
 
         assertStatus(Collections.emptyList(), EMPLOYMENT_CHECK_FAILED);
     }
 
-    @Test
-    public void checkPassesIf12MonthsOverThresholdApplicantOnly() {
-        employmentCheckPasses();
-
-        List<ApplicantIncome> applicantIncomes = twelveMonthsOverThreshold(applicationDate);
-        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
-    }
-
-    @Test
-    public void checkPassesIf12MonthsOverThresholdForApplicantJointApplication() {
-        employmentCheckPasses();
-
-        List<ApplicantIncome> applicantIncomes = twelveMonthsOverThresholdApplicantInJoint(applicationDate);
-        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
-    }
-
-    @Test
-    public void checkPassesIf12MonthsOverThresholdForPartnerJointApplication() {
-        employmentCheckPasses();
-
-        List<ApplicantIncome> applicantIncomes = twelveMonthsOverThresholdPartnerInJoint(applicationDate);
-        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
-    }
-
-    @Test
-    public void checkPassesIf12MonthsOverThresholdCombinedForJointApplication() {
-        employmentCheckPasses();
-
-        List<ApplicantIncome> applicantIncomes = twelveMonthsOverThresholdCombinedInJoint(applicationDate);
-        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
-    }
-
-    @Test
-    public void checkFailsIfMonthMissingTooFewPayments() {
-        employmentCheckPasses();
-
-        List<ApplicantIncome> applicantIncomes = monthMissingTooFewPayments(applicationDate);
-        assertStatus(applicantIncomes, IncomeValidationStatus.NOT_ENOUGH_RECORDS);
-    }
-
-    @Test
-    public void checkFailsIfMonthMissingButStillEnoughPayments() {
-        employmentCheckPasses();
-
-        List<ApplicantIncome> applicantIncomes = monthMissingButEnoughPayments(applicationDate);
-        assertStatus(applicantIncomes, IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
-    }
-
-    @Test
-    public void checkFailsIfMonthMissingBothApplicantsJointApplication() {
-        employmentCheckPasses();
-
-        List<ApplicantIncome> applicantIncomes = jointApplicationMonthMissingBothApplicants(applicationDate);
-        assertStatus(applicantIncomes, IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
-    }
-
-
-    @Test
-    public void checkPassesIfMonthMissingOnlyOneApplicantJointApplication() {
-        employmentCheckPasses();
-
-        List<ApplicantIncome> applicantIncomes = jointApplicationMonthMissingOneApplicant(applicationDate);
-        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
-    }
-
-    @Test
-    public void checkFailsIfMonthBelowThreshold() {
-        employmentCheckPasses();
-
-        List<ApplicantIncome> applicantIncomes = monthBelowThreshold(applicationDate);
-        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_BELOW_THRESHOLD);
-    }
-
-    @Test
-    public void checkPassesMixedFrequencyButOverThreshold() {
-        employmentCheckPasses();
-
-        List<ApplicantIncome> applicantIncomes = mixedFrequencyButOverThreshold(applicationDate);
-        assertStatus(applicantIncomes, IncomeValidationStatus.CATB_SALARIED_PASSED);
-    }
-
-    @Test
-    public void checkFailsMixedFrequencyButOneMonthMissing() {}
-
-    @Test
-    public void checkFailsMixedFrequencyButOneMonthUnderThreshold() {}
-
-    @Test
-    public void checkPassesIf12MonthsOverThresholdMultipleEmployersSolo() {}
-
-    @Test
-    public void checkPassesIf12MonthsOverThresholdMultipleEmployersForApplicantInJoint() {}
-
-    @Test
-    public void checkPassesIf12MonthsOverThresholdMultipleEmployersForPartnerInJoint() {}
-
-    @Test
-    public void checkPassesIf12MonthsOverThresholdMultipleEmployersForApplicantAndPartnerInJoint() {}
-
-    @Test
-    public void checkFailsIfMonthUnderThresholdMultipleEmployersSolo() {}
-
-    @Test
-    public void checkFailsIfMonthUnderThresholdMultipleEmployersForApplicantInJoint() {}
-
-    @Test
-    public void checkFailsIfMonthUnderThresholdMultipleEmployersForPartnerInJoint() {}
-
-    @Test
-    public void checkFailsIfMonthUnderThresholdMultipleEmployersForApplicantAndPartnerInJoint() {}
-
-    @Test
-    public void checkFailsIfMonthMissingMultipleEmployersSolo() {}
-
-    @Test
-    public void checkFailsIfMonthMissingMultipleEmployersForApplicantInJoint() {}
-
-    @Test
-    public void checkFailsIfMonthMissingMultipleEmployersForPartnerInJoint() {}
-
-    @Test
-    public void checkFailsIfMonthMissingMultipleEmployersForApplicantAndPartnerInJoint() {}
-
-    @Test
-    public void checkPassesFor1DependantIfOverThresholdSoloApplication() {}
-
-    @Test
-    public void checkPassesFor2DependantIfOverThresholdSoloApplication() {}
-
-    @Test
-    public void checkPassesFor3DependantIfOverThresholdSoloApplication() {}
-
-    @Test
-    public void checkPassesFor4DependantIfOverThresholdSoloApplication() {}
-
-    @Test
-    public void checkPassesFor5DependantIfOverThresholdSoloApplication() {}
-
-    @Test
-    public void checkPassesFor1DependantIfOverThresholdJointApplication() {}
-
-    @Test
-    public void checkPassesFor2DependantIfOverThresholdJointApplication() {}
-
-    @Test
-    public void checkPassesFor3DependantIfOverThresholdJointApplication() {}
-
-    @Test
-    public void checkPassesFor4DependantIfOverThresholdJointApplication() {}
-
-    @Test
-    public void checkPassesFor5DependantIfOverThresholdJointApplication() {}
-
-    // TODO OJR: Check day calculation is correct (minus 366 days), check that works for unsorted income data
-
     private void assertStatus(List<ApplicantIncome> applicantIncomes, IncomeValidationStatus status) {
         assertStatus(applicantIncomes, status, 0);
     }
 
     private void assertStatus(List<ApplicantIncome> applicantIncomes, IncomeValidationStatus status, int dependants) {
-        IncomeValidationRequest request = new IncomeValidationRequest(applicantIncomes, applicationDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(applicantIncomes, applicationDate, dependants);
 
         IncomeValidationResult result = catBSalariedIncomeValidator.validate(request);
 

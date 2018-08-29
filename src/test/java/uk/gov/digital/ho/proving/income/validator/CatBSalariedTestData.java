@@ -6,19 +6,24 @@ import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.digital.ho.proving.income.validator.CatBNonSalariedTestData.BURGER_KING_PAYE_REF;
 import static uk.gov.digital.ho.proving.income.validator.CatBNonSalariedTestData.PIZZA_HUT_PAYE_REF;
 import static uk.gov.digital.ho.proving.income.validator.CatBSharedTestData.*;
 
 class CatBSalariedTestData {
 
     static List<ApplicantIncome> twelveMonthsOverThreshold(final LocalDate applicationRaisedDate) {
+        return twelveMonthsOverThreshold(applicationRaisedDate, 0);
+    }
+
+    static List<ApplicantIncome> twelveMonthsOverThreshold(final LocalDate applicationRaisedDate, final int dependants) {
         List<Income> incomes = new ArrayList<>();
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
+        BigDecimal monthlyIncome = incomeOverMonthlyThreshold(dependants);
 
         for (int i = 0; i < 12; i++) {
             incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
@@ -27,14 +32,18 @@ class CatBSalariedTestData {
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
+
     static List<ApplicantIncome> monthBelowThreshold(final LocalDate applicationRaisedDate) {
+        return monthBelowThreshold(applicationRaisedDate, 0);
+    }
+
+    static List<ApplicantIncome> monthBelowThreshold(final LocalDate applicationRaisedDate, final int dependants) {
         List<Income> incomes = new ArrayList<>();
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
+        BigDecimal monthlyIncome = incomeOverMonthlyThreshold(dependants);
+        BigDecimal belowThresholdPayment = incomeUnderMonthlyThreshold(dependants);
 
         for (int i = 0; i < 12; i++) {
             if (i == 6) {
-                BigDecimal belowThresholdPayment = thresholdCalculator.getMonthlyThreshold().subtract(amount("0.01"));
                 incomes.add(new Income(belowThresholdPayment, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
                 continue;
             }
@@ -44,46 +53,15 @@ class CatBSalariedTestData {
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    static List<ApplicantIncome> twelveMonthsOverThresholdApplicantInJoint(final LocalDate applicationRaisedDate) {
-        List<Income> applicantIncomes = new ArrayList<>();
-        List<Income> partnerIncomes = new ArrayList<>();
-
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
-
-        for (int i = 0; i < 12; i++) {
-            applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
-        }
-        partnerIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(1), 11, null, PIZZA_HUT_PAYE_REF));
-
-        List<ApplicantIncome> jointIncomes = new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
-        jointIncomes.addAll(getPartnerIncomes(partnerIncomes, PIZZA_HUT_EMPLOYER));
-        return ImmutableList.copyOf(jointIncomes);
+    static List<ApplicantIncome> twelveMonthsOverThresholdJointApplication(final LocalDate applicationRaisedDate) {
+        return twelveMonthsOverThresholdJointApplication(applicationRaisedDate, 0);
     }
 
-    static List<ApplicantIncome> twelveMonthsOverThresholdPartnerInJoint(final LocalDate applicationRaisedDate) {
+    static List<ApplicantIncome> twelveMonthsOverThresholdJointApplication(final LocalDate applicationRaisedDate, final int dependants) {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
-
-        applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(1), 11, null, PIZZA_HUT_PAYE_REF));
-        for (int i = 0; i < 12; i++) {
-            partnerIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
-        }
-
-        List<ApplicantIncome> jointIncomes = new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
-        jointIncomes.addAll(getPartnerIncomes(partnerIncomes, PIZZA_HUT_EMPLOYER));
-        return ImmutableList.copyOf(jointIncomes);
-    }
-
-    static List<ApplicantIncome> twelveMonthsOverThresholdCombinedInJoint(final LocalDate applicationRaisedDate) {
-        List<Income> applicantIncomes = new ArrayList<>();
-        List<Income> partnerIncomes = new ArrayList<>();
-
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().divide(amount("2")).add(amount("0.01"));
+        BigDecimal monthlyIncome = incomeOverThresholdJointApplication(dependants);
 
         for (int i = 0; i < 12; i++) {
             applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
@@ -94,13 +72,45 @@ class CatBSalariedTestData {
         jointIncomes.addAll(getPartnerIncomes(partnerIncomes, PIZZA_HUT_EMPLOYER));
         return ImmutableList.copyOf(jointIncomes);
     }
+
+    static List<ApplicantIncome> twelveMonthsUnderThresholdJointApplication(final LocalDate applicationRaisedDate, final int dependants) {
+        List<Income> applicantIncomes = new ArrayList<>();
+        List<Income> partnerIncomes = new ArrayList<>();
+
+        BigDecimal monthlyIncome = incomeBelowThresholdJointApplication(dependants);
+
+        for (int i = 0; i < 12; i++) {
+            applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
+            partnerIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
+        }
+
+        List<ApplicantIncome> jointIncomes = new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
+        jointIncomes.addAll(getPartnerIncomes(partnerIncomes, PIZZA_HUT_EMPLOYER));
+        return ImmutableList.copyOf(jointIncomes);
+    }
+
+    static List<ApplicantIncome> twelveMonthsOverThresholdApplicantOnlyInJoint(final LocalDate applicationRaisedDate, final int dependants) {
+        List<Income> applicantIncomes = new ArrayList<>();
+        List<Income> partnerIncomes = new ArrayList<>();
+
+        BigDecimal monthlyIncome = incomeOverThresholdJointApplication(dependants);
+
+        for (int i = 0; i < 12; i++) {
+            applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
+            partnerIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
+        }
+
+        List<ApplicantIncome> jointIncomes = new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
+        jointIncomes.addAll(getPartnerIncomes(partnerIncomes, PIZZA_HUT_EMPLOYER));
+        return ImmutableList.copyOf(jointIncomes);
+    }
+
 
     static List<ApplicantIncome> jointApplicationMonthMissingBothApplicants(final LocalDate applicationRaisedDate) {
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
+        BigDecimal monthlyIncome = incomeOverMonthlyThreshold(0);
 
         for (int i = 0; i < 12; i++) {
             if (i == 3) {
@@ -115,16 +125,18 @@ class CatBSalariedTestData {
         return ImmutableList.copyOf(jointIncomes);
     }
 
-    static List<ApplicantIncome> jointApplicationMonthMissingOneApplicant(final LocalDate applicationRaisedDate) {
+    static List<ApplicantIncome> jointApplicationMonthUnderThreshold(final LocalDate applicationRaisedDate) {
+        final int dependants = 0;
         List<Income> applicantIncomes = new ArrayList<>();
         List<Income> partnerIncomes = new ArrayList<>();
 
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
+        BigDecimal monthlyIncome = incomeOverThresholdJointApplication(dependants);
+        BigDecimal belowThreshold = incomeBelowThresholdJointApplication(dependants);
 
         for (int i = 0; i < 12; i++) {
-            if (i == 3) {
-                partnerIncomes.add(new Income(monthlyIncome.multiply(amount("2")), applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
+            if (i == 1) {
+                applicantIncomes.add(new Income(belowThreshold, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
+                partnerIncomes.add(new Income(belowThreshold, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
                 continue;
             }
             applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
@@ -139,22 +151,20 @@ class CatBSalariedTestData {
     static List<ApplicantIncome> monthMissingTooFewPayments(final LocalDate applicationRaisedDate) {
         List<Income> applicantIncomes = new ArrayList<>();
 
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
+        BigDecimal monthlyIncome = incomeOverMonthlyThreshold(0);
         for (int i = 0; i < 12; i++) {
             if (i == 4) {
                 continue;
             }
             applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
         }
-        return new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
+        return getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER);
     }
 
     static List<ApplicantIncome> monthMissingButEnoughPayments(final LocalDate applicationRaisedDate) {
         List<Income> applicantIncomes = new ArrayList<>();
 
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().divide(amount("2")).add(amount("0.01"));
+        BigDecimal monthlyIncome = incomeOverThresholdJointApplication(0);
         for (int i = 0; i < 12; i++) {
             if (i == 4) {
                 continue;
@@ -162,15 +172,14 @@ class CatBSalariedTestData {
             applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
             applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
         }
-        return new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
+        return getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER);
     }
 
     static List<ApplicantIncome> mixedFrequencyButOverThreshold(final LocalDate applicationRaisedDate) {
         List<Income> applicantIncomes = new ArrayList<>();
 
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(0);
-        BigDecimal monthlyIncome = thresholdCalculator.getMonthlyThreshold().add(amount("0.01"));
-        BigDecimal weeklyIncome = monthlyIncome.divide(amount("2"));
+        BigDecimal monthlyIncome = incomeOverMonthlyThreshold(0);
+        BigDecimal weeklyIncome = monthlyIncome.divide(amount("2"), RoundingMode.FLOOR);
 
         applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate, 12, null, PIZZA_HUT_PAYE_REF));
         applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(1), 11, null, PIZZA_HUT_PAYE_REF));
@@ -189,6 +198,41 @@ class CatBSalariedTestData {
         applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(10), 2, null, PIZZA_HUT_PAYE_REF));
         applicantIncomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(11), 1, null, PIZZA_HUT_PAYE_REF));
 
-        return new ArrayList<>(getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER));
+        return getApplicantIncomes(applicantIncomes, PIZZA_HUT_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> overThresholdMultipleEmployers(final LocalDate applicationRaisedDate) {
+        List<Income> incomes = new ArrayList<>();
+        BigDecimal monthlyIncome = incomeOverMonthlyThreshold(0);
+
+        for (int i = 0; i < 12; i++) {
+            if (isEven(i)) {
+                incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, PIZZA_HUT_PAYE_REF));
+            } else {
+                incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i), 12 - i, null, BURGER_KING_PAYE_REF));
+            }
+        }
+
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER, BURGER_KING_EMPLOYER);
+    }
+
+    private static BigDecimal incomeOverMonthlyThreshold(int dependants) {
+        return new IncomeThresholdCalculator(dependants).getMonthlyThreshold().add(amount("0.01"));
+    }
+
+    private static BigDecimal incomeUnderMonthlyThreshold(int dependants) {
+        return new IncomeThresholdCalculator(dependants).getMonthlyThreshold().subtract(amount("0.01"));
+    }
+
+    private static BigDecimal incomeOverThresholdJointApplication(int dependants) {
+        return new IncomeThresholdCalculator(dependants).getMonthlyThreshold().divide(amount("2"), RoundingMode.FLOOR).add(amount("0.01"));
+    }
+
+    private static BigDecimal incomeBelowThresholdJointApplication(int dependants) {
+        return new IncomeThresholdCalculator(dependants).getMonthlyThreshold().divide(amount("2"), RoundingMode.FLOOR).subtract(amount("0.01"));
+    }
+
+    private static boolean isEven(int i) {
+        return i % 2 == 0;
     }
 }
