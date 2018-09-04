@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.filterIncomesByDates;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.isSuccessiveMonths;
 
 @Service
@@ -63,23 +64,17 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
     }
 
     private IncomeValidationResult validateForIndividual(IncomeValidationRequest incomeValidationRequest, List<Income> paye) {
-        paye = paye.stream()
-            .filter(income ->
-                !income.paymentDate().isBefore(getApplicationStartDate(incomeValidationRequest)) &&
-                    !income.paymentDate().isAfter(incomeValidationRequest.applicationRaisedDate())
-            )
+        paye = filterIncomesByDates(paye, getApplicationStartDate(incomeValidationRequest), incomeValidationRequest.applicationRaisedDate())
             .collect(Collectors.toList());
+        if (paye.size() < 12) {
+            return validationResult(incomeValidationRequest, IncomeValidationStatus.NOT_ENOUGH_RECORDS);
+        }
 
         List<List<Income>> monthlyIncomes = new ArrayList<>();
         paye.stream().collect(Collectors.groupingBy(Income::yearAndMonth))
             .forEach((yearAndMonth, income) -> monthlyIncomes.add(income));
 
         monthlyIncomes.sort(Comparator.comparingInt(monthlyIncome -> monthlyIncome.get(0).yearAndMonth()));
-
-        if (paye.size() < 12) {
-            return validationResult(incomeValidationRequest, IncomeValidationStatus.NOT_ENOUGH_RECORDS);
-        }
-
 
         if (monthMissing(monthlyIncomes)) {
             return validationResult(incomeValidationRequest, IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
