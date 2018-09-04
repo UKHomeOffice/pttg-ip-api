@@ -130,7 +130,7 @@ public class CatAMonthlyIncomeValidatorTestToo {
     }
 
     @Test
-    @Ignore("EE-8087") // TODO 2018/09/04 Date-related test failure; either a bug to fix or test to be updated; skipped until decision made.
+    @Ignore("EE-8038") // TODO 2018/09/04 Date-related test failure; either a bug to fix or test to be updated; skipped until decision made.
     public void shouldPassWhenValidWithoutDuplicatesAndDayInMonthOfPaymentAfterCurrentDayOfMonth() {
 
         HmrcIndividual hmrcIndividual = aIndividual();
@@ -146,7 +146,7 @@ public class CatAMonthlyIncomeValidatorTestToo {
     }
 
     @Test
-    @Ignore("EE-8087") // TODO 2018/09/04 Date-related test failure; either a bug to fix or test to be updated; skipped until decision made.
+    @Ignore("EE-8038") // TODO 2018/09/04 Date-related test failure; either a bug to fix or test to be updated; skipped until decision made.
     public void shouldPassWhenValidWithDuplicates() {
 
         HmrcIndividual hmrcIndividual = aIndividual();
