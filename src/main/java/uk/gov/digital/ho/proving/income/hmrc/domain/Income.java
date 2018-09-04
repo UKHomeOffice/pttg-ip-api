@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 @Accessors(fluent = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
 public class Income {
 
     @JsonProperty("taxablePayment")

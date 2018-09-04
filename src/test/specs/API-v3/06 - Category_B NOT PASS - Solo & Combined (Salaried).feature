@@ -386,5 +386,5 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | Category B salaried | Failure Reason            | NOT_ENOUGH_RECORDS |
             | Category B salaried | Application Raised date   | 2018-05-28         |
             | Category B salaried | Assessment Start Date     | 2017-05-28         |
-            | Category B salaried | Threshold                 | 1550.00            |
+            | Category B salaried | Threshold                 | 18600              |
             | Category B salaried | Employer Name - ZK859525C | Flying Pizza Ltd   |
