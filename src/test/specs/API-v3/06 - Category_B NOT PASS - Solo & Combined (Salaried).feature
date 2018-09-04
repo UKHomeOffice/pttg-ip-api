@@ -340,7 +340,6 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | 2017-07-28 | 2066.70 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-06-30 | 2066.70 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-05-26 | 2066.70 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            # TODO OJR 2018/08/28 Check with BA: 24800/12 = 2066.6667 so had to change below line:
             | 2017-04-30 | 2066.66 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
@@ -357,3 +356,35 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | Category B salaried | Assessment Start Date     | 2017-04-30                    |
             | Category B salaried | Threshold                 | 24800                         |
             | Category B salaried | Employer Name - PL823678B | Flying Pizza Ltd              |
+
+    Scenario: 12 months of data over threshold but ARD is for a few months ago.
+
+        Given HMRC has the following income records:
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2018-08-30 | 2866.70 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-07-28 | 2866.70 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-06-31 | 2866.70 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-05-29 | 2866.70 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-30 | 2866.70 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-27 | 2866.70 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-29 | 2866.70 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-25 | 2866.70 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-28 | 2866.70 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 | 2866.70 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-26 | 2866.70 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-09-30 | 2866.70 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-08-30 | 2866.70 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
+
+        When the Income Proving v3 TM Family API is invoked with the following:
+            | NINO - Applicant        | ZK859525C  |
+            | Application Raised Date | 2018-05-28 |
+
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Response       | HTTP Status               | 200                |
+            | Applicant           | National Insurance Number | ZK859525C          |
+            | Category B salaried | Financial requirement met | false              |
+            | Category B salaried | Failure Reason            | NOT_ENOUGH_RECORDS |
+            | Category B salaried | Application Raised date   | 2018-05-28         |
+            | Category B salaried | Assessment Start Date     | 2017-05-28         |
+            | Category B salaried | Threshold                 | 1550.00            |
+            | Category B salaried | Employer Name - ZK859525C | Flying Pizza Ltd   |
