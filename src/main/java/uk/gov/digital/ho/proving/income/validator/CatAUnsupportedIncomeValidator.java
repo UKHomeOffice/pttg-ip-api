@@ -27,7 +27,14 @@ public class CatAUnsupportedIncomeValidator implements IncomeValidator {
         FrequencyCalculator.Frequency frequency = FrequencyCalculator.calculate(applicantIncome.incomeRecord());
         List<String> employments = toEmployerNames(applicantIncome.employments());
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
-        return new IncomeValidationResult(getStatus(frequency), BigDecimal.ZERO, Arrays.asList(checkedIndividual), incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS), CATEGORY, CALCULATION_TYPE);
+        return IncomeValidationResult.builder()
+            .status(getStatus(frequency))
+            .threshold(BigDecimal.ZERO)
+            .individuals(Arrays.asList(checkedIndividual))
+            .assessmentStartDate(incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS))
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
+            .build();
     }
 
     private IncomeValidationStatus getStatus(FrequencyCalculator.Frequency frequency) {

@@ -76,13 +76,14 @@ public class CatBNonSalariedIncomeValidator implements ActiveIncomeValidator {
 
         IncomeValidationStatus result = projectedAnnualIncome.compareTo(yearlyThreshold) >= 0 ? CATB_NON_SALARIED_PASSED : CATB_NON_SALARIED_BELOW_THRESHOLD;
 
-        return new IncomeValidationResult(
-            result,
-            yearlyThreshold,
-            incomeValidationRequest.getCheckedIndividuals(),
-            assessmentStartDate,
-            CATEGORY,
-            CALCULATION_TYPE);
+        return IncomeValidationResult.builder()
+            .status(result)
+            .threshold(yearlyThreshold)
+            .individuals(incomeValidationRequest.getCheckedIndividuals())
+            .assessmentStartDate(assessmentStartDate)
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
+            .build();
     }
 
     private BigDecimal getProjectedAnnualIncome(IncomeValidationRequest incomeValidationRequest) {

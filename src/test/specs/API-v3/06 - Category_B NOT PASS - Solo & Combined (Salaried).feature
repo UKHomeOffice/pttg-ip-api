@@ -240,7 +240,6 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
         Given HMRC has the following income records:
             | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer         |
             | 2018-04-01 | 775.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            # TODO OJR 2018/08/28 Get BA to confirm below change fine - Otherwise we do meet Employment Check conditions.
             | 2018-03-28 | 775.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 775.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-31 | 775.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
@@ -281,7 +280,6 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | Employment Check | Failure Reason            | EMPLOYMENT_CHECK_FAILED          |
             | Employment Check | Application Raised date   | 2018-04-30                       |
             | Employment Check | Assessment Start Date     | 2018-03-30                       |
-            # TODO OJR 2018/08/28 Get BA to check below - threshold value should be monthly for employment check?
             | Employment Check | Threshold                 | 1550.00                          |
             | Employment Check | Employer Name - PK676311C | Flying Pizza Ltd                 |
             | Employment Check | Employer Name - SZ111882A | Reliable Motors, Quality Estates |
@@ -304,7 +302,6 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
             | 2017-07-28 | 1866.70 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-06-30 | 1866.70 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-05-26 | 1866.70 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            # TODO OJR 2018/08/28 Check with BA: 22400/12 = 1866.6667 so had to change below line:
             | 2017-04-30 | 1866.66 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:

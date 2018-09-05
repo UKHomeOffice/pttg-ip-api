@@ -45,7 +45,14 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
                 assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
 
-        return new IncomeValidationResult(status, weeklyThreshold, Arrays.asList(checkedIndividual), assessmentStartDate, CATEGORY, CALCULATION_TYPE);
+        return IncomeValidationResult.builder()
+            .status(status)
+            .threshold(weeklyThreshold)
+            .individuals(Arrays.asList(checkedIndividual))
+            .assessmentStartDate(assessmentStartDate)
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
+            .build();
     }
 
     private static IncomeValidationStatus financialCheckForWeeklySalaried(List<Income> incomes, int numOfWeeks, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
