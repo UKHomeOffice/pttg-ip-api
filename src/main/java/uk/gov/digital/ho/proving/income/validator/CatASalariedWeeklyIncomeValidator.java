@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 
 @Service
 public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
-    private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
     private final static Integer NUMBER_OF_WEEKS = 26;
     private static final String CALCULATION_TYPE = "Category A Weekly Salary";
     private static final String CATEGORY = "A";
@@ -35,7 +35,7 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
         IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(incomeValidationRequest.dependants());
         BigDecimal weeklyThreshold = thresholdCalculator.getWeeklyThreshold();
 
-        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
+        LocalDate assessmentStartDate = getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate());
 
         IncomeValidationStatus status =
             financialCheckForWeeklySalaried(

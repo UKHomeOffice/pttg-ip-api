@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.NUMBER_OF_MONTHS;
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 
 @Slf4j
 @Service
 public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
-    private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
-    private static final Integer NUMBER_OF_MONTHS = 6;
     private static final String CALCULATION_TYPE = "Category A Monthly Salary";
     private static final String CATEGORY = "A";
 
@@ -37,7 +37,7 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
         IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(incomeValidationRequest.dependants());
         BigDecimal monthlyThreshold = thresholdCalculator.getMonthlyThreshold();
 
-        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
+        LocalDate assessmentStartDate = getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate());
 
         IncomeValidationStatus status =
             financialCheckForMonthlySalaried(

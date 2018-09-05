@@ -4,8 +4,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 
+import java.time.LocalDate;
+
 @Service
 public class CatASalariedIncomeValidator implements ActiveIncomeValidator {
+
+    static final Integer NUMBER_OF_MONTHS = 6;
 
     private IncomeValidator catASalariedMonthlyIncomeValidator;
     private IncomeValidator catASalariedWeeklyIncomeValidator;
@@ -33,5 +37,9 @@ public class CatASalariedIncomeValidator implements ActiveIncomeValidator {
                 return catAUnsupportedIncomeValidator.validate(incomeValidationRequest);
         }
 
+    }
+
+    static LocalDate getAssessmentStartDate(final LocalDate applicationRaisedDate) {
+        return applicationRaisedDate.minusMonths(NUMBER_OF_MONTHS);
     }
 }

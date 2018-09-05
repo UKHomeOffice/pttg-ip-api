@@ -1,7 +1,7 @@
 Feature: Failure - Category A Financial Requirement - with dependents - monthly pay
 
     Requirement to meet Category A
-    Applicant or Sponsor has received < 6 consecutive monthly payments from the same employer over the 182 day period prior to the Application Raised Date
+    Applicant or Sponsor has received < 6 consecutive monthly payments from the same employer over the 6 month period prior to the Application Raised Date
 
     Financial income regulation to pass this Feature File
     Income required Amount no Dependent Child = £18600 (£1550 per month or above)
@@ -9,7 +9,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
     Additional funds for EVERY subsequent dependent child = £2400 on top of employment threshold per child
 
     Financial income calculation to pass this Feature File
-    Income required amount + 1 dependant amount + (Additional dependant amount * number of dependants)/12 = Gross Monthly Income is < Threshold in any one of the 6 payments in the 182 days prior to the Application Raised Date
+    Income required amount + 1 dependant amount + (Additional dependant amount * number of dependants)/12 = Gross Monthly Income is < Threshold in any one of the 6 payments in the 6 months prior to the Application Raised Date
 
     1 Dependent Child - £18600+£3800/12 = £1866.67
     2 Dependent Children - £18600+£3800+£2400/12 = £2066.67
@@ -47,7 +47,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | Applicant                 | National Insurance Number | SP123456B                     |
             | Category A Monthly Salary | Financial requirement met | false                         |
             | Category A Monthly Salary | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
-            | Category A Monthly Salary | Assessment start date     | 2014-08-05                    |
+            | Category A Monthly Salary | Assessment start date     | 2014-08-03                    |
             | Category A Monthly Salary | Application Raised date   | 2015-02-03                    |
             | Category A Monthly Salary | Threshold                 | 2466.67                       |
             | Category A Monthly Salary | Employer Name - SP123456B | Flying Pizza Ltd              |
@@ -79,7 +79,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | Applicant                 | National Insurance Number | BS123456B                     |
             | Category A Monthly Salary | Financial requirement met | false                         |
             | Category A Monthly Salary | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
-            | Category A Monthly Salary | Assessment start date     | 2014-08-12                    |
+            | Category A Monthly Salary | Assessment start date     | 2014-08-10                    |
             | Category A Monthly Salary | Application Raised date   | 2015-02-10                    |
             | Category A Monthly Salary | Threshold                 | 2066.67                       |
             | Category A Monthly Salary | Employer Name - BS123456B | Flying Pizza Ltd              |
@@ -113,7 +113,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | Applicant                 | National Insurance Number | SY987654C                 |
             | Category A Monthly Salary | Financial requirement met | false                     |
             | Category A Monthly Salary | Failure reason            | MULTIPLE_EMPLOYERS        |
-            | Category A Monthly Salary | Assessment start date     | 2015-03-05                |
+            | Category A Monthly Salary | Assessment start date     | 2015-03-03                |
             | Category A Monthly Salary | Application Raised date   | 2015-09-03                |
             | Category A Monthly Salary | Threshold                 | 2266.67                   |
             | Category A Monthly Salary | Employer Name - SY987654C | Flying Pizza Ltd , FLying |
@@ -147,7 +147,7 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
             | Applicant                 | National Insurance Number | SY987654C          |
             | Category A Monthly Salary | Financial requirement met | false              |
             | Category A Monthly Salary | Failure reason            | NOT_ENOUGH_RECORDS |
-            | Category A Monthly Salary | Assessment start date     | 2015-03-05         |
+            | Category A Monthly Salary | Assessment start date     | 2015-03-03         |
             | Category A Monthly Salary | Application Raised date   | 2015-09-03         |
             | Category A Monthly Salary | Threshold                 | 2266.67            |
             | Category A Monthly Salary | Employer Name - SY987654C | Flying Pizza Ltd   |
