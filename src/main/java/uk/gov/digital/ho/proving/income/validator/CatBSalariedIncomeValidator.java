@@ -15,9 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.filterIncomesByDates;
-import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.getAllPayeIncomes;
-import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.isSuccessiveMonths;
+import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 
 @Service
 public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
@@ -39,7 +37,7 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
             return employmentCheckValidation;
         }
 
-        final List<Income> paye = getAllPayeInDateRange(incomeValidationRequest);
+        final List<Income> paye = getAllPayeInDateRange(incomeValidationRequest, getApplicationStartDate(incomeValidationRequest));
         if (paye.size() < 12) {
             return validationResult(incomeValidationRequest, IncomeValidationStatus.NOT_ENOUGH_RECORDS);
         }
@@ -65,14 +63,6 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
 
         monthlyIncomes.sort(Comparator.comparingInt(monthlyIncome -> monthlyIncome.get(0).yearAndMonth()));
         return monthlyIncomes;
-    }
-
-    private List<Income> getAllPayeInDateRange(IncomeValidationRequest incomeValidationRequest) {
-        List<Income> paye = getAllPayeIncomes(incomeValidationRequest);
-        LocalDate applicationStartDate = getApplicationStartDate(incomeValidationRequest);
-        LocalDate applicationRaisedDate = incomeValidationRequest.applicationRaisedDate();
-        return filterIncomesByDates(paye, applicationStartDate, applicationRaisedDate)
-            .collect(Collectors.toList());
     }
 
     private IncomeValidationResult validationResult(IncomeValidationRequest incomeValidationRequest, IncomeValidationStatus validationStatus) {

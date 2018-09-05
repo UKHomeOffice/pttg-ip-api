@@ -16,34 +16,35 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.getAllPayeInDateRange;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.getAllPayeIncomes;
 
 
 public class IncomeValidationHelperTest {
 
+    private final LocalDate someDate = LocalDate.of(2018, 9, 5);
+    private final int someInt = 0;
+    private final BigDecimal someAmount = new BigDecimal("12.30");
+    private final Individual applicant = new Individual("some forename", "some surname", "some nino");
+    private final HmrcIndividual applicantHmrcIndividual = new HmrcIndividual("some forename", "some surname", "some nino", someDate);
+    private final Individual partner = new Individual("some other forename", "some other surname", "some other nino");
+    private final HmrcIndividual partnerHmrcIndividual = new HmrcIndividual("some other forename", "some other surname", "some other nino", someDate);
+
     @Test
     public void testGetAllPayeIncomes() {
-        LocalDate someDate = LocalDate.of(2018, 9, 5);
-        int someInt = 0;
-        BigDecimal someAmount =  new BigDecimal("12.30");
 
-        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
-        Individual applicant = new Individual("some forename", "some surname", "some nino");
-        HmrcIndividual applicantHmrcIndividual = new HmrcIndividual("some forename", "some surname", "some nino", someDate);
-        Individual partner = new Individual("some other forename", "some other surname", "some other nino");
-        HmrcIndividual partnerHmrcIndividual = new HmrcIndividual("some other forename", "some other surname", "some other nino", someDate);
-
-
-        List<Income> paye1 = Lists.newArrayList(
+        List<Income> applicantPaye = Lists.newArrayList(
             new Income(someAmount, someDate, someInt, null, "some paye ref"),
             new Income(someAmount, someDate, someInt, null, "some paye ref")
         );
-        List<Income> paye2 = Lists.newArrayList(
+        List<Income> partnerPaye = Lists.newArrayList(
             new Income(someAmount, someDate, null, someInt, "some paye ref")
         );
 
-        IncomeRecord applicantIncome = new IncomeRecord(paye1, new ArrayList<>(), new ArrayList<>(), applicantHmrcIndividual);
-        IncomeRecord partnerIncome = new IncomeRecord(paye2, new ArrayList<>(), new ArrayList<>(), partnerHmrcIndividual);
+        IncomeRecord applicantIncome = new IncomeRecord(applicantPaye, new ArrayList<>(), new ArrayList<>(), applicantHmrcIndividual);
+        IncomeRecord partnerIncome = new IncomeRecord(partnerPaye, new ArrayList<>(), new ArrayList<>(), partnerHmrcIndividual);
+
+        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
         incomeRecords.put(applicant, applicantIncome);
         incomeRecords.put(partner, partnerIncome);
 
@@ -51,8 +52,38 @@ public class IncomeValidationHelperTest {
 
         List<Income> payeIncomes = getAllPayeIncomes(request);
 
-        assertThat(payeIncomes).containsAll(paye1);
-        assertThat(payeIncomes).containsAll(paye2);
-        assertThat(payeIncomes).hasSize(paye1.size() + paye2.size());
+        assertThat(payeIncomes).containsAll(applicantPaye);
+        assertThat(payeIncomes).containsAll(partnerPaye);
+        assertThat(payeIncomes).hasSize(applicantPaye.size() + partnerPaye.size());
+    }
+
+    @Test
+    public void testGetAllPayeInDateRange() {
+        LocalDate applicationStartDate = LocalDate.of(2018, 7, 27);
+        LocalDate applicationRaisedDate = LocalDate.of(2018, 9, 5);
+
+        Income incomeBeforeStartDate = new Income(someAmount, applicationStartDate.minusDays(1), someInt, null, "some paye ref");
+        Income incomeOnStartDate = new Income(someAmount, applicationStartDate, someInt, null, "some paye ref");
+        Income incomeAfterStartDate = new Income(someAmount, applicationStartDate.plusDays(1), someInt, null, "some paye ref");
+
+        Income incomeBeforeEndDate = new Income(someAmount, applicationRaisedDate.minusDays(1), someInt, null, "some paye ref");
+        Income incomeOnEndDate = new Income(someAmount, applicationRaisedDate, someInt, null, "some paye ref");
+        Income incomeAfterEndDate = new Income(someAmount, applicationRaisedDate.plusDays(1), someInt, null, "some paye ref");
+
+        List<Income> applicantPaye = Lists.newArrayList(incomeBeforeStartDate, incomeAfterStartDate, incomeOnEndDate);
+        List<Income> partnerPaye = Lists.newArrayList(incomeOnStartDate, incomeBeforeEndDate, incomeAfterEndDate);
+
+        IncomeRecord applicantIncome = new IncomeRecord(applicantPaye, new ArrayList<>(), new ArrayList<>(), applicantHmrcIndividual);
+        IncomeRecord partnerIncome = new IncomeRecord(partnerPaye, new ArrayList<>(), new ArrayList<>(), partnerHmrcIndividual);
+
+        Map<Individual, IncomeRecord> incomeRecords = new HashMap<>();
+        incomeRecords.put(applicant, applicantIncome);
+        incomeRecords.put(partner, partnerIncome);
+
+        IncomeValidationRequest request = IncomeValidationRequest.create(applicationRaisedDate, incomeRecords, someInt);
+
+        List<Income> payeInDateRange = getAllPayeInDateRange(request, applicationStartDate);
+
+        assertThat(payeInDateRange).containsExactlyInAnyOrder(incomeOnStartDate, incomeAfterStartDate, incomeBeforeEndDate, incomeOnEndDate);
     }
 }

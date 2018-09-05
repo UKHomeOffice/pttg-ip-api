@@ -69,6 +69,14 @@ public class IncomeValidationHelper {
         return inRange;
     }
 
+    static boolean checkValuePassesThreshold(BigDecimal value, BigDecimal threshold) {
+        return (value.compareTo(threshold) >= 0);
+    }
+
+    static List<Income> removeDuplicates(List<Income> incomes) {
+        return incomes.stream().distinct().collect(Collectors.toList());
+    }
+
     static List<Income> getAllPayeIncomes(IncomeValidationRequest incomeValidationRequest) {
         return incomeValidationRequest.allIncome()
             .stream()
@@ -76,12 +84,11 @@ public class IncomeValidationHelper {
             .collect(Collectors.toList());
     }
 
-    static boolean checkValuePassesThreshold(BigDecimal value, BigDecimal threshold) {
-        return (value.compareTo(threshold) >= 0);
-    }
-
-    static List<Income> removeDuplicates(List<Income> incomes) {
-        return incomes.stream().distinct().collect(Collectors.toList());
+    static List<Income> getAllPayeInDateRange(IncomeValidationRequest incomeValidationRequest, LocalDate applicationStartDate) {
+        List<Income> paye = getAllPayeIncomes(incomeValidationRequest);
+        LocalDate applicationRaisedDate = incomeValidationRequest.applicationRaisedDate();
+        return filterIncomesByDates(paye, applicationStartDate, applicationRaisedDate)
+            .collect(Collectors.toList());
     }
 
 }
