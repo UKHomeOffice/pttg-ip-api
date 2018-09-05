@@ -3,7 +3,9 @@ package uk.gov.digital.ho.proving.income.validator;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Employments;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
+import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.EmploymentCheck;
+import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -65,6 +67,13 @@ public class IncomeValidationHelper {
         boolean inRange = !(date.isBefore(lower) || date.isAfter(upper));
         log.debug(String.format("%s: %s in range of %s & %s", inRange, date, lower, upper));
         return inRange;
+    }
+
+    static List<Income> getAllPayeIncomes(IncomeValidationRequest incomeValidationRequest) {
+        return incomeValidationRequest.allIncome()
+            .stream()
+            .flatMap(applicantIncome -> applicantIncome.incomeRecord().paye().stream())
+            .collect(Collectors.toList());
     }
 
     static boolean checkValuePassesThreshold(BigDecimal value, BigDecimal threshold) {

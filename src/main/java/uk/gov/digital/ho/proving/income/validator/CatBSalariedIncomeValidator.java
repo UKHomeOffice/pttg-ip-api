@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.filterIncomesByDates;
+import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.getAllPayeIncomes;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.isSuccessiveMonths;
 
 @Service
@@ -71,14 +72,6 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
         LocalDate applicationStartDate = getApplicationStartDate(incomeValidationRequest);
         LocalDate applicationRaisedDate = incomeValidationRequest.applicationRaisedDate();
         return filterIncomesByDates(paye, applicationStartDate, applicationRaisedDate)
-            .collect(Collectors.toList());
-    }
-
-    private List<Income> getAllPayeIncomes(IncomeValidationRequest incomeValidationRequest) {
-        return incomeValidationRequest.allIncome()
-            .stream()
-            .map(ApplicantIncome::incomeRecord)
-            .flatMap(incomeRecord -> incomeRecord.paye().stream())
             .collect(Collectors.toList());
     }
 

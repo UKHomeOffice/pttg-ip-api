@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.getAllPayeIncomes;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_PASSED;
 
@@ -87,11 +88,7 @@ public class CatBNonSalariedIncomeValidator implements ActiveIncomeValidator {
     }
 
     private BigDecimal getProjectedAnnualIncome(IncomeValidationRequest incomeValidationRequest) {
-        List<Income> incomes =
-            incomeValidationRequest.allIncome()
-                .stream()
-                .flatMap(applicantIncome -> applicantIncome.incomeRecord().paye().stream())
-                .collect(Collectors.toList());
+        List<Income> incomes = getAllPayeIncomes(incomeValidationRequest);
         Map<Integer, BigDecimal> monthlyIncomes = MonthlyIncomeAggregator.aggregateMonthlyIncome(incomes);
         return ProjectedAnnualIncomeCalculator.calculate(monthlyIncomes);
     }
