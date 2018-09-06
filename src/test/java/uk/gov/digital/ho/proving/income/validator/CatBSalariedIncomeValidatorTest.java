@@ -279,7 +279,7 @@ public class CatBSalariedIncomeValidatorTest {
         employmentCheckPasses();
 
         LocalDate earlyInMonthApplicationDate = LocalDate.of(2018, Month.JUNE, 2);
-        assertStatus(twelveMonthsOverThresholdNoPaymentThisMonth(earlyInMonthApplicationDate), CATB_SALARIED_PASSED);
+        assertStatus(twelveMonthsOverThresholdNoPaymentThisMonth(earlyInMonthApplicationDate), CATB_SALARIED_PASSED, earlyInMonthApplicationDate);
     }
 
     @Test
@@ -290,11 +290,26 @@ public class CatBSalariedIncomeValidatorTest {
         assertStatus(twelveMonthsOverThresholdNotPaye(earlyInMonthApplicationDate), NOT_ENOUGH_RECORDS);
     }
 
+    @Test
+    public void checkFailsWhenNotEnoughMonthsAreBeforeApplicationDate() {
+        employmentCheckPasses();
+
+        assertStatus(twelveMonthsOverThresholdButNotAllBeforeArd(applicationDate), NOT_ENOUGH_RECORDS);
+    }
+
     private void assertStatus(List<ApplicantIncome> applicantIncomes, IncomeValidationStatus status) {
         assertStatus(applicantIncomes, status, 0);
     }
 
     private void assertStatus(List<ApplicantIncome> applicantIncomes, IncomeValidationStatus status, int dependants) {
+        assertStatus(applicantIncomes, status, dependants, applicationDate);
+    }
+
+    private void assertStatus(List<ApplicantIncome> applicantIncomes, IncomeValidationStatus status, LocalDate applicationDate) {
+        assertStatus(applicantIncomes, status, 0, applicationDate);
+    }
+
+    private void assertStatus(List<ApplicantIncome> applicantIncomes, IncomeValidationStatus status, int dependants, LocalDate applicationDate) {
         IncomeValidationRequest request = new IncomeValidationRequest(applicantIncomes, applicationDate, dependants);
 
         IncomeValidationResult result = catBSalariedIncomeValidator.validate(request);

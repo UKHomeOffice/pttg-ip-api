@@ -46,7 +46,14 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
                 assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
 
-        return new IncomeValidationResult(status, monthlyThreshold, Collections.singletonList(checkedIndividual), assessmentStartDate, CATEGORY, CALCULATION_TYPE);
+        return IncomeValidationResult.builder()
+            .status(status)
+            .threshold(monthlyThreshold)
+            .individuals(Collections.singletonList(checkedIndividual))
+            .assessmentStartDate(assessmentStartDate)
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
+            .build();
     }
 
     private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {

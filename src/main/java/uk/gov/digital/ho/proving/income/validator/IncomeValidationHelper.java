@@ -3,7 +3,9 @@ package uk.gov.digital.ho.proving.income.validator;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Employments;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
+import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.EmploymentCheck;
+import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -73,6 +75,20 @@ public class IncomeValidationHelper {
 
     static List<Income> removeDuplicates(List<Income> incomes) {
         return incomes.stream().distinct().collect(Collectors.toList());
+    }
+
+    static List<Income> getAllPayeIncomes(IncomeValidationRequest incomeValidationRequest) {
+        return incomeValidationRequest.allIncome()
+            .stream()
+            .flatMap(applicantIncome -> applicantIncome.incomeRecord().paye().stream())
+            .collect(Collectors.toList());
+    }
+
+    static List<Income> getAllPayeInDateRange(IncomeValidationRequest incomeValidationRequest, LocalDate applicationStartDate) {
+        List<Income> paye = getAllPayeIncomes(incomeValidationRequest);
+        LocalDate applicationRaisedDate = incomeValidationRequest.applicationRaisedDate();
+        return filterIncomesByDates(paye, applicationStartDate, applicationRaisedDate)
+            .collect(Collectors.toList());
     }
 
 }

@@ -48,7 +48,14 @@ public class CatASalariedIncomeValidatorTest {
         List<ApplicantIncome> incomes = contiguousMonthlyPayments(raisedDate);
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
 
-        final IncomeValidationResult result = new IncomeValidationResult(IncomeValidationStatus.MONTHLY_SALARIED_PASSED, BigDecimal.TEN, new ArrayList<>(), raisedDate.minusMonths(6), "X", "Calc type");
+        final IncomeValidationResult result = IncomeValidationResult.builder()
+            .status(IncomeValidationStatus.MONTHLY_SALARIED_PASSED)
+            .threshold(BigDecimal.TEN)
+            .individuals(new ArrayList<>())
+            .assessmentStartDate(raisedDate.minusMonths(6))
+            .category("X")
+            .calculationType("Calc type")
+            .build();
         when(monthlyValidator.validate(any(IncomeValidationRequest.class))).thenReturn(result);
 
         catASalariedIncomeValidator.validate(request);
@@ -65,7 +72,14 @@ public class CatASalariedIncomeValidatorTest {
         List<ApplicantIncome> incomes = getIncomesAboveThreshold2();
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
 
-        final IncomeValidationResult result = new IncomeValidationResult(IncomeValidationStatus.WEEKLY_SALARIED_PASSED, BigDecimal.TEN, new ArrayList<>(), raisedDate.minusWeeks(26), "X", "Calc type");
+        final IncomeValidationResult result = IncomeValidationResult.builder()
+            .status(IncomeValidationStatus.WEEKLY_SALARIED_PASSED)
+            .threshold(BigDecimal.TEN)
+            .individuals(new ArrayList<>())
+            .assessmentStartDate(raisedDate.minusWeeks(26))
+            .category("X")
+            .calculationType("Calc type")
+            .build();
         when(monthlyValidator.validate(any(IncomeValidationRequest.class))).thenReturn(result);
 
         catASalariedIncomeValidator.validate(request);
@@ -82,7 +96,14 @@ public class CatASalariedIncomeValidatorTest {
         List<ApplicantIncome> incomes = fortnightlyPayment(raisedDate);
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
 
-        final IncomeValidationResult result = new IncomeValidationResult(IncomeValidationStatus.UNKNOWN_PAY_FREQUENCY, BigDecimal.TEN, new ArrayList<>(), raisedDate.minusMonths(6), "X", "Calc type");
+        final IncomeValidationResult result = IncomeValidationResult.builder()
+            .status(IncomeValidationStatus.UNKNOWN_PAY_FREQUENCY)
+            .threshold(BigDecimal.TEN)
+            .individuals(new ArrayList<>())
+            .assessmentStartDate(raisedDate.minusMonths(6))
+            .category("X")
+            .calculationType("Calc type")
+            .build();
         when(monthlyValidator.validate(any(IncomeValidationRequest.class))).thenReturn(result);
 
         catASalariedIncomeValidator.validate(request);

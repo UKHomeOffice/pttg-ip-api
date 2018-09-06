@@ -37,7 +37,7 @@ class CatBSalariedTestData {
         BigDecimal monthlyIncome = incomeOverMonthlyThreshold(0);
 
         for (int i = 0; i < 12; i++) {
-            incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i + 1), 12 - i, null, PIZZA_HUT_PAYE_REF));
+            incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i + 1).withDayOfMonth(28), 12 - i, null, PIZZA_HUT_PAYE_REF));
         }
 
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
@@ -254,6 +254,20 @@ class CatBSalariedTestData {
         }
 
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER, BURGER_KING_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> twelveMonthsOverThresholdButNotAllBeforeArd(final LocalDate applicationRaisedDate) {
+        List<Income> incomes = new ArrayList<>();
+        BigDecimal monthlyIncome = incomeOverMonthlyThreshold(0);
+
+        for (int i = 0; i < 8; i++) {
+            incomes.add(new Income(monthlyIncome, applicationRaisedDate.minusMonths(i + 1), 12 - i, null, PIZZA_HUT_PAYE_REF));
+        }
+        for (int i = 0; i < 4; i++) {
+            incomes.add(new Income(monthlyIncome, applicationRaisedDate.plusMonths(i), i, null, PIZZA_HUT_PAYE_REF));
+        }
+        assert incomes.size() == 12;
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
     private static BigDecimal incomeOverMonthlyThreshold(int dependants) {
