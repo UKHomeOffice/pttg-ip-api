@@ -39,12 +39,43 @@ public class FrequencyCalculatorTest {
 
         assertThat(frequency).isEqualTo(WEEKLY);
     }
-    // TODO OJR 2018/09/06 We probably need to test similarly that when there are no week/month numbers, having two payments on same date doesn't affect calculation.
+
+    @Test
+    public void shouldReturnMonthlyWhenDuplicatePaymentsNoMonthOrWeekNumbers() {
+        List<Income> paye = generateCalendarMonthlyDatesFrom(someDate).
+            limit(6)
+            .map(date -> new Income(BigDecimal.ONE, date, null, null, "some employer ref"))
+            .collect(Collectors.toList());
+
+        createConsecutiveDuplicates(paye);
+        createNonConsecutiveDuplicates(paye);
+
+        IncomeRecord incomeRecord = new IncomeRecord(paye, null, null, null);
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
+    }
+
+    @Test
+    public void shouldReturnWeeklyWhenDuplicatePaymentsNoMonthOrWeekNumbers() {
+        List<Income> paye = generateWeeklyDatesFrom(someDate).
+            limit(6)
+            .map(date -> new Income(BigDecimal.ONE, date, null, null, "some employer ref"))
+            .collect(Collectors.toList());
+
+        createConsecutiveDuplicates(paye);
+        createNonConsecutiveDuplicates(paye);
+
+        IncomeRecord incomeRecord = new IncomeRecord(paye, null, null, null);
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(WEEKLY);
+
+    }
 
     /*
      When monthly number present.
      */
-
     @Test
     public void shouldReturnMonthlyWhen6SameDateConsecutiveWeeksButWithMonthNumberPresent() {
         List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
@@ -84,10 +115,10 @@ public class FrequencyCalculatorTest {
         assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
     }
 
+
     /*
     When weekly number present and consecutive up to 56 (yes can be above 52)
      */
-
     @Test
     public void shouldReturnWeeklyWhen26DifferentDayConsecutiveWeeksButConsecutiveWeekNumbers() {
         List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.JANUARY, 2))
@@ -103,7 +134,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnWeeklyWhen52DuplicatedDifferentDayConsecutiveWeeksButConsecutiveWeekNumbers() {
-        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.JANUARY, 2))
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.JANUARY, 2), date -> date.minusDays(2))
             .limit(52)
             .collect(Collectors.toList());
 
@@ -179,10 +210,10 @@ public class FrequencyCalculatorTest {
 
     }
 
+
     /*
     When no weekly or monthly number present.
      */
-
     @Test
     public void shouldReturnMonthlyWhen6SameDateConsecutiveMonths() {
         List<LocalDate> dates = generateCalendarMonthlyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
@@ -372,5 +403,13 @@ public class FrequencyCalculatorTest {
 
     private long randomBetween(int min, int max) {
         return new Random().nextInt(max - min + 1) + min;
+    }
+
+    private void createConsecutiveDuplicates(List<Income> list) {
+        list.add(3, list.get(3));
+    }
+
+    private void createNonConsecutiveDuplicates(List<Income> list) {
+        list.add(0, list.get(4));
     }
 }
