@@ -2,7 +2,6 @@ package uk.gov.digital.ho.proving.income.validator;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -192,55 +191,6 @@ public class CatAMonthlyIncomeValidatorTestToo {
         IncomeValidationResult result = service.validate(request);
 
         assertThat(result.individuals().get(0).employers().size()).isEqualTo(2);
-    }
-
-    @Test
-    public void testAssessmentStartDate6MonthsAgo() {
-        List<Income> incomes = new ArrayList<>();
-        HmrcIndividual hmrcIndividual = aIndividual();
-        Applicant applicant = new Applicant(hmrcIndividual.firstName(), hmrcIndividual.lastName(), LocalDate.now(), hmrcIndividual.nino());
-        IncomeRecord incomeRecord = new IncomeRecord(incomes, taxReturns, employments, hmrcIndividual);
-        ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord);
-
-        LocalDate applicationRaisedDate = LocalDate.of(2018, 7, 14);
-        IncomeValidationRequest request = new IncomeValidationRequest(ImmutableList.of(applicantIncome), applicationRaisedDate, 0);
-
-        IncomeValidationResult result = service.validate(request);
-
-        assertThat(result.assessmentStartDate()).isEqualTo(LocalDate.of(2018, 1, 14));
-    }
-
-    @Test
-    public void testAssessmentStartDate6MonthsAgo31stAugust() {
-        List<Income> incomes = new ArrayList<>();
-        HmrcIndividual hmrcIndividual = aIndividual();
-        Applicant applicant = new Applicant(hmrcIndividual.firstName(), hmrcIndividual.lastName(), LocalDate.now(), hmrcIndividual.nino());
-        IncomeRecord incomeRecord = new IncomeRecord(incomes, taxReturns, employments, hmrcIndividual);
-        ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord);
-
-        LocalDate applicationRaisedDate = LocalDate.of(2018, 8, 31);
-        IncomeValidationRequest request = new IncomeValidationRequest(ImmutableList.of(applicantIncome), applicationRaisedDate, 0);
-
-        IncomeValidationResult result = service.validate(request);
-
-        assertThat(result.assessmentStartDate()).isEqualTo(LocalDate.of(2018, 2, 28));
-    }
-
-    @Test
-    public void testAssessmentStartDate6MonthsAgo31stAugustLeapYear() {
-        List<Income> incomes = new ArrayList<>();
-        HmrcIndividual hmrcIndividual = aIndividual();
-        Applicant applicant = new Applicant(hmrcIndividual.firstName(), hmrcIndividual.lastName(), LocalDate.now(), hmrcIndividual.nino());
-        IncomeRecord incomeRecord = new IncomeRecord(incomes, taxReturns, employments, hmrcIndividual);
-        ApplicantIncome applicantIncome = new ApplicantIncome(applicant, incomeRecord);
-
-        LocalDate applicationRaisedDate = LocalDate.of(2020, 8, 31);
-        IncomeValidationRequest request = new IncomeValidationRequest(ImmutableList.of(applicantIncome), applicationRaisedDate, 0);
-
-        IncomeValidationResult result = service.validate(request);
-
-        assertThat(result.assessmentStartDate()).isEqualTo(LocalDate.of(2020, 2, 29));
-
     }
 
     private HmrcIndividual aIndividual() {
