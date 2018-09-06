@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.validator;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
+import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
@@ -14,7 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.isSuccessiveMonths;
+import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 
 @Service
 public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
@@ -36,42 +37,12 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
             return employmentCheckValidation;
         }
 
-        IncomeValidationResult applicantResult = validateForApplicant(incomeValidationRequest);
-        if (applicantResult.status().isPassed() || !incomeValidationRequest.isJointRequest()) {
-            return applicantResult;
-        }
-
-        IncomeValidationResult partnerResult = validateForPartner(incomeValidationRequest);
-        if (partnerResult.status().isPassed()) {
-            return partnerResult;
-        }
-        return validateForJoint(incomeValidationRequest);
-    }
-
-    private IncomeValidationResult validateForApplicant(IncomeValidationRequest incomeValidationRequest) {
-        return validateForIndividual(incomeValidationRequest, incomeValidationRequest.applicantIncome().incomeRecord().paye());
-    }
-
-    private IncomeValidationResult validateForPartner(IncomeValidationRequest incomeValidationRequest) {
-        return validateForIndividual(incomeValidationRequest, incomeValidationRequest.partnerIncome().incomeRecord().paye());
-    }
-
-    private IncomeValidationResult validateForJoint(IncomeValidationRequest incomeValidationRequest) {
-        List<Income> jointPaye = incomeValidationRequest.applicantIncome().incomeRecord().paye();
-        jointPaye.addAll(incomeValidationRequest.partnerIncome().incomeRecord().paye());
-        return validateForIndividual(incomeValidationRequest, jointPaye);
-    }
-
-    private IncomeValidationResult validateForIndividual(IncomeValidationRequest incomeValidationRequest, List<Income> paye) {
+        final List<Income> paye = getAllPayeInDateRange(incomeValidationRequest, getApplicationStartDate(incomeValidationRequest));
         if (paye.size() < 12) {
             return validationResult(incomeValidationRequest, IncomeValidationStatus.NOT_ENOUGH_RECORDS);
         }
 
-        List<List<Income>> monthlyIncomes = new ArrayList<>();
-        paye.stream().collect(Collectors.groupingBy(Income::yearAndMonth))
-            .forEach((yearAndMonth, income) -> monthlyIncomes.add(income));
-
-        monthlyIncomes.sort(Comparator.comparingInt(monthlyIncome -> monthlyIncome.get(0).yearAndMonth()));
+        List<List<Income>> monthlyIncomes = sortAndGroupIncomesByMonth(paye);
 
         if (monthMissing(monthlyIncomes)) {
             return validationResult(incomeValidationRequest, IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
@@ -84,15 +55,25 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
         return validationResult(incomeValidationRequest, IncomeValidationStatus.CATB_SALARIED_PASSED);
     }
 
+    private List<List<Income>> sortAndGroupIncomesByMonth(List<Income> incomes) {
+        List<List<Income>> monthlyIncomes = new ArrayList<>();
+        incomes.stream()
+            .collect(Collectors.groupingBy(Income::yearAndMonth))
+            .forEach((yearAndMonth, income) -> monthlyIncomes.add(income));
+
+        monthlyIncomes.sort(Comparator.comparingInt(monthlyIncome -> monthlyIncome.get(0).yearAndMonth()));
+        return monthlyIncomes;
+    }
+
     private IncomeValidationResult validationResult(IncomeValidationRequest incomeValidationRequest, IncomeValidationStatus validationStatus) {
-        return new IncomeValidationResult(
-            validationStatus,
-            new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold(),
-            incomeValidationRequest.getCheckedIndividuals(),
-            getApplicationStartDate(incomeValidationRequest),
-            CATEGORY,
-            CALCULATION_TYPE
-        );
+        return IncomeValidationResult.builder()
+            .status(validationStatus)
+            .threshold(new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold())
+            .assessmentStartDate(getApplicationStartDate(incomeValidationRequest))
+            .individuals(incomeValidationRequest.getCheckedIndividuals())
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
+            .build();
     }
 
     private LocalDate getApplicationStartDate(IncomeValidationRequest incomeValidationRequest) {

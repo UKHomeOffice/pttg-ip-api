@@ -64,13 +64,14 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
 
         IncomeValidationStatus result = earningsSinceAssessmentStart.compareTo(monthlyThreshold) >= 0 ? EMPLOYMENT_CHECK_PASSED : EMPLOYMENT_CHECK_FAILED;
 
-        return new IncomeValidationResult(
-            result,
-            monthlyThreshold,
-            getCheckedIndividuals(incomeValidationRequest),
-            assessmentStartDate,
-            CATEGORY,
-            CALCULATION_TYPE);
+        return IncomeValidationResult.builder()
+            .status(result)
+            .threshold(monthlyThreshold)
+            .individuals(getCheckedIndividuals(incomeValidationRequest))
+            .assessmentStartDate(assessmentStartDate)
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
+            .build();
     }
 
     private List<CheckedIndividual> getCheckedIndividuals(IncomeValidationRequest incomeValidationRequest) {

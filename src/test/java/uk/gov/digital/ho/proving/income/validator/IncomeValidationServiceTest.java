@@ -136,15 +136,36 @@ public class IncomeValidationServiceTest {
     }
 
     private IncomeValidationResult getResult(IncomeValidationStatus status, String category) {
-        return new IncomeValidationResult(status, BigDecimal.TEN, new ArrayList<>(), LocalDate.now(), category, "Calc type");
+        return IncomeValidationResult.builder()
+            .status(status)
+            .threshold(BigDecimal.TEN)
+            .individuals(new ArrayList<>())
+            .assessmentStartDate(LocalDate.now())
+            .category(category)
+            .calculationType("Calc type")
+            .build();
     }
 
     private IncomeValidationResult getResultWithStartDate(IncomeValidationStatus status, String category, LocalDate assessmentStartDate) {
-        return new IncomeValidationResult(status, BigDecimal.TEN, new ArrayList<>(), assessmentStartDate,category, "Calc type");
+        return IncomeValidationResult.builder()
+            .status(status)
+            .threshold(BigDecimal.TEN)
+            .individuals(new ArrayList<>())
+            .assessmentStartDate(assessmentStartDate)
+            .category(category)
+            .calculationType("Calc type")
+            .build();
     }
 
     private IncomeValidationResult getResultWithIndividual(IncomeValidationStatus status, String category, CheckedIndividual checkedIndividual) {
-        return new IncomeValidationResult(status, BigDecimal.TEN, ImmutableList.of(checkedIndividual), LocalDate.now(), category, "Calc type");
+        return IncomeValidationResult.builder()
+            .status(status)
+            .threshold(BigDecimal.TEN)
+            .individuals(ImmutableList.of(checkedIndividual))
+            .assessmentStartDate(LocalDate.now())
+            .category(category)
+            .calculationType("Calc type")
+            .build();
     }
 
 }
