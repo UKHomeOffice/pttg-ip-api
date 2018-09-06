@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.proving.income.validator;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
@@ -10,6 +9,7 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
@@ -27,7 +27,7 @@ public class CatAUnsupportedIncomeValidator implements IncomeValidator {
         FrequencyCalculator.Frequency frequency = FrequencyCalculator.calculate(applicantIncome.incomeRecord());
         List<String> employments = toEmployerNames(applicantIncome.employments());
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
-        return new IncomeValidationResult(getStatus(frequency), BigDecimal.ZERO, Arrays.asList(checkedIndividual), getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate()), CATEGORY, CALCULATION_TYPE);
+        return new IncomeValidationResult(getStatus(frequency), BigDecimal.ZERO, Collections.singletonList(checkedIndividual), getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate()), CATEGORY, CALCULATION_TYPE);
     }
 
     private IncomeValidationStatus getStatus(FrequencyCalculator.Frequency frequency) {

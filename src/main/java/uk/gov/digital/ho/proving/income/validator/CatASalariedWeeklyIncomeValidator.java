@@ -8,7 +8,7 @@ import uk.gov.digital.ho.proving.income.validator.domain.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,19 +40,18 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
         IncomeValidationStatus status =
             financialCheckForWeeklySalaried(
                 removeDuplicates(applicantIncome.incomeRecord().paye()),
-                NUMBER_OF_WEEKS,
                 weeklyThreshold,
                 assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
 
-        return new IncomeValidationResult(status, weeklyThreshold, Arrays.asList(checkedIndividual), assessmentStartDate, CATEGORY, CALCULATION_TYPE);
+        return new IncomeValidationResult(status, weeklyThreshold, Collections.singletonList(checkedIndividual), assessmentStartDate, CATEGORY, CALCULATION_TYPE);
     }
 
-    private static IncomeValidationStatus financialCheckForWeeklySalaried(List<Income> incomes, int numOfWeeks, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
+    private static IncomeValidationStatus financialCheckForWeeklySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
         Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
         List<Income> lastXWeeks = individualIncome.collect(Collectors.toList());
 
-        if (lastXWeeks.size() >= numOfWeeks) {
+        if (lastXWeeks.size() >= NUMBER_OF_WEEKS) {
             EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXWeeks, threshold);
             if (employmentCheck.equals(EmploymentCheck.PASS)) {
                 return IncomeValidationStatus.WEEKLY_SALARIED_PASSED;

@@ -9,7 +9,7 @@ import uk.gov.digital.ho.proving.income.validator.domain.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,21 +42,20 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
         IncomeValidationStatus status =
             financialCheckForMonthlySalaried(
                 removeDuplicates(applicantIncome.incomeRecord().paye()),
-                NUMBER_OF_MONTHS,
                 monthlyThreshold,
                 assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
 
-        return new IncomeValidationResult(status, monthlyThreshold, Arrays.asList(checkedIndividual), assessmentStartDate, CATEGORY, CALCULATION_TYPE);
+        return new IncomeValidationResult(status, monthlyThreshold, Collections.singletonList(checkedIndividual), assessmentStartDate, CATEGORY, CALCULATION_TYPE);
     }
 
-    private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
+    private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
         Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
-        List<Income> lastXMonths = individualIncome.limit(numOfMonths).collect(Collectors.toList());
-        if (lastXMonths.size() >= numOfMonths) {
+        List<Income> lastXMonths = individualIncome.limit(NUMBER_OF_MONTHS).collect(Collectors.toList());
+        if (lastXMonths.size() >= NUMBER_OF_MONTHS) {
 
             // Do we have NUMBER_OF_MONTHS consecutive months with the same employer
-            for (int i = 0; i < numOfMonths - 1; i++) {
+            for (int i = 0; i < NUMBER_OF_MONTHS - 1; i++) {
                 if (!isSuccessiveMonths(lastXMonths.get(i), lastXMonths.get(i + 1))) {
                     log.debug("FAILED: Months not consecutive");
                     return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
