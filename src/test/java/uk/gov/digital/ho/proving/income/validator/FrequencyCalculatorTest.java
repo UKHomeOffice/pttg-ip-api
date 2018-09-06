@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.validator;
 
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
@@ -7,12 +8,14 @@ import uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.Frequency;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Month;
+import java.time.temporal.WeekFields;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.Frequency.CALENDAR_MONTHLY;
-import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.Frequency.WEEKLY;
+import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.Frequency.*;
 import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.calculate;
 
 public class FrequencyCalculatorTest {
@@ -36,6 +39,271 @@ public class FrequencyCalculatorTest {
 
         assertThat(frequency).isEqualTo(WEEKLY);
     }
+    // TODO OJR 2018/09/06 We probably need to test similarly that when there are no week/month numbers, having two payments on same date doesn't affect calculation.
+
+    /*
+     When monthly number present.
+     */
+
+    @Test
+    public void shouldReturnMonthlyWhen6SameDateConsecutiveWeeksButWithMonthNumberPresent() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7))
+            .limit(6)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForDateWithMonthPayNumber(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
+    }
+
+    @Test
+    public void shouldReturnMonthlyWhen2SameDateConsectutiveMonthsWithMonthNumberPresent() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7))
+            .limit(2)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForDateWithMonthPayNumber(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
+    }
+
+    @Test
+    public void shouldReturnMonthlyWhen1MonthWithMonthNumberPresent() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7))
+            .limit(1)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForDateWithMonthPayNumber(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
+    }
+
+    /*
+    When weekly number present and consecutive up to 56 (yes can be above 52)
+     */
+    @Test
+    public void shouldReturnWeeklyWhen26DifferentDayConsecutiveWeeksButConsecutiveWeekNumbers() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.JANUARY, 2), date -> date.minusDays(7))
+            .limit(26)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForRandomisedDateWithWeekPayNumber(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(WEEKLY);
+    }
+
+    @Test
+    public void shouldReturnWeeklyWhen52DuplicatedDifferentDayConsecutiveWeeksButConsecutiveWeekNumbers() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.JANUARY, 2), date -> date.minusDays(2))
+            .limit(52)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForRandomisedDateWithWeekPayNumber(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(WEEKLY);
+    }
+
+    @Test
+    public void shouldReturnWeekly2DifferentDayConsecutiveWeeksWithConsecutiveWeekNumbers() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.JANUARY, 2), date -> date.minusDays(7))
+            .limit(2)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForRandomisedDateWithWeekPayNumber(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(WEEKLY);
+    }
+
+    @Test
+    public void shouldReturnWeekly1DayWithWeekNumber() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.JANUARY, 2), date -> date.minusDays(7))
+            .limit(1)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForRandomisedDateWithWeekPayNumber(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(WEEKLY);
+    }
+
+    @Test
+    public void shouldReturnFortnightlyWhen13RandomDaysButWeekNumbersForEveryOtherWeek() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(14))
+            .limit(13)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForRandomisedDateWithWeekPayNumber(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(FORTNIGHTLY);
+    }
+
+    @Test
+    public void shouldReturn4WeeklyWhen6RandomDaysButWeekNumbersEvery4thWeeks() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(28))
+            .limit(6)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForRandomisedDateWithWeekPayNumber(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(FOUR_WEEKLY);
+    }
+
+    @Test
+    public void shouldReturnChangedWhenAMixtureOfWeekAndMonthNumbers() {
+        Income monthlyPayment = new Income(BigDecimal.ONE, LocalDate.of(2017, Month.DECEMBER, 1), 9, null, "some employer ref");
+        Income weeklyPayment = new Income(BigDecimal.ONE, LocalDate.of(2017, Month.DECEMBER, 7), null, 41, "some employer ref");
+
+        IncomeRecord incomeRecord = new IncomeRecord(Arrays.asList(monthlyPayment, weeklyPayment), Collections.emptyList(), Collections.emptyList(), null);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(CHANGED);
+
+    }
+
+    /*
+    When no weekly or monthly number present.
+     */
+
+    @Test
+    public void shouldReturnMonthlyWhen6SameDateConsecutiveMonths() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusMonths(1))
+            .limit(6)
+            .collect(Collectors.toList());
+
+
+        IncomeRecord incomeRecord = incomeRecordForDate(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
+    }
+
+    @Test
+    public void shouldReturnMonthlyWhen6SimilarDateConsecutiveMonths() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusMonths(1).plusDays(randomBetween(-1, 1)))
+            .limit(6)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForDate(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
+    }
+
+    @Test
+    public void shouldReturnWeeklyWhen26SameDayConsecutiveWeeks() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7))
+            .limit(26)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForDate(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(WEEKLY);
+    }
+
+    @Test
+    public void shouldReturnWeeklyWhen26SimilarDayConsecutiveWeeks() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7).plusDays(randomBetween(-1, 1)))
+            .limit(26)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForDate(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(WEEKLY);
+    }
+
+    @Test
+    public void shouldReturnMonthlyWhen3SameDateConsecutiveMonths() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusMonths(-1))
+            .limit(3)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForDate(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
+    }
+
+    @Test
+    public void shouldReturnWeeklyWhen13SameDayConsecutiveWeeks() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7))
+            .limit(13)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForDate(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(WEEKLY);
+    }
+
+    @Test
+    public void shouldReturnFortnightlyWhen13SameDayEveryTwoWeeks() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(14))
+            .limit(13)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForDate(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(FORTNIGHTLY);
+    }
+
+    @Test
+    public void shouldReturn4WeeklyWhen6SameDayEveryFourWeeks() {
+        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(28))
+            .limit(6)
+            .collect(Collectors.toList());
+
+        IncomeRecord incomeRecord = incomeRecordForDate(dates);
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(FOUR_WEEKLY);
+    }
+
+    @Test
+    public void shouldReturnMonthlyWhenNoPayments() {
+        IncomeRecord incomeRecord = incomeRecordForDate(Lists.emptyList());
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
+    }
+
+    @Test
+    public void shouldReturnMonthlyWHenOnlyOnePayment() {
+        IncomeRecord incomeRecord = incomeRecordForDate(Collections.singletonList(LocalDate.of(2017, Month.DECEMBER, 1)));
+
+        Frequency frequency = calculate(incomeRecord);
+
+        assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
+    }
 
     private List<Income> incomesForMonthNumber(int... monthNumbers) {
         final List<Income> incomes = new ArrayList<>();
@@ -51,5 +319,46 @@ public class FrequencyCalculatorTest {
             incomes.add(new Income(BigDecimal.TEN, someDate.plusWeeks(weekNumber), null, weekNumber, "any employer ref"));
         }
         return incomes;
+    }
+
+    private IncomeRecord incomeRecordForDate(List<LocalDate> dates) {
+        List<Income> paye = dates.stream()
+            .map(date -> new Income(BigDecimal.ONE, date, null, null, "some employer ref"))
+            .collect(Collectors.toList());
+
+        return new IncomeRecord(paye, Lists.emptyList(), Lists.emptyList(), null);
+    }
+
+    private IncomeRecord incomeRecordForDateWithMonthPayNumber(List<LocalDate> dates) {
+        List<Income> paye = dates.stream()
+            .map(date -> new Income(BigDecimal.ONE, date, mapToMonthNumber(date), null, "some employer ref"))
+            .collect(Collectors.toList());
+        return new IncomeRecord(paye, Lists.emptyList(), Lists.emptyList(), null);
+    }
+
+    private IncomeRecord incomeRecordForRandomisedDateWithWeekPayNumber(List<LocalDate> dates) {
+        List<Income> paye = dates.stream()
+            .map(date -> new Income(BigDecimal.ONE, date.plusDays(randomBetween(-7, 7)), null, mapWeekToNumber(date), "ref")).collect(Collectors.toList());
+        return new IncomeRecord(
+            paye,
+            Lists.emptyList(),
+            Lists.emptyList(),
+            null);
+    }
+
+    private Integer mapToMonthNumber(LocalDate date) {
+        int taxMonth = date.getMonthValue() - 3;
+        return taxMonth > 0 ? taxMonth : 12 + taxMonth;
+    }
+
+    private Integer mapWeekToNumber(LocalDate date) {
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        int weekNumber = date.get(weekFields.weekOfWeekBasedYear()) - 13;
+
+        return weekNumber > 0 ? weekNumber : 52 + weekNumber;
+    }
+
+    private long randomBetween(int min, int max) {
+        return new Random().nextInt(max - min + 1) + min;
     }
 }
