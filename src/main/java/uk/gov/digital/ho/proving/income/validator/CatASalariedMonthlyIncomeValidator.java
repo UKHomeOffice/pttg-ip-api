@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.NUMBER_OF_MONTHS;
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.MONTHS_OF_INCOME;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 
@@ -58,11 +58,11 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
     private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
         Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
-        List<Income> lastXMonths = individualIncome.limit(NUMBER_OF_MONTHS).collect(Collectors.toList());
-        if (lastXMonths.size() >= NUMBER_OF_MONTHS) {
+        List<Income> lastXMonths = individualIncome.limit(MONTHS_OF_INCOME).collect(Collectors.toList());
+        if (lastXMonths.size() >= MONTHS_OF_INCOME) {
 
-            // Do we have NUMBER_OF_MONTHS consecutive months with the same employer
-            for (int i = 0; i < NUMBER_OF_MONTHS - 1; i++) {
+            // Do we have MONTHS_OF_INCOME consecutive months with the same employer
+            for (int i = 0; i < MONTHS_OF_INCOME - 1; i++) {
                 if (!isSuccessiveMonths(lastXMonths.get(i), lastXMonths.get(i + 1))) {
                     log.debug("FAILED: Months not consecutive");
                     return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;

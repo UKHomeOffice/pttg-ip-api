@@ -19,7 +19,7 @@ import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.
 @Service
 public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
-    private final static Integer NUMBER_OF_WEEKS = 26;
+    private final static Integer WEEKS_OF_INCOME = 26;
     private static final String CALCULATION_TYPE = "Category A Weekly Salary";
     private static final String CATEGORY = "A";
 
@@ -58,7 +58,7 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
         Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
         List<Income> lastXWeeks = individualIncome.collect(Collectors.toList());
 
-        if (lastXWeeks.size() >= NUMBER_OF_WEEKS) {
+        if (lastXWeeks.size() >= WEEKS_OF_INCOME) {
             EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXWeeks, threshold);
             if (employmentCheck.equals(EmploymentCheck.PASS)) {
                 return IncomeValidationStatus.WEEKLY_SALARIED_PASSED;
