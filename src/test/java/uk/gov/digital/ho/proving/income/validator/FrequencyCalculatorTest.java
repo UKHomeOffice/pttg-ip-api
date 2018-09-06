@@ -47,7 +47,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnMonthlyWhen6SameDateConsecutiveWeeksButWithMonthNumberPresent() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7))
+        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(6)
             .collect(Collectors.toList());
 
@@ -60,7 +60,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnMonthlyWhen2SameDateConsectutiveMonthsWithMonthNumberPresent() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7))
+        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(2)
             .collect(Collectors.toList());
 
@@ -73,7 +73,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnMonthlyWhen1MonthWithMonthNumberPresent() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7))
+        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(1)
             .collect(Collectors.toList());
 
@@ -87,9 +87,10 @@ public class FrequencyCalculatorTest {
     /*
     When weekly number present and consecutive up to 56 (yes can be above 52)
      */
+
     @Test
     public void shouldReturnWeeklyWhen26DifferentDayConsecutiveWeeksButConsecutiveWeekNumbers() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.JANUARY, 2), date -> date.minusDays(7))
+        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.JANUARY, 2))
             .limit(26)
             .collect(Collectors.toList());
 
@@ -102,7 +103,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnWeeklyWhen52DuplicatedDifferentDayConsecutiveWeeksButConsecutiveWeekNumbers() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.JANUARY, 2), date -> date.minusDays(2))
+        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.JANUARY, 2))
             .limit(52)
             .collect(Collectors.toList());
 
@@ -115,7 +116,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnWeekly2DifferentDayConsecutiveWeeksWithConsecutiveWeekNumbers() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.JANUARY, 2), date -> date.minusDays(7))
+        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.JANUARY, 2))
             .limit(2)
             .collect(Collectors.toList());
 
@@ -128,7 +129,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnWeekly1DayWithWeekNumber() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.JANUARY, 2), date -> date.minusDays(7))
+        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.JANUARY, 2))
             .limit(1)
             .collect(Collectors.toList());
 
@@ -141,7 +142,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnFortnightlyWhen13RandomDaysButWeekNumbersForEveryOtherWeek() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(14))
+        List<LocalDate> dates = generateFortnightlyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(13)
             .collect(Collectors.toList());
 
@@ -154,7 +155,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturn4WeeklyWhen6RandomDaysButWeekNumbersEvery4thWeeks() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(28))
+        List<LocalDate> dates = generateFourWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(6)
             .collect(Collectors.toList());
 
@@ -184,10 +185,9 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnMonthlyWhen6SameDateConsecutiveMonths() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusMonths(1))
+        List<LocalDate> dates = generateCalendarMonthlyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(6)
             .collect(Collectors.toList());
-
 
         IncomeRecord incomeRecord = incomeRecordForDate(dates);
 
@@ -211,7 +211,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnWeeklyWhen26SameDayConsecutiveWeeks() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7))
+        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(26)
             .collect(Collectors.toList());
 
@@ -237,7 +237,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnMonthlyWhen3SameDateConsecutiveMonths() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusMonths(-1))
+        List<LocalDate> dates = generateCalendarMonthlyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(3)
             .collect(Collectors.toList());
 
@@ -250,7 +250,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnWeeklyWhen13SameDayConsecutiveWeeks() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(7))
+        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(13)
             .collect(Collectors.toList());
 
@@ -263,7 +263,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnFortnightlyWhen13SameDayEveryTwoWeeks() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(14))
+        List<LocalDate> dates = generateFortnightlyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(13)
             .collect(Collectors.toList());
 
@@ -276,7 +276,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturn4WeeklyWhen6SameDayEveryFourWeeks() {
-        List<LocalDate> dates = Stream.iterate(LocalDate.of(2017, Month.DECEMBER, 1), date -> date.minusDays(28))
+        List<LocalDate> dates = generateFourWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(6)
             .collect(Collectors.toList());
 
@@ -321,6 +321,22 @@ public class FrequencyCalculatorTest {
         return incomes;
     }
 
+    private Stream<LocalDate> generateWeeklyDatesFrom(LocalDate startDate) {
+        return Stream.iterate(startDate, date -> date.minusDays(7));
+    }
+
+    private Stream<LocalDate> generateFortnightlyDatesFrom(LocalDate startDate) {
+        return Stream.iterate(startDate, date -> date.minusDays(14));
+    }
+
+    private Stream<LocalDate> generateFourWeeklyDatesFrom(LocalDate startDate) {
+        return Stream.iterate(startDate, date -> date.minusDays(28));
+    }
+
+    private Stream<LocalDate> generateCalendarMonthlyDatesFrom(LocalDate startDate) {
+        return Stream.iterate(startDate, date -> date.minusMonths(1));
+    }
+
     private IncomeRecord incomeRecordForDate(List<LocalDate> dates) {
         List<Income> paye = dates.stream()
             .map(date -> new Income(BigDecimal.ONE, date, null, null, "some employer ref"))
@@ -339,11 +355,7 @@ public class FrequencyCalculatorTest {
     private IncomeRecord incomeRecordForRandomisedDateWithWeekPayNumber(List<LocalDate> dates) {
         List<Income> paye = dates.stream()
             .map(date -> new Income(BigDecimal.ONE, date.plusDays(randomBetween(-7, 7)), null, mapWeekToNumber(date), "ref")).collect(Collectors.toList());
-        return new IncomeRecord(
-            paye,
-            Lists.emptyList(),
-            Lists.emptyList(),
-            null);
+        return new IncomeRecord(paye, Lists.emptyList(), Lists.emptyList(), null);
     }
 
     private Integer mapToMonthNumber(LocalDate date) {
