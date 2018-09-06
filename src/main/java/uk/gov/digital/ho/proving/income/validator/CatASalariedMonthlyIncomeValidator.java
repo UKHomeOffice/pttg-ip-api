@@ -9,19 +9,19 @@ import uk.gov.digital.ho.proving.income.validator.domain.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.MONTHS_OF_INCOME;
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 
 @Slf4j
 @Service
 public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
-    private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
-    private static final Integer NUMBER_OF_MONTHS = 6;
     private static final String CALCULATION_TYPE = "Category A Monthly Salary";
     private static final String CATEGORY = "A";
 
@@ -37,12 +37,11 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
         IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(incomeValidationRequest.dependants());
         BigDecimal monthlyThreshold = thresholdCalculator.getMonthlyThreshold();
 
-        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
+        LocalDate assessmentStartDate = getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate());
 
         IncomeValidationStatus status =
             financialCheckForMonthlySalaried(
                 removeDuplicates(applicantIncome.incomeRecord().paye()),
-                NUMBER_OF_MONTHS,
                 monthlyThreshold,
                 assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
@@ -50,20 +49,20 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
         return IncomeValidationResult.builder()
             .status(status)
             .threshold(monthlyThreshold)
-            .individuals(Arrays.asList(checkedIndividual))
+            .individuals(Collections.singletonList(checkedIndividual))
             .assessmentStartDate(assessmentStartDate)
             .category(CATEGORY)
             .calculationType(CALCULATION_TYPE)
             .build();
     }
 
-    private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
+    private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
         Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
-        List<Income> lastXMonths = individualIncome.limit(numOfMonths).collect(Collectors.toList());
-        if (lastXMonths.size() >= numOfMonths) {
+        List<Income> lastXMonths = individualIncome.limit(MONTHS_OF_INCOME).collect(Collectors.toList());
+        if (lastXMonths.size() >= MONTHS_OF_INCOME) {
 
-            // Do we have NUMBER_OF_MONTHS consecutive months with the same employer
-            for (int i = 0; i < numOfMonths - 1; i++) {
+            // Do we have MONTHS_OF_INCOME consecutive months with the same employer
+            for (int i = 0; i < MONTHS_OF_INCOME - 1; i++) {
                 if (!isSuccessiveMonths(lastXMonths.get(i), lastXMonths.get(i + 1))) {
                     log.debug("FAILED: Months not consecutive");
                     return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;

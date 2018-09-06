@@ -17,8 +17,10 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -111,5 +113,21 @@ public class CatASalariedIncomeValidatorTest {
         verify(unsupportedValidator).validate(request);
     }
 
+    @Test
+    public void getAssessmentStartDateShouldBe6MonthsAgo() {
+        LocalDate applicationRaisedDate = LocalDate.of(2018, Month.SEPTEMBER, 6);
+        assertThat(getAssessmentStartDate(applicationRaisedDate)).isEqualTo(LocalDate.of(2018, Month.MARCH, 6));
+    }
 
+    @Test
+    public void getAssessmentStartDateShouldBe6MonthsAgoAugust31st() {
+        LocalDate applicationRaisedDate = LocalDate.of(2018, Month.AUGUST, 31);
+        assertThat(getAssessmentStartDate(applicationRaisedDate)).isEqualTo(LocalDate.of(2018, Month.FEBRUARY, 28));
+    }
+
+    @Test
+    public void getAssessmentStartDateShouldBe6MonthsAgoAugust31stLeapYear() {
+        LocalDate applicationRaisedDate = LocalDate.of(2020, Month.AUGUST, 31);
+        assertThat(getAssessmentStartDate(applicationRaisedDate)).isEqualTo(LocalDate.of(2020, Month.FEBRUARY, 29));
+    }
 }

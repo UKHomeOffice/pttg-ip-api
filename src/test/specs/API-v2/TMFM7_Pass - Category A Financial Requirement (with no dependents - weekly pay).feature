@@ -1,10 +1,10 @@
 Feature: Pass - Category A Financial Requirement - with no dependents - weekly pay
 
     Requirement to meet Category A
-    Applicant or Sponsor has received 26 payments from the same employer over 182 day period prior to the Application Raised Date
+    Applicant or Sponsor has received 26 payments from the same employer over 6 month period prior to the Application Raised Date
 
     Financial employment income regulation to pass this Feature File
-    Applicant or Sponsor has received 26 weekly Gross Income payments of => £357.69 in the 182 day period prior to the Application Raised Date
+    Applicant or Sponsor has received 26 weekly Gross Income payments of => £357.69 in the 6 month period prior to the Application Raised Date
 
 #New Scenario -
     Scenario: Molly Henry meets the Category A Financial Requirement
@@ -48,7 +48,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - weekly p
             | HTTP Response            | HTTP Status               | 200              |
             | Applicant                | National Insurance Number | MH123456A        |
             | Category A Weekly Salary | Financial requirement met | true             |
-            | Category A Weekly Salary | Assessment start date     | 2015-05-31       |
+            | Category A Weekly Salary | Assessment start date     | 2015-05-29       |
             | Category A Weekly Salary | Application Raised date   | 2015-11-29       |
             | Category A Weekly Salary | Threshold                 | 357.69           |
             | Category A Weekly Salary | Employer Name - MH123456A | Flying Pizza Ltd |

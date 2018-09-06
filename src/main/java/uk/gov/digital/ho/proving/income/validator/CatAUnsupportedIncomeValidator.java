@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.proving.income.validator;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
@@ -9,15 +8,15 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.toEmployerNames;
 
 @Service
 public class CatAUnsupportedIncomeValidator implements IncomeValidator {
 
-    private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
     private static final String CALCULATION_TYPE = "Category A Unsupported Salary Frequency";
     private static final String CATEGORY = "A";
 
@@ -30,8 +29,8 @@ public class CatAUnsupportedIncomeValidator implements IncomeValidator {
         return IncomeValidationResult.builder()
             .status(getStatus(frequency))
             .threshold(BigDecimal.ZERO)
-            .individuals(Arrays.asList(checkedIndividual))
-            .assessmentStartDate(incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS))
+            .individuals(Collections.singletonList(checkedIndividual))
+            .assessmentStartDate(getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate()))
             .category(CATEGORY)
             .calculationType(CALCULATION_TYPE)
             .build();
