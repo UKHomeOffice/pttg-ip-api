@@ -32,13 +32,11 @@ public class CatASalariedIncomeValidatorTest {
     @Mock
     private IncomeValidator monthlyValidator;
     @Mock
-    private IncomeValidator weeklyValidator;
-    @Mock
     private IncomeValidator unsupportedValidator;
 
     @Before
     public void setUp() {
-        catASalariedIncomeValidator = new CatASalariedIncomeValidator(monthlyValidator, weeklyValidator, unsupportedValidator);
+        catASalariedIncomeValidator = new CatASalariedIncomeValidator(monthlyValidator, unsupportedValidator);
     }
 
     @Test
@@ -61,12 +59,11 @@ public class CatASalariedIncomeValidatorTest {
         catASalariedIncomeValidator.validate(request);
 
         verify(monthlyValidator).validate(request);
-        verifyZeroInteractions(weeklyValidator);
         verifyZeroInteractions(unsupportedValidator);
     }
 
     @Test
-    public void thatWeeklyPaymentsCallWeeklyValidator() {
+    public void thatWeeklyPaymentsCallMonthlyValidator() {
 
         LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
         List<ApplicantIncome> incomes = getIncomesAboveThreshold2();
@@ -84,8 +81,7 @@ public class CatASalariedIncomeValidatorTest {
 
         catASalariedIncomeValidator.validate(request);
 
-        verifyZeroInteractions(monthlyValidator);
-        verify(weeklyValidator).validate(request);
+        verify(monthlyValidator).validate(request);
         verifyZeroInteractions(unsupportedValidator);
     }
 
@@ -109,7 +105,6 @@ public class CatASalariedIncomeValidatorTest {
         catASalariedIncomeValidator.validate(request);
 
         verifyZeroInteractions(monthlyValidator);
-        verifyZeroInteractions(weeklyValidator);
         verify(unsupportedValidator).validate(request);
     }
 
