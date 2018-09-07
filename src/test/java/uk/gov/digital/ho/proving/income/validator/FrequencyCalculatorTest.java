@@ -170,10 +170,10 @@ public class FrequencyCalculatorTest {
         verifyLogMessage("Frequency calculated by payment numbers as UNKNOWN");
     }
 
-
     /*
      When monthly number present.
      */
+
     @Test
     public void shouldReturnMonthlyWhen6SameDateConsecutiveWeeksButWithMonthNumberPresent() {
         List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
