@@ -76,6 +76,7 @@ public class FrequencyCalculatorTest {
     /*
      When monthly number present.
      */
+
     @Test
     public void shouldReturnMonthlyWhen6SameDateConsecutiveWeeksButWithMonthNumberPresent() {
         List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
@@ -115,10 +116,10 @@ public class FrequencyCalculatorTest {
         assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
     }
 
-
     /*
     When weekly number present and consecutive up to 56 (yes can be above 52)
      */
+
     @Test
     public void shouldReturnWeeklyWhen26DifferentDayConsecutiveWeeksButConsecutiveWeekNumbers() {
         List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.JANUARY, 2))
@@ -210,10 +211,10 @@ public class FrequencyCalculatorTest {
 
     }
 
-
     /*
     When no weekly or monthly number present.
      */
+
     @Test
     public void shouldReturnMonthlyWhen6SameDateConsecutiveMonths() {
         List<LocalDate> dates = generateCalendarMonthlyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
