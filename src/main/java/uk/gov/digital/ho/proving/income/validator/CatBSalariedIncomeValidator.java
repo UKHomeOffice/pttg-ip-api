@@ -55,16 +55,6 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
         return validationResult(incomeValidationRequest, IncomeValidationStatus.CATB_SALARIED_PASSED);
     }
 
-    private List<List<Income>> sortAndGroupIncomesByMonth(List<Income> incomes) {
-        List<List<Income>> monthlyIncomes = new ArrayList<>();
-        incomes.stream()
-            .collect(Collectors.groupingBy(Income::yearAndMonth))
-            .forEach((yearAndMonth, income) -> monthlyIncomes.add(income));
-
-        monthlyIncomes.sort(Comparator.comparingInt(monthlyIncome -> monthlyIncome.get(0).yearAndMonth()));
-        return monthlyIncomes;
-    }
-
     private IncomeValidationResult validationResult(IncomeValidationRequest incomeValidationRequest, IncomeValidationStatus validationStatus) {
         return IncomeValidationResult.builder()
             .status(validationStatus)

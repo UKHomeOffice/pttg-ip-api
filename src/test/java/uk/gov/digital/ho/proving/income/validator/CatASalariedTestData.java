@@ -74,30 +74,6 @@ public class CatASalariedTestData {
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> contiguousMonthlyPaymentsWithMultiplePaymentsInEarliestMonth(LocalDate raisedDate) {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1777"), raisedDate.minusMonths(3), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1777"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
-        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
-    }
-
-    public static List<ApplicantIncome> contiguousMonthlyPaymentsWithMultiplePaymentsInMiddleMonth(LocalDate raisedDate) {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1666"), raisedDate.minusMonths(3), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1777"), raisedDate.minusMonths(3), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
-        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
-    }
-
     public static List<ApplicantIncome> contiguousMonthlyPaymentsWithMultiplePaymentsInOldestMonth(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
         incomes.add(new Income(amount("1666"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
@@ -374,6 +350,20 @@ public class CatASalariedTestData {
         incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
         incomes.add(new Income(amount("1600"), raisedDate.minusMonths(2), null, 1, PIZZA_HUT_PAYE_REF ));
         return getApplicantIncomes(incomes, new Employer("n/a", "n/a"));
+    }
+
+    static List<ApplicantIncome> twoPaymentsSameMonth(LocalDate raisedDate) {
+        List<Income> incomes = new ArrayList<>();
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), 1, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3), 1, null, PIZZA_HUT_PAYE_REF ));
+
+        incomes.add(new Income(amount("1550.99"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("0.01"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
+
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1600"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
     public static LocalDate getDate(int year, Month month, int day) {

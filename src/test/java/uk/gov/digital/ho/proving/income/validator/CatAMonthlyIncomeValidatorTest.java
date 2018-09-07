@@ -54,30 +54,6 @@ public class CatAMonthlyIncomeValidatorTest {
     }
 
     @Test
-    public void thatMultiplePaymentsInEarliestMonthFails() {
-
-        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
-        List<ApplicantIncome> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsInEarliestMonth(raisedDate);
-
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
-        IncomeValidationResult categoryAIndividual = validator.validate(request);
-
-        assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
-    }
-
-    @Test
-    public void thatMultiplePaymentInMiddleMonthFails() {
-
-        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
-        List<ApplicantIncome> incomes = contiguousMonthlyPaymentsWithMultiplePaymentsInMiddleMonth(raisedDate);
-
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
-        IncomeValidationResult categoryAIndividual = validator.validate(request);
-
-        assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.NON_CONSECUTIVE_MONTHS);
-    }
-
-    @Test
     public void thatSufficientContiguousMonthlyPaymentsPasses() {
 
         LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
@@ -185,6 +161,17 @@ public class CatAMonthlyIncomeValidatorTest {
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MONTHLY_SALARIED_PASSED);
+    }
+
+    @Test
+    public void shouldPassWhenMultiplePaymentsSameMonth() {
+        LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 7);
+        List<ApplicantIncome> incomes = twoPaymentsSameMonth(raisedDate);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult result = validator.validate(request);
+
+        assertThat(result.status()).isEqualTo(IncomeValidationStatus.MONTHLY_SALARIED_PASSED);
     }
 
 }

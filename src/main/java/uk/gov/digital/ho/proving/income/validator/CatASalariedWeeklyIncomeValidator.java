@@ -55,20 +55,22 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
     }
 
     private static IncomeValidationStatus financialCheckForWeeklySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
-        Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
-        List<Income> lastXWeeks = individualIncome.collect(Collectors.toList());
-
-        if (lastXWeeks.size() >= WEEKS_OF_INCOME) {
-            EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXWeeks, threshold);
-            if (employmentCheck.equals(EmploymentCheck.PASS)) {
-                return IncomeValidationStatus.WEEKLY_SALARIED_PASSED;
-            } else {
-                return employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD) ? IncomeValidationStatus.WEEKLY_VALUE_BELOW_THRESHOLD : IncomeValidationStatus.MULTIPLE_EMPLOYERS;
-            }
-        } else {
+//        Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate).;
+//        List<Income> lastXWeeks = individualIncome.collect(Collectors.toList());
+//
+//        if (lastXWeeks.size() >= WEEKS_OF_INCOME) {
+//            EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXWeeks, threshold);
+//            if (employmentCheck.equals(EmploymentCheck.PASS)) {
+//                return IncomeValidationStatus.WEEKLY_SALARIED_PASSED;
+//            } else {
+//                return employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD) ? IncomeValidationStatus.WEEKLY_VALUE_BELOW_THRESHOLD : IncomeValidationStatus.MULTIPLE_EMPLOYERS;
+//            }
+//        } else {
             return IncomeValidationStatus.NOT_ENOUGH_RECORDS;
-        }
+//        }
 
     }
+
+
 
 }
