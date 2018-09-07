@@ -40,39 +40,6 @@ public class FrequencyCalculatorTest {
         assertThat(frequency).isEqualTo(WEEKLY);
     }
 
-    @Test
-    public void shouldReturnMonthlyWhenDuplicatePaymentsNoMonthOrWeekNumbers() {
-        List<Income> paye = generateCalendarMonthlyDatesFrom(someDate).
-            limit(6)
-            .map(date -> new Income(BigDecimal.ONE, date, null, null, "some employer ref"))
-            .collect(Collectors.toList());
-
-        createConsecutiveDuplicates(paye);
-        createNonConsecutiveDuplicates(paye);
-
-        IncomeRecord incomeRecord = new IncomeRecord(paye, null, null, null);
-        Frequency frequency = calculate(incomeRecord);
-
-        assertThat(frequency).isEqualTo(CALENDAR_MONTHLY);
-    }
-
-    @Test
-    public void shouldReturnWeeklyWhenDuplicatePaymentsNoMonthOrWeekNumbers() {
-        List<Income> paye = generateWeeklyDatesFrom(someDate).
-            limit(6)
-            .map(date -> new Income(BigDecimal.ONE, date, null, null, "some employer ref"))
-            .collect(Collectors.toList());
-
-        createConsecutiveDuplicates(paye);
-        createNonConsecutiveDuplicates(paye);
-
-        IncomeRecord incomeRecord = new IncomeRecord(paye, null, null, null);
-        Frequency frequency = calculate(incomeRecord);
-
-        assertThat(frequency).isEqualTo(WEEKLY);
-
-    }
-
     /*
      When monthly number present.
      */
