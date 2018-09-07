@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.validator;
 
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
+@Slf4j
 public class FrequencyCalculator {
     enum Frequency {
         WEEKLY,
@@ -27,6 +29,7 @@ public class FrequencyCalculator {
         HAS_MONTHLY_NUMBER,
         HAS_NONE
     }
+
     public static Frequency calculate(IncomeRecord incomeRecord) {
         if (hasDifferentFrequencies(incomeRecord)) {
             return Frequency.CHANGED;
@@ -116,7 +119,7 @@ public class FrequencyCalculator {
 
     private static boolean isDifferenceAlways(List<Integer> weekNumbers, int differenceAmount) {
         for (int i = 0; i < weekNumbers.size() - 1; i++) {
-            if (weekNumbers.get(i+1) -  weekNumbers.get(i) != differenceAmount) {
+            if (weekNumbers.get(i + 1) - weekNumbers.get(i) != differenceAmount) {
                 return false;
             }
         }
@@ -124,39 +127,43 @@ public class FrequencyCalculator {
         return true;
     }
 
-    private static Frequency calculateByPaymentNumbers(IncomeRecord incomeRecord) {
+    static Frequency calculateByPaymentNumbers(IncomeRecord incomeRecord) {
+        log.info("Calculating frequency by payment numbers");
         Optional<LocalDate> max = incomeRecord.paye().stream().map(Income::paymentDate).max(Comparator.naturalOrder());
         Optional<LocalDate> min = incomeRecord.paye().stream().map(Income::paymentDate).min(Comparator.naturalOrder());
 
         if (!max.isPresent() || !min.isPresent()) {
-            return Frequency.CALENDAR_MONTHLY;
+            return logFrequency(Frequency.CALENDAR_MONTHLY);
         }
 
-        long daysInRange =  DAYS.between(min.get(), max.get());
+        long daysInRange = DAYS.between(min.get(), max.get());
         long numberOfPayments = incomeRecord.paye().size();
 
         if (numberOfPayments < 2) {
-            return Frequency.CALENDAR_MONTHLY;
+            return logFrequency(Frequency.CALENDAR_MONTHLY);
         }
 
-        int averageDaysBetweenPayments = Math.round((float)daysInRange / (float)(numberOfPayments - 1));
+        int averageDaysBetweenPayments = Math.round((float) daysInRange / (float) (numberOfPayments - 1));
 
+        Frequency frequency;
         if (averageDaysBetweenPayments < 6) {
-            return Frequency.UNKNOWN;
+            frequency = Frequency.UNKNOWN;
+        } else if (averageDaysBetweenPayments < 8) {
+            frequency = Frequency.WEEKLY;
+        } else if (averageDaysBetweenPayments < 15) {
+            frequency = Frequency.FORTNIGHTLY;
+        } else if (averageDaysBetweenPayments < 29) {
+            frequency = Frequency.FOUR_WEEKLY;
+        } else if (averageDaysBetweenPayments < 32) {
+            frequency = Frequency.CALENDAR_MONTHLY;
+        } else {
+            frequency = Frequency.UNKNOWN;
         }
-        if (averageDaysBetweenPayments < 8) {
-            return Frequency.WEEKLY;
-        }
-        if (averageDaysBetweenPayments < 15) {
-            return Frequency.FORTNIGHTLY;
-        }
-        if (averageDaysBetweenPayments < 29) {
-            return Frequency.FOUR_WEEKLY;
-        }
-        if (averageDaysBetweenPayments < 32) {
-            return Frequency.CALENDAR_MONTHLY;
-        }
-        return Frequency.UNKNOWN;
+        return logFrequency(frequency);
     }
 
+    private static Frequency logFrequency(Frequency frequency) {
+        log.info(String.format("Frequency calculated by payment numbers as %s", frequency));
+        return frequency;
+    }
 }
