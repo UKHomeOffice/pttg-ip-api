@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.proving.income.validator;
 
-import org.assertj.core.util.Lists;
 import org.junit.Test;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
@@ -14,6 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.Frequency.*;
 import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.calculate;
@@ -59,7 +59,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnMonthlyWhen2SameDateConsectutiveMonthsWithMonthNumberPresent() {
-        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
+        List<LocalDate> dates = generateCalendarMonthlyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(2)
             .collect(Collectors.toList());
 
@@ -72,7 +72,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnMonthlyWhen1MonthWithMonthNumberPresent() {
-        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
+        List<LocalDate> dates = generateCalendarMonthlyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(1)
             .collect(Collectors.toList());
 
@@ -170,7 +170,7 @@ public class FrequencyCalculatorTest {
         Income monthlyPayment = new Income(BigDecimal.ONE, LocalDate.of(2017, Month.DECEMBER, 1), 9, null, "some employer ref");
         Income weeklyPayment = new Income(BigDecimal.ONE, LocalDate.of(2017, Month.DECEMBER, 7), null, 41, "some employer ref");
 
-        IncomeRecord incomeRecord = new IncomeRecord(Arrays.asList(monthlyPayment, weeklyPayment), Collections.emptyList(), Collections.emptyList(), null);
+        IncomeRecord incomeRecord = new IncomeRecord(Arrays.asList(monthlyPayment, weeklyPayment), emptyList(), emptyList(), null);
 
         Frequency frequency = calculate(incomeRecord);
 
@@ -288,7 +288,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnMonthlyWhenNoPayments() {
-        IncomeRecord incomeRecord = incomeRecordForDate(Lists.emptyList());
+        IncomeRecord incomeRecord = incomeRecordForDate(emptyList());
 
         Frequency frequency = calculate(incomeRecord);
 
@@ -341,20 +341,20 @@ public class FrequencyCalculatorTest {
             .map(date -> new Income(BigDecimal.ONE, date, null, null, "some employer ref"))
             .collect(Collectors.toList());
 
-        return new IncomeRecord(paye, Lists.emptyList(), Lists.emptyList(), null);
+        return new IncomeRecord(paye, emptyList(), emptyList(), null);
     }
 
     private IncomeRecord incomeRecordForDateWithMonthPayNumber(List<LocalDate> dates) {
         List<Income> paye = dates.stream()
             .map(date -> new Income(BigDecimal.ONE, date, mapToMonthNumber(date), null, "some employer ref"))
             .collect(Collectors.toList());
-        return new IncomeRecord(paye, Lists.emptyList(), Lists.emptyList(), null);
+        return new IncomeRecord(paye, emptyList(), emptyList(), null);
     }
 
     private IncomeRecord incomeRecordForRandomisedDateWithWeekPayNumber(List<LocalDate> dates) {
         List<Income> paye = dates.stream()
             .map(date -> new Income(BigDecimal.ONE, date.plusDays(randomBetween(-7, 7)), null, mapWeekToNumber(date), "ref")).collect(Collectors.toList());
-        return new IncomeRecord(paye, Lists.emptyList(), Lists.emptyList(), null);
+        return new IncomeRecord(paye, emptyList(), emptyList(), null);
     }
 
     private Integer mapToMonthNumber(LocalDate date) {
