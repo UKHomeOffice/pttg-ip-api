@@ -5,7 +5,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -189,7 +188,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnMonthlyWhen2SameDateConsectutiveMonthsWithMonthNumberPresent() {
-        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
+        List<LocalDate> dates = generateCalendarMonthlyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(2)
             .collect(Collectors.toList());
 
@@ -202,7 +201,7 @@ public class FrequencyCalculatorTest {
 
     @Test
     public void shouldReturnMonthlyWhen1MonthWithMonthNumberPresent() {
-        List<LocalDate> dates = generateWeeklyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
+        List<LocalDate> dates = generateCalendarMonthlyDatesFrom(LocalDate.of(2017, Month.DECEMBER, 1))
             .limit(1)
             .collect(Collectors.toList());
 
@@ -471,20 +470,20 @@ public class FrequencyCalculatorTest {
             .map(date -> new Income(BigDecimal.ONE, date, null, null, "some employer ref"))
             .collect(Collectors.toList());
 
-        return new IncomeRecord(paye, Lists.emptyList(), Lists.emptyList(), null);
+        return new IncomeRecord(paye, emptyList(), emptyList(), null);
     }
 
     private IncomeRecord incomeRecordForDatesWithMonthPayNumber(List<LocalDate> dates) {
         List<Income> paye = dates.stream()
             .map(date -> new Income(BigDecimal.ONE, date, mapToMonthNumber(date), null, "some employer ref"))
             .collect(Collectors.toList());
-        return new IncomeRecord(paye, Lists.emptyList(), Lists.emptyList(), null);
+        return new IncomeRecord(paye, emptyList(), emptyList(), null);
     }
 
     private IncomeRecord incomeRecordForRandomisedDatesWithWeekPayNumber(List<LocalDate> dates) {
         List<Income> paye = dates.stream()
             .map(date -> new Income(BigDecimal.ONE, date.plusDays(randomBetween(-7, 7)), null, mapWeekToNumber(date), "ref")).collect(Collectors.toList());
-        return new IncomeRecord(paye, Lists.emptyList(), Lists.emptyList(), null);
+        return new IncomeRecord(paye, emptyList(), emptyList(), null);
     }
 
     private Integer mapToMonthNumber(LocalDate date) {
