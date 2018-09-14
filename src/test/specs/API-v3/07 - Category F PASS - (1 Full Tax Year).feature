@@ -11,8 +11,8 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: No dependents. Self-Assessment payment in the last full tax year that meets the threshold
         Given HMRC has the following Self Assessment Returns for nino TK047457B:
-            | TaxYear | Self Employment Profit |
-            | 2017-18 | 18600.00               |
+            | TaxYear | Summary Income |
+            | 2017-18 | 18600.00       |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | TK047457B  |
             | Application Raised Date | 2018-04-30 |
@@ -26,11 +26,11 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: No dependents. Self-Assessment payment in the last full tax year that does not meet the threshold but does when combined with partner
         Given HMRC has the following Self Assessment Returns for nino OB666650A:
-            | TaxYear | Self Employment Profit |
-            | 2016-17 | 9300.00                |
+            | TaxYear | Summary Income |
+            | 2016-17 | 9300.00        |
         And HMRC has the following Self Assessment Returns for nino BJ892995A:
-            | TaxYear | Self Employment Profit |
-            | 2016-17 | 9300.00                |
+            | TaxYear | Summary Income |
+            | 2016-17 | 9300.00        |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | OB666650A  |
             | NINO - Partner          | BJ892995A  |
@@ -46,11 +46,11 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: No dependents. No Self-Assessment payment in the last full tax year from main applicant but passes when supplemented with partner
         Given HMRC has the following Self Assessment Returns for nino BP016016A:
-            | TaxYear | Self Employment Profit |
-            | 2016-17 | 00.00                  |
+            | TaxYear | Summary Income |
+            | 2016-17 | 00.00          |
         And HMRC has the following Self Assessment Returns for nino SE290452D:
-            | TaxYear | Self Employment Profit |
-            | 2016-17 | 18600.00               |
+            | TaxYear | Summary Income |
+            | 2016-17 | 18600.00       |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | BP016016A  |
             | NINO - Partner          | SE290452D  |
@@ -66,8 +66,8 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: One dependent. Self-Assessment payment in the last full tax year that meets the threshold
         Given HMRC has the following Self Assessment Returns for nino ZR507150B:
-            | TaxYear | Self Employment Profit |
-            | 2017-18 | 22400.00               |
+            | TaxYear | Summary Income |
+            | 2017-18 | 22400.00       |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | ZR507150B  |
             | Application Raised Date | 2018-04-30 |
@@ -81,8 +81,8 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: Two dependents. Self-Assessment payment in the last full tax year that meets the threshold
         Given HMRC has the following Self Assessment Returns for nino CY893804C:
-            | TaxYear | Self Employment Profit |
-            | 2017-18 | 24800.00               |
+            | TaxYear | Summary Income |
+            | 2017-18 | 24800.00       |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | CY893804C  |
             | Application Raised Date | 2018-04-30 |
@@ -96,8 +96,8 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: No dependents. Application made 1 day before the end of the current tax year meaning Self-Assessment payment is 12 months ago. Threshold is met
         Given HMRC has the following Self Assessment Returns for nino PP345212A:
-            | TaxYear | Self Employment Profit |
-            | 2016-17 | 18600.00               |
+            | TaxYear | Summary Income |
+            | 2016-17 | 18600.00       |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | PP345212A  |
             | Application Raised Date | 2018-04-05 |
