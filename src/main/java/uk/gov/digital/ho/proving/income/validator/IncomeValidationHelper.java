@@ -10,7 +10,9 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,10 +59,16 @@ public class IncomeValidationHelper {
         return EmploymentCheck.PASS;
     }
 
-    static Stream<Income> filterIncomesByDates(List<Income> incomes, LocalDate lower, LocalDate upper) {
+    static List<Income> filterIncomesByDates(List<Income> incomes, LocalDate lower, LocalDate upper) {
         return incomes.stream()
+            .filter(income -> isDateInRange(income.paymentDate(), lower, upper))
+            .collect(Collectors.toList());
+    }
+
+    static List<Income> orderByPaymentDate(List<Income> incomeStream) {
+        return incomeStream.stream()
             .sorted((income1, income2) -> income2.paymentDate().compareTo(income1.paymentDate()))
-            .filter(income -> isDateInRange(income.paymentDate(), lower, upper));
+            .collect(Collectors.toList());
     }
 
     private static boolean isDateInRange(LocalDate date, LocalDate lower, LocalDate upper) {
@@ -73,10 +81,6 @@ public class IncomeValidationHelper {
         return (value.compareTo(threshold) >= 0);
     }
 
-    static List<Income> removeDuplicates(List<Income> incomes) {
-        return incomes.stream().distinct().collect(Collectors.toList());
-    }
-
     static List<Income> getAllPayeIncomes(IncomeValidationRequest incomeValidationRequest) {
         return incomeValidationRequest.allIncome()
             .stream()
@@ -87,8 +91,30 @@ public class IncomeValidationHelper {
     static List<Income> getAllPayeInDateRange(IncomeValidationRequest incomeValidationRequest, LocalDate applicationStartDate) {
         List<Income> paye = getAllPayeIncomes(incomeValidationRequest);
         LocalDate applicationRaisedDate = incomeValidationRequest.applicationRaisedDate();
-        return filterIncomesByDates(paye, applicationStartDate, applicationRaisedDate)
-            .collect(Collectors.toList());
+        return filterIncomesByDates(paye, applicationStartDate, applicationRaisedDate);
     }
 
+    static List<Income> combineIncomesForSameMonth(List<Income> incomes) {
+        Map<Integer, List<Income>> groupedByMonth = incomes.stream()
+            .collect(Collectors.groupingBy(Income::yearMonthAndEmployer));
+        return sumGroupedIncomes(groupedByMonth);
+    }
+
+    static List<Income> combineIncomesForSameWeek(List<Income> incomes) {
+        Map<Integer, List<Income>> groupedByWeek = incomes.stream()
+            .collect(Collectors.groupingBy(Income::weekNumberAndEmployer));
+        return sumGroupedIncomes(groupedByWeek);
+    }
+
+    private static List<Income> sumGroupedIncomes(Map<Integer, List<Income>> groupedIncomes) {
+        List<Income> summedIncomes = new ArrayList<>();
+        for (List<Income> samePeriodIncomes : groupedIncomes.values()) {
+            Income summedIncome = samePeriodIncomes.get(0);
+            for (int i = 1; i < samePeriodIncomes.size(); i++) {
+                summedIncome = summedIncome.add(samePeriodIncomes.get(i));
+            }
+            summedIncomes.add(summedIncome);
+        }
+        return summedIncomes;
+    }
 }

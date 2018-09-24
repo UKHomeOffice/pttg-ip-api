@@ -57,18 +57,9 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
     }
 
     private static IncomeValidationStatus financialCheckForWeeklySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
-        Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
-        Map<Integer, List<Income>> groupedByWeek = individualIncome.collect(Collectors.groupingBy(Income::weekNumberAndEmployer));
-        List<Income> summedIncomesSameWeek = new ArrayList<>();
-        for (List<Income> weeklyIncomes : groupedByWeek.values()) {
-            Income summedIncome = weeklyIncomes.get(0);
-            for (int i = 1; i < weeklyIncomes.size(); i++) {
-                summedIncome = summedIncome.add(weeklyIncomes.get(i));
-            }
-            summedIncomesSameWeek.add(summedIncome);
-        }
-        individualIncome = summedIncomesSameWeek.stream().sorted((income1, income2) -> income2.paymentDate().compareTo(income1.paymentDate()));
-        List<Income> lastXWeeks = individualIncome.collect(Collectors.toList());
+        List<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
+
+        List<Income> lastXWeeks = orderByPaymentDate(combineIncomesForSameWeek(individualIncome));
 
         if (lastXWeeks.size() >= WEEKS_OF_INCOME) {
             EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXWeeks, threshold);

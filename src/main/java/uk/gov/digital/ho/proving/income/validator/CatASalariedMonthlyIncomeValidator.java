@@ -59,25 +59,14 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
     }
 
     private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
-        Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
-        if (individualIncome.count() < MONTHS_OF_INCOME) {
+        List<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
+        if (individualIncome.size() < MONTHS_OF_INCOME) {
             return IncomeValidationStatus.NOT_ENOUGH_RECORDS;
         }
-        individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
 
-        Map<Integer, List<Income>> groupedByMonth = individualIncome.collect(Collectors.groupingBy(Income::yearMonthAndEmployer));
-        List<Income> summedIncomesSameMonth = new ArrayList<>();
-        for (List<Income> monthlyIncomes : groupedByMonth.values()) {
-            Income summedIncome = monthlyIncomes.get(0);
-            for (int i = 1; i < monthlyIncomes.size(); i++) {
-                summedIncome = summedIncome.add(monthlyIncomes.get(i));
-            }
-            summedIncomesSameMonth.add(summedIncome);
-        }
-        individualIncome = summedIncomesSameMonth.stream().sorted((income1, income2) -> income2.paymentDate().compareTo(income1.paymentDate()));
-
-
-        List<Income> lastXMonths = individualIncome.limit(MONTHS_OF_INCOME).collect(Collectors.toList());
+        List<Income> lastXMonths = orderByPaymentDate(combineIncomesForSameMonth(individualIncome)).stream()
+            .limit(MONTHS_OF_INCOME)
+            .collect(Collectors.toList());
         if (lastXMonths.size() < MONTHS_OF_INCOME) {
             return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
         }
