@@ -101,5 +101,39 @@ public class CatAWeeklyIncomeValidatorTest {
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.WEEKLY_SALARIED_PASSED);
     }
 
-    // TODO OJR 2018/9/24 Also do payments exactly same day, multiple payments still below threshold, different employers (fail)
+    @Test
+    public void shouldPassIfMultiplePaymentsSameDayWhichWhenCombinedAreOverThreshold() {
+        List<ApplicantIncome> incomes = getIncomesAboveThresholdMultiplePaymentsSameDay();
+
+        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult categoryAIndividual = validator.validate(request);
+
+        assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.WEEKLY_SALARIED_PASSED);
+    }
+
+    @Test
+    public void shouldFailIfMultiplePaymentsSameWeekWhichWhenCombinedAreStillBelowThreshold() {
+        List<ApplicantIncome> incomes = getIncomesMultiplePaymentsSameWeekBelowThreshold();
+
+        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult categoryAIndividual = validator.validate(request);
+
+        assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.WEEKLY_VALUE_BELOW_THRESHOLD);
+    }
+
+    @Test
+    public void shouldFailIfMultiplePaymentsSameWeekDifferentEmployersEvenOverThreshold() {
+        List<ApplicantIncome> incomes = getIncomesMultiplePaymentsSameWeekDifferentEmployers();
+
+        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult categoryAIndividual = validator.validate(request);
+
+        assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MULTIPLE_EMPLOYERS);
+    }
 }
