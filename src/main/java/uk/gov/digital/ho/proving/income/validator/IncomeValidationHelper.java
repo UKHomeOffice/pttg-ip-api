@@ -10,8 +10,6 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,30 +41,26 @@ public class IncomeValidationHelper {
             .collect(Collectors.toList());
     }
 
-    static EmploymentCheck checkIncomesPassThresholdWithSameEmployer(List<List<Income>> incomes, BigDecimal threshold) {
-        String employerPayeReference = incomes.get(0).get(0).employerPayeReference();
-        for (List<Income> periodicIncome : incomes) {
-            BigDecimal payment = periodicIncome.stream()
-                .map(Income::payment)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-            if (!checkValuePassesThreshold(payment, threshold)) {
-                log.debug("FAILED: Income value = " + payment + " is below threshold: " + threshold);
+    static EmploymentCheck checkIncomesPassThresholdWithSameEmployer(List<Income> incomes, BigDecimal threshold) {
+        String employerPayeReference = incomes.get(0).employerPayeReference();
+        for (Income income : incomes) {
+            if (!checkValuePassesThreshold(income.payment(), threshold)) {
+                log.debug("FAILED: Income value = " + income.payment() + " is below threshold: " + threshold);
                 return EmploymentCheck.FAILED_THRESHOLD;
             }
 
-            if (!employerPayeReference.equalsIgnoreCase(periodicIncome.get(0).employerPayeReference())) { // TODO OJR 2018/09/07: need to check all entries in period.
-                log.debug("FAILED: Different employerPayeReference = " + employerPayeReference + " is not the same as " + periodicIncome.get(0).employerPayeReference());
+            if (!employerPayeReference.equalsIgnoreCase(income.employerPayeReference())) {
+                log.debug("FAILED: Different employerPayeReference = " + employerPayeReference + " is not the same as " + income.employerPayeReference());
                 return EmploymentCheck.FAILED_EMPLOYER;
             }
         }
         return EmploymentCheck.PASS;
     }
 
-    static List<Income> filterIncomesByDates(List<Income> incomes, LocalDate lower, LocalDate upper) {
+    static Stream<Income> filterIncomesByDates(List<Income> incomes, LocalDate lower, LocalDate upper) {
         return incomes.stream()
-            .sorted((income1, income2) -> income2.paymentDate().compareTo(income1.paymentDate())) // TODO OJR 2018/09/07: If all code paths do their own sorting maybe drop this.
-            .filter(income -> isDateInRange(income.paymentDate(), lower, upper))
-            .collect(Collectors.toList());
+            .sorted((income1, income2) -> income2.paymentDate().compareTo(income1.paymentDate()))
+            .filter(income -> isDateInRange(income.paymentDate(), lower, upper));
     }
 
     private static boolean isDateInRange(LocalDate date, LocalDate lower, LocalDate upper) {
@@ -93,32 +87,8 @@ public class IncomeValidationHelper {
     static List<Income> getAllPayeInDateRange(IncomeValidationRequest incomeValidationRequest, LocalDate applicationStartDate) {
         List<Income> paye = getAllPayeIncomes(incomeValidationRequest);
         LocalDate applicationRaisedDate = incomeValidationRequest.applicationRaisedDate();
-        return new ArrayList<>(filterIncomesByDates(paye, applicationStartDate, applicationRaisedDate));
+        return filterIncomesByDates(paye, applicationStartDate, applicationRaisedDate)
+            .collect(Collectors.toList());
     }
 
-    static List<List<Income>> sortAndGroupIncomesByMonth(List<Income> incomes) {
-        return sortAndGroupIncomesByMonth(incomes, false);
-    }
-
-    static List<List<Income>> sortAndGroupIncomesByMonth(Stream<Income> incomes) {
-        return sortAndGroupIncomesByMonth(incomes, false);
-    }
-
-    static List<List<Income>> sortAndGroupIncomesByMonth(List<Income> incomes, boolean reversed) {
-        return sortAndGroupIncomesByMonth(incomes.stream(), reversed);
-    }
-
-    private static List<List<Income>> sortAndGroupIncomesByMonth(Stream<Income> incomes, boolean reversed) {
-
-        List<List<Income>> monthlyIncomes = new ArrayList<>();
-        incomes.collect(Collectors.groupingBy(Income::yearAndMonth))
-            .forEach((yearAndMonth, income) -> monthlyIncomes.add(income));
-
-        Comparator<List<Income>> ordering = Comparator.comparingInt(monthlyIncome -> monthlyIncome.get(0).yearAndMonth());
-        if (reversed) {
-            ordering = ordering.reversed();
-        }
-        monthlyIncomes.sort(ordering);
-        return monthlyIncomes;
-    }
 }

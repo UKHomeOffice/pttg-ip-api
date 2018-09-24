@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.MONTHS_OF_INCOME;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
@@ -56,34 +57,28 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
     }
 
     private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
-        List<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
-        if (individualIncome.size() < MONTHS_OF_INCOME) {
+        Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
+        List<Income> lastXMonths = individualIncome.limit(MONTHS_OF_INCOME).collect(Collectors.toList());
+        if (lastXMonths.size() >= MONTHS_OF_INCOME) {
+
+            // Do we have MONTHS_OF_INCOME consecutive months with the same employer
+            for (int i = 0; i < MONTHS_OF_INCOME - 1; i++) {
+                if (!isSuccessiveMonths(lastXMonths.get(i), lastXMonths.get(i + 1))) {
+                    log.debug("FAILED: Months not consecutive");
+                    return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
+                }
+            }
+
+            EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXMonths, threshold);
+            if (employmentCheck.equals(EmploymentCheck.PASS)) {
+                return IncomeValidationStatus.MONTHLY_SALARIED_PASSED;
+            } else {
+                return employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD) ? IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD : IncomeValidationStatus.MULTIPLE_EMPLOYERS;
+            }
+
+        } else {
             return IncomeValidationStatus.NOT_ENOUGH_RECORDS;
         }
-
-        List<List<Income>> lastXMonths = sortAndGroupIncomesByMonth(individualIncome, true).stream()
-            .limit(MONTHS_OF_INCOME)
-            .collect(Collectors.toList());
-
-        if (lastXMonths.size() < MONTHS_OF_INCOME) {
-            return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
-        }
-
-        // Do we have MONTHS_OF_INCOME consecutive months with the same employer
-        for (int i = 0; i < MONTHS_OF_INCOME - 1; i++) {
-            if (!isSuccessiveMonths(lastXMonths.get(i).get(0), lastXMonths.get(i + 1).get(0))) {
-                log.debug("FAILED: Months not consecutive");
-                return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
-            }
-        }
-
-        EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXMonths, threshold);
-        if (employmentCheck.equals(EmploymentCheck.PASS)) {
-            return IncomeValidationStatus.MONTHLY_SALARIED_PASSED;
-        } else {
-            return employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD) ? IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD : IncomeValidationStatus.MULTIPLE_EMPLOYERS;
-        }
-
     }
 
 }
