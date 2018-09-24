@@ -106,7 +106,7 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | 2018-01-31 | 1866.70 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-12-29 | 1866.70 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-11-30 | 1866.70 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-30 | 66.69   |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-30 | 66.66   |             | 01           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-10-30 | 1800.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:

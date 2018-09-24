@@ -43,7 +43,7 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
         IncomeValidationStatus status =
             financialCheckForMonthlySalaried(
-                removeDuplicates(applicantIncome.incomeRecord().paye()),
+                applicantIncome.incomeRecord().paye(),
                 monthlyThreshold,
                 assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
@@ -82,21 +82,19 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
             return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
         }
 
-            // Do we have MONTHS_OF_INCOME consecutive months with the same employer
-            for (int i = 0; i < MONTHS_OF_INCOME - 1; i++) {
-                if (!isSuccessiveMonths(lastXMonths.get(i), lastXMonths.get(i + 1))) {
-                    log.debug("FAILED: Months not consecutive");
-                    return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
-                }
+        // Do we have MONTHS_OF_INCOME consecutive months with the same employer
+        for (int i = 0; i < MONTHS_OF_INCOME - 1; i++) {
+            if (!isSuccessiveMonths(lastXMonths.get(i), lastXMonths.get(i + 1))) {
+                log.debug("FAILED: Months not consecutive");
+                return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
             }
+        }
 
-            EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXMonths, threshold);
-            if (employmentCheck.equals(EmploymentCheck.PASS)) {
-                return IncomeValidationStatus.MONTHLY_SALARIED_PASSED;
-            } else {
-                return employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD) ? IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD : IncomeValidationStatus.MULTIPLE_EMPLOYERS;
-            }
-
+        EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXMonths, threshold);
+        if (employmentCheck.equals(EmploymentCheck.PASS)) {
+            return IncomeValidationStatus.MONTHLY_SALARIED_PASSED;
+        } else {
+            return employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD) ? IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD : IncomeValidationStatus.MULTIPLE_EMPLOYERS;
+        }
     }
-
 }
