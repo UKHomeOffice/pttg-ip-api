@@ -9,12 +9,9 @@ import uk.gov.digital.ho.proving.income.validator.domain.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.MONTHS_OF_INCOME;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;

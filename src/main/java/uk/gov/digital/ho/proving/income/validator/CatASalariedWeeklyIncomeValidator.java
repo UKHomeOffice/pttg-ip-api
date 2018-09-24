@@ -58,7 +58,6 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
     private static IncomeValidationStatus financialCheckForWeeklySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
         List<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
-
         List<Income> lastXWeeks = orderByPaymentDate(combineIncomesForSameWeek(individualIncome));
 
         if (lastXWeeks.size() >= WEEKS_OF_INCOME) {

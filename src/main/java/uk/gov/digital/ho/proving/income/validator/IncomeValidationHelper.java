@@ -3,7 +3,6 @@ package uk.gov.digital.ho.proving.income.validator;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Employments;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
-import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.EmploymentCheck;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 
@@ -11,10 +10,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 public class IncomeValidationHelper {
@@ -97,18 +96,18 @@ public class IncomeValidationHelper {
     static List<Income> combineIncomesForSameMonth(List<Income> incomes) {
         Map<Integer, List<Income>> groupedByMonth = incomes.stream()
             .collect(Collectors.groupingBy(Income::yearMonthAndEmployer));
-        return sumGroupedIncomes(groupedByMonth);
+        return sumGroupedIncomes(groupedByMonth.values());
     }
 
     static List<Income> combineIncomesForSameWeek(List<Income> incomes) {
         Map<Integer, List<Income>> groupedByWeek = incomes.stream()
             .collect(Collectors.groupingBy(Income::weekNumberAndEmployer));
-        return sumGroupedIncomes(groupedByWeek);
+        return sumGroupedIncomes(groupedByWeek.values());
     }
 
-    private static List<Income> sumGroupedIncomes(Map<Integer, List<Income>> groupedIncomes) {
+    private static List<Income> sumGroupedIncomes(Collection<List<Income>> groupedIncomes) {
         List<Income> summedIncomes = new ArrayList<>();
-        for (List<Income> samePeriodIncomes : groupedIncomes.values()) {
+        for (List<Income> samePeriodIncomes : groupedIncomes) {
             Income summedIncome = samePeriodIncomes.get(0);
             for (int i = 1; i < samePeriodIncomes.size(); i++) {
                 summedIncome = summedIncome.add(samePeriodIncomes.get(i));

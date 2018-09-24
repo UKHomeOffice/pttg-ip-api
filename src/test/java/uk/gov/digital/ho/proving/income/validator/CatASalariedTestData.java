@@ -112,12 +112,12 @@ public class CatASalariedTestData {
 
     public static List<ApplicantIncome> contiguousMonthlyPaymentsWithMultiplePaymentsPerMonthAndInsufficientRangeOfMonths(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1666"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1777"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), 2, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3), 3, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1666"), raisedDate.minusMonths(2), 4, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1777"), raisedDate.minusMonths(2), 4, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 5, null, PIZZA_HUT_PAYE_REF ));
+        incomes.add(new Income(amount("1600"), raisedDate, 6, null, PIZZA_HUT_PAYE_REF ));
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
