@@ -89,4 +89,17 @@ public class CatAWeeklyIncomeValidatorTest {
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.WEEKLY_VALUE_BELOW_THRESHOLD);
     }
 
+    @Test
+    public void shouldPassIfMultiplePaymentsSameWeekWhichWhenCombinedAreOverThreshold() {
+        List<ApplicantIncome> incomes = getIncomesAboveThresholdMultiplePaymentsOneWeek();
+
+        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult categoryAIndividual = validator.validate(request);
+
+        assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.WEEKLY_SALARIED_PASSED);
+    }
+
+    // TODO OJR 2018/9/24 Also do payments exactly same day, multiple payments still below threshold, different employers (fail)
 }

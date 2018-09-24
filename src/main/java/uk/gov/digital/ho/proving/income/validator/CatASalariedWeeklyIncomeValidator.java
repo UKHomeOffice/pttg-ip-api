@@ -8,8 +8,10 @@ import uk.gov.digital.ho.proving.income.validator.domain.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +58,16 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
     private static IncomeValidationStatus financialCheckForWeeklySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
         Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
+        Map<Integer, List<Income>> groupedByWeek = individualIncome.collect(Collectors.groupingBy(Income::weekNumberAndEmployer));
+        List<Income> summedIncomesSameWeek = new ArrayList<>();
+        for (List<Income> weeklyIncomes : groupedByWeek.values()) {
+            Income summedIncome = weeklyIncomes.get(0);
+            for (int i = 1; i < weeklyIncomes.size(); i++) {
+                summedIncome = summedIncome.add(weeklyIncomes.get(i));
+            }
+            summedIncomesSameWeek.add(summedIncome);
+        }
+        individualIncome = summedIncomesSameWeek.stream().sorted((income1, income2) -> income2.paymentDate().compareTo(income1.paymentDate()));
         List<Income> lastXWeeks = individualIncome.collect(Collectors.toList());
 
         if (lastXWeeks.size() >= WEEKS_OF_INCOME) {

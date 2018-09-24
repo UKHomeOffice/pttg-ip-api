@@ -39,6 +39,11 @@ public class Income {
         return yearAndMonth() + 10_000 * employerPayeReference.hashCode();
     }
 
+    public int weekNumberAndEmployer() {
+        return weekPayNumber + 100 * employerPayeReference.hashCode();
+    }
+
+
     public Income add(Income otherIncome) {
         final String canNotAddOtherIncomeReason = checkOtherIncomeCanBeAdded(otherIncome);
         if (canNotAddOtherIncomeReason != null) {
