@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
@@ -32,5 +33,54 @@ public class Income {
 
     public int yearAndMonth() {
         return paymentDate.getYear() * 100 + paymentDate.getMonthValue();
+    }
+
+    public int yearMonthAndEmployer() {
+        return yearAndMonth() + 10_000 * employerPayeReference.hashCode();
+    }
+
+    public Income add(Income otherIncome) {
+        final String canNotAddOtherIncomeReason = checkOtherIncomeCanBeAdded(otherIncome);
+        if (canNotAddOtherIncomeReason != null) {
+            throw new IllegalArgumentException(canNotAddOtherIncomeReason);
+        }
+
+        return new Income(payment.add(otherIncome.payment), paymentDate, monthPayNumber, weekPayNumber, employerPayeReference);
+    }
+
+    private String checkOtherIncomeCanBeAdded(Income otherIncome) {
+        if (!sameFrequency(otherIncome)) {
+            return "Can't add a weekly payment to a monthly one.";
+        }
+        if (!sameMonthPayNumber(otherIncome)) {
+            return "Can't add incomes for different month pay numbers.";
+        }
+        if (!sameWeekPayNumber(otherIncome)) {
+            return "Can't add incomes for different week pay numbers.";
+        }
+        if (yearAndMonth() != otherIncome.yearAndMonth()) {
+            return "Can't add payments for different years.";
+        }
+        if (!sameEmployer(otherIncome)) {
+            return "Can't add payments for different employers.";
+        }
+        return null;
+    }
+
+    private boolean sameFrequency(Income otherIncome) {
+        return (monthPayNumber != null && otherIncome.monthPayNumber != null) ||
+            (weekPayNumber != null && otherIncome.weekPayNumber != null);
+    }
+
+    private boolean sameMonthPayNumber(Income otherIncome) {
+        return Objects.equals(otherIncome.monthPayNumber, monthPayNumber);
+    }
+
+    private boolean sameWeekPayNumber(Income otherIncome) {
+        return Objects.equals(otherIncome.weekPayNumber, weekPayNumber);
+    }
+
+    private boolean sameEmployer(Income otherIncome) {
+        return Objects.equals(employerPayeReference, otherIncome.employerPayeReference);
     }
 }

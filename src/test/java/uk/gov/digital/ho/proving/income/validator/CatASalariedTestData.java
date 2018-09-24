@@ -158,14 +158,14 @@ public class CatASalariedTestData {
 
     public static List<ApplicantIncome> getNoneConsecutiveIncomes2() {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.FEBRUARY, 15), 1, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JANUARY, 15), 10, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.FEBRUARY, 15), 11, null, PIZZA_HUT_PAYE_REF));
         incomes.add(new Income(amount("1600"), paymentDate(2015, Month.APRIL, 16), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JUNE, 15), 1, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.MAY, 15), 2, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JUNE, 15), 3, null, PIZZA_HUT_PAYE_REF));
         incomes.add(new Income(amount("1600"), paymentDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.AUGUST, 15), 5, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.SEPTEMBER, 15), 6, null, PIZZA_HUT_PAYE_REF));
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
@@ -193,13 +193,13 @@ public class CatASalariedTestData {
 
     public static List<ApplicantIncome> getConsecutiveIncomesButLowAmounts2() {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JANUARY, 15),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.MAY, 15),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JUNE, 15),  1, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JANUARY, 15),  10, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.MAY, 15),  2, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JUNE, 15),  3, null, PIZZA_HUT_PAYE_REF));
         incomes.add(new Income(amount("1600"), paymentDate(2015, Month.APRIL, 15),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1400"), paymentDate(2015, Month.JULY, 15),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1400"), paymentDate(2015, Month.AUGUST, 15),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.SEPTEMBER, 15),  1, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1400"), paymentDate(2015, Month.JULY, 15),  4, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1400"), paymentDate(2015, Month.AUGUST, 15),  5, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.SEPTEMBER, 15),  6, null, PIZZA_HUT_PAYE_REF));
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
@@ -219,14 +219,14 @@ public class CatASalariedTestData {
 
     public static List<ApplicantIncome> getConsecutiveIncomesWithExactlyTheAmount2() {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.MAY, 16), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.JUNE, 17), 1, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.JANUARY, 15), 10, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.MAY, 16), 2, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.JUNE, 17), 3, null, PIZZA_HUT_PAYE_REF));
         incomes.add(new Income(amount("1550"), paymentDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.JULY, 14), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.FEBRUARY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.JULY, 14), 4, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.FEBRUARY, 15), 11, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.AUGUST, 15), 5, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.SEPTEMBER, 15), 6, null, PIZZA_HUT_PAYE_REF));
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
