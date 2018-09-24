@@ -40,7 +40,7 @@ public class Income {
     }
 
     public int weekNumberAndEmployer() {
-        return weekPayNumber + 100 * employerPayeReference.hashCode();
+        return weekPayNumber + 10_000 * employerPayeReference.hashCode();
     }
 
 
