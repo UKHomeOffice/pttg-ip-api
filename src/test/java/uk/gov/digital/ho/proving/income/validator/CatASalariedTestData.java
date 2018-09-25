@@ -84,17 +84,12 @@ public class CatASalariedTestData {
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> getConsecutiveIncomes2() { // TODO OJR 2018/09/25 Address last as used in Spock Integration Test
+    public static List<ApplicantIncome> getConsecutiveIncomes2(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1400"), paymentDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.FEBRUARY, 15), 1, null, BURGER_KING_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.MARCH, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JUNE, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JULY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1400"), raisedDate.minusMonths(8), 1, null, PIZZA_HUT_PAYE_REF));
+        for (int i = 0; i < 8; i++) {
+            incomes.add(new Income(amount("1600"), raisedDate.minusMonths(i), 1, null, PIZZA_HUT_PAYE_REF));
+        }
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER, BURGER_KING_EMPLOYER);
     }
 

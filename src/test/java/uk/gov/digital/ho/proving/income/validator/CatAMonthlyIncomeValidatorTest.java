@@ -68,8 +68,8 @@ public class CatAMonthlyIncomeValidatorTest {
     @Test
     public void thatValidCategoryIndividualAccepted() {
 
-        List<ApplicantIncome> incomes = getConsecutiveIncomes2();
-        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getConsecutiveIncomes2(raisedDate);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -80,8 +80,8 @@ public class CatAMonthlyIncomeValidatorTest {
     @Test
     public void thatCalculationTypeIsOfRequiredFormatForStepAssertor() {
 
-        List<ApplicantIncome> incomes = getConsecutiveIncomes2();
-        LocalDate raisedDate = getDate(2015, Month.SEPTEMBER, 23);
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getConsecutiveIncomes2(raisedDate);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
