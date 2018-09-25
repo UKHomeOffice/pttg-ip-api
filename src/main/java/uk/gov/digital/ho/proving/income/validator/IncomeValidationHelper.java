@@ -80,6 +80,10 @@ public class IncomeValidationHelper {
         return (value.compareTo(threshold) >= 0);
     }
 
+    static List<Income> removeDuplicates(List<Income> incomes) {
+        return incomes.stream().distinct().collect(Collectors.toList());
+    }
+
     static List<Income> getAllPayeIncomes(IncomeValidationRequest incomeValidationRequest) {
         return incomeValidationRequest.allIncome()
             .stream()

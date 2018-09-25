@@ -40,7 +40,7 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
         IncomeValidationStatus status =
             financialCheckForMonthlySalaried(
-                applicantIncome.incomeRecord().paye(),
+                removeDuplicates(applicantIncome.incomeRecord().paye()),
                 monthlyThreshold,
                 assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());

@@ -174,4 +174,15 @@ public class CatAMonthlyIncomeValidatorTest {
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.MONTHLY_SALARIED_PASSED);
     }
 
+    @Test
+    public void shouldExcludeExactDuplicatePayments() {
+        LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 25);
+        List<ApplicantIncome> incomes = incomeWithDuplicateMonthlyPayments(raisedDate);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult result = validator.validate(request);
+
+        assertThat(result.status()).isEqualTo(IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD);
+    }
+
 }

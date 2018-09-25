@@ -136,4 +136,15 @@ public class CatAWeeklyIncomeValidatorTest {
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MULTIPLE_EMPLOYERS);
     }
+
+    @Test
+    public void shouldExcludeExactDuplicatePayments() {
+        List<ApplicantIncome> incomes = incomeWithDuplicateWeeklyPayments();
+        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationResult categoryAIndividual = validator.validate(request);
+
+        assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.WEEKLY_VALUE_BELOW_THRESHOLD);
+    }
 }
