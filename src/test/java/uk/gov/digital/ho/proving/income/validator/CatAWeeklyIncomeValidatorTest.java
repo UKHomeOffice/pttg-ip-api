@@ -7,7 +7,6 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,8 +19,8 @@ public class CatAWeeklyIncomeValidatorTest {
     @Test
     public void validCategoryAIndividualAccepted() {
 
-        List<ApplicantIncome> incomes = getIncomesAboveThreshold2();
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getIncomesAboveThreshold2(raisedDate);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -32,8 +31,8 @@ public class CatAWeeklyIncomeValidatorTest {
     @Test
     public void thatCalculationTypeIsOfRequiredFormatForStepAssertor() {
 
-        List<ApplicantIncome> incomes = getIncomesAboveThreshold2();
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getIncomesAboveThreshold2(raisedDate);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -44,8 +43,8 @@ public class CatAWeeklyIncomeValidatorTest {
     @Test
     public void thatExactly26WeeksAccepted() {
 
-        List<ApplicantIncome> incomes = getIncomesExactly26AboveThreshold2();
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getIncomesExactly26AboveThreshold2(raisedDate);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -56,8 +55,8 @@ public class CatAWeeklyIncomeValidatorTest {
     @Test
     public void thatExactly26WeeksRejectedIfRaisedBeforeLastPayday() {
 
-        List<ApplicantIncome> incomes = getIncomesExactly26AboveThreshold2();
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 10);
+        LocalDate raisedDate = LocalDate.now().minusDays(6);
+        List<ApplicantIncome> incomes = getIncomesExactly26AboveThreshold2(LocalDate.now());
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -68,8 +67,8 @@ public class CatAWeeklyIncomeValidatorTest {
     @Test
     public void thatInsufficientWeeklyDataFails() {
 
-        List<ApplicantIncome> incomes = getIncomesNotEnoughWeeks2();
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getIncomesNotEnoughWeeks2(raisedDate);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -80,8 +79,8 @@ public class CatAWeeklyIncomeValidatorTest {
     @Test
     public void thatSomeWeeksBelowThresholdFails() {
 
-        List<ApplicantIncome> incomes = getIncomesSomeBelowThreshold2();
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getIncomesSomeBelowThreshold2(raisedDate);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -91,9 +90,10 @@ public class CatAWeeklyIncomeValidatorTest {
 
     @Test
     public void shouldPassIfMultiplePaymentsSameWeekWhichWhenCombinedAreOverThreshold() {
-        List<ApplicantIncome> incomes = getIncomesAboveThresholdMultiplePaymentsOneWeek();
 
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getIncomesAboveThresholdMultiplePaymentsOneWeek(raisedDate);
+
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -103,9 +103,9 @@ public class CatAWeeklyIncomeValidatorTest {
 
     @Test
     public void shouldPassIfMultiplePaymentsSameDayWhichWhenCombinedAreOverThreshold() {
-        List<ApplicantIncome> incomes = getIncomesAboveThresholdMultiplePaymentsSameDay();
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getIncomesAboveThresholdMultiplePaymentsSameDay(raisedDate);
 
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -115,9 +115,9 @@ public class CatAWeeklyIncomeValidatorTest {
 
     @Test
     public void shouldFailIfMultiplePaymentsSameWeekWhichWhenCombinedAreStillBelowThreshold() {
-        List<ApplicantIncome> incomes = getIncomesMultiplePaymentsSameWeekBelowThreshold();
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getIncomesMultiplePaymentsSameWeekBelowThreshold(raisedDate);
 
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -127,9 +127,8 @@ public class CatAWeeklyIncomeValidatorTest {
 
     @Test
     public void shouldFailIfMultiplePaymentsSameWeekDifferentEmployersEvenOverThreshold() {
-        List<ApplicantIncome> incomes = getIncomesMultiplePaymentsSameWeekDifferentEmployers();
-
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getIncomesMultiplePaymentsSameWeekDifferentEmployers(raisedDate);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
@@ -139,8 +138,8 @@ public class CatAWeeklyIncomeValidatorTest {
 
     @Test
     public void shouldExcludeExactDuplicatePayments() {
-        List<ApplicantIncome> incomes = incomeWithDuplicateWeeklyPayments();
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = incomeWithDuplicateWeeklyPayments(raisedDate);
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);

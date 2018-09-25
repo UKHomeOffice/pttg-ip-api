@@ -20,7 +20,6 @@ public class CatASalariedTestData {
     final static Employer PIZZA_HUT_EMPLOYER = new Employer(PIZZA_HUT, PIZZA_HUT_PAYE_REF);
     final static Employer BURGER_KING_EMPLOYER = new Employer(BURGER_KING, BURGER_KING_PAYE_REF);
 
-    final static String weeklyThreshold = "357.69";
     final static String aboveThreshold = "357.70";
     final static String belowThreshold = "357.68";
 
@@ -38,87 +37,54 @@ public class CatASalariedTestData {
         return getDate(year, month, day);
     }
 
-    static List<Employments> getEmployers(List<Income> incomes) {
-        Set<String> employeRef = new HashSet<>();
-        for (Income income : incomes) {
-            employeRef.add(income.employerPayeReference());
-        }
-        return employeRef.stream().map(ref -> new Employments(new Employer(employerRefToName(ref), ref))).collect(Collectors.toList());
-    }
-
-    static String employerRefToName(String ref) {
-        if (ref.equals(PIZZA_HUT_PAYE_REF)) {
-            return PIZZA_HUT;
-        }
-        if (ref.equals(BURGER_KING_PAYE_REF)) {
-            return BURGER_KING;
-        }
-
-        return ref;
-    }
-
     private static List<ApplicantIncome> getApplicantIncomes(List<Income> paye, Employer... employers) {
         List<Employments> employments = Arrays.stream(employers).map(Employments::new).collect(Collectors.toList());
         IncomeRecord incomeRecord = new IncomeRecord(paye, new ArrayList<>(), employments, HMRC_INDIVIDUAL);
         return ImmutableList.of(new ApplicantIncome(APPLICANT, incomeRecord));
     }
 
-    public static List<ApplicantIncome> contiguousMonthlyPayments(LocalDate raisedDate) {
+    static List<ApplicantIncome> contiguousMonthlyPayments(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
+        for (int i = 0; i < 6; i++) {
+            incomes.add(new Income(amount("1600"), raisedDate.minusMonths(i), 1, null, PIZZA_HUT_PAYE_REF));
+        }
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> contiguousMonthlyPaymentsWithMultiplePaymentsInOldestMonth(LocalDate raisedDate) {
+    static List<ApplicantIncome> contiguousMonthlyPaymentsWithMultiplePaymentsPerMonthAndInsufficientRangeOfMonths(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1666"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1777"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1777"), raisedDate.minusMonths(3), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1666"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
-        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
-    }
-
-    public static List<ApplicantIncome> contiguousMonthlyPaymentsWithMultiplePaymentsPerMonthAndInsufficientRangeOfMonths(LocalDate raisedDate) {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), 2, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3), 3, null, PIZZA_HUT_PAYE_REF ));
+        for (int i = 0; i < 5; i++) {
+            if (i == 2) {
+                continue;
+            }
+            incomes.add(new Income(amount("1600"), raisedDate.minusMonths(i), 6 - i, null, PIZZA_HUT_PAYE_REF));
+        }
         incomes.add(new Income(amount("1666"), raisedDate.minusMonths(2), 4, null, PIZZA_HUT_PAYE_REF ));
         incomes.add(new Income(amount("1777"), raisedDate.minusMonths(2), 4, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 5, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate, 6, null, PIZZA_HUT_PAYE_REF ));
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> nonContiguousMonthlyPaymentsWithMultiplePaymentsPerMonth(LocalDate raisedDate) {
+    static List<ApplicantIncome> nonContiguousMonthlyPaymentsWithMultiplePaymentsPerMonth(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1666"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1777"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1888"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1999"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("2000"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
+        String[] incomeAmounts = {"1666", "1777", "1888", "1999", "2000"};
+        for (String incomeAmount : incomeAmounts) {
+            incomes.add(new Income(amount(incomeAmount), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF));
+        }
         incomes.add(new Income(amount("1600"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> nonContiguousMonthlyPaymentsWithMultiplePaymentsPerMonthAndInsufficientQuantity(LocalDate raisedDate) {
+    static List<ApplicantIncome> nonContiguousMonthlyPaymentsWithMultiplePaymentsPerMonthAndInsufficientQuantity(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1666"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1777"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1888"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1999"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
+        String[] incomeAmounts = {"1666", "1777", "1888", "1999"};
+        for (String incomeAmount : incomeAmounts) {
+            incomes.add(new Income(amount(incomeAmount), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF));
+        }
         incomes.add(new Income(amount("1600"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> getConsecutiveIncomes2() {
+    public static List<ApplicantIncome> getConsecutiveIncomes2() { // TODO OJR 2018/09/25 Address last as used in Spock Integration Test
         List<Income> incomes = new ArrayList<>();
         incomes.add(new Income(amount("1400"), paymentDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF ));
         incomes.add(new Income(amount("1600"), paymentDate(2015, Month.FEBRUARY, 15), 1, null, BURGER_KING_PAYE_REF ));
@@ -132,346 +98,166 @@ public class CatASalariedTestData {
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER, BURGER_KING_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> getNoneConsecutiveIncomes2() {
+    static List<ApplicantIncome> getNoneConsecutiveIncomes2(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JANUARY, 15), 10, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.FEBRUARY, 15), 11, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.APRIL, 16), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.MAY, 15), 2, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JUNE, 15), 3, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.AUGUST, 15), 5, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.SEPTEMBER, 15), 6, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(8), getMonthNumber(raisedDate.minusMonths(8)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(7), getMonthNumber(raisedDate.minusMonths(7)), null, PIZZA_HUT_PAYE_REF));
+
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(5)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5).withDayOfMonth(16), getMonthNumber(raisedDate.minusMonths(5)), null, PIZZA_HUT_PAYE_REF));
+
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), getMonthNumber(raisedDate.minusMonths(4)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3), getMonthNumber(raisedDate.minusMonths(3)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), getMonthNumber(raisedDate.minusMonths(1)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(0), getMonthNumber(raisedDate.minusMonths(0)), null, PIZZA_HUT_PAYE_REF));
+
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> getNotEnoughConsecutiveIncomes2() {
+    static List<ApplicantIncome> getNotEnoughConsecutiveIncomes2(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"),paymentDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"),paymentDate(2015, Month.JUNE, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"),paymentDate(2015, Month.APRIL, 15),1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"),paymentDate(2015, Month.JULY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"),paymentDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF));
+        for (int i = 1; i < 6; i++) {
+            incomes.add(new Income(amount("1600"), raisedDate.minusMonths(i), getMonthNumber(raisedDate.minusMonths(i)), null, PIZZA_HUT_PAYE_REF));
+        }
+
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> getConsecutiveIncomesButDifferentEmployers2() {
+    static List<ApplicantIncome> getConsecutiveIncomesButDifferentEmployers2(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JANUARY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.MAY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JUNE, 15), 1, null, BURGER_KING_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JULY, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.AUGUST, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.SEPTEMBER, 15), 1, null, PIZZA_HUT_PAYE_REF));
+        for (int i = 0; i < 7; i++) {
+            String payeRef = PIZZA_HUT_PAYE_REF;
+            if (i == 4) {
+                payeRef = BURGER_KING_PAYE_REF;
+            }
+            incomes.add(new Income(amount("1600"), raisedDate.minusMonths(i), getMonthNumber(raisedDate.minusMonths(i)), null, payeRef));
+        }
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER, BURGER_KING_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> getConsecutiveIncomesButLowAmounts2() {
+    static List<ApplicantIncome> getConsecutiveIncomesButLowAmounts2(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JANUARY, 15),  10, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.MAY, 15),  2, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JUNE, 15),  3, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.APRIL, 15),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1400"), paymentDate(2015, Month.JULY, 15),  4, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1400"), paymentDate(2015, Month.AUGUST, 15),  5, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.SEPTEMBER, 15),  6, null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(8), getMonthNumber(raisedDate.minusMonths(8)), null, PIZZA_HUT_PAYE_REF));
+        for (int i = 0; i < 6; i++) {
+            BigDecimal incomeAmount = amount("1600");
+            if (i == 1 || i == 2) {
+                incomeAmount = amount("1400");
+            }
+            incomes.add(new Income(incomeAmount, raisedDate.minusMonths(i), getMonthNumber(raisedDate.minusMonths(i)), null, PIZZA_HUT_PAYE_REF));
+        }
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> getConsecutiveIncomesWithDifferentMonthlyPayDay2() {
+    static List<ApplicantIncome> getConsecutiveIncomesWithDifferentMonthlyPayDay2(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1400"), paymentDate(2015, Month.JANUARY, 15),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.MAY, 16),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JUNE, 17),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.APRIL, 15),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.JULY, 14),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.FEBRUARY, 15),  1, null, BURGER_KING_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.AUGUST, 15),  1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), paymentDate(2015, Month.SEPTEMBER, 15),  1, null, PIZZA_HUT_PAYE_REF));
-        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER, BURGER_KING_EMPLOYER);
-    }
+        incomes.add(new Income(amount("1400"), raisedDate.minusMonths(8).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(8)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(7).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(7)), null, BURGER_KING_PAYE_REF));
 
-
-    public static List<ApplicantIncome> getConsecutiveIncomesWithExactlyTheAmount2() {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.JANUARY, 15), 10, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.MAY, 16), 2, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.JUNE, 17), 3, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.APRIL, 15), 1, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.JULY, 14), 4, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.FEBRUARY, 15), 11, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.AUGUST, 15), 5, null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), paymentDate(2015, Month.SEPTEMBER, 15), 6, null, PIZZA_HUT_PAYE_REF));
-        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
-    }
-
-
-    public static List<ApplicantIncome> getIncomesAboveThreshold2() {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 11), null, 19, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 4), null, 18, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 28), null, 17, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 21), null, 16, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 14), null, 15, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 7), null, 14, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 30), null, 13, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 23), null, 12, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 16), null, 11, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 9), null, 10, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 2), null, 9, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 26), null, 8, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 19), null, 7, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 12), null, 6, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 5), null, 5, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 28), null, 4, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 21), null, 3, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 14), null, 2, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 7), null, 1, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 31), null, 52, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 24), null, 51, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 17), null, 50, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 10), null, 49, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 3), null, 48, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 24), null, 47, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 17), null, 46, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 10), null, 45, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 3), null, 44, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JANUARY, 27), null, 43, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JANUARY, 20), null, 42, PIZZA_HUT_PAYE_REF));
-        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
-    }
-
-    static List<ApplicantIncome> getIncomesAboveThresholdMultiplePaymentsOneWeek() {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 11), null, 19, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 4), null, 18, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 28), null, 17, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 21), null, 16, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 14), null, 15, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 7), null, 14, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 30), null, 13, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 23), null, 12, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 16), null, 11, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 9), null, 10, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 2), null, 9, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 26), null, 8, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 19), null, 7, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 12), null, 6, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 5), null, 5, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 28), null, 4, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 21), null, 3, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 14), null, 2, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 7), null, 52, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 31), null, 51, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 24), null, 50, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 17), null, 49, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 10), null, 48, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 3), null, 47, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 24), null, 46, PIZZA_HUT_PAYE_REF));
-
-        incomes.add(new Income(amount(belowThreshold), paymentDate(2015, Month.FEBRUARY, 17), null, 45, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(belowThreshold), paymentDate(2015, Month.FEBRUARY, 18), null, 45, PIZZA_HUT_PAYE_REF));
-        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
-    }
-
-    static List<ApplicantIncome> getIncomesAboveThresholdMultiplePaymentsSameDay() {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 11), null, 19, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 4), null, 18, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 28), null, 17, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 21), null, 16, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 14), null, 15, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 7), null, 14, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 30), null, 13, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 23), null, 12, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 16), null, 11, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 9), null, 10, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 2), null, 9, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 26), null, 8, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 19), null, 7, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 12), null, 6, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 5), null, 5, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 28), null, 4, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 21), null, 3, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 14), null, 2, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 7), null, 52, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 31), null, 51, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 24), null, 50, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 17), null, 49, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 10), null, 48, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 3), null, 47, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 24), null, 46, PIZZA_HUT_PAYE_REF));
-
-        incomes.add(new Income(amount(belowThreshold), paymentDate(2015, Month.FEBRUARY, 17), null, 45, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(belowThreshold).add(BigDecimal.ONE), paymentDate(2015, Month.FEBRUARY, 17), null, 45, PIZZA_HUT_PAYE_REF));
-        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
-    }
-
-    static  List<ApplicantIncome> getIncomesMultiplePaymentsSameWeekBelowThreshold() {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 11), null, 19, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 4), null, 18, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 28), null, 17, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 21), null, 16, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 14), null, 15, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 7), null, 14, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 30), null, 13, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 23), null, 12, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 16), null, 11, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 9), null, 10, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 2), null, 9, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 26), null, 8, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 19), null, 7, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 12), null, 6, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 5), null, 5, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 28), null, 4, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 21), null, 3, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 14), null, 2, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 7), null, 52, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 31), null, 51, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 24), null, 50, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 17), null, 49, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 10), null, 48, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 3), null, 47, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 24), null, 46, PIZZA_HUT_PAYE_REF));
-
-        incomes.add(new Income(amount("5"), paymentDate(2015, Month.FEBRUARY, 17), null, 45, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("5"), paymentDate(2015, Month.FEBRUARY, 18), null, 45, PIZZA_HUT_PAYE_REF));
-        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
-
-    }
-
-    static List<ApplicantIncome> getIncomesMultiplePaymentsSameWeekDifferentEmployers() {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 11), null, 19, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 4), null, 18, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 28), null, 17, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 21), null, 16, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 14), null, 15, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 7), null, 14, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 30), null, 13, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 23), null, 12, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 16), null, 11, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 9), null, 10, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 2), null, 9, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 26), null, 8, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 19), null, 7, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 12), null, 6, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 5), null, 5, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 28), null, 4, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 21), null, 3, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 14), null, 2, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 7), null, 52, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 31), null, 51, PIZZA_HUT_PAYE_REF));
-
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 24), null, 50, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 25), null, 50, BURGER_KING_PAYE_REF));
-
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 17), null, 49, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 10), null, 48, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 3), null, 47, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 24), null, 46, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(5)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4).withDayOfMonth(16), getMonthNumber(raisedDate.minusMonths(4)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3).withDayOfMonth(17), getMonthNumber(raisedDate.minusMonths(3)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(2).withDayOfMonth(14), getMonthNumber(raisedDate.minusMonths(2)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(1)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1600"), raisedDate.withDayOfMonth(15), getMonthNumber(raisedDate), null, PIZZA_HUT_PAYE_REF));
 
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER, BURGER_KING_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> getIncomesExactly26AboveThreshold2() {
+
+    static List<ApplicantIncome> getConsecutiveIncomesWithExactlyTheAmount2(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 11), null, 19, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 4), null, 18, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 28), null, 17, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 21), null, 16, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 14), null, 15, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 7), null, 14, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 30), null, 13, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 23), null, 12, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 16), null, 11, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 9), null, 10, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 2), null, 9, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 26), null, 8, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 19), null, 7, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 12), null, 6, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 5), null, 5, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 28), null, 4, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 21), null, 3, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 14), null, 2, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 7), null, 1, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 31), null, 52, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 24), null, 51, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 17), null, 50, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 10), null, 49, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 3), null, 48, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 24), null, 47, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 17), null, 56, PIZZA_HUT_PAYE_REF));
+
+        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(8).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(8)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(4).withDayOfMonth(16), getMonthNumber(raisedDate.minusMonths(4)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(3).withDayOfMonth(17), getMonthNumber(raisedDate.minusMonths(3)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(5).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(5)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(2).withDayOfMonth(14), getMonthNumber(raisedDate.minusMonths(2)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(7).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(7)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(1).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(1)), null, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("1550"), raisedDate.withDayOfMonth(15), getMonthNumber(raisedDate), null, PIZZA_HUT_PAYE_REF));
 
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> getIncomesNotEnoughWeeks2() {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 11), null, 19, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 4), null, 18, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 28), null, 17, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 21), null, 16, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 14), null, 15, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 7), null, 14, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 30), null, 13, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 23), null, 12, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 16), null, 11, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 9), null, 10, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 7), null, 1, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 31), null, 52, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 24), null, 51, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 17), null, 50, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 10), null, 49, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 3), null, 48, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 24), null, 47, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 17), null, 46, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 10), null, 45, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 3), null, 44, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JANUARY, 27), null, 43, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JANUARY, 20), null, 42, PIZZA_HUT_PAYE_REF));
+
+    static List<ApplicantIncome> getIncomesAboveThreshold2(LocalDate raisedDate) {
+        List<Income> incomes = generateWeeklyIncomes(raisedDate, 30);
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> getIncomesAboveThresholdMultiplePaymentsOneWeek(LocalDate raisedDate) {
+        List<Income> incomes = generateWeeklyIncomes(raisedDate, 26);
+
+        Income lastIncome = incomes.get(incomes.size() - 1);
+        incomes.add(new Income(amount(belowThreshold), lastIncome.paymentDate().minusWeeks(1), null, lastIncome.weekPayNumber() - 1, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount(belowThreshold), lastIncome.paymentDate().minusWeeks(1).plusDays(1), null, lastIncome.weekPayNumber() - 1, PIZZA_HUT_PAYE_REF));
 
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> getIncomesSomeBelowThreshold2() {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 11), null, 19, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 4), null, 18, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 28), null, 17, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 21), null, 16, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 14), null, 15, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 7), null, 14, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 30), null, 13, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(belowThreshold), paymentDate(2015, Month.JUNE, 23), null, 12, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 16), null, 11, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 9), null, 10, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 2), null, 9, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 26), null, 8, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 19), null, 7, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 12), null, 6, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 5), null, 5, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 28), null, 4, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 21), null, 3, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 14), null, 2, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 7), null, 1, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 31), null, 52, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 24), null, 51, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 17), null, 50, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 10), null, 49, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(belowThreshold), paymentDate(2015, Month.MARCH, 3), null, 48, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 24), null, 47, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 17), null, 46, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 10), null, 45, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 3), null, 44, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JANUARY, 27), null, 43, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JANUARY, 20), null, 42, PIZZA_HUT_PAYE_REF));
+    static List<ApplicantIncome> getIncomesAboveThresholdMultiplePaymentsSameDay(LocalDate raisedDate) {
+        List<Income> incomes = generateWeeklyIncomes(raisedDate, 26);
+
+        Income lastIncome = incomes.get(incomes.size() - 1);
+        incomes.add(new Income(amount(belowThreshold), lastIncome.paymentDate().minusWeeks(1), null, lastIncome.weekPayNumber() - 1, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount(belowThreshold), lastIncome.paymentDate().minusWeeks(1), null, lastIncome.weekPayNumber() - 1, PIZZA_HUT_PAYE_REF));
+
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    public static List<ApplicantIncome> fortnightlyPayment(LocalDate raisedDate) {
+    static List<ApplicantIncome> getIncomesMultiplePaymentsSameWeekBelowThreshold(LocalDate raisedDate) {
+        List<Income> incomes = generateWeeklyIncomes(raisedDate, 25);
+
+        Income lastIncome = incomes.get(incomes.size() - 1);
+        incomes.add(new Income(amount("5"), lastIncome.paymentDate().minusWeeks(1), null, lastIncome.weekPayNumber() - 1, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount("5"), lastIncome.paymentDate().minusWeeks(1).plusDays(1), null, lastIncome.weekPayNumber() - 1, PIZZA_HUT_PAYE_REF));
+
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> getIncomesMultiplePaymentsSameWeekDifferentEmployers(LocalDate raisedDate) {
+        List<Income> incomes = generateWeeklyIncomes(raisedDate, 20);
+
+        Income lastIncome = incomes.get(incomes.size() - 1);
+        int weekPayNumber = decrementWeekNumber(lastIncome.weekPayNumber());
+        incomes.add(new Income(amount(aboveThreshold), lastIncome.paymentDate().minusWeeks(1), null, weekPayNumber, PIZZA_HUT_PAYE_REF));
+        incomes.add(new Income(amount(aboveThreshold), lastIncome.paymentDate().minusWeeks(1).plusDays(1), null, weekPayNumber, BURGER_KING_PAYE_REF));
+
+        weekPayNumber = decrementWeekNumber(weekPayNumber);
+        incomes.add(new Income(amount(aboveThreshold), lastIncome.paymentDate().minusWeeks(2), null, weekPayNumber, PIZZA_HUT_PAYE_REF));
+        weekPayNumber = decrementWeekNumber(weekPayNumber);
+        incomes.add(new Income(amount(aboveThreshold), lastIncome.paymentDate().minusWeeks(3), null, weekPayNumber, PIZZA_HUT_PAYE_REF));
+        weekPayNumber = decrementWeekNumber(weekPayNumber);
+        incomes.add(new Income(amount(aboveThreshold), lastIncome.paymentDate().minusWeeks(4), null, weekPayNumber, PIZZA_HUT_PAYE_REF));
+        weekPayNumber = decrementWeekNumber(weekPayNumber);
+        incomes.add(new Income(amount(aboveThreshold), lastIncome.paymentDate().minusWeeks(5), null, weekPayNumber, PIZZA_HUT_PAYE_REF));
+
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER, BURGER_KING_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> getIncomesExactly26AboveThreshold2(LocalDate raisedDate) {
+        List<Income> incomes = generateWeeklyIncomes(raisedDate, 26);
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> getIncomesNotEnoughWeeks2(LocalDate raisedDate) {
+        List<Income> incomes = generateWeeklyIncomes(raisedDate, 22);
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> getIncomesSomeBelowThreshold2(LocalDate raisedDate) {
+        List<Income> incomes = generateWeeklyIncomes(raisedDate, 30);
+
+        Income incomeToReplace = incomes.get(7);
+        incomes.set(7, new Income(amount(belowThreshold), incomeToReplace.paymentDate(), null, incomeToReplace.weekPayNumber(), incomeToReplace.employerPayeReference()));
+
+        incomeToReplace = incomes.get(23);
+        incomes.set(23, new Income(amount(belowThreshold), incomeToReplace.paymentDate(), null, incomeToReplace.weekPayNumber(), incomeToReplace.employerPayeReference()));
+
+        return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
+    }
+
+    static List<ApplicantIncome> fortnightlyPayment(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
         incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), null, null, PIZZA_HUT_PAYE_REF ));
         incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1).minusDays(14), null, null, PIZZA_HUT_PAYE_REF ));
@@ -479,7 +265,7 @@ public class CatASalariedTestData {
         return getApplicantIncomes(incomes, new Employer("n/a", "n/a"));
     }
 
-    public static List<ApplicantIncome> changedFrequencyPayments(LocalDate raisedDate) {
+    static List<ApplicantIncome> changedFrequencyPayments(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
         incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
         incomes.add(new Income(amount("1600"), raisedDate.minusMonths(2), null, 1, PIZZA_HUT_PAYE_REF ));
@@ -514,37 +300,13 @@ public class CatASalariedTestData {
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
-    static List<ApplicantIncome> incomeWithDuplicateWeeklyPayments() {
-        List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 11), null, 19, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.AUGUST, 4), null, 18, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 28), null, 17, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 21), null, 16, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 14), null, 15, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JULY, 7), null, 14, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 30), null, 13, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 23), null, 12, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 16), null, 11, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 9), null, 10, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.JUNE, 2), null, 9, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 26), null, 8, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 19), null, 7, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 12), null, 6, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MAY, 5), null, 5, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 28), null, 4, PIZZA_HUT_PAYE_REF));
+    static List<ApplicantIncome> incomeWithDuplicateWeeklyPayments(LocalDate raisedDate) {
+        List<Income> incomes = generateWeeklyIncomes(raisedDate, 26);
 
-        incomes.add(new Income(amount(belowThreshold), paymentDate(2015, Month.APRIL, 21), null, 3, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(belowThreshold), paymentDate(2015, Month.APRIL, 21), null, 3, PIZZA_HUT_PAYE_REF));
+        Income incomeToReplace = incomes.get(16);
+        incomes.set(16, new Income(amount(belowThreshold), incomeToReplace.paymentDate(), null, incomeToReplace.weekPayNumber(), incomeToReplace.employerPayeReference()));
+        incomes.add(16, new Income(amount(belowThreshold), incomeToReplace.paymentDate(), null, incomeToReplace.weekPayNumber(), incomeToReplace.employerPayeReference()));
 
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 14), null, 2, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.APRIL, 7), null, 1, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 31), null, 52, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 24), null, 51, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 17), null, 50, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 10), null, 49, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.MARCH, 3), null, 48, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 24), null, 47, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount(aboveThreshold), paymentDate(2015, Month.FEBRUARY, 17), null, 56, PIZZA_HUT_PAYE_REF));
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
@@ -552,7 +314,26 @@ public class CatASalariedTestData {
         return LocalDate.of(year,month,day);
     }
 
-    public static LocalDate subtractDaysFromDate(LocalDate date, long days) {
-        return date.minusDays(days);
+    private static int getMonthNumber(LocalDate paymentDate) {
+        int taxMonth = paymentDate.getMonthValue() - 3;
+        return taxMonth > 0 ? taxMonth : 12 + taxMonth;
+    }
+
+    private static List<Income> generateWeeklyIncomes(LocalDate raisedDate, int numberOfIncomes) {
+        List<Income> incomes = new ArrayList<>();
+        LocalDate paymentDate = raisedDate.minusDays(5);
+        int weekNumber = 19;
+        while (incomes.size() < numberOfIncomes) {
+            incomes.add(new Income(amount(aboveThreshold), paymentDate, null, weekNumber, PIZZA_HUT_PAYE_REF));
+            weekNumber = decrementWeekNumber(weekNumber);
+            paymentDate = paymentDate.minusWeeks(1);
+        }
+        return incomes;
+    }
+
+    private static int decrementWeekNumber(int weekNumber) {
+        weekNumber--;
+        weekNumber = weekNumber > 0 ? weekNumber : 52;
+        return weekNumber;
     }
 }
