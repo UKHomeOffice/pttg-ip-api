@@ -60,12 +60,13 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Response                           | HTTP Status               | 200              |
-            | Applicant                               | National Insurance Number | AA345678A        |
-            | Category A Unsupported Salary Frequency | Financial requirement met | false            |
-            | Category A Unsupported Salary Frequency | Application Raised date   | 2018-04-30       |
-            | Category A Unsupported Salary Frequency | Assessment Start Date     | 2017-10-30       |
-            | Category A Unsupported Salary Frequency | Threshold                 | 0                |
+            | HTTP Response                           | HTTP Status               | 200                  |
+            | Applicant                               | National Insurance Number | AA345678A            |
+            | Category A Unsupported Salary Frequency | Financial requirement met | false                |
+            | Category A Unsupported Salary Frequency | Failure Reason            | PAY_FREQUENCY_CHANGE |
+            | Category A Unsupported Salary Frequency | Application Raised date   | 2018-04-30           |
+            | Category A Unsupported Salary Frequency | Assessment Start Date     | 2017-10-30           |
+            | Category A Unsupported Salary Frequency | Threshold                 | 0                    |
             | Category A Unsupported Salary Frequency | Employer Name - AA345678A | Flying Pizza Ltd |
 
 
@@ -132,16 +133,16 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-03-27 | 1550.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-30 | 1550.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-30 | 1550.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-28 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-12-31 | 1550.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-31 | 1550.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-11-29 | 1550.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-10-30 | 1550.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-09-27 | 1550.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-08-30 | 1550.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-07-28 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-06-31 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-08-30 | 1550.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-07-28 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-31 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-05-29 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-04-30 | 0.01    |             | 01           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-04-30 | 1549.98 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
@@ -151,10 +152,11 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Response       | HTTP Status               | 200              |
-            | Applicant           | National Insurance Number | AA345678A        |
-            | Category B salaried | Financial requirement met | false            |
-            | Category B salaried | Application Raised date   | 2018-04-30       |
-            | Category B salaried | Assessment Start Date     | 2017-04-30       |
-            | Category B salaried | Threshold                 | 18600            |
-            | Category B salaried | Employer Name - AA345678A | Flying Pizza Ltd |
+            | HTTP Response       | HTTP Status               | 200                           |
+            | Applicant           | National Insurance Number | AA345678A                     |
+            | Category B salaried | Financial requirement met | false                         |
+            | Category B salaried | Application Raised date   | 2018-04-30                    |
+            | Category B salaried | Failure Reason            | CATB_SALARIED_BELOW_THRESHOLD |
+            | Category B salaried | Assessment Start Date     | 2017-04-30                    |
+            | Category B salaried | Threshold                 | 18600                         |
+            | Category B salaried | Employer Name - AA345678A | Flying Pizza Ltd              |
