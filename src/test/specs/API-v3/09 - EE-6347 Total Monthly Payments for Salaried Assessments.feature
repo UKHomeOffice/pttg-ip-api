@@ -100,10 +100,10 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-27 | 387.50  |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-04-27 | 387.50  |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-04-27 | 387.50  |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-04-27 | 387.50  |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-27 | 387.49  |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-27 | 387.51  |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-27 | 387.52  |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-27 | 387.48  |             | 06           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-03-30 | 1550.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-28 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-31 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
