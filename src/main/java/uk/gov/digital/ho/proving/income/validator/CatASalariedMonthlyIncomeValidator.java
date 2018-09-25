@@ -79,8 +79,10 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
         EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXMonths, threshold);
         if (employmentCheck.equals(EmploymentCheck.PASS)) {
             return IncomeValidationStatus.MONTHLY_SALARIED_PASSED;
-        } else {
-            return employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD) ? IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD : IncomeValidationStatus.MULTIPLE_EMPLOYERS;
         }
+        if (employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD)) {
+            return IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD;
+        }
+        return IncomeValidationStatus.MULTIPLE_EMPLOYERS;
     }
 }
