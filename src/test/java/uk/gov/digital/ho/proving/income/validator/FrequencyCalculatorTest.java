@@ -14,7 +14,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
-import uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.Frequency;
+import uk.gov.digital.ho.proving.income.validator.frequencycalculator.Frequency;
+import uk.gov.digital.ho.proving.income.validator.frequencycalculator.FrequencyCalculator;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -33,9 +34,9 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
-import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.Frequency.*;
-import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.calculate;
-import static uk.gov.digital.ho.proving.income.validator.FrequencyCalculator.calculateByPaymentNumbers;
+import static uk.gov.digital.ho.proving.income.validator.frequencycalculator.Frequency.*;
+import static uk.gov.digital.ho.proving.income.validator.frequencycalculator.FrequencyCalculator.calculate;
+import static uk.gov.digital.ho.proving.income.validator.frequencycalculator.FrequencyCalculator.calculateByPaymentNumbers;
 
 
 @RunWith(MockitoJUnitRunner.class)

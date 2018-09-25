@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.proving.income.validator;
+package uk.gov.digital.ho.proving.income.validator.frequencycalculator;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
@@ -15,14 +15,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 @Slf4j
 public class FrequencyCalculator {
-    enum Frequency {
-        WEEKLY,
-        FORTNIGHTLY,
-        FOUR_WEEKLY,
-        CALENDAR_MONTHLY,
-        UNKNOWN,
-        CHANGED
-    }
 
     private enum NUMBER_TYPE {
         HAS_WEEKLY_NUMBER,
@@ -127,7 +119,7 @@ public class FrequencyCalculator {
         return true;
     }
 
-    static Frequency calculateByPaymentNumbers(IncomeRecord incomeRecord) {
+    public static Frequency calculateByPaymentNumbers(IncomeRecord incomeRecord) {
         log.info("Calculating frequency by payment numbers");
         Optional<LocalDate> max = incomeRecord.paye().stream().map(Income::paymentDate).max(Comparator.naturalOrder());
         Optional<LocalDate> min = incomeRecord.paye().stream().map(Income::paymentDate).min(Comparator.naturalOrder());
@@ -145,21 +137,7 @@ public class FrequencyCalculator {
 
         int averageDaysBetweenPayments = Math.round((float) daysInRange / (float) (numberOfPayments - 1));
 
-        Frequency frequency;
-        if (averageDaysBetweenPayments < 6) {
-            frequency = Frequency.UNKNOWN;
-        } else if (averageDaysBetweenPayments < 8) {
-            frequency = Frequency.WEEKLY;
-        } else if (averageDaysBetweenPayments < 15) {
-            frequency = Frequency.FORTNIGHTLY;
-        } else if (averageDaysBetweenPayments < 29) {
-            frequency = Frequency.FOUR_WEEKLY;
-        } else if (averageDaysBetweenPayments < 32) {
-            frequency = Frequency.CALENDAR_MONTHLY;
-        } else {
-            frequency = Frequency.UNKNOWN;
-        }
-        return logFrequency(frequency);
+        return logFrequency(Frequency.frequencyForAverageNumberOfDaysBetweenPayments(averageDaysBetweenPayments));
     }
 
     private static Frequency logFrequency(Frequency frequency) {
