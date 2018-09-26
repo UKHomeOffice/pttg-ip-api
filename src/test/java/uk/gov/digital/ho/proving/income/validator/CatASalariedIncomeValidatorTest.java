@@ -68,8 +68,8 @@ public class CatASalariedIncomeValidatorTest {
     @Test
     public void thatWeeklyPaymentsCallWeeklyValidator() {
 
-        LocalDate raisedDate = getDate(2015, Month.AUGUST, 16);
-        List<ApplicantIncome> incomes = getIncomesAboveThreshold2();
+        LocalDate raisedDate = LocalDate.now();
+        List<ApplicantIncome> incomes = getIncomesAboveThreshold2(raisedDate);
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
 
         final IncomeValidationResult result = IncomeValidationResult.builder()

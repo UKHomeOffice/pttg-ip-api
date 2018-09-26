@@ -6,6 +6,8 @@ import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
+import uk.gov.digital.ho.proving.income.validator.frequencycalculator.Frequency;
+import uk.gov.digital.ho.proving.income.validator.frequencycalculator.FrequencyCalculator;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -23,7 +25,7 @@ public class CatAUnsupportedIncomeValidator implements IncomeValidator {
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
         ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncome();
-        FrequencyCalculator.Frequency frequency = FrequencyCalculator.calculate(applicantIncome.incomeRecord());
+        Frequency frequency = FrequencyCalculator.calculate(applicantIncome.incomeRecord());
         List<String> employments = toEmployerNames(applicantIncome.employments());
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
         return IncomeValidationResult.builder()
@@ -36,8 +38,8 @@ public class CatAUnsupportedIncomeValidator implements IncomeValidator {
             .build();
     }
 
-    private IncomeValidationStatus getStatus(FrequencyCalculator.Frequency frequency) {
-        if(frequency.equals(FrequencyCalculator.Frequency.CHANGED)) {
+    private IncomeValidationStatus getStatus(Frequency frequency) {
+        if(frequency.equals(Frequency.CHANGED)) {
             return IncomeValidationStatus.PAY_FREQUENCY_CHANGE;
         }
 

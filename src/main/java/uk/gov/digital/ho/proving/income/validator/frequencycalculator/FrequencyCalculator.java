@@ -1,5 +1,6 @@
-package uk.gov.digital.ho.proving.income.validator;
+package uk.gov.digital.ho.proving.income.validator.frequencycalculator;
 
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 
@@ -12,21 +13,15 @@ import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
+@Slf4j
 public class FrequencyCalculator {
-    enum Frequency {
-        WEEKLY,
-        FORTNIGHTLY,
-        FOUR_WEEKLY,
-        CALENDAR_MONTHLY,
-        UNKNOWN,
-        CHANGED
-    }
 
     private enum NUMBER_TYPE {
         HAS_WEEKLY_NUMBER,
         HAS_MONTHLY_NUMBER,
         HAS_NONE
     }
+
     public static Frequency calculate(IncomeRecord incomeRecord) {
         if (hasDifferentFrequencies(incomeRecord)) {
             return Frequency.CHANGED;
@@ -116,7 +111,7 @@ public class FrequencyCalculator {
 
     private static boolean isDifferenceAlways(List<Integer> weekNumbers, int differenceAmount) {
         for (int i = 0; i < weekNumbers.size() - 1; i++) {
-            if (weekNumbers.get(i+1) -  weekNumbers.get(i) != differenceAmount) {
+            if (weekNumbers.get(i + 1) - weekNumbers.get(i) != differenceAmount) {
                 return false;
             }
         }
@@ -124,39 +119,29 @@ public class FrequencyCalculator {
         return true;
     }
 
-    private static Frequency calculateByPaymentNumbers(IncomeRecord incomeRecord) {
+    public static Frequency calculateByPaymentNumbers(IncomeRecord incomeRecord) {
+        log.info("Calculating frequency by payment numbers");
         Optional<LocalDate> max = incomeRecord.paye().stream().map(Income::paymentDate).max(Comparator.naturalOrder());
         Optional<LocalDate> min = incomeRecord.paye().stream().map(Income::paymentDate).min(Comparator.naturalOrder());
 
         if (!max.isPresent() || !min.isPresent()) {
-            return Frequency.CALENDAR_MONTHLY;
+            return logFrequency(Frequency.CALENDAR_MONTHLY);
         }
 
-        long daysInRange =  DAYS.between(min.get(), max.get());
+        long daysInRange = DAYS.between(min.get(), max.get());
         long numberOfPayments = incomeRecord.paye().size();
 
         if (numberOfPayments < 2) {
-            return Frequency.CALENDAR_MONTHLY;
+            return logFrequency(Frequency.CALENDAR_MONTHLY);
         }
 
-        int averageDaysBetweenPayments = Math.round((float)daysInRange / (float)(numberOfPayments - 1));
+        int averageDaysBetweenPayments = Math.round((float) daysInRange / (float) (numberOfPayments - 1));
 
-        if (averageDaysBetweenPayments < 6) {
-            return Frequency.UNKNOWN;
-        }
-        if (averageDaysBetweenPayments < 8) {
-            return Frequency.WEEKLY;
-        }
-        if (averageDaysBetweenPayments < 15) {
-            return Frequency.FORTNIGHTLY;
-        }
-        if (averageDaysBetweenPayments < 29) {
-            return Frequency.FOUR_WEEKLY;
-        }
-        if (averageDaysBetweenPayments < 32) {
-            return Frequency.CALENDAR_MONTHLY;
-        }
-        return Frequency.UNKNOWN;
+        return logFrequency(Frequency.of(averageDaysBetweenPayments));
     }
 
+    private static Frequency logFrequency(Frequency frequency) {
+        log.info(String.format("Frequency calculated by payment numbers as %s", frequency));
+        return frequency;
+    }
 }
