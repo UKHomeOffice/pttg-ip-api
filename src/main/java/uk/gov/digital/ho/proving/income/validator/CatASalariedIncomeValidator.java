@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.validator;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
+import uk.gov.digital.ho.proving.income.validator.frequencycalculator.FrequencyCalculator;
 
 import java.time.LocalDate;
 
