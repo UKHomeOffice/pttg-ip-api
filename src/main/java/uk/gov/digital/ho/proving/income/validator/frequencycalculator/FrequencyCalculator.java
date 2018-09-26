@@ -137,7 +137,7 @@ public class FrequencyCalculator {
 
         int averageDaysBetweenPayments = Math.round((float) daysInRange / (float) (numberOfPayments - 1));
 
-        return logFrequency(Frequency.frequencyForAverageNumberOfDaysBetweenPayments(averageDaysBetweenPayments));
+        return logFrequency(Frequency.of(averageDaysBetweenPayments));
     }
 
     private static Frequency logFrequency(Frequency frequency) {

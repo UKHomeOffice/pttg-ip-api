@@ -18,7 +18,7 @@ public enum Frequency {
         this.maximumNumberOfDaysBetweenPayments = maximumNumberOfDaysBetweenPayments;
     }
 
-    public static Frequency frequencyForAverageNumberOfDaysBetweenPayments(int numberOfDaysBetweenPayments) {
+    public static Frequency of(int numberOfDaysBetweenPayments) {
         return Arrays.stream(Frequency.values())
             .filter(frequency -> frequency.isPaymentIntervalInRange(numberOfDaysBetweenPayments))
             .findFirst()

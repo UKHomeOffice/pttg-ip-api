@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class CatASalariedTestData {
 
@@ -95,16 +96,15 @@ public class CatASalariedTestData {
 
     static List<ApplicantIncome> getNoneConsecutiveIncomes2(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(8), getMonthNumber(raisedDate.minusMonths(8)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(7), getMonthNumber(raisedDate.minusMonths(7)), null, PIZZA_HUT_PAYE_REF));
-
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(5)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5).withDayOfMonth(16), getMonthNumber(raisedDate.minusMonths(5)), null, PIZZA_HUT_PAYE_REF));
-
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), getMonthNumber(raisedDate.minusMonths(4)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3), getMonthNumber(raisedDate.minusMonths(3)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), getMonthNumber(raisedDate.minusMonths(1)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(0), getMonthNumber(raisedDate.minusMonths(0)), null, PIZZA_HUT_PAYE_REF));
+        IntStream.of(0, 1, 3, 4, 5, 7, 8).forEach(i -> {
+            LocalDate paymentDate = raisedDate.minusMonths(i);
+            if (i != 5) {
+                incomes.add(new Income(amount("1600"), paymentDate, getMonthNumber(paymentDate), null, PIZZA_HUT_PAYE_REF));
+            } else {
+                incomes.add(new Income(amount("1600"), paymentDate.withDayOfMonth(15), getMonthNumber(paymentDate), null, PIZZA_HUT_PAYE_REF));
+                incomes.add(new Income(amount("1600"), paymentDate.withDayOfMonth(16), getMonthNumber(paymentDate), null, PIZZA_HUT_PAYE_REF));
+            }
+        });
 
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
@@ -145,15 +145,22 @@ public class CatASalariedTestData {
 
     static List<ApplicantIncome> getConsecutiveIncomesWithDifferentMonthlyPayDay2(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1400"), raisedDate.minusMonths(8).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(8)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(7).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(7)), null, BURGER_KING_PAYE_REF));
+        IntStream.of(0, 1, 5, 7, 8).forEach(i -> {
+            LocalDate paymentDate = raisedDate.minusMonths(i).withDayOfMonth(15);
+            BigDecimal payment = amount("1600");
+            String employerRef = PIZZA_HUT_PAYE_REF;
 
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(5)), null, PIZZA_HUT_PAYE_REF));
+            if (i == 7) {
+                employerRef = BURGER_KING_PAYE_REF;
+            }
+            if (i == 8) {
+                payment = amount("1400");
+            }
+            incomes.add(new Income(payment, paymentDate, getMonthNumber(paymentDate), null, employerRef));
+        });
         incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4).withDayOfMonth(16), getMonthNumber(raisedDate.minusMonths(4)), null, PIZZA_HUT_PAYE_REF));
         incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3).withDayOfMonth(17), getMonthNumber(raisedDate.minusMonths(3)), null, PIZZA_HUT_PAYE_REF));
         incomes.add(new Income(amount("1600"), raisedDate.minusMonths(2).withDayOfMonth(14), getMonthNumber(raisedDate.minusMonths(2)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(1)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1600"), raisedDate.withDayOfMonth(15), getMonthNumber(raisedDate), null, PIZZA_HUT_PAYE_REF));
 
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER, BURGER_KING_EMPLOYER);
     }
@@ -161,15 +168,19 @@ public class CatASalariedTestData {
 
     static List<ApplicantIncome> getConsecutiveIncomesWithExactlyTheAmount2(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-
-        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(8).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(8)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(4).withDayOfMonth(16), getMonthNumber(raisedDate.minusMonths(4)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(3).withDayOfMonth(17), getMonthNumber(raisedDate.minusMonths(3)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(5).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(5)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(2).withDayOfMonth(14), getMonthNumber(raisedDate.minusMonths(2)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(7).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(7)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), raisedDate.minusMonths(1).withDayOfMonth(15), getMonthNumber(raisedDate.minusMonths(1)), null, PIZZA_HUT_PAYE_REF));
-        incomes.add(new Income(amount("1550"), raisedDate.withDayOfMonth(15), getMonthNumber(raisedDate), null, PIZZA_HUT_PAYE_REF));
+        IntStream.of(8, 4, 3, 5, 2, 7, 1, 0).forEach(i -> {
+            LocalDate paymentDate = raisedDate.minusMonths(i).withDayOfMonth(15);
+            if (i == 4) {
+                paymentDate = paymentDate.withDayOfMonth(16);
+            }
+            if (i == 3) {
+                paymentDate = paymentDate.withDayOfMonth(17);
+            }
+            if (i == 2) {
+                paymentDate = paymentDate.withDayOfMonth(14);
+            }
+            incomes.add(new Income(amount("1550"), paymentDate, getMonthNumber(paymentDate), null, PIZZA_HUT_PAYE_REF));
+        });
 
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
@@ -269,29 +280,29 @@ public class CatASalariedTestData {
 
     static List<ApplicantIncome> twoPaymentsSameMonth(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3), 1, null, PIZZA_HUT_PAYE_REF ));
-
-        incomes.add(new Income(amount("1549.99"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("0.01"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
-
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
+        IntStream.rangeClosed(0, 5).forEach(i -> {
+            LocalDate paymentDate = raisedDate.minusMonths(i);
+            if (i == 2) {
+                incomes.add(new Income(amount("1549.99"), paymentDate, getMonthNumber(paymentDate), null, PIZZA_HUT_PAYE_REF));
+                incomes.add(new Income(amount("0.01"), paymentDate, getMonthNumber(paymentDate), null, PIZZA_HUT_PAYE_REF));
+            } else {
+                incomes.add(new Income(amount("1600"), paymentDate, getMonthNumber(paymentDate), null, PIZZA_HUT_PAYE_REF));
+            }
+        });
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
     static List<ApplicantIncome> incomeWithDuplicateMonthlyPayments(LocalDate raisedDate) {
         List<Income> incomes = new ArrayList<>();
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(5), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(4), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(3), 1, null, PIZZA_HUT_PAYE_REF ));
-
-        incomes.add(new Income(amount("1549.99"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1549.99"), raisedDate.minusMonths(2), 1, null, PIZZA_HUT_PAYE_REF ));
-
-        incomes.add(new Income(amount("1600"), raisedDate.minusMonths(1), 1, null, PIZZA_HUT_PAYE_REF ));
-        incomes.add(new Income(amount("1600"), raisedDate, 1, null, PIZZA_HUT_PAYE_REF ));
+        IntStream.rangeClosed(0,5).forEach(i -> {
+            LocalDate paymentDate = raisedDate.minusMonths(i);
+            if(i == 2) {
+                incomes.add(new Income(amount("1549.99"), paymentDate, getMonthNumber(paymentDate), null, PIZZA_HUT_PAYE_REF));
+                incomes.add(new Income(amount("1549.99"), paymentDate, getMonthNumber(paymentDate), null, PIZZA_HUT_PAYE_REF));
+            } else {
+                incomes.add(new Income(amount("1600"), paymentDate, getMonthNumber(paymentDate), null, PIZZA_HUT_PAYE_REF));
+            }
+        });
         return getApplicantIncomes(incomes, PIZZA_HUT_EMPLOYER);
     }
 
