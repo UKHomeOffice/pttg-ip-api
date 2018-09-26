@@ -109,6 +109,13 @@ public class IncomeValidationHelper {
         return sumGroupedIncomes(groupedByWeek.values());
     }
 
+    static boolean checkAllSameEmployer(List<Income> paye) {
+        return paye.stream()
+            .map(Income::employerPayeReference)
+            .distinct()
+            .count() == 1;
+    }
+
     private static List<Income> sumGroupedIncomes(Collection<List<Income>> groupedIncomes) {
         List<Income> summedIncomes = new ArrayList<>();
         for (List<Income> samePeriodIncomes : groupedIncomes) {
@@ -120,4 +127,5 @@ public class IncomeValidationHelper {
         }
         return summedIncomes;
     }
+
 }

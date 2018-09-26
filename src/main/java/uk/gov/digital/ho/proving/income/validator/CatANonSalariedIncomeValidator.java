@@ -10,18 +10,14 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
-import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.checkValuePassesThreshold;
-import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.filterIncomesByDates;
-import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATA_NON_SALARIED_BELOW_THRESHOLD;
-import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATA_NON_SALARIED_PASSED;
-import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.NOT_ENOUGH_RECORDS;
+import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
+import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.*;
 
 @Service
 public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
@@ -34,22 +30,46 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
         List<Income> applicantPaye = incomeValidationRequest.applicantIncome().incomeRecord().paye();
         IncomeValidationStatus validationStatus = validateIncome(applicantPaye, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
 
-        IncomeValidationResult.IncomeValidationResultBuilder validationResultBuilder = IncomeValidationResult.builder()
-            .status(validationStatus)
-            .category("A")
-            .calculationType("Category A non salaried")
-            .assessmentStartDate(assessmentStartDate)
-            .threshold(threshold);
+        IncomeValidationResult.IncomeValidationResultBuilder validationResultBuilder = IncomeValidationResult.builder();
+
+        if (validationStatus.isPassed() && !checkAllSameEmployer(applicantPaye)) {
+            return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold);
+        }
+
+
+        if (!validationStatus.isPassed() && incomeValidationRequest.isJointRequest()) {
+            List<Income> partnerPaye = incomeValidationRequest.partnerIncome().incomeRecord().paye();
+            validationStatus = (validateIncome(partnerPaye, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold));
+            if (validationStatus.isPassed() && !checkAllSameEmployer(partnerPaye)) {
+                return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold);
+            }
+
+            if (!validationStatus.isPassed()) {
+                List<Income> allIncomes = new ArrayList<>(applicantPaye);
+                allIncomes.addAll(partnerPaye);
+                validationStatus = validateIncome(allIncomes, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
+
+                if (validationStatus.isPassed() && (!checkAllSameEmployer(applicantPaye) || !checkAllSameEmployer(partnerPaye))) {
+                    return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold);
+                }
+            }
+        }
 
         if (incomeValidationRequest.getCheckedIndividuals().size() > 0) {
             validationResultBuilder.individuals(singletonList(new CheckedIndividual(incomeValidationRequest.getCheckedIndividuals().get(0).nino(), emptyList())));
         }
 
-        return validationResultBuilder.build();
+        return validationResultBuilder
+            .status(validationStatus)
+            .category("A")
+            .calculationType("Category A non salaried")
+            .assessmentStartDate(assessmentStartDate)
+            .threshold(threshold)
+            .build();
     }
 
     private IncomeValidationStatus validateIncome(List<Income> paye, LocalDate assessmentStartDate, LocalDate applicationRaisedDate, BigDecimal threshold) {
-        paye = filterIncomesByDates(paye, assessmentStartDate, applicationRaisedDate).collect(Collectors.toList());
+        paye = removeDuplicates(filterIncomesByDates(paye, assessmentStartDate, applicationRaisedDate));
 
         if (paye.size() <= 0) {
             return NOT_ENOUGH_RECORDS;
@@ -60,4 +80,15 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
         }
         return CATA_NON_SALARIED_BELOW_THRESHOLD;
     }
+
+    private IncomeValidationResult validationResult(IncomeValidationStatus validationStatus, LocalDate assessmentStartDate, BigDecimal threshold) {
+        return IncomeValidationResult.builder()
+            .status(validationStatus)
+            .category("A")
+            .calculationType("Category A non salaried")
+            .assessmentStartDate(assessmentStartDate)
+            .threshold(threshold)
+            .build();
+    }
+
 }
