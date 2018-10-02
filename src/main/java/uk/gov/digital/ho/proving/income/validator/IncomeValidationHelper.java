@@ -134,4 +134,13 @@ public class IncomeValidationHelper {
         return summedIncomes;
     }
 
+    static Collection<List<Income>> groupIncomesByEmployers(List<Income> paye) {
+        return paye.stream()
+            .collect(Collectors.groupingBy(Income::employerPayeReference))
+            .values();
+    }
+
+    static BigDecimal totalPayment(List<Income> incomes) {
+        return incomes.stream().map(Income::payment).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

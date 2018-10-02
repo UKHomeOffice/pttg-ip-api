@@ -2,7 +2,6 @@ package uk.gov.digital.ho.proving.income.validator;
 
 import org.junit.Test;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
-import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn;
 import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
@@ -15,12 +14,11 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.*;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -209,7 +207,7 @@ public class CatANonSalariedIncomeValidatorTest {
     @Test
     public void shouldFailWhenMultipleEmployers() {
         List<Income> incomes = asList(
-            new Income(amount("18599.99"), APPLICATION_RAISED_DATE.minusDays(1), null, null, "any employer ref"),
+            new Income(amount("9299.99"), APPLICATION_RAISED_DATE.minusDays(1), null, null, "any employer ref"),
             new Income(amount("0.01"), APPLICATION_RAISED_DATE.minusDays(2), null, null, "any other employer ref")
         );
 
@@ -264,6 +262,7 @@ public class CatANonSalariedIncomeValidatorTest {
         assertThat(result.individuals()).hasSize(1);
         assertThat(result.individuals().get(0).nino().equals(ANY_HMRC_INDIVIDUAL_PARTNER.nino()));
     }
+
     @Test
     public void checkedIndividualShouldBeBothWhenCombinedPass() {
         List<Income> applicantIncome = singletonList(new Income(BigDecimal.valueOf(18_600 / 4), APPLICATION_RAISED_DATE.minusDays(1), null, null, "any employer ref"));
@@ -282,6 +281,20 @@ public class CatANonSalariedIncomeValidatorTest {
         assertThat(result.individuals()).hasSize(2);
         assertThat(result.individuals().get(0).nino().equals(ANY_HMRC_INDIVIDUAL.nino()));
         assertThat(result.individuals().get(0).nino().equals(ANY_HMRC_INDIVIDUAL_PARTNER.nino()));
+    }
+
+    @Test
+    public void shouldPassWhenMultipleEmployersButSingleEmployerOverThreshold() {
+        List<Income> incomes = asList(
+            new Income(BigDecimal.valueOf(18_600 / 2), APPLICATION_RAISED_DATE.minusDays(1), null, null, "an employer ref"),
+            new Income(BigDecimal.ONE, APPLICATION_RAISED_DATE.minusDays(2), null, null, "a different employer ref")
+        );
+
+        List<ApplicantIncome> applicantIncomes = singletonList(new ApplicantIncome(ANY_APPLICANT, new IncomeRecord(incomes, emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL)));
+
+        IncomeValidationResult result = validator.validate(new IncomeValidationRequest(applicantIncomes, APPLICATION_RAISED_DATE, 0));
+
+        assertThat(result.status()).isEqualTo(CATA_NON_SALARIED_PASSED);
     }
 
     private void assertExpectedResult(IncomeValidationRequest request, IncomeValidationStatus expectedStatus) {

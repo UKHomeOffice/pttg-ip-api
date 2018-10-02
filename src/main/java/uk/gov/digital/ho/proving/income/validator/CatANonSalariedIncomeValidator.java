@@ -10,7 +10,10 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
@@ -24,28 +27,21 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
         BigDecimal threshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
         LocalDate assessmentStartDate = getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate());
 
-        IncomeValidationStatus validationStatus;
-
         IncomeValidationRequest applicantOnlyRequest = incomeValidationRequest.toApplicantOnly();
-        validationStatus = validateIncome(applicantOnlyRequest, assessmentStartDate, applicantOnlyRequest.applicationRaisedDate(), threshold);
+
+        IncomeValidationStatus validationStatus = validateIncome(applicantOnlyRequest, assessmentStartDate, applicantOnlyRequest.applicationRaisedDate(), threshold);
         if (validationStatus.isPassed()) {
-            if (checkAllSameEmployer(getAllPayeIncomes(applicantOnlyRequest))) {
-                return validationResult(validationStatus, assessmentStartDate, threshold, applicantOnlyRequest.getCheckedIndividuals());
-            } else {
-                validationStatus = MULTIPLE_EMPLOYERS;
-            }
+            return validationResult(validationStatus, assessmentStartDate, threshold, applicantOnlyRequest.getCheckedIndividuals());
         }
 
         if (incomeValidationRequest.isJointRequest()) {
             IncomeValidationRequest partnerOnlyRequest = incomeValidationRequest.toPartnerOnly();
             validationStatus = validateIncome(partnerOnlyRequest, assessmentStartDate, partnerOnlyRequest.applicationRaisedDate(), threshold);
             if (validationStatus.isPassed()) {
-                if (checkAllSameEmployer(getAllPayeIncomes(partnerOnlyRequest))) {
-                    return validationResult(validationStatus, assessmentStartDate, threshold, partnerOnlyRequest.getCheckedIndividuals());
-                }
+                return validationResult(validationStatus, assessmentStartDate, threshold, partnerOnlyRequest.getCheckedIndividuals());
             }
 
-            validationStatus = validateIncome(incomeValidationRequest, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
+            validationStatus = validateJointIncome(incomeValidationRequest, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
             if (validationStatus.isPassed()) {
                 if (checkAllSameEmployerJointApplication(incomeValidationRequest)) {
                     return validationResult(validationStatus, assessmentStartDate, threshold, incomeValidationRequest.getCheckedIndividuals());
@@ -64,8 +60,42 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
             return NOT_ENOUGH_RECORDS;
         }
 
-        if (checkValuePassesThreshold(paye.stream().map(Income::payment).reduce(BigDecimal.ZERO, BigDecimal::add).multiply(BigDecimal.valueOf(2)), threshold)) {
+        Collection<List<Income>> groupedByEmployers = groupIncomesByEmployers(paye);
+        if (groupedByEmployers.stream().anyMatch(incomes ->
+            checkValuePassesThreshold(totalPayment(incomes).multiply(BigDecimal.valueOf(2)), threshold))) {
             return CATA_NON_SALARIED_PASSED;
+        }
+        if (checkValuePassesThreshold(totalPayment(paye).multiply(BigDecimal.valueOf(2)), threshold)) {
+            return MULTIPLE_EMPLOYERS;
+        }
+        return CATA_NON_SALARIED_BELOW_THRESHOLD;
+    }
+
+    private IncomeValidationStatus validateJointIncome(IncomeValidationRequest validationRequest, LocalDate assessmentStartDate, LocalDate applicationRaisedDate, BigDecimal threshold) {
+        List<Income> paye = getAllPayeIncomes(validationRequest);
+        paye = removeDuplicates(filterIncomesByDates(paye, assessmentStartDate, applicationRaisedDate));
+
+        if (paye.size() <= 0) {
+            return NOT_ENOUGH_RECORDS;
+        }
+
+        List<Income> applicantPaye = validationRequest.applicantIncome().incomeRecord().paye();
+        List<Income> partnerPaye = validationRequest.partnerIncome().incomeRecord().paye();
+
+        BigDecimal applicantIncome = groupIncomesByEmployers(applicantPaye).stream()
+            .map(IncomeValidationHelper::totalPayment)
+            .max(BigDecimal::compareTo)
+            .orElse(BigDecimal.ZERO);
+        BigDecimal partnerIncome = groupIncomesByEmployers(partnerPaye).stream()
+            .map(IncomeValidationHelper::totalPayment)
+            .max(BigDecimal::compareTo)
+            .orElse(BigDecimal.ZERO);
+
+        if (checkValuePassesThreshold(applicantIncome.add(partnerIncome).multiply(BigDecimal.valueOf(2)), threshold)) {
+            return CATA_NON_SALARIED_PASSED;
+        }
+        if (checkValuePassesThreshold(totalPayment(paye).multiply(BigDecimal.valueOf(2)), threshold)) {
+            return MULTIPLE_EMPLOYERS;
         }
         return CATA_NON_SALARIED_BELOW_THRESHOLD;
     }
