@@ -275,15 +275,14 @@ public class CatANonSalariedIncomeValidatorTest {
             new ApplicantIncome(ANY_APPLICANT, applicantIncomeRecord),
             new ApplicantIncome(ANY_PARTNER, partnerIncomeRecord)
         );
+        assertThat(ANY_HMRC_INDIVIDUAL.nino()).isNotEqualTo(ANY_HMRC_INDIVIDUAL_PARTNER.nino());
 
 
         IncomeValidationResult result = validator.validate(new IncomeValidationRequest(applicantIncomes, APPLICATION_RAISED_DATE, 0));
         assertThat(result.individuals()).hasSize(2);
         assertThat(result.individuals().get(0).nino().equals(ANY_HMRC_INDIVIDUAL.nino()));
         assertThat(result.individuals().get(0).nino().equals(ANY_HMRC_INDIVIDUAL_PARTNER.nino()));
-        assertThat(ANY_HMRC_INDIVIDUAL.nino()).isNotEqualTo(ANY_HMRC_INDIVIDUAL.nino());
     }
-    // TODO OJR 2018/09/26 Check checkedIndividual correct: combined
 
     private void assertExpectedResult(IncomeValidationRequest request, IncomeValidationStatus expectedStatus) {
         IncomeValidationResult result = validator.validate(request);

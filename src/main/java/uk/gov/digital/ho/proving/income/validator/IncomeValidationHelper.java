@@ -116,6 +116,12 @@ public class IncomeValidationHelper {
             .count() == 1;
     }
 
+    static boolean checkAllSameEmployerJointApplication(IncomeValidationRequest request) {
+        boolean allSameEmployerApplicant = checkAllSameEmployer(request.applicantIncome().incomeRecord().paye());
+        boolean allSameEmployerPartner = checkAllSameEmployer(request.partnerIncome().incomeRecord().paye());
+        return allSameEmployerApplicant && allSameEmployerPartner;
+    }
+
     private static List<Income> sumGroupedIncomes(Collection<List<Income>> groupedIncomes) {
         List<Income> summedIncomes = new ArrayList<>();
         for (List<Income> samePeriodIncomes : groupedIncomes) {

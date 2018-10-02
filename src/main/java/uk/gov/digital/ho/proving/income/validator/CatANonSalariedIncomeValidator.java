@@ -10,11 +10,8 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.*;
@@ -27,48 +24,38 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
         BigDecimal threshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
 
         LocalDate assessmentStartDate = getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate());
-        List<Income> applicantPaye = incomeValidationRequest.applicantIncome().incomeRecord().paye();
-        IncomeValidationStatus validationStatus = validateIncome(applicantPaye, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
+        IncomeValidationRequest applicantOnlyRequest = incomeValidationRequest.toApplicantOnly();
+        List<CheckedIndividual> checkedIndividuals = applicantOnlyRequest.getCheckedIndividuals();
+        IncomeValidationStatus validationStatus = validateIncome(applicantOnlyRequest, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
 
-        IncomeValidationResult.IncomeValidationResultBuilder validationResultBuilder = IncomeValidationResult.builder();
 
-        if (validationStatus.isPassed() && !checkAllSameEmployer(applicantPaye)) {
-            return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold);
+        if (validationStatus.isPassed() && !checkAllSameEmployer(getAllPayeIncomes(applicantOnlyRequest))) {
+            return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold, checkedIndividuals);
         }
 
-
         if (!validationStatus.isPassed() && incomeValidationRequest.isJointRequest()) {
-            List<Income> partnerPaye = incomeValidationRequest.partnerIncome().incomeRecord().paye();
-            validationStatus = (validateIncome(partnerPaye, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold));
-            if (validationStatus.isPassed() && !checkAllSameEmployer(partnerPaye)) {
-                return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold);
+            IncomeValidationRequest partnerOnlyRequest = incomeValidationRequest.toPartnerOnly();
+            checkedIndividuals = partnerOnlyRequest.getCheckedIndividuals();
+            validationStatus = validateIncome(partnerOnlyRequest, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
+            if (validationStatus.isPassed() && !checkAllSameEmployer(getAllPayeIncomes(partnerOnlyRequest))) {
+                return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold, checkedIndividuals);
             }
 
             if (!validationStatus.isPassed()) {
-                List<Income> allIncomes = new ArrayList<>(applicantPaye);
-                allIncomes.addAll(partnerPaye);
-                validationStatus = validateIncome(allIncomes, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
+                validationStatus = validateIncome(incomeValidationRequest, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
+                checkedIndividuals = incomeValidationRequest.getCheckedIndividuals();
 
-                if (validationStatus.isPassed() && (!checkAllSameEmployer(applicantPaye) || !checkAllSameEmployer(partnerPaye))) {
-                    return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold);
+                if (validationStatus.isPassed() && !checkAllSameEmployerJointApplication(incomeValidationRequest)) {
+                    return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold, checkedIndividuals);
                 }
             }
         }
 
-        if (incomeValidationRequest.getCheckedIndividuals().size() > 0) {
-            validationResultBuilder.individuals(singletonList(new CheckedIndividual(incomeValidationRequest.getCheckedIndividuals().get(0).nino(), emptyList())));
-        }
-
-        return validationResultBuilder
-            .status(validationStatus)
-            .category("A")
-            .calculationType("Category A non salaried")
-            .assessmentStartDate(assessmentStartDate)
-            .threshold(threshold)
-            .build();
+        return validationResult(validationStatus, assessmentStartDate, threshold, checkedIndividuals);
     }
 
-    private IncomeValidationStatus validateIncome(List<Income> paye, LocalDate assessmentStartDate, LocalDate applicationRaisedDate, BigDecimal threshold) {
+    private IncomeValidationStatus validateIncome(IncomeValidationRequest validationRequest, LocalDate assessmentStartDate, LocalDate applicationRaisedDate, BigDecimal threshold) {
+        List<Income> paye = getAllPayeIncomes(validationRequest);
         paye = removeDuplicates(filterIncomesByDates(paye, assessmentStartDate, applicationRaisedDate));
 
         if (paye.size() <= 0) {
@@ -81,13 +68,14 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
         return CATA_NON_SALARIED_BELOW_THRESHOLD;
     }
 
-    private IncomeValidationResult validationResult(IncomeValidationStatus validationStatus, LocalDate assessmentStartDate, BigDecimal threshold) {
+    private IncomeValidationResult validationResult(IncomeValidationStatus validationStatus, LocalDate assessmentStartDate, BigDecimal threshold, List<CheckedIndividual> checkedIndividuals) {
         return IncomeValidationResult.builder()
             .status(validationStatus)
             .category("A")
             .calculationType("Category A non salaried")
             .assessmentStartDate(assessmentStartDate)
             .threshold(threshold)
+            .individuals(checkedIndividuals)
             .build();
     }
 
