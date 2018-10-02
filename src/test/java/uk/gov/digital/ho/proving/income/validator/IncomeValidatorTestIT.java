@@ -16,9 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.contiguousMonthlyPayments;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.getDate;
 
@@ -35,6 +33,8 @@ public class IncomeValidatorTestIT {
     private IncomeValidator catASalariedMonthlyIncomeValidator;
     @SpyBean(CatASalariedWeeklyIncomeValidator.class)
     private IncomeValidator catASalariedWeeklyIncomeValidator;
+    @SpyBean(CatANonSalariedIncomeValidator.class)
+    private IncomeValidator catANonSalariedIncomeValidator;
     @SpyBean(CatAUnsupportedIncomeValidator.class)
     private IncomeValidator catAUnsupportedIncomeValidator;
     @SpyBean(CatBNonSalariedIncomeValidator.class)
@@ -56,7 +56,7 @@ public class IncomeValidatorTestIT {
 
         assertThat(categoryChecks.size())
             .withFailMessage("There should be 4 category checks performed")
-            .isEqualTo(4);
+            .isEqualTo(5);
 
         List<String> returnedCategories = categoryChecks.stream()
             .map(CategoryCheck::category)
@@ -76,6 +76,7 @@ public class IncomeValidatorTestIT {
 
         verify(catASalariedIncomeValidator).validate(request);
         verify(catASalariedMonthlyIncomeValidator).validate(request);
+        verify(catANonSalariedIncomeValidator).validate(request);
         verify(employmentCheckIncomeValidator, times(2)).validate(request); // Called for both CatB Salaried and Unsalaried
         verify(catBSalariedIncomeValidator).validate(request);
         verify(catBNonSalariedIncomeValidator).validate(request);
