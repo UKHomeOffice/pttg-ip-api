@@ -22,36 +22,38 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
         BigDecimal threshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
-
         LocalDate assessmentStartDate = getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate());
+
+        IncomeValidationStatus validationStatus;
+
         IncomeValidationRequest applicantOnlyRequest = incomeValidationRequest.toApplicantOnly();
-        List<CheckedIndividual> checkedIndividuals = applicantOnlyRequest.getCheckedIndividuals();
-        IncomeValidationStatus validationStatus = validateIncome(applicantOnlyRequest, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
-
-
-        if (validationStatus.isPassed() && !checkAllSameEmployer(getAllPayeIncomes(applicantOnlyRequest))) {
-            return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold, checkedIndividuals);
+        validationStatus = validateIncome(applicantOnlyRequest, assessmentStartDate, applicantOnlyRequest.applicationRaisedDate(), threshold);
+        if (validationStatus.isPassed()) {
+            if (checkAllSameEmployer(getAllPayeIncomes(applicantOnlyRequest))) {
+                return validationResult(validationStatus, assessmentStartDate, threshold, applicantOnlyRequest.getCheckedIndividuals());
+            } else {
+                validationStatus = MULTIPLE_EMPLOYERS;
+            }
         }
 
-        if (!validationStatus.isPassed() && incomeValidationRequest.isJointRequest()) {
+        if (incomeValidationRequest.isJointRequest()) {
             IncomeValidationRequest partnerOnlyRequest = incomeValidationRequest.toPartnerOnly();
-            checkedIndividuals = partnerOnlyRequest.getCheckedIndividuals();
-            validationStatus = validateIncome(partnerOnlyRequest, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
-            if (validationStatus.isPassed() && !checkAllSameEmployer(getAllPayeIncomes(partnerOnlyRequest))) {
-                return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold, checkedIndividuals);
+            validationStatus = validateIncome(partnerOnlyRequest, assessmentStartDate, partnerOnlyRequest.applicationRaisedDate(), threshold);
+            if (validationStatus.isPassed()) {
+                if (checkAllSameEmployer(getAllPayeIncomes(partnerOnlyRequest))) {
+                    return validationResult(validationStatus, assessmentStartDate, threshold, partnerOnlyRequest.getCheckedIndividuals());
+                }
             }
 
-            if (!validationStatus.isPassed()) {
-                validationStatus = validateIncome(incomeValidationRequest, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
-                checkedIndividuals = incomeValidationRequest.getCheckedIndividuals();
-
-                if (validationStatus.isPassed() && !checkAllSameEmployerJointApplication(incomeValidationRequest)) {
-                    return validationResult(MULTIPLE_EMPLOYERS, assessmentStartDate, threshold, checkedIndividuals);
+            validationStatus = validateIncome(incomeValidationRequest, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
+            if (validationStatus.isPassed()) {
+                if (checkAllSameEmployerJointApplication(incomeValidationRequest)) {
+                    return validationResult(validationStatus, assessmentStartDate, threshold, incomeValidationRequest.getCheckedIndividuals());
                 }
             }
         }
 
-        return validationResult(validationStatus, assessmentStartDate, threshold, checkedIndividuals);
+        return validationResult(validationStatus, assessmentStartDate, threshold, incomeValidationRequest.getCheckedIndividuals());
     }
 
     private IncomeValidationStatus validateIncome(IncomeValidationRequest validationRequest, LocalDate assessmentStartDate, LocalDate applicationRaisedDate, BigDecimal threshold) {
