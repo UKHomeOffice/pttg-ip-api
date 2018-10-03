@@ -11,7 +11,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800
 
 
-    Scenario: 01 Lucy has no dependents. Her income history shows a payments in 6 months that meet the threshold. Assessment range 2018-04-30 to 2017-10-30
+    # 01 Lucy has no dependents. Her income history shows a payments in 6 months that meet the threshold. Assessment range 2018-04-30 to 2017-10-30
+    Scenario: No dependants. 6 monthly payments over threshold.
 
 
         Given HMRC has the following income records:
@@ -37,7 +38,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 ############
 
-    Scenario: 02 David has no dependents. His income history shows payments in 7 months prior that meet the threshold. Assessment range 2018-04-30 to 2017-10-30
+    # 02 David has no dependents. His income history shows payments in 7 months prior that meet the threshold. Assessment range 2018-04-30 to 2017-10-30
+    Scenario: No dependants. 7 monthly payments over threshold.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -63,7 +65,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 ############
 
-    Scenario: 03 Pauline has no dependents. Her income history shows payments in 6 months that meet the threshold, but ignoring payments from a second employer.  Assessment range 2018-04-30 to 2017-10-30
+    # 03 Pauline has no dependents. Her income history shows payments in 6 months that meet the threshold, but ignoring payments from a second employer.  Assessment range 2018-04-30 to 2017-10-30
+    Scenario: No dependants. 6 months of payment over threshold, ignoring second employer.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -89,7 +92,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 ############
 
-    Scenario: 04 Sarah has no dependants. Her income history shows a payment that meets the threshold at the very beginning of the 6 month range. All other months are blank. Assessment range 2017-12-30 to 2017-07-01.
+    # 04 Sarah has no dependants. Her income history shows a payment that meets the threshold at the very beginning of the 6 month range. All other months are blank. Assessment range 2017-12-30 to 2017-07-01.
+    Scenario: No dependants. Single payment over threshold at very beginning of 6 month assessment range.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -110,7 +114,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 ############
 
-    Scenario: 05 Sally has no dependants. Her income history shows a payment that meets the threshold at the very end of the 6 month range. All other months are blank. Assessment range 2017-12-30 to 2017-07-01.
+    # 05 Sally has no dependants. Her income history shows a payment that meets the threshold at the very end of the 6 month range. All other months are blank. Assessment range 2017-12-30 to 2017-07-01.
+    Scenario: No dependants. Single payment over threshold at very end of 6 month assessment range.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -131,7 +136,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 ############
 
-    Scenario: 06 Phillip has no dependents. His income history shows 6 months with payments. One month has weekly payments and another month has fortnightly and a monthly payment. Average meets the threshold. Assessment range 2017-09-30 to 2017-04-01.
+    # 06 Phillip has no dependents. His income history shows 6 months with payments. One month has weekly payments and another month has fortnightly and a monthly payment. Average meets the threshold. Assessment range 2017-09-30 to 2017-04-01.
+    Scenario: No dependants. Mixed frequency payments in last 6 month over threshold.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -160,7 +166,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 ############
 
-    Scenario: 07 Siobhan has one dependent. Her income history shows a payment in 6 months with a mixture of payments and gaps that meet the threshold (Nov & Sept are blank). Assessment range 2018-01-31 to 2017-08-02.
+    # 07 Siobhan has one dependent. Her income history shows a payment in 6 months with a mixture of payments and gaps that meet the threshold (Nov & Sept are blank). Assessment range 2018-01-31 to 2017-08-02.
+    Scenario: One dependant. Payments with monthly gaps but over threshold.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -184,7 +191,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 ############
 
-    Scenario: 08 Derek has two dependents. His income history shows a payment in 6 months with a mixture of payments and gaps that meet the threshold (Nov, Oct & Sept are blank). Assessment range 2017-01-31 to 2017-08-02.
+    #  08 Derek has two dependents. His income history shows a payment in 6 months with a mixture of payments and gaps that meet the threshold (Nov, Oct & Sept are blank). Assessment range 2017-01-31 to 2017-08-02.
+    Scenario: Two dependants. Mixed frequency payments with gaps but over threshold.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -208,7 +216,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 ############
 
-    Scenario: 09 Geraldine has no dependents. Her income history shows payments in 6 months but does not meet the threshold until it is supplemented by a partners income. Assessment range 2018-04-30 to 2017-10-30.
+    #  09 Geraldine has no dependents. Her income history shows payments in 6 months but does not meet the threshold until it is supplemented by a partners income. Assessment range 2018-04-30 to 2017-10-30.
+    Scenario: No dependants. Applicant income below threshold. Over threshold when combined with partner income.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -246,7 +255,8 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 ############
 
-    Scenario: 10 Bertie has no dependents. His income history shows payments but with some months having gaps. The payments do not meet the threshold until it is supplemented by a partners income also having gaps. Assessment range 2018-04-30 to 2017-10-30.
+    # 10 Bertie has no dependents. His income history shows payments but with some months having gaps. The payments do not meet the threshold until it is supplemented by a partners income also having gaps. Assessment range 2018-04-30 to 2017-10-30.
+    Scenario: No dependants. Payments with gaps, below threshold. Over threshold when adding partner payment, also with gaps.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
