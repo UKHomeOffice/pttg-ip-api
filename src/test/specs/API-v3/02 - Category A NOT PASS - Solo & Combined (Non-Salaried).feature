@@ -50,6 +50,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2018-04-30 |
+            | Dependants              | 1          |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200                               |

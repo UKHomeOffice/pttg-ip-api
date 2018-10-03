@@ -139,13 +139,13 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | 2017-09-29 | 2000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-08-25 | 2000.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-07-28 | 2000.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-06-30 | 325.00  |             | 10           | FP/Ref2        | Flying Pizza Ltd |
-            | 2017-06-23 | 325.00  |             | 09           | FP/Ref2        | Flying Pizza Ltd |
-            | 2017-06-16 | 325.00  |             | 08           | FP/Ref2        | Flying Pizza Ltd |
-            | 2017-06-09 | 325.00  |             | 07           | FP/Ref2        | Flying Pizza Ltd |
+            | 2017-06-30 | 325.00  |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-23 | 325.00  |             | 09           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-16 | 325.00  |             | 08           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-09 | 325.00  |             | 07           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-05-26 | 1000.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-04-28 | 500.00  |             | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-04-07 | 500.00  | 03          |              | FP/Ref2        | Flying Pizza Ltd |
+            | 2017-04-07 | 500.00  | 03          |              | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AB889357A  |
@@ -155,7 +155,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | HTTP Response           | HTTP Status               | 200              |
             | Category A non salaried | Financial requirement met | true             |
             | Category A non salaried | Application Raised date   | 2017-09-30       |
-            | Applicant               | National Insurance Number | AAB889357A       |
+            | Applicant               | National Insurance Number | AB889357A        |
             | Category A non salaried | Threshold                 | 18600            |
             | Category A non salaried | Employer Name - AB889357A | Flying Pizza Ltd |
 
@@ -173,13 +173,14 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | LA345628A  |
             | Application Raised Date | 2018-01-31 |
+            | Dependants              | 1          |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200              |
             | Category A non salaried | Financial requirement met | true             |
             | Category A non salaried | Application Raised date   | 2018-01-31       |
             | Applicant               | National Insurance Number | LA345628A        |
-            | Category A non salaried | Threshold                 | £22400           |
+            | Category A non salaried | Threshold                 | 22400            |
             | Category A non salaried | Employer Name - LA345628A | Flying Pizza Ltd |
 
 ############
@@ -190,19 +191,20 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
             | 2018-01-26 | 5000.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-12-22 | 1800.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-08 | 600.00  | 38          | 0            | FP/Ref2        | Flying Pizza Ltd |
+            | 2017-12-08 | 600.00  | 38          |              | FP/Ref1        | Flying Pizza Ltd |
             | 2017-08-31 | 5000.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | PL327678A  |
             | Application Raised Date | 2018-01-31 |
+            | Dependants              | 2          |
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200              |
             | Category A non salaried | Financial requirement met | true             |
             | Category A non salaried | Application Raised date   | 2018-01-31       |
             | Applicant               | National Insurance Number | PL327678A        |
-            | Category A non salaried | Threshold                 | £24800           |
+            | Category A non salaried | Threshold                 | 24800            |
             | Category A non salaried | Employer Name - PL327678A | Flying Pizza Ltd |
 
 ############
@@ -233,14 +235,14 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Response           | HTTP Status               | 200                          |
-            | Category A non salaried | Financial requirement met | true                         |
-            | Category A non salaried | Application Raised date   | 2018-04-30                   |
-            | Applicant               | National Insurance Number | SS317678A                    |
-            | Partner                 | National Insurance Number | GG374820B                    |
-            | Category A non salaried | Threshold                 | 18600                        |
-            | Category A non salaried | Employer Name - SS317678A | Flying Pizza Ltd             |
-            | Category A non salaried | Employer Name - GG374820B | The Home Office              |
+            | HTTP Response           | HTTP Status               | 200              |
+            | Category A non salaried | Financial requirement met | true             |
+            | Category A non salaried | Application Raised date   | 2018-04-30       |
+            | Applicant               | National Insurance Number | SS317678A        |
+            | Partner                 | National Insurance Number | GG374820B        |
+            | Category A non salaried | Threshold                 | 18600            |
+            | Category A non salaried | Employer Name - SS317678A | Flying Pizza Ltd |
+            | Category A non salaried | Employer Name - GG374820B | The Home Office  |
 
 
 ############
