@@ -144,7 +144,7 @@ public class CatAMonthlyIncomeValidatorTest {
         LocalDate raisedDate = LocalDate.now();
         List<ApplicantIncome> incomes = getConsecutiveIncomesWithDifferentMonthlyPayDay2(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate.withDayOfMonth(16), 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MONTHLY_SALARIED_PASSED);
@@ -156,7 +156,7 @@ public class CatAMonthlyIncomeValidatorTest {
         LocalDate raisedDate = LocalDate.now();
         List<ApplicantIncome> incomes = getConsecutiveIncomesWithExactlyTheAmount2(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate.withDayOfMonth(17), 0);
         IncomeValidationResult categoryAIndividual = validator.validate(request);
 
         assertThat(categoryAIndividual.status()).isEqualTo(IncomeValidationStatus.MONTHLY_SALARIED_PASSED);
