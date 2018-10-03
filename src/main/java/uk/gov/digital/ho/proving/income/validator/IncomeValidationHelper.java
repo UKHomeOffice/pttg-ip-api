@@ -143,4 +143,11 @@ public class IncomeValidationHelper {
     static BigDecimal totalPayment(List<Income> incomes) {
         return incomes.stream().map(Income::payment).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    static BigDecimal largestSingleEmployerIncome(List<Income> incomes) {
+        return groupIncomesByEmployers(incomes).stream()
+            .map(IncomeValidationHelper::totalPayment)
+            .max(BigDecimal::compareTo)
+            .orElse(BigDecimal.ZERO);
+    }
 }

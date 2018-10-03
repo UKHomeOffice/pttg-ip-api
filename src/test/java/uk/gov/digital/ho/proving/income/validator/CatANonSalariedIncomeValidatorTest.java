@@ -297,6 +297,48 @@ public class CatANonSalariedIncomeValidatorTest {
         assertThat(result.status()).isEqualTo(CATA_NON_SALARIED_PASSED);
     }
 
+    @Test
+    public void shouldFilterDuplicatesJointApplication() {
+        List<Income> applicantIncome = asList(
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusDays(1), 1, null, "an employer ref"),
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusDays(1), 1, null, "an employer ref")
+        );
+        List<Income> partnerIncome = asList(
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusDays(1), 1, null, "another employer ref"),
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusDays(1), 1, null, "another employer ref")
+        );
+
+        List<ApplicantIncome> applicantIncomes = asList(
+            new ApplicantIncome(ANY_APPLICANT, new IncomeRecord(applicantIncome, emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL)),
+            new ApplicantIncome(ANY_PARTNER, new IncomeRecord(partnerIncome, emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL_PARTNER))
+        );
+
+        IncomeValidationResult result = validator.validate(new IncomeValidationRequest(applicantIncomes, APPLICATION_RAISED_DATE, 0));
+
+        assertThat(result.status()).isEqualTo(CATA_NON_SALARIED_BELOW_THRESHOLD);
+    }
+
+    @Test
+    public void shouldFilterOutOfRangePaymentsJointApplication() {
+        List<Income> applicantIncome = asList(
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusMonths(6).minusDays(1), 8, null, "an employer ref"),
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusDays(1), 1, null, "an employer ref")
+        );
+        List<Income> partnerIncome = asList(
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.plusDays(1), 1, null, "another employer ref"),
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusDays(1), 1, null, "another employer ref")
+        );
+
+        List<ApplicantIncome> applicantIncomes = asList(
+            new ApplicantIncome(ANY_APPLICANT, new IncomeRecord(applicantIncome, emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL)),
+            new ApplicantIncome(ANY_PARTNER, new IncomeRecord(partnerIncome, emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL_PARTNER))
+        );
+
+        IncomeValidationResult result = validator.validate(new IncomeValidationRequest(applicantIncomes, APPLICATION_RAISED_DATE, 0));
+
+        assertThat(result.status()).isEqualTo(CATA_NON_SALARIED_BELOW_THRESHOLD);
+    }
+
     private void assertExpectedResult(IncomeValidationRequest request, IncomeValidationStatus expectedStatus) {
         IncomeValidationResult result = validator.validate(request);
         assertThat(result.status()).isEqualTo(expectedStatus);

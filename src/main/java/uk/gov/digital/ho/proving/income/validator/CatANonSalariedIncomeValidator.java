@@ -10,10 +10,9 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
@@ -75,29 +74,27 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
     }
 
     private IncomeValidationStatus validateJointIncome(IncomeValidationRequest validationRequest, LocalDate assessmentStartDate, LocalDate applicationRaisedDate, BigDecimal threshold) {
-        List<Income> paye = getAllPayeIncomes(validationRequest);
-        paye = removeDuplicates(filterIncomesByDates(paye, assessmentStartDate, applicationRaisedDate));
 
-        if (paye.size() <= 0) {
+        List<Income> applicantPaye = validationRequest.applicantIncome().incomeRecord().paye();
+        applicantPaye = removeDuplicates(filterIncomesByDates(applicantPaye, assessmentStartDate, applicationRaisedDate));
+
+        List<Income> partnerPaye = validationRequest.partnerIncome().incomeRecord().paye();
+        partnerPaye = removeDuplicates(filterIncomesByDates(partnerPaye, assessmentStartDate, applicationRaisedDate));
+
+        List<Income> allPaye = new ArrayList<>(applicantPaye);
+        allPaye.addAll(partnerPaye);
+
+        if (allPaye.size() <= 0) {
             return NOT_ENOUGH_RECORDS;
         }
 
-        List<Income> applicantPaye = validationRequest.applicantIncome().incomeRecord().paye();
-        List<Income> partnerPaye = validationRequest.partnerIncome().incomeRecord().paye();
-
-        BigDecimal applicantIncome = groupIncomesByEmployers(applicantPaye).stream()
-            .map(IncomeValidationHelper::totalPayment)
-            .max(BigDecimal::compareTo)
-            .orElse(BigDecimal.ZERO);
-        BigDecimal partnerIncome = groupIncomesByEmployers(partnerPaye).stream()
-            .map(IncomeValidationHelper::totalPayment)
-            .max(BigDecimal::compareTo)
-            .orElse(BigDecimal.ZERO);
+        BigDecimal applicantIncome = largestSingleEmployerIncome(applicantPaye);
+        BigDecimal partnerIncome = largestSingleEmployerIncome(partnerPaye);
 
         if (checkValuePassesThreshold(applicantIncome.add(partnerIncome).multiply(BigDecimal.valueOf(2)), threshold)) {
             return CATA_NON_SALARIED_PASSED;
         }
-        if (checkValuePassesThreshold(totalPayment(paye).multiply(BigDecimal.valueOf(2)), threshold)) {
+        if (checkValuePassesThreshold(totalPayment(allPaye).multiply(BigDecimal.valueOf(2)), threshold)) {
             return MULTIPLE_EMPLOYERS;
         }
         return CATA_NON_SALARIED_BELOW_THRESHOLD;
