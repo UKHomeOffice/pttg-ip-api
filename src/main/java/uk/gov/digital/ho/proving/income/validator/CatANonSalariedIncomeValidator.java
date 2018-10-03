@@ -22,6 +22,9 @@ import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidation
 @Service
 public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
 
+    private static final String CALCULATION_TYPE = "Category A Non Salaried";
+    private static final String CATEGORY = "A";
+
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
         BigDecimal threshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
@@ -103,8 +106,8 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
     private IncomeValidationResult validationResult(IncomeValidationStatus validationStatus, LocalDate assessmentStartDate, BigDecimal threshold, List<CheckedIndividual> checkedIndividuals) {
         return IncomeValidationResult.builder()
             .status(validationStatus)
-            .category("A")
-            .calculationType("Category A non salaried")
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
             .assessmentStartDate(assessmentStartDate)
             .threshold(threshold)
             .individuals(checkedIndividuals)

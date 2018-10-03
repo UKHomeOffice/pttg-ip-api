@@ -66,7 +66,7 @@ public class CatANonSalariedIncomeValidatorTest {
 
     @Test
     public void calculationTypeShouldBeCategoryANonSalaried() {
-        String expectedCalculationType = "Category A non salaried";
+        String expectedCalculationType = "Category A Non Salaried";
 
         IncomeValidationResult result = validator.validate(new IncomeValidationRequest(ANY_APPLICANT_INCOME, APPLICATION_RAISED_DATE, 0));
 

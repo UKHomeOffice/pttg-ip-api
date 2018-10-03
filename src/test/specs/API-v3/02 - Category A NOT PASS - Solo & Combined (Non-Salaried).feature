@@ -26,12 +26,12 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200                               |
-            | Category A non salaried | Financial requirement met | false                             |
-            | Category A non salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
-            | Category A non salaried | Application Raised date   | 2018-04-30                        |
+            | Category A Non Salaried | Financial requirement met | false                             |
+            | Category A Non Salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
+            | Category A Non Salaried | Application Raised date   | 2018-04-30                        |
             | Applicant               | National Insurance Number | AA345678A                         |
-            | Category A non salaried | Threshold                 | 18600                             |
-            | Category A non salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
+            | Category A Non Salaried | Threshold                 | 18600                             |
+            | Category A Non Salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
 
     ############
 
@@ -54,12 +54,12 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200                               |
-            | Category A non salaried | Financial requirement met | false                             |
-            | Category A non salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
-            | Category A non salaried | Application Raised date   | 2018-04-30                        |
+            | Category A Non Salaried | Financial requirement met | false                             |
+            | Category A Non Salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
+            | Category A Non Salaried | Application Raised date   | 2018-04-30                        |
             | Applicant               | National Insurance Number | AA345678A                         |
-            | Category A non salaried | Threshold                 | 22400                             |
-            | Category A non salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
+            | Category A Non Salaried | Threshold                 | 22400                             |
+            | Category A Non Salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
 
        ############
 
@@ -81,12 +81,12 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200                               |
-            | Category A non salaried | Financial requirement met | false                             |
-            | Category A non salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
-            | Category A non salaried | Application Raised date   | 2018-04-30                        |
+            | Category A Non Salaried | Financial requirement met | false                             |
+            | Category A Non Salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
+            | Category A Non Salaried | Application Raised date   | 2018-04-30                        |
             | Applicant               | National Insurance Number | AA345678A                         |
-            | Category A non salaried | Threshold                 | 18600                             |
-            | Category A non salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
+            | Category A Non Salaried | Threshold                 | 18600                             |
+            | Category A Non Salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
 
     ############
 
@@ -108,12 +108,12 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200                                 |
-            | Category A non salaried | Financial requirement met | false                               |
-            | Category A non salaried | Failure Reason            | MULTIPLE_EMPLOYERS                  |
-            | Category A non salaried | Application Raised date   | 2018-04-30                          |
+            | Category A Non Salaried | Financial requirement met | false                               |
+            | Category A Non Salaried | Failure Reason            | MULTIPLE_EMPLOYERS                  |
+            | Category A Non Salaried | Application Raised date   | 2018-04-30                          |
             | Applicant               | National Insurance Number | AA345678A                           |
-            | Category A non salaried | Threshold                 | 18600                               |
-            | Category A non salaried | Employer Name - AA345678A | Flying Pizza Ltd, Derek's Autos Ltd |
+            | Category A Non Salaried | Threshold                 | 18600                               |
+            | Category A Non Salaried | Employer Name - AA345678A | Flying Pizza Ltd, Derek's Autos Ltd |
 
     ############
 
@@ -140,14 +140,14 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200                               |
-            | Category A non salaried | Financial requirement met | false                             |
-            | Category A non salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
-            | Category A non salaried | Application Raised date   | 2018-04-30                        |
+            | Category A Non Salaried | Financial requirement met | false                             |
+            | Category A Non Salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
+            | Category A Non Salaried | Application Raised date   | 2018-04-30                        |
             | Applicant               | National Insurance Number | AA345678A                         |
             | Partner                 | National Insurance Number | GE345678A                         |
-            | Category A non salaried | Threshold                 | 18600                             |
-            | Category A non salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
-            | Category A non salaried | Employer Name - GE345678A | The Home Office                   |
+            | Category A Non Salaried | Threshold                 | 18600                             |
+            | Category A Non Salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
+            | Category A Non Salaried | Employer Name - GE345678A | The Home Office                   |
 
     ############
 
@@ -175,9 +175,9 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
 
         Then The Income Proving TM Family API provides the following result:
             | HTTP Response           | HTTP Status               | 200                               |
-            | Category A non salaried | Financial requirement met | false                             |
-            | Category A non salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
-            | Category A non salaried | Application Raised date   | 2018-04-30                        |
+            | Category A Non Salaried | Financial requirement met | false                             |
+            | Category A Non Salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
+            | Category A Non Salaried | Application Raised date   | 2018-04-30                        |
             | Applicant               | National Insurance Number | GE345678A                         |
-            | Category A non salaried | Threshold                 | 24800                             |
-            | Category A non salaried | Employer Name - GE345678A | Flying Pizza Ltd                  |
+            | Category A Non Salaried | Threshold                 | 24800                             |
+            | Category A Non Salaried | Employer Name - GE345678A | Flying Pizza Ltd                  |
