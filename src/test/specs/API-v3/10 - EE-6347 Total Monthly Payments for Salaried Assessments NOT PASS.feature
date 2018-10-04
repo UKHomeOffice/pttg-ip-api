@@ -67,7 +67,7 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | Category A Unsupported Salary Frequency | Application Raised date   | 2018-04-30           |
             | Category A Unsupported Salary Frequency | Assessment Start Date     | 2017-10-30           |
             | Category A Unsupported Salary Frequency | Threshold                 | 0                    |
-            | Category A Unsupported Salary Frequency | Employer Name - AA345678A | Flying Pizza Ltd |
+            | Category A Unsupported Salary Frequency | Employer Name - AA345678A | Flying Pizza Ltd     |
 
 
 ##############
@@ -161,7 +161,8 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | Category B salaried | Threshold                 | 18600                         |
             | Category B salaried | Employer Name - AA345678A | Flying Pizza Ltd              |
 
-
+    # Defect EE-9307
+    @WIP
     Scenario: Category A & B - No dependents - Annual check Not met - Employment Check not met
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -189,7 +190,7 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | HTTP Response             | HTTP Status               | 200                               |
             | Applicant                 | National Insurance Number | AA345678A                         |
             | Category A Monthly Salary | Financial requirement met | false                             |
-            | Category A Monthly Salary | Failure Reason            | NON_CONSECUTIVE_MONTHS            |
+            | Category A Monthly Salary | Failure Reason            | MULTIPLE_EMPLOYERS                |
             | Category A Monthly Salary | Application Raised date   | 2018-04-30                        |
             | Category A Monthly Salary | Assessment Start Date     | 2017-10-30                        |
             | Category A Monthly Salary | Threshold                 | 1550.00                           |
@@ -201,7 +202,8 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | Employment Check          | Threshold                 | 1550.00                           |
             | Employment Check          | Employer Name - AA345678A | Flying Pizza Ltd, Crazy Pizza Ltd |
 
-
+    # Defect EE-9307
+    @WIP
     Scenario: Category A - No dependents - Partner income not considered for Cat A - Multiple payments in the fifth month of the assessment range
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -227,7 +229,7 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | HTTP Response             | HTTP Status               | 200                               |
             | Applicant                 | National Insurance Number | AA345678A                         |
             | Category A Monthly Salary | Financial requirement met | false                             |
-            | Category A Monthly Salary | Failure Reason            | NON_CONSECUTIVE_MONTHS            |
+            | Category A Monthly Salary | Failure Reason            | MULTIPLE_EMPLOYERS                |
             | Category A Monthly Salary | Application Raised date   | 2018-04-30                        |
             | Category A Monthly Salary | Assessment Start Date     | 2017-10-30                        |
             | Category A Monthly Salary | Threshold                 | 1550.00                           |
@@ -292,7 +294,8 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | Status        | code        | 0004                                               |
             | Status        | message     | Can't add incomes for different month pay numbers. |
 
-
+    # Defect EE-9307
+    @WIP
     Scenario: No dependents - Employment check passes - First month below threshold when combined with partner
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
@@ -332,7 +335,7 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | Applicant                 | National Insurance Number | RR223611A                         |
             | Partner                   | National Insurance Number | GG199882B                         |
             | Category A Monthly Salary | Financial requirement met | false                             |
-            | Category A Monthly Salary | Failure Reason            | NON_CONSECUTIVE_MONTHS            |
+            | Category A Monthly Salary | Failure Reason            | MULTIPLE_EMPLOYERS                |
             | Category A Monthly Salary | Application Raised date   | 2018-04-30                        |
             | Category A Monthly Salary | Assessment Start Date     | 2017-10-30                        |
             | Category A Monthly Salary | Threshold                 | 1550.00                           |
