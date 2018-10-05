@@ -11,7 +11,6 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
@@ -44,11 +43,6 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
             }
 
             validationStatus = validateJointIncome(incomeValidationRequest, assessmentStartDate, incomeValidationRequest.applicationRaisedDate(), threshold);
-            if (validationStatus.isPassed()) {
-                if (checkAllSameEmployerJointApplication(incomeValidationRequest)) {
-                    return validationResult(validationStatus, assessmentStartDate, threshold, incomeValidationRequest.getCheckedIndividuals());
-                }
-            }
         }
 
         return validationResult(validationStatus, assessmentStartDate, threshold, incomeValidationRequest.getCheckedIndividuals());

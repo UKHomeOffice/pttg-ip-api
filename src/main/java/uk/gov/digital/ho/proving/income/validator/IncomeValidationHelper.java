@@ -77,7 +77,7 @@ public class IncomeValidationHelper {
     }
 
     static boolean checkValuePassesThreshold(BigDecimal value, BigDecimal threshold) {
-        return value.compareTo(threshold) >= 0;
+        return (value.compareTo(threshold) >= 0);
     }
 
     static List<Income> removeDuplicates(List<Income> incomes) {
@@ -109,19 +109,6 @@ public class IncomeValidationHelper {
         return sumGroupedIncomes(groupedByWeek.values());
     }
 
-    static boolean checkAllSameEmployer(List<Income> paye) {
-        return paye.stream()
-            .map(Income::employerPayeReference)
-            .distinct()
-            .count() == 1;
-    }
-
-    static boolean checkAllSameEmployerJointApplication(IncomeValidationRequest request) {
-        boolean allSameEmployerApplicant = checkAllSameEmployer(request.applicantIncome().incomeRecord().paye());
-        boolean allSameEmployerPartner = checkAllSameEmployer(request.partnerIncome().incomeRecord().paye());
-        return allSameEmployerApplicant && allSameEmployerPartner;
-    }
-
     private static List<Income> sumGroupedIncomes(Collection<List<Income>> groupedIncomes) {
         List<Income> summedIncomes = new ArrayList<>();
         for (List<Income> samePeriodIncomes : groupedIncomes) {
@@ -134,14 +121,10 @@ public class IncomeValidationHelper {
         return summedIncomes;
     }
 
-    static Collection<List<Income>> groupIncomesByEmployers(List<Income> paye) {
-        return paye.stream()
-            .collect(Collectors.groupingBy(Income::employerPayeReference))
-            .values();
-    }
-
     static BigDecimal totalPayment(List<Income> incomes) {
-        return incomes.stream().map(Income::payment).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return incomes.stream()
+            .map(Income::payment)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     static BigDecimal largestSingleEmployerIncome(List<Income> incomes) {
@@ -149,5 +132,11 @@ public class IncomeValidationHelper {
             .map(IncomeValidationHelper::totalPayment)
             .max(BigDecimal::compareTo)
             .orElse(BigDecimal.ZERO);
+    }
+
+    private static Collection<List<Income>> groupIncomesByEmployers(List<Income> paye) {
+        return paye.stream()
+            .collect(Collectors.groupingBy(Income::employerPayeReference))
+            .values();
     }
 }
