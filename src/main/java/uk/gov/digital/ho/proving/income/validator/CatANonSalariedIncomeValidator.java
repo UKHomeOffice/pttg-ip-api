@@ -62,12 +62,13 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
             return NOT_ENOUGH_RECORDS;
         }
 
-        Collection<List<Income>> groupedByEmployers = groupIncomesByEmployers(paye);
-        if (groupedByEmployers.stream().anyMatch(incomes ->
-            checkValuePassesThreshold(totalPayment(incomes).multiply(BigDecimal.valueOf(2)), threshold))) {
+        BigDecimal annualApplicantIncome = largestSingleEmployerIncome(paye).multiply(BigDecimal.valueOf(2));
+        if (checkValuePassesThreshold(annualApplicantIncome, threshold)) {
             return CATA_NON_SALARIED_PASSED;
         }
-        if (checkValuePassesThreshold(totalPayment(paye).multiply(BigDecimal.valueOf(2)), threshold)) {
+
+        BigDecimal annualAllEmployerIncome = totalPayment(paye).multiply(BigDecimal.valueOf(2));
+        if (checkValuePassesThreshold(annualAllEmployerIncome, threshold)) {
             return MULTIPLE_EMPLOYERS;
         }
         return CATA_NON_SALARIED_BELOW_THRESHOLD;
@@ -90,11 +91,14 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
 
         BigDecimal applicantIncome = largestSingleEmployerIncome(applicantPaye);
         BigDecimal partnerIncome = largestSingleEmployerIncome(partnerPaye);
+        BigDecimal annualCombinedIncome = applicantIncome.add(partnerIncome).multiply(BigDecimal.valueOf(2));
 
-        if (checkValuePassesThreshold(applicantIncome.add(partnerIncome).multiply(BigDecimal.valueOf(2)), threshold)) {
+        if (checkValuePassesThreshold(annualCombinedIncome, threshold)) {
             return CATA_NON_SALARIED_PASSED;
         }
-        if (checkValuePassesThreshold(totalPayment(allPaye).multiply(BigDecimal.valueOf(2)), threshold)) {
+
+        BigDecimal annualAllEmployerCombinedIncome = totalPayment(allPaye);
+        if (checkValuePassesThreshold(annualAllEmployerCombinedIncome.multiply(BigDecimal.valueOf(2)), threshold)) {
             return MULTIPLE_EMPLOYERS;
         }
         return CATA_NON_SALARIED_BELOW_THRESHOLD;

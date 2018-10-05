@@ -77,7 +77,7 @@ public class IncomeValidationHelper {
     }
 
     static boolean checkValuePassesThreshold(BigDecimal value, BigDecimal threshold) {
-        return (value.compareTo(threshold) >= 0);
+        return value.compareTo(threshold) >= 0;
     }
 
     static List<Income> removeDuplicates(List<Income> incomes) {

@@ -105,9 +105,8 @@ public class CatANonSalariedIncomeValidatorTest {
     public void shouldPassWhenOverThresholdSingleMonth() {
         List<Income> incomes = singletonList(new Income(BigDecimal.valueOf(18_600 / 2), APPLICATION_RAISED_DATE.minusDays(1), null, null, "any employer ref"));
 
-        Applicant applicant = ANY_APPLICANT;
         IncomeRecord incomeRecord = new IncomeRecord(incomes, emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL);
-        List<ApplicantIncome> applicantIncomes = singletonList(new ApplicantIncome(applicant, incomeRecord));
+        List<ApplicantIncome> applicantIncomes = singletonList(new ApplicantIncome(ANY_APPLICANT, incomeRecord));
 
         assertExpectedResult(new IncomeValidationRequest(applicantIncomes, APPLICATION_RAISED_DATE, 0), CATA_NON_SALARIED_PASSED);
     }
@@ -116,20 +115,18 @@ public class CatANonSalariedIncomeValidatorTest {
     public void shouldFailWhenBelowThresholdSingleMonth() {
         List<Income> incomes = singletonList(new Income(BigDecimal.valueOf(18_600 / 2).subtract(BigDecimal.ONE), APPLICATION_RAISED_DATE.minusDays(1), null, null, "any employer ref"));
 
-        Applicant applicant = ANY_APPLICANT;
         IncomeRecord incomeRecord = new IncomeRecord(incomes, emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL);
-        List<ApplicantIncome> applicantIncomes = singletonList(new ApplicantIncome(applicant, incomeRecord));
+        List<ApplicantIncome> applicantIncomes = singletonList(new ApplicantIncome(ANY_APPLICANT, incomeRecord));
 
         assertExpectedResult(new IncomeValidationRequest(applicantIncomes, APPLICATION_RAISED_DATE, 0), CATA_NON_SALARIED_BELOW_THRESHOLD);
     }
 
     @Test
     public void shouldFailWhenOnlyIncomeNotPaye() {
-        Applicant applicant = ANY_APPLICANT;
         List<AnnualSelfAssessmentTaxReturn> selfAssessmentIncome = singletonList(new AnnualSelfAssessmentTaxReturn(String.valueOf(APPLICATION_RAISED_DATE.getYear()), BigDecimal.valueOf(33_000)));
 
         IncomeRecord incomeRecord = new IncomeRecord(emptyList(), selfAssessmentIncome, emptyList(), ANY_HMRC_INDIVIDUAL);
-        List<ApplicantIncome> applicantIncomes = singletonList(new ApplicantIncome(applicant, incomeRecord));
+        List<ApplicantIncome> applicantIncomes = singletonList(new ApplicantIncome(ANY_APPLICANT, incomeRecord));
 
         assertExpectedResult(new IncomeValidationRequest(applicantIncomes, APPLICATION_RAISED_DATE, 0), NOT_ENOUGH_RECORDS);
     }
@@ -337,6 +334,27 @@ public class CatANonSalariedIncomeValidatorTest {
         IncomeValidationResult result = validator.validate(new IncomeValidationRequest(applicantIncomes, APPLICATION_RAISED_DATE, 0));
 
         assertThat(result.status()).isEqualTo(CATA_NON_SALARIED_BELOW_THRESHOLD);
+    }
+
+    @Test
+    public void shouldReturnMultipleEmployersForJointApplicationWhenOverThresholdOnlyForMultipleEmployers() {
+        List<Income> applicantIncome = asList(
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusDays(1), 8, null, "an employer ref"),
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusDays(1), 1, null, "another employer ref")
+        );
+        List<Income> partnerIncome = asList(
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusDays(1), 1, null, "yet another employer ref"),
+            new Income(BigDecimal.valueOf(18_600 / 8), APPLICATION_RAISED_DATE.minusDays(1), 1, null, "and yet another employer ref")
+        );
+
+        List<ApplicantIncome> applicantIncomes = asList(
+            new ApplicantIncome(ANY_APPLICANT, new IncomeRecord(applicantIncome, emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL)),
+            new ApplicantIncome(ANY_PARTNER, new IncomeRecord(partnerIncome, emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL_PARTNER))
+        );
+
+        IncomeValidationResult result = validator.validate(new IncomeValidationRequest(applicantIncomes, APPLICATION_RAISED_DATE, 0));
+
+        assertThat(result.status()).isEqualTo(MULTIPLE_EMPLOYERS);
     }
 
     private void assertExpectedResult(IncomeValidationRequest request, IncomeValidationStatus expectedStatus) {
