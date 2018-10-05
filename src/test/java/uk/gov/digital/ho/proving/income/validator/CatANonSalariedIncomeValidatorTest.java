@@ -45,6 +45,17 @@ public class CatANonSalariedIncomeValidatorTest {
     }
 
     @Test
+    public void shouldReturnNotEnoughRecordsWhenNoIncomeRecordsJoint() {
+        List<ApplicantIncome> noJointIncome = asList(
+            new ApplicantIncome(ANY_APPLICANT, new IncomeRecord(emptyList(), emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL)),
+            new ApplicantIncome(ANY_PARTNER, new IncomeRecord(emptyList(), emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL_PARTNER))
+        );
+        IncomeValidationResult result = validator.validate(new IncomeValidationRequest(noJointIncome, APPLICATION_RAISED_DATE, 0));
+
+        assertThat(result.status()).isEqualTo(NOT_ENOUGH_RECORDS);
+    }
+
+    @Test
     public void checkedIndividualShouldHaveSameNinoAsInRequest() {
         String givenNino = "a given nino";
         Applicant applicant = new Applicant("any forename", "any surname", ANY_DOB, givenNino);
