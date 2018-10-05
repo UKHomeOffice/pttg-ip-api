@@ -6,48 +6,57 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
-import uk.gov.digital.ho.proving.income.application.ApplicationExceptions;
+import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.EarningsServiceNoUniqueMatchException;
 import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.Map;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.api.RequestData.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HmrcClientTest {
 
+    private static final String SOME_SESSION_ID = "some session id";
+    private static final String SOME_CORRELATION_ID = "some correlation id";
+    private static final String SOME_USER_ID = "some user id";
+    private static final String SOME_BASIC_AUTH = "some basic auth";
+    private static final String SOME_FIRST_NAME = "John";
+    private static final String SOME_LAST_NAME = "Smith";
+    private static final String SOME_NINO = "some nino";
+    private static final LocalDate SOME_DOB = LocalDate.of(1965, Month.JULY, 19);
+    private static final LocalDate SOME_FROM_DATE = LocalDate.of(2017, Month.JANUARY, 1);
+    private static final LocalDate SOME_TO_DATE = LocalDate.of(2017, Month.JULY, 1);
+
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
     @Mock private ServiceResponseLogger mockServiceResponseLogger;
 
-    @Captor private ArgumentCaptor<Map<String, String>> captorVariables;
-    @Captor private ArgumentCaptor<String> captorUrlTemplate;
     @Captor private ArgumentCaptor<IncomeRecord> captorResponseBody;
     @Captor private ArgumentCaptor<HttpEntity> captorEntity;
 
@@ -57,144 +66,110 @@ public class HmrcClientTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
-    public void before() throws Exception {
+    public void before() {
 
-        when(mockRequestData.sessionId()).thenReturn("some session id");
-        when(mockRequestData.correlationId()).thenReturn("some correlation id");
-        when(mockRequestData.userId()).thenReturn("some user id");
-        when(mockRequestData.hmrcBasicAuth()).thenReturn("some basic auth");
+        when(mockRequestData.sessionId()).thenReturn(SOME_SESSION_ID);
+        when(mockRequestData.correlationId()).thenReturn(SOME_CORRELATION_ID);
+        when(mockRequestData.userId()).thenReturn(SOME_USER_ID);
+        when(mockRequestData.hmrcBasicAuth()).thenReturn(SOME_BASIC_AUTH);
 
         service = new HmrcClient(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger);
 
-        when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
+        when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
             .thenReturn(new ResponseEntity<>(new IncomeRecord(
                 emptyList(),
                 emptyList(),
                 emptyList(),
                 aIndividual()
-            ), HttpStatus.OK));
+            ), OK));
 
         service.getIncomeRecord(
             new Identity(
-                "John",
-                "Smith",
-                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
-            LocalDate.of(2017, Month.JANUARY, 1),
-            LocalDate.of(2017, Month.JULY, 1)
+                SOME_FIRST_NAME,
+                SOME_LAST_NAME,
+                SOME_DOB,
+                SOME_NINO),
+            SOME_FROM_DATE,
+            SOME_TO_DATE
         );
     }
 
     @Test
     public void shouldSendServiceResponseToLogger() {
-        verify(mockServiceResponseLogger).record(eq(new Identity("John",
-                                                                "Smith",
-                                                                LocalDate.of(1965, Month.JULY, 19), "NE121212A")),
+        verify(mockServiceResponseLogger).record(eq(new Identity(SOME_FIRST_NAME, SOME_LAST_NAME, SOME_DOB, SOME_NINO)),
                                                     captorResponseBody.capture());
 
+        assertThat(captorResponseBody.getValue()).isInstanceOf(IncomeRecord.class);
         assertThat(captorResponseBody.getValue().paye()).isEmpty();
         assertThat(captorResponseBody.getValue().employments()).isEmpty();
     }
 
     @Test
-    public void shouldMakeGetRequest() throws Exception {
-        verify(mockRestTemplate).exchange(anyString(),
-                                            eq(HttpMethod.GET),
-                                            any(HttpEntity.class),
-                                            Matchers.<Class<IncomeRecord>>any(),
-                                            Matchers.<Map<String, String>>any());
-    }
-
-    @Test
-    public void shouldPassFirstnameAsRestParameter() throws Exception {
-        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
-
-        assertThat(captorVariables.getValue()).containsEntry("firstName", "John");
-        assertThat(captorUrlTemplate.getValue()).contains("firstName={firstName}");
-    }
-
-    @Test
-    public void shouldPassLastnameAsRestParameter() throws Exception {
-        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
-
-        assertThat(captorVariables.getValue()).containsEntry("lastName", "Smith");
-        assertThat(captorUrlTemplate.getValue()).contains("lastName={lastName}");
-    }
-
-    @Test
-    public void shouldPassNinoAsRestParameter() throws Exception {
-        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
-
-        assertThat(captorVariables.getValue()).containsEntry("nino", "NE121212A");
-        assertThat(captorUrlTemplate.getValue()).contains("nino={nino}");
-    }
-
-    @Test
-    public void shouldPassDateOfBirthAsRestParameterInISOFormat() throws Exception {
-        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
-
-        assertThat(captorVariables.getValue()).containsEntry("dateOfBirth", "1965-07-19");
-        assertThat(captorUrlTemplate.getValue()).contains("dateOfBirth={dateOfBirth}");
-    }
-
-    @Test
-    public void shouldPassFromDateAsRestParameterInISOFormat() throws Exception {
-        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
-
-        assertThat(captorVariables.getValue()).containsEntry("fromDate", "2017-01-01");
-        assertThat(captorUrlTemplate.getValue()).contains("fromDate={fromDate}");
-    }
-
-    @Test
-    public void shouldPassToDateAsRestParameterInISOFormat() throws Exception {
-        verify(mockRestTemplate).exchange(captorUrlTemplate.capture(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), captorVariables.capture());
-
-        assertThat(captorVariables.getValue()).containsEntry("toDate", "2017-07-01");
-        assertThat(captorUrlTemplate.getValue()).contains("toDate={toDate}");
-    }
-
-    @Test(expected = HttpStatusCodeException.class)
-    public void forbiddenShouldNotBeMappedToNoMatch() {
-        when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
-            .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
-
-        service.getIncomeRecord(
-            new Identity(
-                "John",
-                "Smith",
-                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
-            LocalDate.of(2017, Month.JANUARY, 1),
-            LocalDate.of(2017, Month.JULY, 1)
-        );
-    }
-
-    @Test(expected = ApplicationExceptions.EarningsServiceNoUniqueMatchException.class)
-    public void notFoundShouldBeMappedToNoMatch() {
-        when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), Matchers.<Class<IncomeRecord>>any(), Matchers.<Map<String, String>>any()))
-            .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
-
-        service.getIncomeRecord(
-            new Identity(
-                "John",
-                "Smith",
-                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
-            LocalDate.of(2017, Month.JANUARY, 1),
-            LocalDate.of(2017, Month.JULY, 1)
-        );
+    public void shouldMakePostRequestToHmrcService() {
+        verify(mockRestTemplate).exchange(
+            eq("http://income-service/income"),
+            eq(POST),
+            any(HttpEntity.class),
+            eq(IncomeRecord.class));
     }
 
     @Test
     public void shouldSendHttpHeaders() {
         verify(mockRestTemplate).exchange(anyString(),
-                                            any(HttpMethod.class),
-                                            captorEntity.capture(),
-                                            Matchers.<Class<IncomeRecord>>any(),
-                                            Matchers.<Map<String, String>>any());
+            any(HttpMethod.class),
+            captorEntity.capture(),
+            ArgumentMatchers.<Class<IncomeRecord>>any());
 
-        assertThat(captorEntity.getValue().getHeaders()).containsEntry(CONTENT_TYPE, Arrays.asList(APPLICATION_JSON_VALUE));
-        assertThat(captorEntity.getValue().getHeaders()).containsEntry(SESSION_ID_HEADER, Arrays.asList("some session id"));
-        assertThat(captorEntity.getValue().getHeaders()).containsEntry(CORRELATION_ID_HEADER, Arrays.asList("some correlation id"));
-        assertThat(captorEntity.getValue().getHeaders()).containsEntry(USER_ID_HEADER, Arrays.asList("some user id"));
-        assertThat(captorEntity.getValue().getHeaders()).containsEntry(AUTHORIZATION, Arrays.asList("some basic auth"));
+        assertThat(captorEntity.getValue().getHeaders()).containsEntry(CONTENT_TYPE, singletonList(APPLICATION_JSON_VALUE));
+        assertThat(captorEntity.getValue().getHeaders()).containsEntry(SESSION_ID_HEADER, singletonList("some session id"));
+        assertThat(captorEntity.getValue().getHeaders()).containsEntry(CORRELATION_ID_HEADER, singletonList("some correlation id"));
+        assertThat(captorEntity.getValue().getHeaders()).containsEntry(USER_ID_HEADER, singletonList("some user id"));
+        assertThat(captorEntity.getValue().getHeaders()).containsEntry(AUTHORIZATION, singletonList("some basic auth"));
+    }
+
+    @Test
+    public void shouldSendIncomeDataRequest() {
+        verify(mockRestTemplate).exchange(
+            anyString(),
+            any(HttpMethod.class),
+            captorEntity.capture(),
+            ArgumentMatchers.<Class<IncomeRecord>>any());
+
+        Object body = captorEntity.getValue().getBody();
+        assertThat(body).isInstanceOf(IncomeDataRequest.class);
+        IncomeDataRequest data = (IncomeDataRequest) body;
+        assertThat(data).isEqualTo(new IncomeDataRequest(SOME_FIRST_NAME, SOME_LAST_NAME, SOME_NINO, SOME_DOB, SOME_FROM_DATE, SOME_TO_DATE));
+    }
+
+
+    @Test(expected = HttpStatusCodeException.class)
+    public void forbiddenShouldNotBeMappedToNoMatch() {
+        when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
+            .thenThrow(new HttpClientErrorException(FORBIDDEN));
+
+        service.getIncomeRecord(
+            new Identity(
+                "John",
+                "Smith",
+                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+            LocalDate.of(2017, Month.JANUARY, 1),
+            LocalDate.of(2017, Month.JULY, 1)
+        );
+    }
+
+    @Test(expected = EarningsServiceNoUniqueMatchException.class)
+    public void notFoundShouldBeMappedToNoMatch() {
+        when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
+            .thenThrow(new HttpClientErrorException(NOT_FOUND));
+
+        service.getIncomeRecord(
+            new Identity(
+                "John",
+                "Smith",
+                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+            LocalDate.of(2017, Month.JANUARY, 1),
+            LocalDate.of(2017, Month.JULY, 1)
+        );
     }
 
     private HmrcIndividual aIndividual() {
@@ -207,28 +182,9 @@ public class HmrcClientTest {
 
         thrown.expect(HttpServerErrorException.class);
 
-        HttpServerErrorException exception = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
+        HttpServerErrorException exception = new HttpServerErrorException(BAD_GATEWAY);
 
         service.getIncomeRecordFailureRecovery(exception);
     }
 
-    @Test
-    public void shouldHttpClientErrorException() {
-
-        thrown.expect(HttpClientErrorException.class);
-
-        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
-
-        service.getIncomeRecordFailureRecovery(exception);
-    }
-
-    @Test
-    public void shouldEarningsServiceNoUniqueMatch() {
-
-        thrown.expect(ApplicationExceptions.EarningsServiceNoUniqueMatchException.class);
-
-        ApplicationExceptions.EarningsServiceNoUniqueMatchException exception = new ApplicationExceptions.EarningsServiceNoUniqueMatchException("nino");
-
-        service.getIncomeRecordFailureRecovery(exception);
-    }
 }

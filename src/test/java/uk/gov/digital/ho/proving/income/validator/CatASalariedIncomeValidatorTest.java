@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.*;
@@ -80,7 +80,8 @@ public class CatASalariedIncomeValidatorTest {
             .category("X")
             .calculationType("Calc type")
             .build();
-        when(monthlyValidator.validate(any(IncomeValidationRequest.class))).thenReturn(result);
+
+        when(weeklyValidator.validate(any(IncomeValidationRequest.class))).thenReturn(result);
 
         catASalariedIncomeValidator.validate(request);
 
@@ -104,7 +105,8 @@ public class CatASalariedIncomeValidatorTest {
             .category("X")
             .calculationType("Calc type")
             .build();
-        when(monthlyValidator.validate(any(IncomeValidationRequest.class))).thenReturn(result);
+
+        when(unsupportedValidator.validate(any(IncomeValidationRequest.class))).thenReturn(result);
 
         catASalariedIncomeValidator.validate(request);
 

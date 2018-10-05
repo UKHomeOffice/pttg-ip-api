@@ -13,12 +13,16 @@ import java.time.LocalDate;
 @Accessors(fluent = true)
 @EqualsAndHashCode
 public class Identity {
+
     @JsonProperty
     private String firstname;
+
     @JsonProperty
     private String lastname;
+
     @JsonProperty
     private LocalDate dateOfBirth;
+
     @JsonProperty
     private String nino;
 }
