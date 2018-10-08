@@ -13,7 +13,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
@@ -25,7 +25,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

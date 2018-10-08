@@ -8,7 +8,8 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @AllArgsConstructor
 @Getter
@@ -16,20 +17,23 @@ import java.util.stream.Collectors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IncomeRecord {
 
-    @JsonProperty
+    @JsonProperty(value = "paye", required = true)
     private List<Income> paye;
-    @JsonProperty
+
+    @JsonProperty(value = "selfAssessment", required = true)
     private final List<AnnualSelfAssessmentTaxReturn> selfAssessment;
-    @JsonProperty
+
+    @JsonProperty(value = "employments", required = true)
     private List<Employments> employments;
-    @JsonProperty
+
+    @JsonProperty(value = "individual", required = true)
     private HmrcIndividual individual;
 
     public List<Income> deDuplicatedIncome() {
 
         return paye.stream()
                         .distinct()
-                        .collect(Collectors.toList());
+                        .collect(toList());
     }
 
     public LocalDate dateOfBirth() {

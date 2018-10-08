@@ -5,8 +5,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.digital.ho.proving.income.api.domain.*;
+import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck;
+import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
+import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusCheckResponse;
+import uk.gov.digital.ho.proving.income.api.domain.Individual;
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
@@ -19,8 +22,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,10 +40,6 @@ public class FinancialStatusServiceTest {
 
     @Test
     public void shouldReturnCorrectIndividualNamesIfIndividualNotReturnedFromHmrc() {
-        when(mockHmrcClient.getIncomeRecord(eq(getApplicantIdentity()), any(LocalDate.class), any(LocalDate.class)))
-            .thenReturn(getApplicantIncomeRecord());
-        when(mockHmrcClient.getIncomeRecord(eq(getPartnerIdentity()), any(LocalDate.class), any(LocalDate.class)))
-            .thenReturn(getPartnerIncomeRecord());
         when(mockIncomeValidationService.validate(any())).thenReturn(getCategoryChecks());
 
 
@@ -62,15 +60,10 @@ public class FinancialStatusServiceTest {
 
     @Test
     public void shouldReturnIndividualsInCorrectOrder() {
-        when(mockHmrcClient.getIncomeRecord(eq(getApplicantIdentity()), any(LocalDate.class), any(LocalDate.class)))
-            .thenReturn(getApplicantIncomeRecord());
-        when(mockHmrcClient.getIncomeRecord(eq(getPartnerIdentity()), any(LocalDate.class), any(LocalDate.class)))
-            .thenReturn(getPartnerIncomeRecord());
+
         when(mockIncomeValidationService.validate(any())).thenReturn(getCategoryChecks());
 
-
         FinancialStatusCheckResponse response = financialStatusService.calculateResponse(LocalDate.now(), 0, getIncomeRecords());
-
 
         assertThat(response.individuals().size()).isEqualTo(2).withFailMessage("The correct number of individuals should be returned");
         assertThat(response.individuals().get(0).nino()).withFailMessage("The applicant should be returned first").isEqualTo("A");
@@ -78,7 +71,6 @@ public class FinancialStatusServiceTest {
 
         assertThat(response.categoryChecks().get(0).individuals().get(0).nino()).withFailMessage("The applicant should be first in the category check").isEqualTo("A");
         assertThat(response.categoryChecks().get(0).individuals().get(1).nino()).withFailMessage("The partner should be second in the category check").isEqualTo("B");
-
     }
 
     private Individual getApplicantIndividual() {

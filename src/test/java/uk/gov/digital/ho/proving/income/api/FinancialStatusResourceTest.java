@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.api.domain.*;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
@@ -16,10 +16,14 @@ import utils.LogCapturer;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,14 +46,14 @@ public class FinancialStatusResourceTest {
         // given
         String realNino = "RealNino";
         String redactedNino = "RedactedNino";
-        String sanitusedNino = "SanitisedNino";
+        String sanitisedNino = "SanitisedNino";
         FinancialStatusRequest mockFinancialStatusRequest = mock(FinancialStatusRequest.class);
         Applicant applicant = new Applicant("forename", "surname", LocalDate.now(), realNino);
-        List<Applicant> applicants = Arrays.asList(applicant);
+        List<Applicant> applicants = singletonList(applicant);
         when(mockFinancialStatusRequest.applicants()).thenReturn(applicants);
 
-        when(mockNinoUtils.redact(realNino)).thenReturn(redactedNino);
-        when(mockNinoUtils.sanitise(realNino)).thenReturn(sanitusedNino);
+        when(mockNinoUtils.sanitise(realNino)).thenReturn(sanitisedNino);
+        when(mockNinoUtils.redact(sanitisedNino)).thenReturn(redactedNino);
 
         LocalDate fiveDaysAgo = LocalDate.now().minusDays(5);
         when(mockFinancialStatusRequest.applicationRaisedDate()).thenReturn(fiveDaysAgo);
@@ -63,7 +67,7 @@ public class FinancialStatusResourceTest {
         service.getFinancialStatus(mockFinancialStatusRequest);
 
         // then
-        verify(mockNinoUtils, atLeastOnce()).redact(sanitusedNino);
+        verify(mockNinoUtils, atLeastOnce()).redact(sanitisedNino);
 
         // verify log outputs never contain the `real` nino
         List<ILoggingEvent> allLogEvents = logCapturer.getAllEvents();
@@ -75,7 +79,7 @@ public class FinancialStatusResourceTest {
 
     private IncomeRecord getApplicantIncomeRecord() {
         Income income = new Income(BigDecimal.ONE, LocalDate.now(), 1, null, "E1");
-        return new IncomeRecord(ImmutableList.of(income), new ArrayList<>(), new ArrayList(), null);
+        return new IncomeRecord(ImmutableList.of(income), new ArrayList<>(), new ArrayList<>(), null);
     }
 
     private Individual getApplicantIndividual() {
@@ -84,7 +88,7 @@ public class FinancialStatusResourceTest {
 
     private IncomeRecord getPartnerIncomeRecord() {
         Income income = new Income(BigDecimal.ONE, LocalDate.now(), 1, null, "E2");
-        return new IncomeRecord(ImmutableList.of(income), new ArrayList<>(), new ArrayList(), null);
+        return new IncomeRecord(ImmutableList.of(income), new ArrayList<>(), new ArrayList<>(), null);
     }
 
     private Individual getPartnerIndividual() {
@@ -101,12 +105,12 @@ public class FinancialStatusResourceTest {
     private FinancialStatusCheckResponse getResponse() {
 
         List<CheckedIndividual> checkedIndividuals = new ArrayList<>();
-        CheckedIndividual applicant = new CheckedIndividual("A", Collections.unmodifiableList(Arrays.asList("E1")));
+        CheckedIndividual applicant = new CheckedIndividual("A", Collections.unmodifiableList(singletonList("E1")));
         checkedIndividuals.add(applicant);
         CategoryCheck categoryCheck = new CategoryCheck("B", "Test", false, LocalDate.now(), LocalDate.now(), IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD, BigDecimal.TEN, checkedIndividuals);
-        List<CategoryCheck> categoryChecks = Collections.unmodifiableList(Arrays.asList(categoryCheck));
+        List<CategoryCheck> categoryChecks = Collections.unmodifiableList(singletonList(categoryCheck));
 
-        List<Individual> individuals = Collections.unmodifiableList(Arrays.asList(getApplicantIndividual()));
+        List<Individual> individuals = Collections.unmodifiableList(singletonList(getApplicantIndividual()));
 
         return new FinancialStatusCheckResponse(new ResponseStatus("100", "OK"), individuals, categoryChecks);
     }
