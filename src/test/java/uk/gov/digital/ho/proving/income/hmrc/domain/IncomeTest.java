@@ -68,7 +68,7 @@ public class IncomeTest {
     }
 
     @Test
-    public void addDifferentWeekNumberShouldKeepInitialWeekNumber() {
+    public void addDifferentWeekPayNumberShouldKeepInitialWeekPayNumber() {
         assertThat(incomeWeek26.add(incomeWeek27).weekPayNumber()).isEqualTo(incomeWeek26.weekPayNumber());
         assertThat(incomeWeek27.add(incomeWeek26).weekPayNumber()).isEqualTo(incomeWeek27.weekPayNumber());
     }

@@ -44,7 +44,6 @@ public class Income {
     }
 
     public Income add(Income otherIncome) {
-
         return new Income(payment.add(otherIncome.payment), paymentDate, monthPayNumber, weekPayNumber, employerPayeReference);
     }
 }
