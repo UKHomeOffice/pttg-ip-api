@@ -235,65 +235,6 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | Category A Monthly Salary | Threshold                 | 1550.00                           |
             | Category A Monthly Salary | Employer Name - AA345678A | Flying Pizza Ltd, Crazy Pizza Ltd |
 
-    # Defect EE-9296
-    @WIP
-    Scenario: Cannot add incomes for different month pay numbers
-        Given HMRC has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-03-29 | 500     |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-03-27 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-30 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 449.98  |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-30 | 1000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 | 1550.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 1550.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-30 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
-        And the applicants partner has the following income records:
-            | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer        |
-            | 2018-03-27 | 00.00  |             | 03           | RM/Ref3        | Reliable Motors |
-            | 2018-02-25 | 00.00  |             | 02           | RM/Ref3        | Reliable Motors |
-            | 2018-01-30 | 00.01  |             | 01           | RM/Ref3        | Reliable Motors |
-            | 2017-12-27 | 250.00 |             | 12           | RM/Ref3        | Reliable Motors |
-            | 2017-11-29 | 250.00 |             | 11           | RM/Ref3        | Reliable Motors |
-            | 2017-10-30 | 250.00 |             | 10           | RM/Ref3        | Reliable Motors |
-        When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO - Applicant        | AA345678A  |
-            | Application Raised Date | 2018-04-30 |
-        Then The Income Proving TM Family API provides the following result:
-            | Http Response | HTTP Status | 400                                                |
-            | Status        | code        | 0004                                               |
-            | Status        | message     | Can't add incomes for different month pay numbers. |
-
-    # Defect EE-9296
-    @WIP
-    Scenario: Cannot add partner incomes for different month pay numbers
-        Given HMRC has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-03-27 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-30 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 449.98  |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-30 | 1000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 | 1550.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 1550.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-30 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
-        And the applicants partner has the following income records:
-            | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer        |
-            | 2018-03-27 | 150.00 |             | 04           | RM/Ref3        | Reliable Motors |
-            | 2018-03-15 | 300.00 |             | 03           | QE/Ref4        | Quality Estates |
-            | 2018-03-14 | 300.00 |             | 02           | QE/Ref4        | Quality Estates |
-            | 2018-02-25 | 00.00  |             | 02           | RM/Ref3        | Reliable Motors |
-            | 2018-01-30 | 00.01  |             | 01           | RM/Ref3        | Reliable Motors |
-            | 2017-12-27 | 250.00 |             | 12           | RM/Ref3        | Reliable Motors |
-            | 2017-11-29 | 250.00 |             | 11           | RM/Ref3        | Reliable Motors |
-            | 2017-10-30 | 250.00 |             | 10           | RM/Ref3        | Reliable Motors |
-        When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO - Applicant        | AA345678A  |
-            | Application Raised Date | 2018-04-30 |
-        Then The Income Proving TM Family API provides the following result:
-            | Http Response | HTTP Status | 400                                                |
-            | Status        | code        | 0004                                               |
-            | Status        | message     | Can't add incomes for different month pay numbers. |
-
     # Defect EE-9307
     @WIP
     Scenario: No dependents - Employment check passes - First month below threshold when combined with partner

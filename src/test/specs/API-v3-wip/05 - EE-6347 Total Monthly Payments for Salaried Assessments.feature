@@ -48,3 +48,39 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
             | Category A Monthly Salary | Assessment Start Date     | 2017-10-30       |
             | Category A Monthly Salary | Threshold                 | 1550.00          |
             | Category A Monthly Salary | Employer Name - AA345678A | Flying Pizza Ltd |
+
+    # TODO 2018/09/24 EE-3991: Partner not yet implemented for Cat A.
+    Scenario: Can add partner incomes for different month pay numbers. Grouping done by Calendar Month of Payment Date not Month Number
+        Given HMRC has the following income records:
+            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
+            | 2018-03-27 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-30 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 449.98  |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-30 | 1000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 1550.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 | 1550.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-30 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+        And the applicants partner has the following income records:
+            | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer        |
+            | 2018-03-27 | 150.00 |             | 04           | RM/Ref3        | Reliable Motors |
+            | 2018-03-15 | 300.00 |             | 03           | QE/Ref4        | Quality Estates |
+            | 2018-03-14 | 300.00 |             | 02           | QE/Ref4        | Quality Estates |
+            | 2018-02-25 | 00.00  |             | 02           | RM/Ref3        | Reliable Motors |
+            | 2018-01-30 | 00.01  |             | 01           | RM/Ref3        | Reliable Motors |
+            | 2017-12-27 | 250.00 |             | 12           | RM/Ref3        | Reliable Motors |
+            | 2017-11-29 | 250.00 |             | 11           | RM/Ref3        | Reliable Motors |
+            | 2017-10-30 | 250.00 |             | 10           | RM/Ref3        | Reliable Motors |
+        When the Income Proving v3 TM Family API is invoked with the following:
+            | NINO - Applicant        | AA345678A  |
+            | NINO - Partner          | GG199882B  |
+            | Application Raised Date | 2018-04-30 |
+        Then The Income Proving TM Family API provides the following result:
+            | HTTP Response             | HTTP Status               | 200                              |
+            | Applicant                 | National Insurance Number | AA345678A                        |
+            | Category A Monthly Salary | Financial requirement met | false                            |
+            | Category A Monthly Salary | Failure Reason            | MONTHLY_VALUE_BELOW_THRESHOLD    |
+            | Category A Monthly Salary | Application Raised date   | 2018-04-30                       |
+            | Category A Monthly Salary | Assessment Start Date     | 2017-10-30                       |
+            | Category A Monthly Salary | Threshold                 | 1550.00                          |
+            | Category A Monthly Salary | Employer Name - AA345678A | Flying Pizza Ltd                 |
+            | Category A Monthly Salary | Employer Name - GG199882B | Reliable Motors, Quality Estates |
