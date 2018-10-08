@@ -14,7 +14,7 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
     #       - 4-Weekly payments alone– Achieved by meeting a minimum consistent value of £1430 per 4-weekly
     #       - Mixture of any of the above
 
-    # TODO 2018/09/24 EE-3391: Partner not yet implemented for Cat A.
+    # TODO 2018/09/24 EE-3991: Partner not yet implemented for Cat A.
     Scenario: Category A. No dependents. Partners Income Included. Annual Check Met. Multiple payments in the fifth month of the assessment range. (*NOTE* PARTNER NOT YET READY)
 
         Given HMRC has the following income records:
