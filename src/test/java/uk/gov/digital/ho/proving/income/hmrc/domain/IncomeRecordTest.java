@@ -62,13 +62,12 @@ public class IncomeRecordTest {
     }
 
     @Test
-    public void shouldDeserializeIndividual() throws IOException {
+    public void shouldDeserializeJson() throws IOException {
         ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0).createObjectMapper();
 
-        String json = "{\"individual\":{\"firstName\": \"firstname\", \"lastName\": \"lastname\", \"dateOfBirth\": \"1970-01-01\", \"nino\": \"QQ123456C\"}}";
+        String json = "{\"paye\":[],\"selfAssessment\":[],\"employments\":[],\"individual\":{\"firstName\": \"firstname\", \"lastName\": \"lastname\", \"dateOfBirth\": \"1970-01-01\", \"nino\": \"QQ123456C\"}}";
 
         IncomeRecord incomeRecord = objectMapper.readValue(json, IncomeRecord.class);
-
 
         assertThat(incomeRecord).isNotNull();
         assertThat(incomeRecord.individual().nino()).isEqualTo("QQ123456C");
