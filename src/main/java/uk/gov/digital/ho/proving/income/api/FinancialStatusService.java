@@ -13,7 +13,10 @@ import uk.gov.digital.ho.proving.income.validator.IncomeValidationService;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class FinancialStatusService {
@@ -51,6 +54,7 @@ public class FinancialStatusService {
         IncomeValidationRequest incomeValidationRequest = IncomeValidationRequest.create(applicationRaisedDate, incomeRecords, dependants);
 
         response.categoryChecks().addAll(incomeValidationService.validate(incomeValidationRequest));
+
         return response;
     }
 

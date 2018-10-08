@@ -15,9 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.getAllPayeInDateRange;
-import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.getAllPayeIncomes;
+import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 
 
 public class IncomeValidationHelperTest {
@@ -85,5 +87,57 @@ public class IncomeValidationHelperTest {
         List<Income> payeInDateRange = getAllPayeInDateRange(request, applicationStartDate);
 
         assertThat(payeInDateRange).containsExactlyInAnyOrder(incomeOnStartDate, incomeAfterStartDate, incomeBeforeEndDate, incomeOnEndDate);
+    }
+
+    @Test
+    public void totalPaymentShouldReturnZeroForNoIncome() {
+        assertThat(totalPayment(emptyList())).isEqualTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    public void totalPaymentShouldReturnSingleIncomeAmount() {
+        List<Income> singleIncome = singletonList(new Income(BigDecimal.valueOf(2.3), someDate, someInt, someInt, "any employer ref"));
+        assertThat(totalPayment(singleIncome)).isEqualTo(BigDecimal.valueOf(2.3));
+    }
+
+    @Test
+    public void totalPaymentShouldSumIncomes() {
+        List<Income> multipleIncomes = asList(
+            new Income(BigDecimal.valueOf(1.9), someDate, someInt, someInt, "any employer ref"),
+            new Income(BigDecimal.valueOf(3.33), someDate, someInt, someInt, "any employer ref")
+        );
+        assertThat(totalPayment(multipleIncomes)).isEqualTo(BigDecimal.valueOf(5.23));
+    }
+
+    @Test
+    public void totalPaymentShouldHandleNegativeAmounts() {
+        List<Income> someNegativeIncomes = asList(
+            new Income(BigDecimal.valueOf(0.5), someDate, someInt, someInt, "any employer ref"),
+            new Income(BigDecimal.valueOf(-100.91), someDate, someInt, someInt, "any employer ref")
+        );
+        assertThat(totalPayment(someNegativeIncomes)).isEqualTo(BigDecimal.valueOf(-100.41));
+    }
+
+    @Test
+    public void largestSingleEmployerIncomeShouldReturnZeroForNoIncome() {
+        assertThat(largestSingleEmployerIncome(emptyList())).isEqualTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    public void largestSingleEmployerIncomeShouldReturnSingleIncome() {
+        List<Income> singleIncome = singletonList(new Income(BigDecimal.valueOf(200.15), someDate, someInt, someInt, "any employer ref"));
+        assertThat(largestSingleEmployerIncome(singleIncome)).isEqualTo(BigDecimal.valueOf(200.15));
+    }
+
+    @Test
+    public void largestSingleEmployerIncomeShouldReturnLargestOfMultipleEmployers() {
+        List<Income> incomesFromDifferentEmployers = asList(
+            new Income(BigDecimal.valueOf(0.5), someDate, someInt, someInt, "any employer ref"),
+            new Income(BigDecimal.valueOf(1000), someDate, someInt, someInt, "any employer ref"),
+
+            new Income(BigDecimal.valueOf(1000), someDate, someInt, someInt, "any other employer ref"),
+            new Income(BigDecimal.valueOf(0.4), someDate, someInt, someInt, "any other employer ref")
+        );
+        assertThat(largestSingleEmployerIncome(incomesFromDifferentEmployers)).isEqualTo(BigDecimal.valueOf(1000.5));
     }
 }

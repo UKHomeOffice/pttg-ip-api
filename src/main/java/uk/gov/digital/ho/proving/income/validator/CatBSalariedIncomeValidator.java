@@ -91,19 +91,12 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
 
     private boolean monthBelowThreshold(List<List<Income>> monthlyIncomes, BigDecimal monthlyThreshold) {
         for (List<Income> monthlyIncome : monthlyIncomes) {
-            BigDecimal totalMonthlyIncome = BigDecimal.ZERO;
-            for (Income income : monthlyIncome) {
-                totalMonthlyIncome = totalMonthlyIncome.add(income.payment());
-            }
-            if (isLessThan(totalMonthlyIncome, monthlyThreshold)) {
+            BigDecimal totalMonthlyIncome = totalPayment(monthlyIncome);
+            if (!checkValuePassesThreshold(totalMonthlyIncome, monthlyThreshold)) {
                 return true;
             }
         }
         return false;
-    }
-
-    private boolean isLessThan(BigDecimal numberToCheck, BigDecimal target) {
-        return numberToCheck.compareTo(target) < 0;
     }
 
     private BigDecimal getMonthlyThreshold(IncomeValidationRequest incomeValidationRequest) {
