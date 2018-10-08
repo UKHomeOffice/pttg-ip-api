@@ -52,16 +52,16 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
         List<Income> paye = getAllPayeIncomes(validationRequest);
         paye = removeDuplicates(filterIncomesByDates(paye, assessmentStartDate, applicationRaisedDate));
 
-        if (paye.size() <= 0) {
+        if (paye.isEmpty()) {
             return NOT_ENOUGH_RECORDS;
         }
 
-        BigDecimal annualApplicantIncome = largestSingleEmployerIncome(paye).multiply(BigDecimal.valueOf(2));
+        BigDecimal annualApplicantIncome = annualisedIncome(largestSingleEmployerIncome(paye));
         if (checkValuePassesThreshold(annualApplicantIncome, threshold)) {
             return CATA_NON_SALARIED_PASSED;
         }
 
-        BigDecimal annualAllEmployerIncome = totalPayment(paye).multiply(BigDecimal.valueOf(2));
+        BigDecimal annualAllEmployerIncome = annualisedIncome(totalPayment(paye));
         if (checkValuePassesThreshold(annualAllEmployerIncome, threshold)) {
             return MULTIPLE_EMPLOYERS;
         }
@@ -79,20 +79,20 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
         List<Income> allPaye = new ArrayList<>(applicantPaye);
         allPaye.addAll(partnerPaye);
 
-        if (allPaye.size() <= 0) {
+        if (allPaye.isEmpty()) {
             return NOT_ENOUGH_RECORDS;
         }
 
         BigDecimal applicantIncome = largestSingleEmployerIncome(applicantPaye);
         BigDecimal partnerIncome = largestSingleEmployerIncome(partnerPaye);
-        BigDecimal annualCombinedIncome = applicantIncome.add(partnerIncome).multiply(BigDecimal.valueOf(2));
+        BigDecimal annualCombinedIncome = annualisedIncome(applicantIncome.add(partnerIncome));
 
         if (checkValuePassesThreshold(annualCombinedIncome, threshold)) {
             return CATA_NON_SALARIED_PASSED;
         }
 
-        BigDecimal annualAllEmployerCombinedIncome = totalPayment(allPaye);
-        if (checkValuePassesThreshold(annualAllEmployerCombinedIncome.multiply(BigDecimal.valueOf(2)), threshold)) {
+        BigDecimal annualAllEmployerCombinedIncome = annualisedIncome(totalPayment(allPaye));
+        if (checkValuePassesThreshold(annualAllEmployerCombinedIncome, threshold)) {
             return MULTIPLE_EMPLOYERS;
         }
         return CATA_NON_SALARIED_BELOW_THRESHOLD;
@@ -109,4 +109,7 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
             .build();
     }
 
+    private BigDecimal annualisedIncome(BigDecimal sixMonthlyIncome) {
+        return sixMonthlyIncome.multiply(BigDecimal.valueOf(2));
+    }
 }
