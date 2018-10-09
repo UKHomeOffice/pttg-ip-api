@@ -16,11 +16,9 @@ public class IncomeTest {
     private final Income incomeMonth4 = new Income(BigDecimal.ONE, MONTH_4_PAYMENT_DATE, 4, null, "anyRef");
     private final Income anotherIncomeMonth4 = new Income(BigDecimal.TEN, MONTH_4_PAYMENT_DATE, 4, null, "anyRef");
     private final Income negativeIncomeMonth4 = new Income(BigDecimal.valueOf(-5), MONTH_4_PAYMENT_DATE, 4, null, "anyRef");
-    private final Income incomeMonth4NextYear =  new Income(BigDecimal.ONE, LocalDate.of(2019, 10, 24), 4, null, "anyRef");;
     private final Income incomeWeek26 = new Income(BigDecimal.ONE, LocalDate.of(2018, 9, 13), null, 26, "anyRef");;
     private final Income incomeWeek26OtherEmployer = new Income(BigDecimal.ONE, LocalDate.of(2018, 9, 13), null, 26, "any other ref");;
     private final Income incomeWeek27 = new Income(BigDecimal.ONE, LocalDate.of(2018, 9, 20), null, 27, "anyRef");;
-    private final Income incomeWeek27NextYear = new Income(BigDecimal.ONE, LocalDate.of(2019, 9, 20), null, 27, "anyRef");;
 
     @Test
     public void shouldFindEqual() {
@@ -64,46 +62,58 @@ public class IncomeTest {
     }
 
     @Test
-    public void addDifferentMonthNumberShouldThrowIllegalArgumentException() {
-        assertThatThrownBy(() -> incomeMonth3.add(incomeMonth4)).isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Can't add incomes for different month pay numbers.");
+    public void addDifferentMonthPayNumberShouldKeepInitialMonthPayNumber() {
+        assertThat(incomeMonth3.add(incomeMonth4).monthPayNumber()).isEqualTo(incomeMonth3.monthPayNumber());
+        assertThat(incomeMonth4.add(incomeMonth3).monthPayNumber()).isEqualTo(incomeMonth4.monthPayNumber());
     }
 
     @Test
-    public void addDifferentWeekNumberShouldThrowIllegalArgumentException() {
-        assertThatThrownBy(() -> incomeWeek26.add(incomeWeek27)).isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Can't add incomes for different week pay numbers.");
+    public void addDifferentWeekPayNumberShouldKeepInitialWeekPayNumber() {
+        assertThat(incomeWeek26.add(incomeWeek27).weekPayNumber()).isEqualTo(incomeWeek26.weekPayNumber());
+        assertThat(incomeWeek27.add(incomeWeek26).weekPayNumber()).isEqualTo(incomeWeek27.weekPayNumber());
     }
 
     @Test
-    public void addWeeklyToMonthlyShouldThrowIllegalArgumentException() {
-        assertThatThrownBy(() -> incomeMonth4.add(incomeWeek27)).isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Can't add a weekly payment to a monthly one.");
+    public void addWeeklyToMonthlyShouldKeepMonthPayNumber() {
+        assertThat(incomeMonth4.add(incomeWeek27).monthPayNumber()).isEqualTo(incomeMonth4.monthPayNumber());
     }
 
     @Test
-    public void addMonthlyToWeeklyShouldThrowIllegalArgumentException() {
-        assertThatThrownBy(() -> incomeWeek26.add(incomeMonth4)).isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Can't add a weekly payment to a monthly one.");
+    public void addWeeklyToMonthlyShouldKeepNullWeekPayNumber() {
+        assertThat(incomeMonth4.add(incomeWeek27).weekPayNumber()).isEqualTo(incomeMonth4.weekPayNumber())
+            .isNull();
     }
 
     @Test
-    public void addSameMonthDifferentYearShouldThrowIllegalArgumentException() {
-        assertThatThrownBy(() -> incomeMonth4.add(incomeMonth4NextYear)).isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Can't add payments for different years.");
+    public void addMonthlyToWeeklyShouldKeepWeekPayNumber() {
+        assertThat(incomeWeek27.add(incomeMonth4).weekPayNumber()).isEqualTo(incomeWeek27.weekPayNumber());
     }
 
     @Test
-    public void addSameWeekDifferentYearShouldThrowIllegalArgumentException() {
-        assertThatThrownBy(() -> incomeWeek27.add(incomeWeek27NextYear)).isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Can't add payments for different years.");
+    public void addMonthlyToWeeklyShouldKeepNullMonthPayNumber() {
+        assertThat(incomeWeek27.add(incomeMonth4).monthPayNumber()).isEqualTo(incomeWeek27.monthPayNumber())
+            .isNull();
     }
 
     @Test
-    public void addDifferentEmploymentRefsShouldThrowIllegalArgumentException() {
-        assertThatThrownBy(() -> incomeWeek26.add(incomeWeek26OtherEmployer)).isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Can't add payments for different employers.");
+    public void addShouldKeepInitialPaymentDate() {
+        assertThat(incomeWeek26.add(incomeWeek27).paymentDate()).isEqualTo(incomeWeek26.paymentDate())
+            .isNotEqualTo(incomeWeek27.paymentDate());
+        assertThat(incomeWeek27.add(incomeWeek26).paymentDate()).isEqualTo(incomeWeek27.paymentDate())
+            .isNotEqualTo(incomeWeek26.paymentDate());
 
+        assertThat(incomeMonth3.add(incomeMonth4).paymentDate()).isEqualTo(incomeMonth3.paymentDate())
+            .isNotEqualTo(incomeMonth4.paymentDate());
+        assertThat(incomeMonth4.add(incomeMonth3).paymentDate()).isEqualTo(incomeMonth4.paymentDate())
+            .isNotEqualTo(incomeMonth3.paymentDate());
+    }
+
+    @Test
+    public void addShouldKeepInitialEmploymentReference() {
+        assertThat(incomeWeek26.add(incomeWeek26OtherEmployer).employerPayeReference()).isEqualTo(incomeWeek26.employerPayeReference())
+            .isNotEqualTo(incomeWeek26OtherEmployer.employerPayeReference());
+        assertThat(incomeWeek26OtherEmployer.add(incomeWeek26).employerPayeReference()).isEqualTo(incomeWeek26OtherEmployer.employerPayeReference())
+            .isNotEqualTo(incomeWeek26.employerPayeReference());
     }
 
     @Test
