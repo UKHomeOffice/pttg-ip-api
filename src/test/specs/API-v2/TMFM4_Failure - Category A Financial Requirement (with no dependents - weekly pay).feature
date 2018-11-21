@@ -1,10 +1,10 @@
 Feature: Failure - Category A Financial Requirement with no dependents - weekly pay)
 
     Requirement to meet Category A
-    Applicant or Sponsor has received < 26 payments from the same employer over 182 day period prior to the Application Raised Date
+    Applicant or Sponsor has received < 26 payments from the same employer over 6 month period prior to the Application Raised Date
 
     Financial employment income regulation to pass this Feature File
-    Applicant or Sponsor has received 26 weekly Gross Income payments of < £357.69 in the 182 day period prior to the Application Raised Date
+    Applicant or Sponsor has received 26 weekly Gross Income payments of < £357.69 in the 6 month period prior to the Application Raised Date
 
 #New Scenario -
     Scenario: Davina Love does not meet the Category A Financial Requirement (She has earned < the Cat A financial threshold)
@@ -49,7 +49,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Applicant                | National Insurance Number | SP123456A                    |
             | Category A Weekly Salary | Financial requirement met | false                        |
             | Category A Weekly Salary | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
-            | Category A Weekly Salary | Assessment start date     | 2015-05-05                   |
+            | Category A Weekly Salary | Assessment start date     | 2015-05-03                   |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03                   |
             | Category A Weekly Salary | Threshold                 | 357.69                       |
             | Category A Weekly Salary | Employer Name - SP123456A | Flying Pizza Ltd             |
@@ -101,7 +101,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Applicant                | National Insurance Number | PY123456B                    |
             | Category A Weekly Salary | Financial requirement met | false                        |
             | Category A Weekly Salary | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
-            | Category A Weekly Salary | Assessment start date     | 2015-05-05                   |
+            | Category A Weekly Salary | Assessment start date     | 2015-05-03                   |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03                   |
             | Category A Weekly Salary | Threshold                 | 357.69                       |
             | Category A Weekly Salary | Employer Name - PY123456B | Flying Pizza Ltd             |
@@ -151,7 +151,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Applicant                | National Insurance Number | RP123456C                          |
             | Category A Weekly Salary | Financial requirement met | false                              |
             | Category A Weekly Salary | Failure reason            | MULTIPLE_EMPLOYERS                 |
-            | Category A Weekly Salary | Assessment start date     | 2015-05-05                         |
+            | Category A Weekly Salary | Assessment start date     | 2015-05-03                         |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03                         |
             | Category A Weekly Salary | Threshold                 | 357.69                             |
             | Category A Weekly Salary | Employer Name - RP123456C | Flying Pizza Ltd, Crazy Pizza  Ltd |
@@ -200,7 +200,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Applicant                | National Insurance Number | JJ123456A          |
             | Category A Weekly Salary | Financial requirement met | false              |
             | Category A Weekly Salary | Failure reason            | NOT_ENOUGH_RECORDS |
-            | Category A Weekly Salary | Assessment start date     | 2015-05-05         |
+            | Category A Weekly Salary | Assessment start date     | 2015-05-03         |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03         |
             | Category A Weekly Salary | Threshold                 | 357.69             |
             | Category A Weekly Salary | Employer Name - JJ123456A | Flying Pizza Ltd   |
@@ -208,7 +208,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
 
     Scenario: Gary Goldstein does not meet the Category A Employment Requirement (He currently works for two employers)
 
-    He has received 26 Weekly Gross Income payments of £260.60 and £300.00 in the 182 day period from two active employers.  Combined the totals are above the threshold, however this will trigger a failed result.
+    He has received 26 Weekly Gross Income payments of £260.60 and £300.00 in the 6 month period from two active employers.  Combined the totals are above the threshold, however this will trigger a failed result.
 
         Given HMRC has the following income records:
             | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer         |
@@ -274,7 +274,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Applicant                | National Insurance Number | GG987654A                         |
             | Category A Weekly Salary | Financial requirement met | false                             |
             | Category A Weekly Salary | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD      |
-            | Category A Weekly Salary | Assessment start date     | 2015-03-05                        |
+            | Category A Weekly Salary | Assessment start date     | 2015-03-03                        |
             | Category A Weekly Salary | Application Raised date   | 2015-09-03                        |
             | Category A Weekly Salary | Threshold                 | 357.69                            |
             | Category A Weekly Salary | Employer Name - GG987654A | Curry House Ltd, Flying Pizza Ltd |
@@ -327,7 +327,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Applicant                | National Insurance Number | PJ123456A                         |
             | Category A Weekly Salary | Financial requirement met | false                             |
             | Category A Weekly Salary | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD      |
-            | Category A Weekly Salary | Assessment start date     | 2015-05-05                        |
+            | Category A Weekly Salary | Assessment start date     | 2015-05-03                        |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03                        |
             | Category A Weekly Salary | Threshold                 | 357.69                            |
             | Category A Weekly Salary | Employer Name - PJ123456A | Flying Pizza Ltd, Mambo Pizza Ltd |
@@ -372,7 +372,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Applicant                | National Insurance Number | PP123456A          |
             | Category A Weekly Salary | Financial requirement met | false              |
             | Category A Weekly Salary | Failure reason            | NOT_ENOUGH_RECORDS |
-            | Category A Weekly Salary | Assessment start date     | 2015-05-05         |
+            | Category A Weekly Salary | Assessment start date     | 2015-05-03         |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03         |
             | Category A Weekly Salary | Threshold                 | 357.69             |
             | Category A Weekly Salary | Employer Name - PP123456A | Flying Pizza Ltd   |
@@ -415,7 +415,7 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
             | Applicant                               | National Insurance Number | PP123456A            |
             | Category A Unsupported Salary Frequency | Financial requirement met | false                |
             | Category A Unsupported Salary Frequency | Failure reason            | PAY_FREQUENCY_CHANGE |
-            | Category A Unsupported Salary Frequency | Assessment start date     | 2014-11-11           |
+            | Category A Unsupported Salary Frequency | Assessment start date     | 2014-11-12           |
             | Category A Unsupported Salary Frequency | Application Raised date   | 2015-05-12           |
             | Category A Unsupported Salary Frequency | Threshold                 | 0                    |
             | Category A Unsupported Salary Frequency | Employer Name - PP123456A | Flying Pizza Ltd     |

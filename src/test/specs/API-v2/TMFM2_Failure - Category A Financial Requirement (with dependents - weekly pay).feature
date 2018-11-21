@@ -1,7 +1,7 @@
 Feature: Failure - Category A Financial Requirement  - with Dependants - weekly pay
 
     Requirement to meet Category A
-    Applicant or Sponsor has received < 26 payments from the same employer over 182 day period prior to the Application Raised Date
+    Applicant or Sponsor has received < 26 payments from the same employer over 6 month period prior to the Application Raised Date
 
     Financial income regulation to pass this Feature File
     Income required amount no dependant child = £18600 (£1550 per month or above for EACH of the previous 6 months from the Application Raised Date)
@@ -9,7 +9,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
     Additional funds for EVERY subsequent dependant child = £2400 on top of employment threshold per child
 
     Financial income calculation to pass this Feature File
-    Income required amount + 1 dependant amount + (Additional dependant amount * number of dependants)/52 weeks in the year = 26 Weekly Gross Income payments < threshold in the 182 day period prior to the Application Raised Date from the same employer
+    Income required amount + 1 dependant amount + (Additional dependant amount * number of dependants)/52 weeks in the year = 26 Weekly Gross Income payments < threshold in the 6 month period prior to the Application Raised Date from the same employer
 
     1 Dependant child - £18600+£3800/52 = £430.77
     2 Dependant children - £18600+£3800+£2400/12 = £476.92
@@ -23,7 +23,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
     Pay date - Weekly (variable dates)
     Before day of Application Raised Date
     He has 3 columbian dependants
-    He has received 26 Weekly Gross Income payments of £225.40 in the 182 day period from the same employer
+    He has received 26 Weekly Gross Income payments of £225.40 in the 6 month period from the same employer
 
         Given HMRC has the following income records:
             | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer         |
@@ -67,7 +67,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Applicant                | National Insurance Number | AP123456C                    |
             | Category A Weekly Salary | Financial requirement met | false                        |
             | Category A Weekly Salary | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD |
-            | Category A Weekly Salary | Assessment start date     | 2015-05-05                   |
+            | Category A Weekly Salary | Assessment start date     | 2015-05-03                   |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03                   |
             | Category A Weekly Salary | Threshold                 | 523.08                       |
             | Category A Weekly Salary | Employer Name - AP123456C | Flying Pizza Ltd             |
@@ -77,7 +77,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
     Scenario: John Lister does not meet the Category A Financial Requirement (He has earned < the Cat A financial threshold also does not have enough records)
 
     He has 2 Chinese dependants
-    He has received 23 Weekly Gross Income payments of £475.67 in the 182 day period from the same employer
+    He has received 23 Weekly Gross Income payments of £475.67 in the 6 month period from the same employer
 
         Given HMRC has the following income records:
             | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer         |
@@ -116,7 +116,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Applicant                | National Insurance Number | JL123456D          |
             | Category A Weekly Salary | Financial requirement met | false              |
             | Category A Weekly Salary | Failure reason            | NOT_ENOUGH_RECORDS |
-            | Category A Weekly Salary | Assessment start date     | 2015-05-05         |
+            | Category A Weekly Salary | Assessment start date     | 2015-05-03         |
             | Category A Weekly Salary | Application Raised date   | 2015-11-03         |
             | Category A Weekly Salary | Threshold                 | 476.92             |
             | Category A Weekly Salary | Employer Name - JL123456D | Flying Pizza Ltd   |
@@ -125,7 +125,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
     Scenario: Gary Goldstein does not meet the Category A employment duration Requirement (He has worked for his current employer for only 20 weeks)
 
     He has 3 Isreali dependants
-    He has received 20 Weekly Gross Income payments of £530.67 and 6 Weekly Gross payments of £525.30 in the 182 day period from two employers
+    He has received 20 Weekly Gross Income payments of £530.67 and 6 Weekly Gross payments of £525.30 in the 6 month period from two employers
     He worked for a different employer before his current employer
 
         Given HMRC has the following income records:
@@ -167,7 +167,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Applicant                | National Insurance Number | GG987654A                         |
             | Category A Weekly Salary | Financial requirement met | false                             |
             | Category A Weekly Salary | Failure reason            | MULTIPLE_EMPLOYERS                |
-            | Category A Weekly Salary | Assessment start date     | 2015-03-05                        |
+            | Category A Weekly Salary | Assessment start date     | 2015-03-03                        |
             | Category A Weekly Salary | Application Raised date   | 2015-09-03                        |
             | Category A Weekly Salary | Threshold                 | 523.08                            |
             | Category A Weekly Salary | Employer Name - GG987654A | Flying Pizza Ltd, Curry House Ltd |
@@ -176,7 +176,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
     Scenario: Terry Pilchard does not meet the Category A Employment Requirement (He currently works for two employers)
 
     He has 3 Isreali dependants
-    He has received 26 Weekly Gross Income payments of £260.60 and £300.00 in the 182 day period from two active employers.
+    He has received 26 Weekly Gross Income payments of £260.60 and £300.00 in the 6 month period from two active employers.
     Combined the totals are above the threshold, however this will trigger a failed result.
 
         Given HMRC has the following income records:
@@ -244,7 +244,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Applicant                | National Insurance Number | GG987654A                         |
             | Category A Weekly Salary | Financial requirement met | false                             |
             | Category A Weekly Salary | Failure reason            | WEEKLY_VALUE_BELOW_THRESHOLD      |
-            | Category A Weekly Salary | Assessment start date     | 2015-03-05                        |
+            | Category A Weekly Salary | Assessment start date     | 2015-03-03                        |
             | Category A Weekly Salary | Application Raised date   | 2015-09-03                        |
             | Category A Weekly Salary | Threshold                 | 523.08                            |
             | Category A Weekly Salary | Employer Name - GG987654A | Curry House Ltd, Flying Pizza Ltd |
@@ -285,7 +285,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Applicant                               | National Insurance Number | JW984624A            |
             | Category A Unsupported Salary Frequency | Financial requirement met | false                |
             | Category A Unsupported Salary Frequency | Failure reason            | PAY_FREQUENCY_CHANGE |
-            | Category A Unsupported Salary Frequency | Assessment start date     | 2015-05-24           |
+            | Category A Unsupported Salary Frequency | Assessment start date     | 2015-05-22           |
             | Category A Unsupported Salary Frequency | Application Raised date   | 2015-11-22           |
             | Category A Unsupported Salary Frequency | Threshold                 | 0                    |
             | Category A Unsupported Salary Frequency | Employer Name - JW984624A | Flying Pizza Ltd     |
@@ -311,5 +311,5 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
             | Applicant                 | National Insurance Number | JL123456A          |
             | Category A Monthly Salary | Financial requirement met | false              |
             | Category A Monthly Salary | Failure reason            | NOT_ENOUGH_RECORDS |
-            | Category A Monthly Salary | Assessment start date     | 2014-07-17         |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-15         |
             | Category A Monthly Salary | Application Raised date   | 2015-01-15         |

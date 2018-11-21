@@ -28,7 +28,7 @@ import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -93,7 +93,7 @@ public class ApiDocumentation {
         fieldWithPath("categoryCheck.category").description("The category that was checked"),
         fieldWithPath("categoryCheck.passed").description("True if this individual meets the financial status requirements for the given Category, otherwise false"),
         fieldWithPath("categoryCheck.applicationRaisedDate").description("Date of the application"),
-        fieldWithPath("categoryCheck.assessmentStartDate").description("Start date of the financial status check based on the application raised date minus 182 days"),
+        fieldWithPath("categoryCheck.assessmentStartDate").description("Start date of the financial status check based on the application raised date minus 6 months"),
         fieldWithPath("categoryCheck.failureReason").description("Description of the failure reason when passed is not true - see <<Glossary>>"),
         fieldWithPath("categoryCheck.threshold").description("Calculated threshold required for a pass"),
         fieldWithPath("categoryCheck.employers").description("Employer names returned by HMRC")

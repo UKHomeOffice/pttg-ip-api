@@ -284,8 +284,8 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
         def incomeRecord = new IncomeRecord([], selfAssessmentReturns, [], individual)
 
         def responseData = objectMapper.writeValueAsString(incomeRecord)
-        stubFor(get(urlMatching("/income.*"))
-            .withQueryParam("nino", matching(nino))
+        stubFor(post(urlMatching("/income.*"))
+            .withRequestBody(equalToJson("{\"nino\":\"" + nino + "\"}", true, true))
             .willReturn(aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody(responseData))
@@ -318,7 +318,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
         IncomeRecord incomeRecord = new IncomeRecord(income, new ArrayList<AnnualSelfAssessmentTaxReturn>(), employments, new HmrcIndividual("Joe", "Bloggs", "NE121212A", LocalDate.now()))
         String data = objectMapper.writeValueAsString(incomeRecord)
-        stubFor(get(urlMatching("/income.*")).
+        stubFor(post(urlMatching("/income.*")).
             inScenario("hmrc applicants").
             whenScenarioStateIs(Scenario.STARTED).
             willReturn(aResponse().
@@ -351,7 +351,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
         IncomeRecord incomeRecord = new IncomeRecord(income, new ArrayList<AnnualSelfAssessmentTaxReturn>(), employments, new HmrcIndividual("Jane", "Bloggs", "OP232323B", LocalDate.now()))
         String data = objectMapper.writeValueAsString(incomeRecord)
-        stubFor(get(urlMatching("/income.*")).
+        stubFor(post(urlMatching("/income.*")).
             inScenario("hmrc applicants").
             whenScenarioStateIs("main applicant returned").
             willReturn(aResponse().
@@ -378,7 +378,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
     @Given("^HMRC has no matching record\$")
     void hmrcHasNoMatchingRecord() throws Throwable {
-        stubFor(WireMock.get(urlMatching("/income.*")).
+        stubFor(WireMock.post(urlMatching("/income.*")).
             inScenario("hmrc applicants").
             whenScenarioStateIs(Scenario.STARTED).
             willReturn(aResponse().
@@ -390,7 +390,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
     @Given("^the applicants partner has no matching record\$")
     void partnerHasNoMatchingRecord() throws Throwable {
-        stubFor(WireMock.get(urlMatching("/income.*")).
+        stubFor(WireMock.post(urlMatching("/income.*")).
             inScenario("hmrc applicants").
             whenScenarioStateIs("main applicant returned").
             willReturn(aResponse().

@@ -50,7 +50,7 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
 
     private BigDecimal getTotalIncome(List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns) {
         return previousYearsTaxReturns.stream()
-            .map(AnnualSelfAssessmentTaxReturn::selfEmploymentProfit)
+            .map(AnnualSelfAssessmentTaxReturn::summaryIncome)
             .reduce(BigDecimal::add)
             .get();
     }

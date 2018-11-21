@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
@@ -19,7 +19,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_PASSED;
@@ -136,15 +136,36 @@ public class IncomeValidationServiceTest {
     }
 
     private IncomeValidationResult getResult(IncomeValidationStatus status, String category) {
-        return new IncomeValidationResult(status, BigDecimal.TEN, new ArrayList<>(), LocalDate.now(), category, "Calc type");
+        return IncomeValidationResult.builder()
+            .status(status)
+            .threshold(BigDecimal.TEN)
+            .individuals(new ArrayList<>())
+            .assessmentStartDate(LocalDate.now())
+            .category(category)
+            .calculationType("Calc type")
+            .build();
     }
 
     private IncomeValidationResult getResultWithStartDate(IncomeValidationStatus status, String category, LocalDate assessmentStartDate) {
-        return new IncomeValidationResult(status, BigDecimal.TEN, new ArrayList<>(), assessmentStartDate,category, "Calc type");
+        return IncomeValidationResult.builder()
+            .status(status)
+            .threshold(BigDecimal.TEN)
+            .individuals(new ArrayList<>())
+            .assessmentStartDate(assessmentStartDate)
+            .category(category)
+            .calculationType("Calc type")
+            .build();
     }
 
     private IncomeValidationResult getResultWithIndividual(IncomeValidationStatus status, String category, CheckedIndividual checkedIndividual) {
-        return new IncomeValidationResult(status, BigDecimal.TEN, ImmutableList.of(checkedIndividual), LocalDate.now(), category, "Calc type");
+        return IncomeValidationResult.builder()
+            .status(status)
+            .threshold(BigDecimal.TEN)
+            .individuals(ImmutableList.of(checkedIndividual))
+            .assessmentStartDate(LocalDate.now())
+            .category(category)
+            .calculationType("Calc type")
+            .build();
     }
 
 }

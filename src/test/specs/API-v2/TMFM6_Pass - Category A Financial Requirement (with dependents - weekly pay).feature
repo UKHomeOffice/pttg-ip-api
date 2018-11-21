@@ -1,7 +1,7 @@
 Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
 
     Requirement to meet Category A
-    Applicant or Sponsor has received 26 payments from the same employer over 182 day period prior to the Application Raised Date
+    Applicant or Sponsor has received 26 payments from the same employer over 6 month period prior to the Application Raised Date
 
     Financial income regulation to pass this Feature File
     Income required amount no dependant child = £18600 (£1550 per month or above for EACH of the previous 6 months from the Application Raised Date)
@@ -9,7 +9,7 @@ Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
     Additional funds for EVERY subsequent dependant child = £2400 on top of employment threshold per child
 
     Financial income calculation to pass this Feature File
-    Income required amount + 1 dependant amount + (Additional dependant amount * number of dependants)/52 weeks in the year = 26 Weekly Gross Income payments => threshold in the 182 day period prior to the Application Raised Date
+    Income required amount + 1 dependant amount + (Additional dependant amount * number of dependants)/52 weeks in the year = 26 Weekly Gross Income payments => threshold in the 6 month period prior to the Application Raised Date
 
     1 Dependant child - £18600+£3800/52 = £430.77
     2 Dependant children - £18600+£3800+£2400/12 = £476.92
@@ -62,7 +62,7 @@ Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
             | HTTP Response            | HTTP Status               | 200              |
             | Applicant                | National Insurance Number | TS123456A        |
             | Category A Weekly Salary | Financial requirement met | true             |
-            | Category A Weekly Salary | Assessment start date     | 2015-08-25       |
+            | Category A Weekly Salary | Assessment start date     | 2015-08-23       |
             | Category A Weekly Salary | Application Raised date   | 2016-02-23       |
             | Category A Weekly Salary | Threshold                 | 430.77           |
             | Category A Weekly Salary | Employer Name - TS123456A | Flying Pizza Ltd |
@@ -111,7 +111,7 @@ Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
             | HTTP Response            | HTTP Status               | 200              |
             | Applicant                | National Insurance Number | JT123456C        |
             | Category A Weekly Salary | Financial requirement met | true             |
-            | Category A Weekly Salary | Assessment start date     | 2015-06-05       |
+            | Category A Weekly Salary | Assessment start date     | 2015-06-04       |
             | Category A Weekly Salary | Application Raised date   | 2015-12-04       |
             | Category A Weekly Salary | Threshold                 | 523.08           |
             | Category A Weekly Salary | Employer Name - JT123456C | Flying Pizza Ltd |
@@ -160,7 +160,7 @@ Feature: Pass - Category A Financial Requirement  - with Dependants - weekly pay
             | HTTP Response            | HTTP Status               | 200              |
             | Applicant                | National Insurance Number | PS987654B        |
             | Category A Weekly Salary | Financial requirement met | true             |
-            | Category A Weekly Salary | Assessment start date     | 2015-01-21       |
+            | Category A Weekly Salary | Assessment start date     | 2015-01-22       |
             | Category A Weekly Salary | Application Raised date   | 2015-07-22       |
             | Category A Weekly Salary | Threshold                 | 615.38           |
             | Category A Weekly Salary | Employer Name - PS987654B | Flying Pizza Ltd |

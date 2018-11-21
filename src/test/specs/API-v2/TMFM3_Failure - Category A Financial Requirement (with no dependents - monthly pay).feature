@@ -1,10 +1,10 @@
 Feature: Failure - Category A Financial Requirement - with no dependents - monthly pay
 
     Requirement to meet Category A
-    Applicant or Sponsor has received < 6 consecutive monthly payments from the same employer over the 182 day period prior to the Application Raised Date
+    Applicant or Sponsor has received < 6 consecutive monthly payments from the same employer over the 6 month period prior to the Application Raised Date
 
     Financial employment income regulation to pass this Feature File
-    Gross Monthly Income is < £1550.00 in any one of the 6 payments in the 182 days prior to the Application Raised Date
+    Gross Monthly Income is < £1550.00 in any one of the 6 payments in the 6 months days prior to the Application Raised Date
 
 
 #New Scenario -
@@ -32,7 +32,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Applicant                 | National Insurance Number | JL123456A                     |
             | Category A Monthly Salary | Financial requirement met | false                         |
             | Category A Monthly Salary | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
-            | Category A Monthly Salary | Assessment start date     | 2014-07-17                    |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-15                    |
             | Category A Monthly Salary | Application Raised date   | 2015-01-15                    |
             | Category A Monthly Salary | Threshold                 | 1550.00                       |
             | Category A Monthly Salary | Employer Name - JL123456A | Flying Pizza Ltd              |
@@ -62,7 +62,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Applicant                 | National Insurance Number | AP123456B                     |
             | Category A Monthly Salary | Financial requirement met | false                         |
             | Category A Monthly Salary | Failure reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
-            | Category A Monthly Salary | Assessment start date     | 2014-09-27                    |
+            | Category A Monthly Salary | Assessment start date     | 2014-09-28                    |
             | Category A Monthly Salary | Application Raised date   | 2015-03-28                    |
             | Category A Monthly Salary | Threshold                 | 1550.00                       |
             | Category A Monthly Salary | Employer Name - AP123456B | Flying Pizza Ltd              |
@@ -90,7 +90,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Applicant                 | National Insurance Number | KS123456C          |
             | Category A Monthly Salary | Financial requirement met | false              |
             | Category A Monthly Salary | Failure reason            | NOT_ENOUGH_RECORDS |
-            | Category A Monthly Salary | Assessment start date     | 2015-01-02         |
+            | Category A Monthly Salary | Assessment start date     | 2015-01-03         |
             | Category A Monthly Salary | Application Raised date   | 2015-07-03         |
             | Category A Monthly Salary | Threshold                 | 1550.00            |
             | Category A Monthly Salary | Employer Name - KS123456C | Flying Pizza Ltd   |
@@ -100,7 +100,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
     (Despite passing the financial threshold he has only worked for his current employer for 2 months)
 
     Pay date 28th of the month
-    He has received 6 Monthly Gross Income payments of £1600.00 in the 182 day period from two employers
+    He has received 6 Monthly Gross Income payments of £1600.00 in the 6 month period from two employers
     He worked for a different employer before his current employer
 
         Given HMRC has the following income records:
@@ -121,7 +121,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Applicant                 | National Insurance Number | GG987654A                            |
             | Category A Monthly Salary | Financial requirement met | false                                |
             | Category A Monthly Salary | Failure reason            | MULTIPLE_EMPLOYERS                   |
-            | Category A Monthly Salary | Assessment start date     | 2015-03-05                           |
+            | Category A Monthly Salary | Assessment start date     | 2015-03-03                           |
             | Category A Monthly Salary | Application Raised date   | 2015-09-03                           |
             | Category A Monthly Salary | Threshold                 | 1550.00                              |
             | Category A Monthly Salary | Employer Name - GG987654A | Curry House Ltd, Office Supplies Ltd |
@@ -130,7 +130,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
     Scenario: David Jones does not meet the Category A employment duration Requirement (Despite passing the financial threshold he has two current active employers)
 
     Pay date is 28th of the month
-    He has received 12 Monthly Gross Income payments of £900.00 and £1200.00 in the 182 day period from two employers
+    He has received 12 Monthly Gross Income payments of £900.00 and £1200.00 in the 6 month period from two employers
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer        |
@@ -156,7 +156,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Applicant                 | National Insurance Number | AA987654A                     |
             | Category A Monthly Salary | Financial requirement met | false                         |
             | Category A Monthly Salary | Failure reason            | NON_CONSECUTIVE_MONTHS        |
-            | Category A Monthly Salary | Assessment start date     | 2015-03-05                    |
+            | Category A Monthly Salary | Assessment start date     | 2015-03-03                    |
             | Category A Monthly Salary | Application Raised date   | 2015-09-03                    |
             | Category A Monthly Salary | Threshold                 | 1550.00                       |
             | Category A Monthly Salary | Employer Name - AA987654A | Curry House Ltd, Johns Chippy |
@@ -188,7 +188,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Applicant                               | National Insurance Number | JW984624A            |
             | Category A Unsupported Salary Frequency | Financial requirement met | false                |
             | Category A Unsupported Salary Frequency | Failure reason            | PAY_FREQUENCY_CHANGE |
-            | Category A Unsupported Salary Frequency | Assessment start date     | 2015-05-24           |
+            | Category A Unsupported Salary Frequency | Assessment start date     | 2015-05-22           |
             | Category A Unsupported Salary Frequency | Application Raised date   | 2015-11-22           |
             | Category A Unsupported Salary Frequency | Threshold                 | 0                    |
             | Category A Unsupported Salary Frequency | Employer Name - JW984624A | Flying Pizza Ltd     |
@@ -218,7 +218,7 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Applicant                 | National Insurance Number | JL123456A          |
             | Category A Monthly Salary | Financial requirement met | false              |
             | Category A Monthly Salary | Failure reason            | NOT_ENOUGH_RECORDS |
-            | Category A Monthly Salary | Assessment start date     | 2014-07-17         |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-15         |
             | Category A Monthly Salary | Application Raised date   | 2015-01-15         |
             | Category A Monthly Salary | Threshold                 | 1550.00            |
             | Category A Monthly Salary | Employer Name - JL123456A | Flying Pizza Ltd   |
@@ -243,5 +243,5 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
             | Applicant                 | National Insurance Number | JL123456A          |
             | Category A Monthly Salary | Financial requirement met | false              |
             | Category A Monthly Salary | Failure reason            | NOT_ENOUGH_RECORDS |
-            | Category A Monthly Salary | Assessment start date     | 2014-07-17         |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-15         |
             | Category A Monthly Salary | Application Raised date   | 2015-01-15         |

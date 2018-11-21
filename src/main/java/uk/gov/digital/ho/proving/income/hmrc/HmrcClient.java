@@ -1,27 +1,28 @@
 package uk.gov.digital.ho.proving.income.hmrc;
 
-import jersey.repackaged.com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
-import uk.gov.digital.ho.proving.income.application.ApplicationExceptions;
+import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.EarningsServiceNoUniqueMatchException;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.api.RequestData.*;
 
@@ -46,7 +47,6 @@ public class HmrcClient {
 
     @Retryable(
         include = { HttpServerErrorException.class },
-        exclude = { HttpClientErrorException.class, ApplicationExceptions.EarningsServiceNoUniqueMatchException.class },
         maxAttemptsExpression = "#{${hmrc.service.retry.attempts}}",
         backoff = @Backoff(delayExpression = "#{${hmrc.service.retry.delay}}"))
     public IncomeRecord getIncomeRecord(Identity identity, LocalDate fromDate, LocalDate toDate) {
@@ -56,19 +56,10 @@ public class HmrcClient {
             log.info(String.format("About to call Income Service at %s", hmrcServiceEndpoint));
 
             ResponseEntity<IncomeRecord> responseEntity = restTemplate.exchange(
-                String.format("%s?firstName={firstName}&lastName={lastName}&nino={nino}&dateOfBirth={dateOfBirth}&fromDate={fromDate}&toDate={toDate}", hmrcServiceEndpoint),
-                HttpMethod.GET,
-                createEntity(),
-                IncomeRecord.class,
-                ImmutableMap.
-                    <String, String>builder().
-                    put("firstName", identity.firstname()).
-                    put("lastName", identity.lastname()).
-                    put("nino", identity.nino()).
-                    put("dateOfBirth", identity.dateOfBirth().format(DateTimeFormatter.ISO_DATE)).
-                    put("fromDate", fromDate.format(DateTimeFormatter.ISO_DATE)).
-                    put("toDate", toDate.format(DateTimeFormatter.ISO_DATE)).
-                    build());
+                hmrcServiceEndpoint,
+                POST,
+                createEntity(identity, fromDate, toDate),
+                IncomeRecord.class);
 
             serviceResponseLogger.record(identity, responseEntity.getBody());
 
@@ -79,7 +70,7 @@ public class HmrcClient {
         } catch (HttpStatusCodeException e) {
             if (isNotFound(e)) {
                 log.error("Income Service found no match");
-                throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException(identity.nino());
+                throw new EarningsServiceNoUniqueMatchException(identity.nino());
             }
             log.error("Income Service failed", e);
             throw e;
@@ -89,18 +80,6 @@ public class HmrcClient {
     @Recover
     IncomeRecord getIncomeRecordFailureRecovery(HttpServerErrorException e) {
         log.error("Failed to retrieve HMRC data after retries - {}", e.getMessage());
-        throw(e);
-    }
-
-    @Recover
-    IncomeRecord getIncomeRecordFailureRecovery(HttpClientErrorException e) {
-        log.error("Failed to retrieve HMRC data (no retries attempted) - {}", e.getMessage());
-        throw(e);
-    }
-
-    @Recover
-    IncomeRecord getIncomeRecordFailureRecovery(ApplicationExceptions.EarningsServiceNoUniqueMatchException e) {
-        log.error("Failed to retrieve HMRC data (no retries attempted) - {}", e.getMessage());
         throw(e);
     }
 
@@ -121,8 +100,16 @@ public class HmrcClient {
         return headers;
     }
 
-    private HttpEntity createEntity() {
-        return new HttpEntity<>(Void.class, generateRestHeaders());
+    private HttpEntity createEntity(Identity identity, LocalDate fromDate, LocalDate toDate) {
+        return new HttpEntity<>(
+            new IncomeDataRequest(
+                identity.firstname(),
+                identity.lastname(),
+                identity.nino(),
+                identity.dateOfBirth(),
+                fromDate,
+                toDate),
+            generateRestHeaders());
     }
 
 }
