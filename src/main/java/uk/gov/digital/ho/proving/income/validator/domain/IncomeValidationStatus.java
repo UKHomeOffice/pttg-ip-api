@@ -19,7 +19,7 @@ public enum IncomeValidationStatus {
     EMPLOYMENT_CHECK_PASSED(true),
     EMPLOYMENT_CHECK_FAILED(false),
     SELF_ASSESSMENT_ONE_YEAR_PASSED(true),
-    SELF_ASSESSMENT_ONE_YEAR_FAILED(false), ;
+    SELF_ASSESSMENT_ONE_YEAR_FAILED(false);
 
     private boolean passed;
 
