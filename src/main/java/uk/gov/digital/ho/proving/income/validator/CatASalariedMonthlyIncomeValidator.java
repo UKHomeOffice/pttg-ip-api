@@ -9,19 +9,18 @@ import uk.gov.digital.ho.proving.income.validator.domain.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.MONTHS_OF_INCOME;
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.*;
 
 @Slf4j
 @Service
 public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
-    private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
-    private static final Integer NUMBER_OF_MONTHS = 6;
     private static final String CALCULATION_TYPE = "Category A Monthly Salary";
     private static final String CATEGORY = "A";
 
@@ -37,42 +36,53 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
         IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(incomeValidationRequest.dependants());
         BigDecimal monthlyThreshold = thresholdCalculator.getMonthlyThreshold();
 
-        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
+        LocalDate assessmentStartDate = getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate());
 
         IncomeValidationStatus status =
             financialCheckForMonthlySalaried(
                 removeDuplicates(applicantIncome.incomeRecord().paye()),
-                NUMBER_OF_MONTHS,
                 monthlyThreshold,
                 assessmentStartDate,
                 incomeValidationRequest.applicationRaisedDate());
 
-        return new IncomeValidationResult(status, monthlyThreshold, Arrays.asList(checkedIndividual), assessmentStartDate, CATEGORY, CALCULATION_TYPE);
+        return IncomeValidationResult.builder()
+            .status(status)
+            .threshold(monthlyThreshold)
+            .individuals(Collections.singletonList(checkedIndividual))
+            .assessmentStartDate(assessmentStartDate)
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
+            .build();
     }
 
-    private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, int numOfMonths, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
-        Stream<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
-        List<Income> lastXMonths = individualIncome.limit(numOfMonths).collect(Collectors.toList());
-        if (lastXMonths.size() >= numOfMonths) {
-
-            // Do we have NUMBER_OF_MONTHS consecutive months with the same employer
-            for (int i = 0; i < numOfMonths - 1; i++) {
-                if (!isSuccessiveMonths(lastXMonths.get(i), lastXMonths.get(i + 1))) {
-                    log.debug("FAILED: Months not consecutive");
-                    return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
-                }
-            }
-
-            EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXMonths, threshold);
-            if (employmentCheck.equals(EmploymentCheck.PASS)) {
-                return IncomeValidationStatus.MONTHLY_SALARIED_PASSED;
-            } else {
-                return employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD) ? IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD : IncomeValidationStatus.MULTIPLE_EMPLOYERS;
-            }
-
-        } else {
+    private IncomeValidationStatus financialCheckForMonthlySalaried(List<Income> incomes, BigDecimal threshold, LocalDate assessmentStartDate, LocalDate applicationRaisedDate) {
+        List<Income> individualIncome = filterIncomesByDates(incomes, assessmentStartDate, applicationRaisedDate);
+        if (individualIncome.size() < MONTHS_OF_INCOME) {
             return IncomeValidationStatus.NOT_ENOUGH_RECORDS;
         }
-    }
 
+        List<Income> lastXMonths = orderByPaymentDate(combineIncomesForSameMonth(individualIncome)).stream()
+            .limit(MONTHS_OF_INCOME)
+            .collect(Collectors.toList());
+        if (lastXMonths.size() < MONTHS_OF_INCOME) {
+            return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
+        }
+
+        // Do we have MONTHS_OF_INCOME consecutive months with the same employer
+        for (int i = 0; i < MONTHS_OF_INCOME - 1; i++) {
+            if (!isSuccessiveMonths(lastXMonths.get(i), lastXMonths.get(i + 1))) {
+                log.debug("FAILED: Months not consecutive");
+                return IncomeValidationStatus.NON_CONSECUTIVE_MONTHS;
+            }
+        }
+
+        EmploymentCheck employmentCheck = checkIncomesPassThresholdWithSameEmployer(lastXMonths, threshold);
+        if (employmentCheck.equals(EmploymentCheck.PASS)) {
+            return IncomeValidationStatus.MONTHLY_SALARIED_PASSED;
+        }
+        if (employmentCheck.equals(EmploymentCheck.FAILED_THRESHOLD)) {
+            return IncomeValidationStatus.MONTHLY_VALUE_BELOW_THRESHOLD;
+        }
+        return IncomeValidationStatus.MULTIPLE_EMPLOYERS;
+    }
 }

@@ -28,7 +28,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Employment Check | Financial requirement met | false                   |
             | Employment Check | Failure Reason            | EMPLOYMENT_CHECK_FAILED |
             | Employment Check | Application Raised date   | 2018-04-30              |
-            | Employment Check | Assessment Start Date     | 2018-03-29              |
+            | Employment Check | Assessment Start Date     | 2018-03-30              |
             | Employment Check | Threshold                 | 1550.00                 |
             | Employment Check | Employer Name - AA345678A | Flying Pizza Ltd        |
 
@@ -111,7 +111,7 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
             | Employment Check | Financial requirement met | false                        |
             | Employment Check | Failure Reason            | EMPLOYMENT_CHECK_FAILED      |
             | Employment Check | Application Raised date   | 2018-04-30                   |
-            | Employment Check | Assessment Start Date     | 2018-03-29                   |
+            | Employment Check | Assessment Start Date     | 2018-03-30                   |
             | Employment Check | Threshold                 | 1550.00                      |
             | Employment Check | Employer Name - AA345678A | Flying Pizza Ltd, Specsavers |
 

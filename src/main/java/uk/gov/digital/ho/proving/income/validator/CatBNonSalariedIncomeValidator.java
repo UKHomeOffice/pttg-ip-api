@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.getAllPayeIncomes;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.CATB_NON_SALARIED_PASSED;
 
@@ -76,21 +77,18 @@ public class CatBNonSalariedIncomeValidator implements ActiveIncomeValidator {
 
         IncomeValidationStatus result = projectedAnnualIncome.compareTo(yearlyThreshold) >= 0 ? CATB_NON_SALARIED_PASSED : CATB_NON_SALARIED_BELOW_THRESHOLD;
 
-        return new IncomeValidationResult(
-            result,
-            yearlyThreshold,
-            incomeValidationRequest.getCheckedIndividuals(),
-            assessmentStartDate,
-            CATEGORY,
-            CALCULATION_TYPE);
+        return IncomeValidationResult.builder()
+            .status(result)
+            .threshold(yearlyThreshold)
+            .individuals(incomeValidationRequest.getCheckedIndividuals())
+            .assessmentStartDate(assessmentStartDate)
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
+            .build();
     }
 
     private BigDecimal getProjectedAnnualIncome(IncomeValidationRequest incomeValidationRequest) {
-        List<Income> incomes =
-            incomeValidationRequest.allIncome()
-                .stream()
-                .flatMap(applicantIncome -> applicantIncome.incomeRecord().paye().stream())
-                .collect(Collectors.toList());
+        List<Income> incomes = getAllPayeIncomes(incomeValidationRequest);
         Map<Integer, BigDecimal> monthlyIncomes = MonthlyIncomeAggregator.aggregateMonthlyIncome(incomes);
         return ProjectedAnnualIncomeCalculator.calculate(monthlyIncomes);
     }

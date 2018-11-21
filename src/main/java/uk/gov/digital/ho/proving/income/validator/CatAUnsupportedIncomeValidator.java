@@ -1,37 +1,45 @@
 package uk.gov.digital.ho.proving.income.validator;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
+import uk.gov.digital.ho.proving.income.validator.frequencycalculator.Frequency;
+import uk.gov.digital.ho.proving.income.validator.frequencycalculator.FrequencyCalculator;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static uk.gov.digital.ho.proving.income.validator.CatASalariedIncomeValidator.getAssessmentStartDate;
 import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.toEmployerNames;
 
 @Service
 public class CatAUnsupportedIncomeValidator implements IncomeValidator {
 
-    private static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 182;
     private static final String CALCULATION_TYPE = "Category A Unsupported Salary Frequency";
     private static final String CATEGORY = "A";
 
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
         ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncome();
-        FrequencyCalculator.Frequency frequency = FrequencyCalculator.calculate(applicantIncome.incomeRecord());
+        Frequency frequency = FrequencyCalculator.calculate(applicantIncome.incomeRecord());
         List<String> employments = toEmployerNames(applicantIncome.employments());
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
-        return new IncomeValidationResult(getStatus(frequency), BigDecimal.ZERO, Arrays.asList(checkedIndividual), incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS), CATEGORY, CALCULATION_TYPE);
+        return IncomeValidationResult.builder()
+            .status(getStatus(frequency))
+            .threshold(BigDecimal.ZERO)
+            .individuals(Collections.singletonList(checkedIndividual))
+            .assessmentStartDate(getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate()))
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
+            .build();
     }
 
-    private IncomeValidationStatus getStatus(FrequencyCalculator.Frequency frequency) {
-        if(frequency.equals(FrequencyCalculator.Frequency.CHANGED)) {
+    private IncomeValidationStatus getStatus(Frequency frequency) {
+        if(frequency.equals(Frequency.CHANGED)) {
             return IncomeValidationStatus.PAY_FREQUENCY_CHANGE;
         }
 

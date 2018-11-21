@@ -32,6 +32,7 @@ import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidation
 
 class FinancialServiceSpec extends Specification {
 
+    private static final LocalDate APPLICATION_RAISED_DATE =  LocalDate.of(2017, Month.AUGUST, 21)
 
     def mockIncomeRecordService = Mock(HmrcClient)
     def mockAuditClient = Mock(AuditClient)
@@ -45,13 +46,13 @@ class FinancialServiceSpec extends Specification {
 
     def "valid NINO is looked up on the earnings service 2"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2(APPLICATION_RAISED_DATE).get(0).incomeRecord
         1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"${APPLICATION_RAISED_DATE}\",\"dependants\":0}")
         )
 
         then:
@@ -68,7 +69,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA12345\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA12345\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"${APPLICATION_RAISED_DATE}\",\"dependants\":0}")
         )
 
 
@@ -91,7 +92,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"${APPLICATION_RAISED_DATE}\",\"dependants\":0}")
         )
 
         then:
@@ -109,7 +110,7 @@ class FinancialServiceSpec extends Specification {
         def PARTNER_NINO_REDACTED = "BB123****"
         def applicant = new Identity("Mark", "Jones", LocalDate.of(2017, 8, 21), APPLICANT_NINO)
         def partner = new Identity("Marie", "Jones", LocalDate.of(2017, 8, 22), PARTNER_NINO)
-        1 * mockIncomeRecordService.getIncomeRecord(applicant, _, _) >> { getConsecutiveIncomes2().get(0).incomeRecord }
+        1 * mockIncomeRecordService.getIncomeRecord(applicant, _, _) >> { getConsecutiveIncomes2(APPLICATION_RAISED_DATE).get(0).incomeRecord }
         1 * mockIncomeRecordService.getIncomeRecord(partner, _, _) >> { throw new ApplicationExceptions.EarningsServiceNoUniqueMatchException(PARTNER_NINO) }
         mockNinoUtils.sanitise(APPLICANT_NINO) >> APPLICANT_NINO
         mockNinoUtils.sanitise(PARTNER_NINO) >> PARTNER_NINO
@@ -119,7 +120,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}, {\"nino\":\"BB123456B\",\"forename\":\"Marie\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-22\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}, {\"nino\":\"BB123456B\",\"forename\":\"Marie\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-22\"}],\"applicationRaisedDate\":\"${APPLICATION_RAISED_DATE}\",\"dependants\":0}")
         )
 
         then:
@@ -133,7 +134,7 @@ class FinancialServiceSpec extends Specification {
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":-1}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"${APPLICATION_RAISED_DATE}\",\"dependants\":-1}")
         )
 
         then:
@@ -144,13 +145,13 @@ class FinancialServiceSpec extends Specification {
 
     def "can submit more than zero dependants"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2(APPLICATION_RAISED_DATE).get(0).incomeRecord()
         1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":1}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"${APPLICATION_RAISED_DATE}\",\"dependants\":1}")
         )
 
         then:
@@ -197,7 +198,7 @@ class FinancialServiceSpec extends Specification {
 
         mockNinoUtils.sanitise(nino) >> nino
 
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2(APPLICATION_RAISED_DATE).get(0).incomeRecord()
         1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         String requestType
@@ -251,13 +252,13 @@ class FinancialServiceSpec extends Specification {
 
     def "individual details from HMRC are returned when present"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2(APPLICATION_RAISED_DATE).get(0).incomeRecord()
         1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Duncan\",\"surname\":\"Smith\",\"dateOfBirth\":\"1970-01-01\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Duncan\",\"surname\":\"Smith\",\"dateOfBirth\":\"1970-01-01\"}],\"applicationRaisedDate\":\"${APPLICATION_RAISED_DATE}\",\"dependants\":0}")
         )
 
         then:
@@ -268,13 +269,13 @@ class FinancialServiceSpec extends Specification {
 
     def "individual details from request are returned when HMRC individual not present"() {
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord()
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2(APPLICATION_RAISED_DATE).get(0).incomeRecord()
         1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Duncan\",\"surname\":\"Smith\",\"dateOfBirth\":\"1970-01-01\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Duncan\",\"surname\":\"Smith\",\"dateOfBirth\":\"1970-01-01\"}],\"applicationRaisedDate\":\"${APPLICATION_RAISED_DATE}\",\"dependants\":0}")
         )
 
         then:
@@ -286,13 +287,13 @@ class FinancialServiceSpec extends Specification {
     def "the income validator service is called"() {
 
         given:
-        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2().get(0).incomeRecord
+        1 * mockIncomeRecordService.getIncomeRecord(_, _, _) >> getConsecutiveIncomes2(APPLICATION_RAISED_DATE).get(0).incomeRecord
         1 * mockIncomeValidationService.validate(_) >> getValidCategoryChecks()
 
         when:
         def response = mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"2017-08-21\",\"dependants\":0}")
+            .content("{\"individuals\": [{\"nino\":\"AA123456A\",\"forename\":\"Mark\",\"surname\":\"Jones\",\"dateOfBirth\":\"2017-08-21\"}],\"applicationRaisedDate\":\"${APPLICATION_RAISED_DATE}\",\"dependants\":0}")
         )
 
         then:
@@ -304,17 +305,16 @@ class FinancialServiceSpec extends Specification {
     def getValidCategoryChecks = {
         List<CategoryCheck> categoryChecks = new ArrayList<>()
 
-        LocalDate applicationDate = LocalDate.of(2017, Month.AUGUST, 21)
-        LocalDate catAAssessmentStart = applicationDate.minusMonths(6)
-        LocalDate catBAssessmentStart = applicationDate.minusDays(365)
+        LocalDate catAAssessmentStart = APPLICATION_RAISED_DATE.minusMonths(6)
+        LocalDate catBAssessmentStart = APPLICATION_RAISED_DATE.minusDays(365)
 
         List<CheckedIndividual> checkedIndividuals = new ArrayList<>()
         List<String> employers = Arrays.asList("Pizza Hut")
         CheckedIndividual checkedIndividual = new CheckedIndividual("AA123456A", employers)
         checkedIndividuals.add(checkedIndividual)
 
-        CategoryCheck catACheck = new CategoryCheck("A", "Calc type", true, applicationDate, catAAssessmentStart, IncomeValidationStatus.MONTHLY_SALARIED_PASSED, new BigDecimal("1550.00"), checkedIndividuals)
-        CategoryCheck catBCheck = new CategoryCheck("B", "Calc type", true, applicationDate, catBAssessmentStart, IncomeValidationStatus.CATB_NON_SALARIED_PASSED, new BigDecimal("18600.00"), checkedIndividuals)
+        CategoryCheck catACheck = new CategoryCheck("A", "Calc type", true, APPLICATION_RAISED_DATE, catAAssessmentStart, IncomeValidationStatus.MONTHLY_SALARIED_PASSED, new BigDecimal("1550.00"), checkedIndividuals)
+        CategoryCheck catBCheck = new CategoryCheck("B", "Calc type", true, APPLICATION_RAISED_DATE, catBAssessmentStart, IncomeValidationStatus.CATB_NON_SALARIED_PASSED, new BigDecimal("18600.00"), checkedIndividuals)
         categoryChecks.add(catACheck)
         categoryChecks.add(catBCheck)
 

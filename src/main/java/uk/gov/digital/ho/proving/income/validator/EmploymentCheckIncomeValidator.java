@@ -51,7 +51,7 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
 
     private IncomeValidationResult doValidation(IncomeValidationRequest incomeValidationRequest) {
 
-        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS);
+        LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS - 1);
 
         BigDecimal monthlyThreshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).getMonthlyThreshold();
 
@@ -64,13 +64,14 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
 
         IncomeValidationStatus result = earningsSinceAssessmentStart.compareTo(monthlyThreshold) >= 0 ? EMPLOYMENT_CHECK_PASSED : EMPLOYMENT_CHECK_FAILED;
 
-        return new IncomeValidationResult(
-            result,
-            monthlyThreshold,
-            getCheckedIndividuals(incomeValidationRequest),
-            assessmentStartDate,
-            CATEGORY,
-            CALCULATION_TYPE);
+        return IncomeValidationResult.builder()
+            .status(result)
+            .threshold(monthlyThreshold)
+            .individuals(getCheckedIndividuals(incomeValidationRequest))
+            .assessmentStartDate(assessmentStartDate)
+            .category(CATEGORY)
+            .calculationType(CALCULATION_TYPE)
+            .build();
     }
 
     private List<CheckedIndividual> getCheckedIndividuals(IncomeValidationRequest incomeValidationRequest) {

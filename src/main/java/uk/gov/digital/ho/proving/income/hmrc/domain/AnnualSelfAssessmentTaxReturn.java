@@ -14,5 +14,5 @@ public class AnnualSelfAssessmentTaxReturn {
     @JsonProperty
     private final String taxYear;
     @JsonProperty
-    private final BigDecimal selfEmploymentProfit;
+    private final BigDecimal summaryIncome;
 }

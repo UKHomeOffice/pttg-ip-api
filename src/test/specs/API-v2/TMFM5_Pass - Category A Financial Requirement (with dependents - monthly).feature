@@ -1,15 +1,15 @@
 Feature: Pass - Category A Financial Requirement - with dependants - monthly
 
     Requirement to meet Category A
-    Applicant or Sponsor has received 6 consecutive monthly payments from the same employer over the 182 day period prior to the Application Raised Date
+    Applicant or Sponsor has received 6 consecutive monthly payments from the same employer over the 6 month period prior to the Application Raised Date
 
     Financial income regulation to pass this Feature File
-    Income required amount no dependant child = £18600 (They have earned 6 monthly payments => £1550 Monthly Gross Income in the 182 days prior to the Application Raised Date)
+    Income required amount no dependant child = £18600 (They have earned 6 monthly payments => £1550 Monthly Gross Income in the 6 months prior to the Application Raised Date)
     Additional funds for 1 dependant child = £3800 on top of employment threshold
     Additional funds for EVERY subsequent dependant child = £2400 on top of employment threshold per child
 
     Financial income calculation to pass this Feature File
-    Income required amount + 1 dependant amount + (Additional dependant amount * number of dependants)/12 = Equal to or greater than the threshold Monthly Gross Income in the 182 days prior to the Application Raised Date
+    Income required amount + 1 dependant amount + (Additional dependant amount * number of dependants)/12 = Equal to or greater than the threshold Monthly Gross Income in the 6 months prior to the Application Raised Date
 
     1 Dependant child - £18600+£3800/12 = £1866.67
     2 Dependant children - £18600+£3800+£2400/12 = £2066.67
@@ -44,7 +44,7 @@ Feature: Pass - Category A Financial Requirement - with dependants - monthly
             | HTTP Response             | HTTP Status               | 200              |
             | Applicant                 | National Insurance Number | TL123456A        |
             | Category A Monthly Salary | Financial requirement met | true             |
-            | Category A Monthly Salary | Assessment start date     | 2014-07-25       |
+            | Category A Monthly Salary | Assessment start date     | 2014-07-23       |
             | Category A Monthly Salary | Application Raised date   | 2015-01-23       |
             | Category A Monthly Salary | Threshold                 | 1866.67          |
             | Category A Monthly Salary | Employer Name - TL123456A | Flying Pizza Ltd |
@@ -75,7 +75,7 @@ Feature: Pass - Category A Financial Requirement - with dependants - monthly
             | HTTP Response             | HTTP Status               | 200              |
             | Applicant                 | National Insurance Number | SJ123456C        |
             | Category A Monthly Salary | Financial requirement met | true             |
-            | Category A Monthly Salary | Assessment start date     | 2015-06-09       |
+            | Category A Monthly Salary | Assessment start date     | 2015-06-08       |
             | Category A Monthly Salary | Application Raised date   | 2015-12-08       |
             | Category A Monthly Salary | Threshold                 | 2266.67          |
             | Category A Monthly Salary | Employer Name - SJ123456C | Flying Pizza Ltd |
@@ -105,7 +105,7 @@ Feature: Pass - Category A Financial Requirement - with dependants - monthly
             | HTTP Response             | HTTP Status               | 200              |
             | Applicant                 | National Insurance Number | WA987654B        |
             | Category A Monthly Salary | Financial requirement met | true             |
-            | Category A Monthly Salary | Assessment start date     | 2014-08-30       |
+            | Category A Monthly Salary | Assessment start date     | 2014-08-28       |
             | Category A Monthly Salary | Application Raised date   | 2015-02-28       |
             | Category A Monthly Salary | Threshold                 | 2666.67          |
             | Category A Monthly Salary | Employer Name - WA987654B | Flying Pizza Ltd |

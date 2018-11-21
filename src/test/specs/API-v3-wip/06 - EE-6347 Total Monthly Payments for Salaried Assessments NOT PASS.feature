@@ -14,179 +14,74 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
     #       - 4-Weekly payments alone– Achieved by meeting a minimum consistent value of £1430 per 4-weekly
     #       - Mixture of any of the above
 
-    Scenario: Category A. No dependents. Annual Check does not meet. Multiple payments in the month at the start of the assessment range.
-
-        Given HMRC has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-03-30 | 1550.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-27 | 1550.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-30 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-12-28 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-11-31 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-31 |  549.99 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-30 | 1000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-
-        When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO - Applicant        | AA345678A  |
-            | Application Raised Date | 2018-04-30 |
-
-        Then The Income Proving TM Family API provides the following result:
-            | HTTP Response       | HTTP Status               | 200              |
-            | Applicant           | National Insurance Number | AA345678A        |
-            | Category A salaried | Financial requirement met | false            |
-            | Category A salaried | Application Raised date   | 2018-04-30       |
-            | Category A salaried | Assessment Start Date     | 2017-10-30       |
-            | Category A salaried | Threshold                 | 18600            |
-            | Category A salaried | Employer Name - AA345678A | Flying Pizza Ltd |
-
-##############
-
-    Scenario: Category A. No dependents. Annual check does not meet. Multiple payments of different frequency in the month at the start of the assessment range.
-
-        Given HMRC has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-27 | 1550.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-03-30 | 1550.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 |  274.99 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-17 |  275.00 | 01          | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-17 | 1000.00 | 01          | 01           | FP/Ref1        | Flying Pizza Ltd |
-
-        When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO - Applicant        | AA345678A  |
-            | Application Raised Date | 2018-04-30 |
-
-        Then The Income Proving TM Family API provides the following result:
-            | HTTP Response       | HTTP Status               | 200              |
-            | Applicant           | National Insurance Number | AA345678A        |
-            | Category A salaried | Financial requirement met | true             |
-            | Category A salaried | Application Raised date   | 2018-04-30       |
-            | Category A salaried | Assessment Start Date     | 2017-10-30       |
-            | Category A salaried | Threshold                 | 18600            |
-            | Category A salaried | Employer Name - AA345678A | Flying Pizza Ltd |
-
-
-##############
-
-    Scenario: Category A. No dependents. Annual check does not meet. Multiple payments in the month at the start of the assessment range.
-
-        Given HMRC has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-30 |  449.99 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-04-27 | 1000.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-03-30 | 1550.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 1550.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-
-        When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO - Applicant        | AA345678A  |
-            | Application Raised Date | 2018-04-30 |
-
-        Then The Income Proving TM Family API provides the following result:
-            | HTTP Response       | HTTP Status               | 200              |
-            | Applicant           | National Insurance Number | AA345678A        |
-            | Category A salaried | Financial requirement met | false            |
-            | Category A salaried | Application Raised date   | 2018-04-30       |
-            | Category A salaried | Assessment Start Date     | 2017-10-30       |
-            | Category A salaried | Threshold                 | 18600            |
-            | Category A salaried | Employer Name - AA345678A | Flying Pizza Ltd |
-
-##############
-
-    Scenario: Category A. One dependent. Annual check does not meet. Multiple payments in the month at the end of the assessment range.
-
-        Given HMRC has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-03-30 | 1866.70 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 1866.70 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 1866.70 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 | 1866.70 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 1866.70 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-30 |   66.69 | 01          | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-30 | 1800.00 | 01          | 01           | FP/Ref1        | Flying Pizza Ltd |
-
-        When the Income Proving v3 TM Family API is invoked with the following:
-            | NINO - Applicant        | AA345678A  |
-            | Application Raised Date | 2018-04-30 |
-
-        Then The Income Proving TM Family API provides the following result:
-            | HTTP Response       | HTTP Status               | 200              |
-            | Applicant           | National Insurance Number | AA345678A        |
-            | Category A salaried | Financial requirement met | true             |
-            | Category A salaried | Application Raised date   | 2018-04-30       |
-            | Category A salaried | Assessment Start Date     | 2017-10-30       |
-            | Category A salaried | Threshold                 | 22400            |
-            | Category A salaried | Employer Name - AA345678A | Flying Pizza Ltd |
-
-##############
-
+    # TODO 2018/09/24 EE-3991: Partner not yet implemented for Cat A.
     Scenario: Category A. No dependents. Partners Income Included. Annual check does not meet. Multiple payments in the fifth month of the assessment range.
 
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
             | 2018-03-27 | 1550.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-02-30 | 1550.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 |  449.98 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 449.98  |             | 04           | FP/Ref1        | Flying Pizza Ltd |
             | 2018-01-30 | 1000.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-12-29 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-11-30 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-10-30 | 1550.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
         And the applicants partner has the following income records:
-            | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer        |
-            | 2018-03-27 |   00.00 |             | 06           | RM/Ref3        | Reliable Motors |
-            | 2018-02-25 |   00.00 |             | 05           | RM/Ref3        | Reliable Motors |
-            | 2018-01-30 |   00.01 |             | 04           | RM/Ref3        | Reliable Motors |
-            | 2017-12-27 |  250.00 |             | 03           | RM/Ref3        | Reliable Motors |
-            | 2017-11-29 |  250.00 |             | 02           | RM/Ref3        | Reliable Motors |
-            | 2017-10-30 |  250.00 |             | 01           | RM/Ref3        | Reliable Motors |
+            | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer        |
+            | 2018-03-27 | 00.00  |             | 06           | RM/Ref3        | Reliable Motors |
+            | 2018-02-25 | 00.00  |             | 05           | RM/Ref3        | Reliable Motors |
+            | 2018-01-30 | 00.01  |             | 04           | RM/Ref3        | Reliable Motors |
+            | 2017-12-27 | 250.00 |             | 03           | RM/Ref3        | Reliable Motors |
+            | 2017-11-29 | 250.00 |             | 02           | RM/Ref3        | Reliable Motors |
+            | 2017-10-30 | 250.00 |             | 01           | RM/Ref3        | Reliable Motors |
 
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2018-04-30 |
 
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Response       | HTTP Status               | 200              |
-            | Applicant           | National Insurance Number | AA345678A        |
-            | Category A salaried | Financial requirement met | true             |
-            | Category A salaried | Application Raised date   | 2018-04-30       |
-            | Category A salaried | Assessment Start Date     | 2017-10-30       |
-            | Category A salaried | Threshold                 | 18600            |
-            | Category A salaried | Employer Name - AA345678A | Flying Pizza Ltd |
+            | HTTP Response             | HTTP Status               | 200                           |
+            | Applicant                 | National Insurance Number | AA345678A                     |
+            | Category A Monthly Salary | Financial requirement met | false                         |
+            | Category A Monthly Salary | Failure Reason            | MONTHLY_VALUE_BELOW_THRESHOLD |
+            | Category A Monthly Salary | Application Raised date   | 2018-04-30                    |
+            | Category A Monthly Salary | Assessment Start Date     | 2017-10-30                    |
+            | Category A Monthly Salary | Threshold                 | 1550.00                       |
+            | Category A Monthly Salary | Employer Name - AA345678A | Flying Pizza Ltd              |
 
-##############
-
-    Scenario: Category B. No dependents. Annual check does not meet. Multiple payments in the month at the end of the assessment range.
-
+    # TODO 2018/09/24 EE-3991: Partner not yet implemented for Cat A.
+    Scenario: Can add partner incomes for different month pay numbers. Grouping done by Calendar Month of Payment Date not Month Number
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-03-27 | 1550.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-30 | 1550.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-28 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-12-31 | 1550.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-29 | 1550.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-30 | 1550.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-09-27 | 1550.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-08-30 | 1550.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-07-28 | 1550.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-06-31 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-05-29 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-04-30 |    0.01 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-04-30 | 1549.98 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-
+            | 2018-03-27 | 1550.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-30 | 1550.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 449.98  |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-30 | 1000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 1550.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 | 1550.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-30 | 1550.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+        And the applicants partner has the following income records:
+            | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer        |
+            | 2018-03-27 | 150.00 |             | 04           | RM/Ref3        | Reliable Motors |
+            | 2018-03-15 | 300.00 |             | 03           | QE/Ref4        | Quality Estates |
+            | 2018-03-14 | 300.00 |             | 02           | QE/Ref4        | Quality Estates |
+            | 2018-02-25 | 00.00  |             | 02           | RM/Ref3        | Reliable Motors |
+            | 2018-01-30 | 00.01  |             | 01           | RM/Ref3        | Reliable Motors |
+            | 2017-12-27 | 250.00 |             | 12           | RM/Ref3        | Reliable Motors |
+            | 2017-11-29 | 250.00 |             | 11           | RM/Ref3        | Reliable Motors |
+            | 2017-10-30 | 250.00 |             | 10           | RM/Ref3        | Reliable Motors |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
+            | NINO - Partner          | GG199882B  |
             | Application Raised Date | 2018-04-30 |
-
         Then The Income Proving TM Family API provides the following result:
-            | HTTP Response       | HTTP Status               | 200              |
-            | Applicant           | National Insurance Number | AA345678A        |
-            | Category B salaried | Financial requirement met | true             |
-            | Category B salaried | Application Raised date   | 2018-04-30       |
-            | Category B salaried | Assessment Start Date     | 2017-04-30       |
-            | Category B salaried | Threshold                 | 18600            |
-            | Category B salaried | Employer Name - AA345678A | Flying Pizza Ltd |
+            | HTTP Response             | HTTP Status               | 200                              |
+            | Applicant                 | National Insurance Number | AA345678A                        |
+            | Category A Monthly Salary | Financial requirement met | false                            |
+            | Category A Monthly Salary | Failure Reason            | MONTHLY_VALUE_BELOW_THRESHOLD    |
+            | Category A Monthly Salary | Application Raised date   | 2018-04-30                       |
+            | Category A Monthly Salary | Assessment Start Date     | 2017-10-30                       |
+            | Category A Monthly Salary | Threshold                 | 1550.00                          |
+            | Category A Monthly Salary | Employer Name - AA345678A | Flying Pizza Ltd                 |
+            | Category A Monthly Salary | Employer Name - GG199882B | Reliable Motors, Quality Estates |
