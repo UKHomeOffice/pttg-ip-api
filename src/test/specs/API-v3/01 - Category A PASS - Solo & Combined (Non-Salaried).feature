@@ -182,7 +182,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
 
 
     #  09 Geraldine has no dependents. Her income history shows payments in 6 months but does not meet the threshold until it is supplemented by a partners income. Assessment range 2018-04-30 to 2017-10-30.
-    Scenario: Applicant has no dependantsand the income is below threshold but is over threshold when combined with partner income
+    Scenario: Applicant has no dependants and the income is below threshold but is over threshold when combined with partner income
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
             | 2018-04-27 | 1000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
