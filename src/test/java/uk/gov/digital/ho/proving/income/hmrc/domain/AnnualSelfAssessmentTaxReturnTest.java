@@ -33,4 +33,14 @@ public class AnnualSelfAssessmentTaxReturnTest {
         assertThat(taxReturn.summaryIncome()).isEqualTo(new BigDecimal("50"));
     }
 
+    @Test
+    public void shouldDeserializeWithZeroSummaryIncome() throws IOException {
+        String json = "{ \"taxYear\": \"2018\", \"summaryIncome\": 0, \"selfEmploymentProfit\": 0 }";
+
+        AnnualSelfAssessmentTaxReturn taxReturn = objectMapper.readValue(json, AnnualSelfAssessmentTaxReturn.class);
+
+        assertThat(taxReturn.taxYear()).isEqualTo("2018");
+        assertThat(taxReturn.summaryIncome()).isEqualTo(new BigDecimal("0"));
+    }
+
 }
