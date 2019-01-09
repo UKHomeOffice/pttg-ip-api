@@ -14,12 +14,12 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
     Scenario: Applicant has no dependants and the income is below threshold
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-27 | 1000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-03-29 | 2000.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 2000.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 2000.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 | 1299.50 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 1000.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-27 | 1000.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-29 | 2000.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 2000.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 2000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 1299.50 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 | 1000.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2018-04-30 |
@@ -28,6 +28,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Category A Non Salaried | Financial requirement met | false                             |
             | Category A Non Salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
             | Category A Non Salaried | Application Raised date   | 2018-04-30                        |
+            | Category A Non Salaried | Assessment Start date     | 2017-10-30                        |
             | Applicant               | National Insurance Number | AA345678A                         |
             | Category A Non Salaried | Threshold                 | 18600                             |
             | Category A Non Salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
@@ -37,13 +38,13 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
     Scenario: Applicant has one dependant and the income is below threshold
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-30 | 500.00  |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-03-29 | 2000.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 4000.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 2000.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 | 1199.99 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 1000.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-30 | 500.00  |             | 07           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-30 | 500.00  |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-29 | 2000.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 4000.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 2000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 1199.99 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 | 1000.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-30 | 500.00  |             | 10           | FP/Ref1        | Flying Pizza Ltd |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2018-04-30 |
@@ -53,6 +54,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Category A Non Salaried | Financial requirement met | false                             |
             | Category A Non Salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
             | Category A Non Salaried | Application Raised date   | 2018-04-30                        |
+            | Category A Non Salaried | Assessment Start date     | 2017-10-30                        |
             | Applicant               | National Insurance Number | AA345678A                         |
             | Category A Non Salaried | Threshold                 | 22400                             |
             | Category A Non Salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
@@ -62,13 +64,13 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
     Scenario: Applicant has no dependants and one payment is out of the assessment range
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-30 | 2000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-03-29 | 2000.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 2000.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-01-31 | 1300.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-29 | 1000.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 999.99  |             | 08           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-29 | 000.01  |             | 08           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-30 | 2000.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-29 | 2000.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 2000.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-01-31 | 1300.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-29 | 1000.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 | 999.99  |             | 11           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-29 | 000.01  |             | 10           | FP/Ref1        | Flying Pizza Ltd |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2018-04-30 |
@@ -77,6 +79,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Category A Non Salaried | Financial requirement met | false                             |
             | Category A Non Salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
             | Category A Non Salaried | Application Raised date   | 2018-04-30                        |
+            | Category A Non Salaried | Assessment Start date     | 2017-10-30                        |
             | Applicant               | National Insurance Number | AA345678A                         |
             | Category A Non Salaried | Threshold                 | 18600                             |
             | Category A Non Salaried | Employer Name - AA345678A | Flying Pizza Ltd                  |
@@ -86,12 +89,12 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
     Scenario: Applicant has no dependants and the income is only over threshold with multiple employers
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer          |
-            | 2018-03-29 | 2000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd  |
-            | 2018-02-28 | 2000.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd  |
-            | 2018-01-31 | 2000.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd  |
-            | 2017-12-29 | 2000.00 |             | 10           | FP/Ref2        | Derek's Autos Ltd |
-            | 2017-11-30 | 1000.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd  |
-            | 2017-10-30 | 1000.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd  |
+            | 2018-03-29 | 2000.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd  |
+            | 2018-02-28 | 2000.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd  |
+            | 2018-01-31 | 2000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd  |
+            | 2017-12-29 | 2000.00 |             | 12           | FP/Ref2        | Derek's Autos Ltd |
+            | 2017-11-30 | 1000.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd  |
+            | 2017-10-30 | 1000.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd  |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
             | Application Raised Date | 2018-04-30 |
@@ -100,6 +103,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Category A Non Salaried | Financial requirement met | false                               |
             | Category A Non Salaried | Failure Reason            | MULTIPLE_EMPLOYERS                  |
             | Category A Non Salaried | Application Raised date   | 2018-04-30                          |
+            | Category A Non Salaried | Assessment Start date     | 2017-10-30                          |
             | Applicant               | National Insurance Number | AA345678A                           |
             | Category A Non Salaried | Threshold                 | 18600                               |
             | Category A Non Salaried | Employer Name - AA345678A | Flying Pizza Ltd, Derek's Autos Ltd |
@@ -109,16 +113,16 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
     Scenario: Applicant has no dependants and payment with gaps but below threshold, even with partner income
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-27 | 2450.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-28 | 550.00  |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-31 | 1000.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-30 | 1000.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-27 | 2450.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-28 | 550.00  |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-31 | 1000.00 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-30 | 1000.00 |             | 11           | FP/Ref1        | Flying Pizza Ltd |
         And the applicants partner has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer        |
-            | 2018-04-27 | 1000.00 |             | 01           | HO/Ref9        | The Home Office |
-            | 2018-02-28 | 1000.00 |             | 12           | HO/Ref9        | The Home Office |
-            | 2018-01-31 | 2000.00 |             | 11           | HO/Ref9        | The Home Office |
-            | 2017-12-23 | 299.99  |             | 10           | HO/Ref9        | The Home Office |
+            | 2018-04-27 | 1000.00 |             | 04           | HO/Ref9        | The Home Office |
+            | 2018-02-28 | 1000.00 |             | 02           | HO/Ref9        | The Home Office |
+            | 2018-01-31 | 2000.00 |             | 01           | HO/Ref9        | The Home Office |
+            | 2017-12-23 | 299.99  |             | 12           | HO/Ref9        | The Home Office |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
             | NINO - Partner          | GE345678A  |
@@ -128,6 +132,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Category A Non Salaried | Financial requirement met | false                             |
             | Category A Non Salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
             | Category A Non Salaried | Application Raised date   | 2018-04-30                        |
+            | Category A Non Salaried | Assessment Start date     | 2017-10-30                        |
             | Applicant               | National Insurance Number | AA345678A                         |
             | Partner                 | National Insurance Number | GE345678A                         |
             | Category A Non Salaried | Threshold                 | 18600                             |
@@ -139,18 +144,18 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
     Scenario: Applicant has two dependants with income above threshold over 12 month period but below threshold in the last 6 months
         Given HMRC has the following income records:
             | Date       | Amount  | Week Number | Month Number | PAYE Reference | Employer         |
-            | 2018-04-27 | 400.00  |             | 01           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-03-29 | 300.00  |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-02-23 | 300.00  |             | 11           | FP/Ref1        | Flying Pizza Ltd |
-            | 2018-01-26 | 300.00  |             | 10           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-12-27 | 50.00   |             | 09           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-11-28 | 49.99   |             | 08           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-10-31 | 1000.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-09-30 | 1000.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-08-27 | 2500.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-07-28 | 1000.00 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-06-31 | 1000.00 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-05-30 | 1000.00 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-04-27 | 400.00  |             | 04           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-03-29 | 300.00  |             | 03           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-02-23 | 300.00  |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2018-01-26 | 300.00  |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-12-27 | 50.00   |             | 12           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-11-28 | 49.99   |             | 11           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-10-31 | 1000.00 |             | 10           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-09-30 | 1000.00 |             | 09           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-08-27 | 2500.00 |             | 08           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-07-28 | 1000.00 |             | 07           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-06-31 | 1000.00 |             | 06           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-05-30 | 1000.00 |             | 05           | FP/Ref1        | Flying Pizza Ltd |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | GE345678A  |
             | Application Raised Date | 2018-04-30 |
@@ -160,6 +165,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Category A Non Salaried | Financial requirement met | false                             |
             | Category A Non Salaried | Failure Reason            | CATA_NON_SALARIED_BELOW_THRESHOLD |
             | Category A Non Salaried | Application Raised date   | 2018-04-30                        |
+            | Category A Non Salaried | Assessment Start date     | 2017-10-30                        |
             | Applicant               | National Insurance Number | GE345678A                         |
             | Category A Non Salaried | Threshold                 | 24800                             |
             | Category A Non Salaried | Employer Name - GE345678A | Flying Pizza Ltd                  |
@@ -178,6 +184,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
             | Category A Non Salaried | Financial requirement met | false              |
             | Category A Non Salaried | Failure Reason            | NOT_ENOUGH_RECORDS |
             | Category A Non Salaried | Application Raised date   | 2018-04-30         |
+            | Category A Non Salaried | Assessment Start date     | 2017-10-30         |
             | Applicant               | National Insurance Number | TK047457B          |
             | Category A Non Salaried | Threshold                 | 18600              |
 
