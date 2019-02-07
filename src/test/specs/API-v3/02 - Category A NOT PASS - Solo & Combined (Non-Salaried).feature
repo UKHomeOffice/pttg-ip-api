@@ -173,7 +173,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
 
     Scenario: Applicant has no dependents with a self-assessment payment in the last full tax year that meets the threshold
         Given HMRC has the following Self Assessment Returns for nino TK047457B:
-            | TaxYear | Summary Income |
+            | TaxYear | Self Employment Profit |
             | 2017-18 | 18600.00       |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | TK047457B  |

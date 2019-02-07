@@ -15,32 +15,22 @@ public class AnnualSelfAssessmentTaxReturnTest {
 
     @Test
     public void shouldDeserialize() throws IOException {
-        String json = "{ \"taxYear\": \"2018\", \"summaryIncome\": 50 }";
+        String json = "{ \"taxYear\": \"2018\", \"selfEmploymentProfit\": 50 }";
 
         AnnualSelfAssessmentTaxReturn taxReturn = objectMapper.readValue(json, AnnualSelfAssessmentTaxReturn.class);
 
         assertThat(taxReturn.taxYear()).isEqualTo("2018");
-        assertThat(taxReturn.summaryIncome()).isEqualTo(new BigDecimal("50"));
+        assertThat(taxReturn.selfEmploymentProfit()).isEqualTo(new BigDecimal("50"));
     }
 
     @Test
-    public void shouldDeserializeWithSelfEmployment() throws IOException {
-        String json = "{ \"taxYear\": \"2018\", \"summaryIncome\": 50, \"selfEmploymentProfit\": 0 }";
+    public void shouldDeserializeWithZeroSelfEmploymentProfit() throws IOException {
+        String json = "{ \"taxYear\": \"2018\", \"selfEmploymentProfit\": 0 }";
 
         AnnualSelfAssessmentTaxReturn taxReturn = objectMapper.readValue(json, AnnualSelfAssessmentTaxReturn.class);
 
         assertThat(taxReturn.taxYear()).isEqualTo("2018");
-        assertThat(taxReturn.summaryIncome()).isEqualTo(new BigDecimal("50"));
-    }
-
-    @Test
-    public void shouldDeserializeWithZeroSummaryIncome() throws IOException {
-        String json = "{ \"taxYear\": \"2018\", \"summaryIncome\": 0, \"selfEmploymentProfit\": 0 }";
-
-        AnnualSelfAssessmentTaxReturn taxReturn = objectMapper.readValue(json, AnnualSelfAssessmentTaxReturn.class);
-
-        assertThat(taxReturn.taxYear()).isEqualTo("2018");
-        assertThat(taxReturn.summaryIncome()).isEqualTo(new BigDecimal("0"));
+        assertThat(taxReturn.selfEmploymentProfit()).isEqualTo(new BigDecimal("0"));
     }
 
 }
