@@ -11,7 +11,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: No dependents. Self-Assessment payment in the last full tax year that does not meet the threshold
         Given HMRC has the following Self Assessment Returns for nino SP123456A:
-            | TaxYear | Summary Income |
+            | TaxYear | Self Employment Profit |
             | 2017-18 | 18599.99       |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | SP123456A  |
@@ -27,7 +27,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: No dependents. Self-Assessment payment in a tax year after the last full tax year that meets the threshold
         Given HMRC has the following Self Assessment Returns for nino NM616732D:
-            | TaxYear | Summary Income |
+            | TaxYear | Self Employment Profit |
             | 2017-18 | 00.00          |
             | 2016-17 | 18600.00       |
         When the Income Proving v3 TM Family API is invoked with the following:
@@ -44,10 +44,10 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: No dependents. Self-Assessment payment in the last full tax year that does not meet the threshold and still does not even when supplemented with a partner
         Given HMRC has the following Self Assessment Returns for nino ZW723343A:
-            | TaxYear | Summary Income |
+            | TaxYear | Self Employment Profit |
             | 2016-17 | 9299.99        |
         And HMRC has the following Self Assessment Returns for nino BZ483260B:
-            | TaxYear | Summary Income |
+            | TaxYear | Self Employment Profit |
             | 2016-17 | 9300.00        |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | ZW723343A  |
@@ -65,7 +65,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: One dependent. Self-Assessment payment in the last full tax year that does not meet the threshold
         Given HMRC has the following Self Assessment Returns for nino KH802177D:
-            | TaxYear | Summary Income |
+            | TaxYear | Self Employment Profit |
             | 2017-18 | 22399.99       |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | KH802177D  |
@@ -81,7 +81,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
 
     Scenario: Two dependents. Self-Assessment payment in the last full tax year that does not meet the threshold
         Given HMRC has the following Self Assessment Returns for nino SN332780B:
-            | TaxYear | Summary Income |
+            | TaxYear | Self Employment Profit |
             | 2017-18 | 24799.99       |
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | SN332780B  |

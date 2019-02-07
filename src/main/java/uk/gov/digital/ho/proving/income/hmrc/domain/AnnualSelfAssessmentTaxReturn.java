@@ -8,13 +8,15 @@ import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 
-@Getter
 @AllArgsConstructor
+@Getter
 @Accessors(fluent = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AnnualSelfAssessmentTaxReturn {
-    @JsonProperty
+
+    @JsonProperty(value = "taxYear", required = true)
     private final String taxYear;
-    @JsonProperty
-    private final BigDecimal summaryIncome;
+
+    @JsonProperty(value = "selfEmploymentProfit", required = true)
+    private final BigDecimal selfEmploymentProfit;
 }
