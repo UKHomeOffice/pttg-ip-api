@@ -11,6 +11,7 @@ import uk.gov.digital.ho.proving.income.application.ServiceConfiguration;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -28,6 +29,26 @@ public class AuditResultParserTest {
     private Resource getAuditRecordFailResponse;
     @Value("classpath:json/AuditRecordResponseNotFound.json")
     private Resource auditRecordNotFoundResponse;
+
+    @Test
+    public void from_anyAuditRecord_fillsStandardFields() throws IOException {
+        String auditRecordRequestString = loadJsonResource(auditRecordRequest);
+        AuditRecord record = objectMapper.readValue(auditRecordRequestString, AuditRecord.class);
+
+        AuditResult auditResult = auditResultParser.from(record);
+        assertThat(auditResult.getId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
+        assertThat(auditResult.getDate()).isEqualTo(LocalDate.of(2019, 2, 25));
+        assertThat(auditResult.getNino()).isEqualTo("PJ151008C");
+    }
+
+    @Test
+    public void from_missingNino_ninoIsNull() throws IOException {
+        String auditRecordFailResponseString = loadJsonResource(getAuditRecordFailResponse);
+        AuditRecord record = objectMapper.readValue(auditRecordFailResponseString, AuditRecord.class);
+
+        AuditResult auditResult = auditResultParser.from(record);
+        assertThat(auditResult.getNino()).isEqualTo(null);
+    }
 
     @Test
     public void from_requestNotResponse_errorResultType() throws IOException {

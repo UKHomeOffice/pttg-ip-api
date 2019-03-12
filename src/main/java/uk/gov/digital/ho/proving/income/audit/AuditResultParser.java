@@ -20,10 +20,11 @@ public class AuditResultParser {
     }
 
     public AuditResult from(AuditRecord auditRecord) {
+        String id = auditRecord.getId();
         AuditResultType resultType = getResultType(auditRecord.getDetail());
         LocalDate date = auditRecord.getDate().toLocalDate();
         String nino = auditRecord.getNino();
-        return new AuditResult(date, nino, resultType);
+        return new AuditResult(id, date, nino, resultType);
     }
 
     private AuditResultType getResultType(JsonNode auditDetail) {

@@ -56,7 +56,7 @@ public class AuditRecordTest {
         AuditRecord record = objectMapper.readValue(auditRecordNotFoundResponseString, AuditRecord.class);
 
         assertThat(record).isNotNull();
-        assertThat(record.getId()).isEqualTo("2ead0944-2b98-48d3-a34b-a0dc1ac7fe29");
+        assertThat(record.getId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
         assertThat(record.getDate()).isEqualTo(LocalDateTime.of(2019, 3, 5, 15, 10, 12, 489000000));
         assertThat(record.getDetail()).isInstanceOf(JsonNode.class);
     }

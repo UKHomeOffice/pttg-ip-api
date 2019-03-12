@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @ToString
 public class AuditResult {
 
+    private String id;
     private LocalDate date;
     private String nino;
     private AuditResultType resultType;
