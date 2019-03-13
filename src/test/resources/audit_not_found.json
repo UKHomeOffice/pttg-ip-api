@@ -1,0 +1,9 @@
+{
+    "method": "get-financial-status",
+    "response": {
+        "status": {
+            "code": "0009",
+            "message": "Resource not found: PJ151****"
+        }
+    }
+}

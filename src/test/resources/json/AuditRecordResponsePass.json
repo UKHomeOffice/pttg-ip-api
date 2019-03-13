@@ -1,0 +1,111 @@
+{
+    "id": "3743b803-bd87-4518-8cae-d5b3e0566396",
+    "date": "2019-02-25 11:13:28.805",
+    "email": "jbuller",
+    "ref": "INCOME_PROVING_FINANCIAL_STATUS_RESPONSE",
+    "detail": {
+        "method": "get-financial-status",
+        "response": {
+            "categoryChecks": [
+                {
+                    "calculationType": "Category A Monthly Salary",
+                    "applicationRaisedDate": "2019-02-11",
+                    "failureReason": "MONTHLY_SALARIED_PASSED",
+                    "threshold": "1550.00",
+                    "passed": true,
+                    "category": "A",
+                    "individuals": [
+                        {
+                            "employers": [
+                                "Company MYDXXQ"
+                            ],
+                            "nino": "PJ151008C"
+                        }
+                    ],
+                    "assessmentStartDate": "2018-08-11"
+                },
+                {
+                    "calculationType": "Category B non salaried",
+                    "applicationRaisedDate": "2019-02-11",
+                    "failureReason": "CATB_NON_SALARIED_PASSED",
+                    "threshold": "18600",
+                    "passed": true,
+                    "category": "B",
+                    "individuals": [
+                        {
+                            "employers": [
+                                "Company MYDXXQ"
+                            ],
+                            "nino": "PJ151008C"
+                        }
+                    ],
+                    "assessmentStartDate": "2018-02-11"
+                },
+                {
+                    "calculationType": "Category A Non Salaried",
+                    "applicationRaisedDate": "2019-02-11",
+                    "failureReason": "CATA_NON_SALARIED_PASSED",
+                    "threshold": "18600",
+                    "passed": true,
+                    "category": "A",
+                    "individuals": [
+                        {
+                            "employers": [
+                                "Company MYDXXQ"
+                            ],
+                            "nino": "PJ151008C"
+                        }
+                    ],
+                    "assessmentStartDate": "2018-08-11"
+                },
+                {
+                    "calculationType": "Category F Self-Assessment Income",
+                    "applicationRaisedDate": "2019-02-11",
+                    "failureReason": "SELF_ASSESSMENT_ONE_YEAR_FAILED",
+                    "threshold": "18600",
+                    "passed": false,
+                    "category": "F",
+                    "individuals": [
+                        {
+                            "employers": [
+                                "Company MYDXXQ"
+                            ],
+                            "nino": "PJ151008C"
+                        }
+                    ],
+                    "assessmentStartDate": "2017-04-06"
+                },
+                {
+                    "calculationType": "Category B salaried",
+                    "applicationRaisedDate": "2019-02-11",
+                    "failureReason": "CATB_SALARIED_PASSED",
+                    "threshold": "18600",
+                    "passed": true,
+                    "category": "B",
+                    "individuals": [
+                        {
+                            "employers": [
+                                "Company MYDXXQ"
+                            ],
+                            "nino": "PJ151008C"
+                        }
+                    ],
+                    "assessmentStartDate": "2018-02-11"
+                }
+            ],
+            "individuals": [
+                {
+                    "forename": "Jackie",
+                    "surname": "Smith",
+                    "title": "",
+                    "nino": "PJ151008C"
+                }
+            ],
+            "status": {
+                "code": "100",
+                "message": "OK"
+            }
+        }
+    },
+    "nino": null
+}
