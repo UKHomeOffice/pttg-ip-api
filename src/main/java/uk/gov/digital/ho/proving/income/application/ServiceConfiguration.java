@@ -33,8 +33,8 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     private final int restTemplateConnectTimeoutInMillis;
 
     public ServiceConfiguration(@Value("${apidocs.dir}") String apiDocsDir,
-                                @Value("${resttemplate.timeout.read:30000}") int restTemplateReadTimeoutInMillis,
-                                @Value("${resttemplate.timeout.connect:30000}") int restTemplateConnectTimeoutInMillis) {
+                                @Value("${resttemplate.timeout.read:100000}") int restTemplateReadTimeoutInMillis,
+                                @Value("${resttemplate.timeout.connect:100000}") int restTemplateConnectTimeoutInMillis) {
         this.apiDocsDir = apiDocsDir;
         this.restTemplateReadTimeoutInMillis = restTemplateReadTimeoutInMillis;
         this.restTemplateConnectTimeoutInMillis = restTemplateConnectTimeoutInMillis;
