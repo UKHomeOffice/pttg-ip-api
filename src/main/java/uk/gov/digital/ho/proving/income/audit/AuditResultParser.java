@@ -28,14 +28,24 @@ public class AuditResultParser {
     }
 
     private AuditResultType getResultType(JsonNode auditDetail) {
+        AuditResultType result = checkIfNotFound(auditDetail);
+        if (result != ERROR) {
+            return result;
+        }
+
+        return checkIfResult(auditDetail);
+    }
+
+    private AuditResultType checkIfNotFound(JsonNode auditDetail) {
         try {
             if (objectMapper.treeToValue(auditDetail.at("/response/status/code"), String.class).equals("0009")) {
                 return NOTFOUND;
             }
-        } catch (JsonProcessingException e) {
-            // swallow the exception, it doesn't automatically follow we have an error
-        }
+        } catch (JsonProcessingException e) {}
+        return ERROR;
+    }
 
+    private AuditResultType checkIfResult(JsonNode auditDetail) {
         try {
             JsonNode checks  = auditDetail.at("/response/categoryChecks");
             if (checks.size() > 0) {
@@ -47,11 +57,9 @@ public class AuditResultParser {
                 }
                 return auditResultType;
             }
-        } catch (Exception e) {
-            // swallow the exception, it doesn't automatically follow we have an error
-        }
-
+        } catch (Exception e) {}
         return ERROR;
+
     }
 
 }
