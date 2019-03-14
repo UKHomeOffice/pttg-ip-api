@@ -36,7 +36,7 @@ public class AuditResultParserTest {
         AuditRecord record = objectMapper.readValue(auditRecordRequestString, AuditRecord.class);
 
         AuditResult auditResult = auditResultParser.from(record);
-        assertThat(auditResult.getId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
+        assertThat(auditResult.getCorrelationId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
         assertThat(auditResult.getDate()).isEqualTo(LocalDate.of(2019, 2, 25));
         assertThat(auditResult.getNino()).isEqualTo("PJ151008C");
     }

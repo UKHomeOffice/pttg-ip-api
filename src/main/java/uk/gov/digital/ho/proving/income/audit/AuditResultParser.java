@@ -48,7 +48,7 @@ public class AuditResultParser {
     private AuditResultType checkIfResult(JsonNode auditDetail) {
         try {
             JsonNode checks  = auditDetail.at("/response/categoryChecks");
-            if (checks.size() <= 0) {
+            if (checks.size() == 0) {
                 return ERROR;
             }
             return getCategoryCheckResult(checks);
@@ -62,6 +62,7 @@ public class AuditResultParser {
         for (JsonNode check : checks) {
             if (objectMapper.treeToValue(check.get("passed"), Boolean.class)) {
                 auditResultType = PASS;
+                break;
             }
         }
         return auditResultType;
