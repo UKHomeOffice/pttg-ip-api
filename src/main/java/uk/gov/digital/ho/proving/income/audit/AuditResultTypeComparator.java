@@ -1,12 +1,15 @@
 package uk.gov.digital.ho.proving.income.audit;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 
-public class AuditResultTypeComparator implements Comparator<AuditResultType> {
+@Component
+class AuditResultTypeComparator implements Comparator<AuditResultType> {
     private static final List<AuditResultType> naturalOrder
         = Arrays.asList(ERROR, NOTFOUND, FAIL, PASS);
 

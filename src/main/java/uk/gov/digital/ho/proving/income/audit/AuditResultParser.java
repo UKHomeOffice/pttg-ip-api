@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 
 @Component
-public class AuditResultParser {
+class AuditResultParser {
 
     private ObjectMapper objectMapper;
 
@@ -66,6 +66,31 @@ public class AuditResultParser {
             }
         }
         return auditResultType;
+    }
+
+    String getResultNino(JsonNode auditDetail) {
+        try {
+            JsonNode checks = auditDetail.at("/response/categoryChecks");
+            if (checks.size() == 0) {
+                return "";
+            }
+            return getNinoFromCategoryChecks(checks);
+        } catch (Exception e) {}
+        return "";
+    }
+
+    private String getNinoFromCategoryChecks(JsonNode checks) throws JsonProcessingException {
+        for (JsonNode check : checks) {
+            JsonNode individuals = check.at("/individuals");
+            for (JsonNode individual : individuals) {
+                String nino = objectMapper.treeToValue(individual.get("nino"), String.class);
+                if (nino != null && !nino.isEmpty()) {
+                    return nino;
+                }
+
+            }
+        }
+        return "";
     }
 
 }
