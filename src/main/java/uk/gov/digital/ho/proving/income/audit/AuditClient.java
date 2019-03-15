@@ -19,9 +19,11 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.*;
 
 @Component
 @Slf4j
@@ -33,10 +35,10 @@ public class AuditClient {
     private final RequestData requestData;
     private final ObjectMapper mapper;
 
-    public AuditClient(Clock clock,
-                       RestTemplate restTemplate,
-                       RequestData requestData,
-                       @Value("${pttg.audit.endpoint}") String auditEndpoint, ObjectMapper mapper) {
+    AuditClient(Clock clock,
+                RestTemplate restTemplate,
+                RequestData requestData,
+                @Value("${pttg.audit.endpoint}") String auditEndpoint, ObjectMapper mapper) {
         this.clock = clock;
         this.restTemplate = restTemplate;
         this.requestData = requestData;
@@ -46,14 +48,14 @@ public class AuditClient {
 
     public void add(AuditEventType eventType, UUID eventId, Map<String, Object> auditDetail) {
 
-        log.info("POST data for {} to audit service", eventId);
+        log.info("POST data for {} to audit service", eventId, value(EVENT, INCOME_PROVING_AUDIT_REQUEST));
 
         try {
             AuditableData auditableData = generateAuditableData(eventType, eventId, auditDetail);
             dispatchAuditableData(auditableData);
-            log.info("data POSTed to audit service");
+            log.info("data POSTed to audit service", value(EVENT, INCOME_PROVING_AUDIT_SUCCESS));
         } catch (JsonProcessingException e) {
-            log.error("Failed to create json representation of audit data");
+            log.error("Failed to create json representation of audit data", value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
         }
     }
 
@@ -67,7 +69,7 @@ public class AuditClient {
 
     @Recover
     void addRetryFailureRecovery(RestClientException e, AuditEventType eventType) {
-        log.error("Failed to audit {} after retries - {}", eventType, e.getMessage());
+        log.error("Failed to audit {} after retries - {}", eventType, e.getMessage(), value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
     }
 
     private AuditableData generateAuditableData(AuditEventType eventType, UUID eventId, Map<String, Object> auditDetail) throws JsonProcessingException {

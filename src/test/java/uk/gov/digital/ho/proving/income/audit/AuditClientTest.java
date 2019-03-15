@@ -1,6 +1,12 @@
 package uk.gov.digital.ho.proving.income.audit;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -10,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
@@ -37,6 +44,7 @@ public class AuditClientTest {
 
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
+    @Mock private Appender<ILoggingEvent> mockAppender;
 
     @Captor private ArgumentCaptor<HttpEntity> captorHttpEntity;
 
@@ -105,5 +113,21 @@ public class AuditClientTest {
         assertThat(auditableData.getDeploymentNamespace()).isEqualTo("some deployment namespace");
         assertThat(auditableData.getEventType()).isEqualTo(INCOME_PROVING_FINANCIAL_STATUS_REQUEST);
         assertThat(auditableData.getData()).isEqualTo("{}");
+    }
+
+    @Test
+    public void shouldLogEventType() {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
+        rootLogger.setLevel(Level.INFO);
+        rootLogger.addAppender(mockAppender);
+
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), Collections.emptyMap());
+
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+
+            return loggingEvent.getMessage().equals("POST data for {} to audit service") &&
+                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[1]).getFieldName().equals("event_id");
+        }));
     }
 }
