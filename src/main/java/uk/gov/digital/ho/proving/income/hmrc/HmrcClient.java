@@ -20,11 +20,13 @@ import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 
 import java.time.LocalDate;
 
+import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.api.RequestData.*;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.*;
 
 @Service
 @Slf4j
@@ -35,10 +37,10 @@ public class HmrcClient {
     private final RequestData requestData;
     private final ServiceResponseLogger serviceResponseLogger;
 
-    public HmrcClient(RestTemplate restTemplate,
-                      @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
-                      RequestData requestData,
-                      ServiceResponseLogger serviceResponseLogger) {
+    HmrcClient(RestTemplate restTemplate,
+               @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
+               RequestData requestData,
+               ServiceResponseLogger serviceResponseLogger) {
         this.restTemplate = restTemplate;
         this.hmrcServiceEndpoint = hmrcServiceEndpoint;
         this.requestData = requestData;
@@ -53,7 +55,8 @@ public class HmrcClient {
 
         try {
 
-            log.info(String.format("About to call Income Service at %s", hmrcServiceEndpoint));
+            log.info("About to call Income Service at {}", hmrcServiceEndpoint,
+                value(EVENT, INCOME_PROVING_SERVICE_REQUEST_SENT));
 
             ResponseEntity<IncomeRecord> responseEntity = restTemplate.exchange(
                 hmrcServiceEndpoint,
@@ -63,13 +66,14 @@ public class HmrcClient {
 
             serviceResponseLogger.record(identity, responseEntity.getBody());
 
-            log.info(String.format("Received %d incomes and %d employments ", responseEntity.getBody().paye().size(), responseEntity.getBody().employments().size()));
+            log.info("Received {} incomes and {} employments ", responseEntity.getBody().paye().size(),
+                responseEntity.getBody().employments().size(), value(EVENT, INCOME_PROVING_SERVICE_RESPONSE_SUCCESS));
 
             return responseEntity.getBody();
 
         } catch (HttpStatusCodeException e) {
             if (isNotFound(e)) {
-                log.error("Income Service found no match");
+                log.error("Income Service found no match", value(EVENT, INCOME_PROVING_SERVICE_RESPONSE_NOT_FOUND));
                 throw new EarningsServiceNoUniqueMatchException(identity.nino());
             }
             log.error("Income Service failed", e);
@@ -79,7 +83,7 @@ public class HmrcClient {
 
     @Recover
     IncomeRecord getIncomeRecordFailureRecovery(HttpServerErrorException e) {
-        log.error("Failed to retrieve HMRC data after retries - {}", e.getMessage());
+        log.error("Failed to retrieve HMRC data after retries - {}", e.getMessage(), value(EVENT, INCOME_PROVING_SERVICE_RESPONSE_ERROR));
         throw(e);
     }
 

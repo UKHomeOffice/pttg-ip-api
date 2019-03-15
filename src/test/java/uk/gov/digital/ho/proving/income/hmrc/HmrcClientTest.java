@@ -1,5 +1,11 @@
 package uk.gov.digital.ho.proving.income.hmrc;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
+import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,6 +16,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +63,7 @@ public class HmrcClientTest {
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
     @Mock private ServiceResponseLogger mockServiceResponseLogger;
+    @Mock private Appender<ILoggingEvent> mockAppender;
 
     @Captor private ArgumentCaptor<IncomeRecord> captorResponseBody;
     @Captor private ArgumentCaptor<HttpEntity> captorEntity;
@@ -185,6 +193,28 @@ public class HmrcClientTest {
         HttpServerErrorException exception = new HttpServerErrorException(BAD_GATEWAY);
 
         service.getIncomeRecordFailureRecovery(exception);
+    }
+
+    @Test
+    public void shouldLogEventType() {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(HmrcClient.class);
+        rootLogger.setLevel(Level.INFO);
+        rootLogger.addAppender(mockAppender);
+
+        service.getIncomeRecord(
+            new Identity(
+                "John",
+                "Smith",
+                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+            LocalDate.of(2017, Month.JANUARY, 1),
+            LocalDate.of(2017, Month.JULY, 1)
+        );
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+
+            return loggingEvent.getFormattedMessage().equals("About to call Income Service at http://income-service/income") &&
+                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[1]).getFieldName().equals("event_id");
+        }));
     }
 
 }
