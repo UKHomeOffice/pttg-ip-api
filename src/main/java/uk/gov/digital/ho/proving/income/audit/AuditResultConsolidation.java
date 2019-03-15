@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.proving.income.audit;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -19,8 +18,8 @@ class AuditResultConsolidation {
     private AuditResultTypeComparator auditResultTypeComparator;
 
     public AuditResultConsolidation(
-        @Autowired AuditResultParser auditResultParser,
-        @Autowired AuditResultTypeComparator auditResultTypeComparator
+        AuditResultParser auditResultParser,
+        AuditResultTypeComparator auditResultTypeComparator
     ) {
         this.auditResultParser = auditResultParser;
         this.auditResultTypeComparator = auditResultTypeComparator;

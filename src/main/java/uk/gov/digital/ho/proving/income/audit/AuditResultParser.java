@@ -3,7 +3,6 @@ package uk.gov.digital.ho.proving.income.audit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -15,7 +14,7 @@ class AuditResultParser {
 
     private ObjectMapper objectMapper;
 
-    public AuditResultParser(@Autowired ObjectMapper objectMapper) {
+    public AuditResultParser(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
