@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 @SpringBootTest(classes = {
     ObjectMapper.class,
     AuditResultParser.class,
+    AuditResultComparator.class,
     AuditResultTypeComparator.class,
     AuditResultConsolidator.class
 })
@@ -34,13 +36,24 @@ public class AuditResultConsolidatorIT {
 
     @Value("classpath:json/AuditRecordRequest.json")
     private Resource auditRecordRequest;
+    @Value("classpath:json/AuditRecordRequest2.json")
+    private Resource auditRecordRequest2;
+    @Value("classpath:json/AuditRecordRequest3.json")
+    private Resource auditRecordRequest3;
     @Value("classpath:json/AuditRecordResponsePass.json")
     private Resource auditRecordResponsePass;
+    @Value("classpath:json/AuditRecordResponsePass2.json")
+    private Resource auditRecordResponsePass2;
+    @Value("classpath:json/AuditRecordResponsePass3.json")
+    private Resource auditRecordResponsePass3;
     @Value("classpath:json/AuditRecordResponseFail.json")
     private Resource auditRecordResponseFail;
     @Value("classpath:json/AuditRecordResponseNotFound.json")
     private Resource auditRecordResponseNotFound;
 
+    /*
+     * auditResultsByCorrelationId
+     */
     @Test
     public void byCorrelationId_requestOnly_allDetailsFilled() {
         List<AuditRecord> records = loadJson(auditRecordRequest);
@@ -132,9 +145,135 @@ public class AuditResultConsolidatorIT {
         assertThat(results.get(0).resultType()).isEqualTo(NOTFOUND);
     }
 
+    @Test
+    public void byCorrelationId_multipleRequestResponses_allDetailsFilled() {
+        List<AuditRecord> records = loadJson(auditRecordRequest, auditRecordResponseNotFound);
+        records.addAll(loadJson(auditRecordRequest2, auditRecordResponsePass2));
+
+        List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
+
+        AuditResult expected1 = getExpectedAuditResult1();
+        AuditResult expected2 = getExpectedAuditResult2();
+
+        assertThat(results.size()).isEqualTo(2);
+        assertThat(results).containsExactlyInAnyOrder(expected1, expected2);
+    }
+
+    private AuditResult getExpectedAuditResult1() {
+        return new AuditResult(
+            "3743b803-bd87-4518-8cae-d5b3e0566396",
+            LocalDate.of(2019, 2, 25),
+            "PJ151008C",
+            NOTFOUND
+        );
+    }
+
+    private AuditResult getExpectedAuditResult2() {
+        return new AuditResult(
+            "5e6d002f-fd09-4347-a7da-2cd23346da49",
+            LocalDate.of(2019, 2, 26),
+            "PP151005D",
+            PASS
+        );
+    }
+
+    private AuditResult getExpectedAuditResult3() {
+        return new AuditResult(
+            "a1e33f3e-3f72-48b9-bdfb-44e17303bd6e",
+            LocalDate.of(2019, 2, 27),
+            "PP151005D",
+            PASS
+        );
+    }
+
+    /*
+     * auditResultsByNino
+     */
+    @Test
+    public void byNino_noResults_empty() {
+        List<AuditResult> results = new ArrayList<>();
+
+        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+
+        assertThat(resultsByNino.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void byNino_singleResult_resultUsed() {
+        List<AuditResult> results = Arrays.asList(new AuditResult("any_correlatoin_id", LocalDate.now(), "any_nino", PASS));
+
+        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+
+        assertThat(resultsByNino.size()).isEqualTo(1);
+        assertThat(resultsByNino.get(0)).isEqualTo(results.get(0));
+    }
+
+    @Test
+    public void byNino_multipleResults_bestResultUsed() {
+        List<AuditResult> results =
+            Arrays.asList(
+                new AuditResult("any_correlation_id", LocalDate.now(), "any_nino", PASS),
+                new AuditResult("any_correlation_id_2", LocalDate.now(), "any_nino", FAIL),
+                new AuditResult("any_correlation_id_3", LocalDate.now(), "any_nino", NOTFOUND),
+                new AuditResult("any_correlation_id_4", LocalDate.now(), "any_nino", ERROR)
+            );
+
+        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+
+        assertThat(resultsByNino.size()).isEqualTo(1);
+        assertThat(resultsByNino.get(0)).isEqualTo(results.get(0));
+    }
+
+    @Test
+    public void byNino_multipleSameResults_mostRecentUsed() {
+        List<AuditResult> results =
+            Arrays.asList(
+                new AuditResult("any_correlation_id", LocalDate.now(), "any_nino", PASS),
+                new AuditResult("any_correlation_id_2", LocalDate.now().plusDays(1), "any_nino", PASS),
+                new AuditResult("any_correlation_id_3", LocalDate.now().plusDays(2), "any_nino", PASS),
+                new AuditResult("any_correlation_id_4", LocalDate.now().plusDays(1), "any_nino", PASS)
+            );
+
+        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+
+        assertThat(resultsByNino.size()).isEqualTo(1);
+        assertThat(resultsByNino.get(0)).isEqualTo(results.get(2));
+    }
+
+    @Test
+    public void byNino_multipleNinos_allIncluded() {
+        List<AuditResult> results =
+            Arrays.asList(
+                new AuditResult("any_correlation_id", LocalDate.now(), "any_nino", PASS),
+                new AuditResult("any_correlation_id_2", LocalDate.now().plusDays(1), "any_nino_2", PASS)
+            );
+
+        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+
+        assertThat(resultsByNino.size()).isEqualTo(2);
+        assertThat(resultsByNino.get(0)).isEqualTo(results.get(0));
+        assertThat(resultsByNino.get(1)).isEqualTo(results.get(1));
+    }
+
+    @Test
+    public void byNino_multipleNinosAndResults_correctResultsIncluded() {
+        List<AuditResult> results =
+            Arrays.asList(
+                new AuditResult("any_correlation_id_2", LocalDate.now(), "any_nino", FAIL),
+                new AuditResult("any_correlation_id", LocalDate.now(), "any_nino", PASS),
+                new AuditResult("any_correlation_id_3", LocalDate.now(), "any_nino_2", PASS),
+                new AuditResult("any_correlation_id_4", LocalDate.now().plusDays(1), "any_nino_2", PASS)
+            );
+
+        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+
+        assertThat(resultsByNino.size()).isEqualTo(2);
+        assertThat(resultsByNino).containsExactlyInAnyOrder(results.get(1), results.get(3));
+    }
+
     private List<AuditRecord> loadJson(Resource... resourceFiles) {
         return Arrays.stream(resourceFiles)
-            .map(resource -> FileUtils.loadJsonResource(resource))
+            .map(FileUtils::loadJsonResource)
             .map(this::readAuditRecord)
             .collect(Collectors.toList());
     }
