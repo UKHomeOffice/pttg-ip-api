@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -503,14 +504,6 @@ public class FrequencyCalculatorTest {
         return new Random().nextInt(max - min + 1) + min;
     }
 
-    private void createConsecutiveDuplicates(List<Income> list) {
-        list.add(3, list.get(3));
-    }
-
-    private void createNonConsecutiveDuplicates(List<Income> list) {
-        list.add(0, list.get(4));
-    }
-
     private void verifyLogMessage(final String message) {
         ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
         verify(mockAppender, times(2)).doAppend(captor.capture());
@@ -518,7 +511,8 @@ public class FrequencyCalculatorTest {
         List<ILoggingEvent> loggingEvents = captor.getAllValues();
         for (ILoggingEvent loggingEvent : loggingEvents) {
             LoggingEvent logEvent = (LoggingEvent) loggingEvent;
-            if (logEvent.getMessage().equals(message) && logEvent.getLevel().equals(Level.INFO)) {
+            if (logEvent.getMessage().equals(message) && logEvent.getLevel().equals(Level.INFO) &&
+                ((ObjectAppendingMarker)logEvent.getArgumentArray()[0]).getFieldName().equals("event_id")) {
                 return;
             }
         }
