@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.*;
 
 @Slf4j
 public class FrequencyCalculator {
@@ -120,7 +122,7 @@ public class FrequencyCalculator {
     }
 
     public static Frequency calculateByPaymentNumbers(IncomeRecord incomeRecord) {
-        log.info("Calculating frequency by payment numbers");
+        log.info("Calculating frequency by payment numbers", value(EVENT, INCOME_PROVING_SERVICE_CALCULATE_FREQUENCY));
         Optional<LocalDate> max = incomeRecord.paye().stream().map(Income::paymentDate).max(Comparator.naturalOrder());
         Optional<LocalDate> min = incomeRecord.paye().stream().map(Income::paymentDate).min(Comparator.naturalOrder());
 
@@ -141,7 +143,7 @@ public class FrequencyCalculator {
     }
 
     private static Frequency logFrequency(Frequency frequency) {
-        log.info(String.format("Frequency calculated by payment numbers as %s", frequency));
+        log.info("Frequency calculated by payment numbers as {}", frequency, value(EVENT, INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED));
         return frequency;
     }
 }
