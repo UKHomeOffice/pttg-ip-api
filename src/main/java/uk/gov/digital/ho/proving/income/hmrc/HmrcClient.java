@@ -76,7 +76,7 @@ public class HmrcClient {
                 log.error("Income Service found no match", value(EVENT, INCOME_PROVING_SERVICE_RESPONSE_NOT_FOUND));
                 throw new EarningsServiceNoUniqueMatchException(identity.nino());
             }
-            log.error("Income Service failed", e);
+            log.error("Income Service failed", e, value(EVENT, INCOME_PROVING_SERVICE_FAILURE));
             throw e;
         }
     }
