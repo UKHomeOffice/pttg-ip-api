@@ -23,12 +23,12 @@ import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
     ObjectMapper.class,
     AuditResultParser.class,
     AuditResultTypeComparator.class,
-    AuditResultConsolidation.class
+    AuditResultConsolidator.class
 })
-public class AuditResultConsolidationIT {
+public class AuditResultConsolidatorIT {
 
     @Autowired
-    AuditResultConsolidation auditResultConsolidation;
+    AuditResultConsolidator auditResultConsolidator;
     @Autowired
     ObjectMapper objectMapper;
 
@@ -45,7 +45,7 @@ public class AuditResultConsolidationIT {
     public void byCorrelationId_requestOnly_allDetailsFilled() {
         List<AuditRecord> records = loadJson(auditRecordRequest);
 
-        List<AuditResult> results = auditResultConsolidation.auditResultsByCorrelationId(records);
+        List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).correlationId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
@@ -58,7 +58,7 @@ public class AuditResultConsolidationIT {
     public void byCorrelationId_requestAndPassResponse_allDetailsFilled() {
         List<AuditRecord> records = loadJson(auditRecordRequest, auditRecordResponsePass);
 
-        List<AuditResult> results = auditResultConsolidation.auditResultsByCorrelationId(records);
+        List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).correlationId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
@@ -71,7 +71,7 @@ public class AuditResultConsolidationIT {
     public void byCorrelationId_requestAndFailResponse_allDetailsFilled() {
         List<AuditRecord> records = loadJson(auditRecordRequest, auditRecordResponseFail);
 
-        List<AuditResult> results = auditResultConsolidation.auditResultsByCorrelationId(records);
+        List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).correlationId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
@@ -84,7 +84,7 @@ public class AuditResultConsolidationIT {
     public void byCorrelationId_requestAndNotFoundResponse_allDetailsFilled() {
         List<AuditRecord> records = loadJson(auditRecordRequest, auditRecordResponseNotFound);
 
-        List<AuditResult> results = auditResultConsolidation.auditResultsByCorrelationId(records);
+        List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).correlationId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
@@ -97,7 +97,7 @@ public class AuditResultConsolidationIT {
     public void byCorrelationId_passResponseOnly_allDetailsFilled() {
         List<AuditRecord> records = loadJson(auditRecordResponsePass);
 
-        List<AuditResult> results = auditResultConsolidation.auditResultsByCorrelationId(records);
+        List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).correlationId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
@@ -110,7 +110,7 @@ public class AuditResultConsolidationIT {
     public void byCorrelationId_failResponseOnly_allDetailsFilled() {
         List<AuditRecord> records = loadJson(auditRecordResponseFail);
 
-        List<AuditResult> results = auditResultConsolidation.auditResultsByCorrelationId(records);
+        List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).correlationId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
@@ -123,7 +123,7 @@ public class AuditResultConsolidationIT {
     public void byCorrelationId_notFoundResponseOnly_allDetailsFilled() {
         List<AuditRecord> records = loadJson(auditRecordResponseNotFound);
 
-        List<AuditResult> results = auditResultConsolidation.auditResultsByCorrelationId(records);
+        List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).correlationId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
