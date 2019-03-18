@@ -10,24 +10,23 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Collections;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.time.*;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
+import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuditClientTest {
@@ -59,6 +58,7 @@ public class AuditClientTest {
                                         mockRestTemplate,
                                         mockRequestData,
                                         "some endpoint",
+                                        "some history endpoint",
                                         mapper);
     }
 
@@ -105,5 +105,39 @@ public class AuditClientTest {
         assertThat(auditableData.getDeploymentNamespace()).isEqualTo("some deployment namespace");
         assertThat(auditableData.getEventType()).isEqualTo(INCOME_PROVING_FINANCIAL_STATUS_REQUEST);
         assertThat(auditableData.getData()).isEqualTo("{}");
+    }
+
+    @Test
+    public void shouldRetrieveAuditHistory() {
+        List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<AuditRecord> results = new ArrayList<>();
+        ResponseEntity<List<AuditRecord>> resultsEntity = ResponseEntity.ok(results);
+        when(mockRestTemplate.exchange(eq("some history endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}))).thenReturn(resultsEntity);
+
+        List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+
+        verify(mockRestTemplate).exchange(eq("some history endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}));
+        AuditHistoryRequest request = (AuditHistoryRequest)captorHttpEntity.getValue().getBody();
+        assertThat(request.toDate()).isEqualTo(LocalDate.now());
+        assertThat(request.eventTypes().size()).isEqualTo(2);
+        assertThat(request.eventTypes()).containsExactlyInAnyOrder(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        assertThat(auditRecords).isEqualTo(results);
+    }
+
+    @Test
+    public void shouldHandleErrorFromAuditHistory() {
+        List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<AuditRecord> results = new ArrayList<>();
+        ResponseEntity<List<AuditRecord>> resultsEntity = ResponseEntity.ok(results);
+        when(mockRestTemplate.exchange(eq("some history endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}))).thenThrow(HttpServerErrorException.class);
+
+        List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+
+        verify(mockRestTemplate).exchange(eq("some history endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}));
+        AuditHistoryRequest request = (AuditHistoryRequest)captorHttpEntity.getValue().getBody();
+        assertThat(request.toDate()).isEqualTo(LocalDate.now());
+        assertThat(request.eventTypes().size()).isEqualTo(2);
+        assertThat(request.eventTypes()).containsExactlyInAnyOrder(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        assertThat(auditRecords).isEqualTo(results);
     }
 }

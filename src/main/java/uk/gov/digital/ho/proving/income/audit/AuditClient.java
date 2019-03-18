@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -15,7 +17,9 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,17 +34,21 @@ public class AuditClient {
     private final Clock clock;
     private final RestTemplate restTemplate;
     private final String auditEndpoint;
+    private final String auditHistoryEndpoint;
     private final RequestData requestData;
     private final ObjectMapper mapper;
 
     public AuditClient(Clock clock,
                        RestTemplate restTemplate,
                        RequestData requestData,
-                       @Value("${pttg.audit.endpoint}") String auditEndpoint, ObjectMapper mapper) {
+                       @Value("${pttg.audit.endpoint}") String auditEndpoint,
+                       @Value("${pttg.audit.history.endpoint}") String auditHistoryEndpoint,
+                       ObjectMapper mapper) {
         this.clock = clock;
         this.restTemplate = restTemplate;
         this.requestData = requestData;
         this.auditEndpoint = auditEndpoint;
+        this.auditHistoryEndpoint = auditHistoryEndpoint;
         this.mapper = mapper;
     }
 
@@ -63,6 +71,13 @@ public class AuditClient {
             backoff = @Backoff(delayExpression = "#{${audit.service.retry.delay}}"))
     private void dispatchAuditableData(AuditableData auditableData) {
         restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
+    }
+
+    List<AuditRecord> getAuditHistory(LocalDate toDate, List<AuditEventType> eventTypes) {
+        AuditHistoryRequest request = new AuditHistoryRequest(toDate, eventTypes);
+        HttpEntity<AuditHistoryRequest> entity = new HttpEntity<>(request, generateRestHeaders());
+        ResponseEntity<List<AuditRecord>> auditRecords = restTemplate.exchange(auditHistoryEndpoint, POST, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
+        return auditRecords.getBody();
     }
 
     @Recover
