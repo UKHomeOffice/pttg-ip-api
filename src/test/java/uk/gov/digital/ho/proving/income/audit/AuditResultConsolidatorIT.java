@@ -177,15 +177,6 @@ public class AuditResultConsolidatorIT {
         );
     }
 
-    private AuditResult getExpectedAuditResult3() {
-        return new AuditResult(
-            "a1e33f3e-3f72-48b9-bdfb-44e17303bd6e",
-            LocalDate.of(2019, 2, 27),
-            "PP151005D",
-            PASS
-        );
-    }
-
     /*
      * auditResultsByNino
      */
