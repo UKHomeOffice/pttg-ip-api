@@ -184,19 +184,20 @@ public class AuditResultConsolidatorIT {
     public void byNino_noResults_empty() {
         List<AuditResult> results = new ArrayList<>();
 
-        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+        List<AuditResultByNino> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(0);
     }
 
     @Test
     public void byNino_singleResult_resultUsed() {
-        List<AuditResult> results = Arrays.asList(new AuditResult("any_correlatoin_id", LocalDate.now(), "any_nino", PASS));
+        List<AuditResult> results = Arrays.asList(new AuditResult("any_correlation_id", LocalDate.now(), "any_nino", PASS));
+        AuditResultByNino expected = new AuditResultByNino("any_nino", Arrays.asList("any_correlation_id"), LocalDate.now(), PASS);
 
-        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+        List<AuditResultByNino> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(1);
-        assertThat(resultsByNino.get(0)).isEqualTo(results.get(0));
+        assertThat(resultsByNino.get(0)).isEqualTo(expected);
     }
 
     @Test
@@ -208,11 +209,18 @@ public class AuditResultConsolidatorIT {
                 new AuditResult("any_correlation_id_3", LocalDate.now(), "any_nino", NOTFOUND),
                 new AuditResult("any_correlation_id_4", LocalDate.now(), "any_nino", ERROR)
             );
+        List<String> expectedCorrelationIds = Arrays.asList(
+            "any_correlation_id",
+            "any_correlation_id_2",
+            "any_correlation_id_3",
+            "any_correlation_id_4"
+        );
+        AuditResultByNino expected = new AuditResultByNino("any_nino", expectedCorrelationIds, LocalDate.now(), PASS);
 
-        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+        List<AuditResultByNino> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(1);
-        assertThat(resultsByNino.get(0)).isEqualTo(results.get(0));
+        assertThat(resultsByNino.get(0)).isEqualTo(expected);
     }
 
     @Test
@@ -224,11 +232,18 @@ public class AuditResultConsolidatorIT {
                 new AuditResult("any_correlation_id_3", LocalDate.now().plusDays(2), "any_nino", PASS),
                 new AuditResult("any_correlation_id_4", LocalDate.now().plusDays(1), "any_nino", PASS)
             );
+        List<String> expectedCorrelationIds = Arrays.asList(
+            "any_correlation_id",
+            "any_correlation_id_2",
+            "any_correlation_id_3",
+            "any_correlation_id_4"
+        );
+        AuditResultByNino expected = new AuditResultByNino("any_nino", expectedCorrelationIds, LocalDate.now().plusDays(2), PASS);
 
-        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+        List<AuditResultByNino> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(1);
-        assertThat(resultsByNino.get(0)).isEqualTo(results.get(2));
+        assertThat(resultsByNino.get(0)).isEqualTo(expected);
     }
 
     @Test
@@ -238,12 +253,15 @@ public class AuditResultConsolidatorIT {
                 new AuditResult("any_correlation_id", LocalDate.now(), "any_nino", PASS),
                 new AuditResult("any_correlation_id_2", LocalDate.now().plusDays(1), "any_nino_2", PASS)
             );
+        List<AuditResultByNino> expected = Arrays.asList(
+                new AuditResultByNino("any_nino", Arrays.asList("any_correlation_id"), LocalDate.now(), PASS),
+                new AuditResultByNino("any_nino_2", Arrays.asList("any_correlation_id_2"), LocalDate.now().plusDays(1), PASS)
+            );
 
-        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+        List<AuditResultByNino> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(2);
-        assertThat(resultsByNino.get(0)).isEqualTo(results.get(0));
-        assertThat(resultsByNino.get(1)).isEqualTo(results.get(1));
+        assertThat(resultsByNino).contains(expected.get(0), expected.get(1));
     }
 
     @Test
@@ -255,11 +273,15 @@ public class AuditResultConsolidatorIT {
                 new AuditResult("any_correlation_id_3", LocalDate.now(), "any_nino_2", PASS),
                 new AuditResult("any_correlation_id_4", LocalDate.now().plusDays(1), "any_nino_2", PASS)
             );
+        List<AuditResultByNino> expected = Arrays.asList(
+                new AuditResultByNino("any_nino", Arrays.asList("any_correlation_id_2", "any_correlation_id"), LocalDate.now(), PASS),
+                new AuditResultByNino("any_nino_2", Arrays.asList("any_correlation_id_3", "any_correlation_id_4"), LocalDate.now().plusDays(1), PASS)
+            );
 
-        List<AuditResult> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
+        List<AuditResultByNino> resultsByNino = auditResultConsolidator.auditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(2);
-        assertThat(resultsByNino).containsExactlyInAnyOrder(results.get(1), results.get(3));
+        assertThat(resultsByNino).contains(expected.get(0), expected.get(1));
     }
 
     private List<AuditRecord> loadJson(Resource... resourceFiles) {

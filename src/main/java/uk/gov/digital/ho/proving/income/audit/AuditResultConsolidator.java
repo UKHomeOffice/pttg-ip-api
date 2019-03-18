@@ -37,7 +37,7 @@ class AuditResultConsolidator {
             .collect(Collectors.toList());
     }
 
-    List<AuditResult> auditResultsByNino(List<AuditResult> results) {
+    List<AuditResultByNino> auditResultsByNino(List<AuditResult> results) {
         Map<String, List<AuditResult>> resultsByNino =
             results.stream().collect(Collectors.groupingBy(AuditResult::nino));
 
@@ -46,10 +46,14 @@ class AuditResultConsolidator {
             .collect(Collectors.toList());
     }
 
-    private AuditResult consolidate(List<AuditResult> results) {
-        return results.stream()
+    private AuditResultByNino consolidate(List<AuditResult> results) {
+        AuditResult consolidatedResult = results.stream()
             .max(auditResultComparator)
             .orElse(null);
+        List<String> allCorrelationIds = results.stream()
+            .map(AuditResult::correlationId)
+            .collect(Collectors.toList());
+        return new AuditResultByNino(consolidatedResult.nino(), allCorrelationIds, consolidatedResult.date(), consolidatedResult.resultType());
     }
 
     private AuditResult getAuditResult(List<AuditRecord> auditRecords) {
