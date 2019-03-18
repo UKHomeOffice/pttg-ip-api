@@ -66,7 +66,8 @@ public class ResourceExceptionHandlerTest {
             LoggingEvent loggingEvent = (LoggingEvent) argument;
 
             return loggingEvent.getFormattedMessage().equals("some message") &&
-                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[0]).getFieldName().equals("event_id");
+                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[0]).getFieldName().equals("event_id") &&
+                loggingEvent.getArgumentArray()[0].toString().equals("INCOME_PROVING_AUDIT_FAILURE");
         }));
     }
 
