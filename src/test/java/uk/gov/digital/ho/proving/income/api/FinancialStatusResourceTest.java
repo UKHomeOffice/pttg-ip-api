@@ -139,7 +139,8 @@ public class FinancialStatusResourceTest {
             LoggingEvent loggingEvent = (LoggingEvent) argument;
 
             return loggingEvent.getFormattedMessage().equals("Financial status check request received for RedactedNino - applicationRaisedDate = 2019-01-01, dependents = 0") &&
-                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[3]).getFieldName().equals("event_id");
+                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[3]).getFieldName().equals("event_id") &&
+                loggingEvent.getArgumentArray()[3].toString().equals("INCOME_PROVING_SERVICE_REQUEST_RECEIVED");
         }));
     }
 
