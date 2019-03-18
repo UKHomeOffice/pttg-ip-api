@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.AfterClass;
@@ -40,8 +41,8 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 public class AuditClientTest {
 
     private static TimeZone defaultTimeZone;
-    private static ObjectMapper mapper = new ObjectMapper();
 
+    @Mock private static ObjectMapper mockObjectMapper;
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
     @Mock private Appender<ILoggingEvent> mockAppender;
@@ -67,7 +68,7 @@ public class AuditClientTest {
                                         mockRestTemplate,
                                         mockRequestData,
                                         "some endpoint",
-                                        mapper);
+                                        mockObjectMapper);
     }
 
     @Test
@@ -91,13 +92,14 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldSetAuditableData() {
+    public void shouldSetAuditableData() throws JsonProcessingException {
 
         when(mockRequestData.sessionId()).thenReturn("some session id");
         when(mockRequestData.correlationId()).thenReturn("some correlation id");
         when(mockRequestData.userId()).thenReturn("some user id");
         when(mockRequestData.deploymentName()).thenReturn("some deployment name");
         when(mockRequestData.deploymentNamespace()).thenReturn("some deployment namespace");
+        when(mockObjectMapper.writeValueAsString(any(Object.class))).thenReturn("{}");
 
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), Collections.emptyMap());
 
@@ -116,7 +118,7 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldLogEventType() {
+    public void shouldLogWhenAddToAuditServiceEvent() {
         Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
         rootLogger.setLevel(Level.INFO);
         rootLogger.addAppender(mockAppender);
@@ -129,6 +131,42 @@ public class AuditClientTest {
             return loggingEvent.getMessage().equals("POST data for {} to audit service") &&
                 ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[1]).getFieldName().equals("event_id") &&
                 loggingEvent.getArgumentArray()[1].toString().equals("INCOME_PROVING_AUDIT_REQUEST");
+        }));
+    }
+
+    @Test
+    public void shouldLogAfterSuccessfulAuditServiceCall() {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
+        rootLogger.setLevel(Level.INFO);
+        rootLogger.addAppender(mockAppender);
+
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), Collections.emptyMap());
+
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+
+            return loggingEvent.getMessage().equals("data POSTed to audit service") &&
+                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[0]).getFieldName().equals("event_id") &&
+                loggingEvent.getArgumentArray()[0].toString().equals("INCOME_PROVING_AUDIT_SUCCESS");
+        }));
+    }
+
+    @Test
+    public void shouldLogAfterFailureToAudit() throws JsonProcessingException {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
+        rootLogger.setLevel(Level.ERROR);
+        rootLogger.addAppender(mockAppender);
+
+        when(mockObjectMapper.writeValueAsString(any(Object.class))).thenThrow(JsonProcessingException.class);
+
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), Collections.emptyMap());
+
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+
+            return loggingEvent.getMessage().equals("Failed to create json representation of audit data") &&
+                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[0]).getFieldName().equals("event_id") &&
+                loggingEvent.getArgumentArray()[0].toString().equals("INCOME_PROVING_AUDIT_FAILURE");
         }));
     }
 }
