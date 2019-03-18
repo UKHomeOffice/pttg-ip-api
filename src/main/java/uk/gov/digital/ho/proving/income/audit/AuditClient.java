@@ -35,6 +35,7 @@ public class AuditClient {
     private final RestTemplate restTemplate;
     private final String auditEndpoint;
     private final String auditHistoryEndpoint;
+    private final String auditArchiveEndpoint;
     private final RequestData requestData;
     private final ObjectMapper mapper;
 
@@ -42,13 +43,15 @@ public class AuditClient {
                        RestTemplate restTemplate,
                        RequestData requestData,
                        @Value("${pttg.audit.endpoint}") String auditEndpoint,
-                       @Value("${pttg.audit.history.endpoint}") String auditHistoryEndpoint,
+                       @Value("${audit.history.endpoint}") String auditHistoryEndpoint,
+                       @Value("${audit.archive.endpoint}") String auditArchiveEndpoint,
                        ObjectMapper mapper) {
         this.clock = clock;
         this.restTemplate = restTemplate;
         this.requestData = requestData;
         this.auditEndpoint = auditEndpoint;
         this.auditHistoryEndpoint = auditHistoryEndpoint;
+        this.auditArchiveEndpoint = auditArchiveEndpoint;
         this.mapper = mapper;
     }
 
@@ -78,6 +81,11 @@ public class AuditClient {
         HttpEntity<AuditHistoryRequest> entity = new HttpEntity<>(request, generateRestHeaders());
         ResponseEntity<List<AuditRecord>> auditRecords = restTemplate.exchange(auditHistoryEndpoint, POST, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
         return auditRecords.getBody();
+    }
+
+    void archiveAudit(ArchiveAuditRequest request) {
+        HttpEntity<ArchiveAuditRequest> entity = new HttpEntity<>(request, generateRestHeaders());
+        ResponseEntity<ArchiveAuditResponse> response = restTemplate.exchange(auditArchiveEndpoint, POST, entity, new ParameterizedTypeReference<ArchiveAuditResponse>() {});
     }
 
     @Recover

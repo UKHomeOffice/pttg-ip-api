@@ -14,7 +14,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
@@ -59,6 +58,7 @@ public class AuditClientTest {
                                         mockRequestData,
                                         "some endpoint",
                                         "some history endpoint",
+                                        "some archive endpoint",
                                         mapper);
     }
 
@@ -125,19 +125,15 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldHandleErrorFromAuditHistory() {
+    public void shouldRequestAuditArchive() {
         List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        List<AuditRecord> results = new ArrayList<>();
-        ResponseEntity<List<AuditRecord>> resultsEntity = ResponseEntity.ok(results);
-        when(mockRestTemplate.exchange(eq("some history endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}))).thenThrow(HttpServerErrorException.class);
+        ArchiveAuditRequest request = new ArchiveAuditRequest(eventTypes, "any_nino", LocalDate.now().minusMonths(6), Arrays.asList("corr1", "corr2"), "PASS");
+        when(mockRestTemplate.exchange(eq("some archive endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<ArchiveAuditResponse>() {}))).thenReturn(ResponseEntity.ok(new ArchiveAuditResponse()));
 
-        List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+        auditClient.archiveAudit(request);
 
-        verify(mockRestTemplate).exchange(eq("some history endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}));
-        AuditHistoryRequest request = (AuditHistoryRequest)captorHttpEntity.getValue().getBody();
-        assertThat(request.toDate()).isEqualTo(LocalDate.now());
-        assertThat(request.eventTypes().size()).isEqualTo(2);
-        assertThat(request.eventTypes()).containsExactlyInAnyOrder(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        assertThat(auditRecords).isEqualTo(results);
+        verify(mockRestTemplate).exchange(eq("some archive endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<ArchiveAuditResponse>() {}));
+        ArchiveAuditRequest actual = (ArchiveAuditRequest) captorHttpEntity.getValue().getBody();
+        assertThat(actual).isEqualTo(request);
     }
 }
