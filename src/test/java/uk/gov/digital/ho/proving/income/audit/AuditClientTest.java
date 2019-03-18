@@ -127,7 +127,8 @@ public class AuditClientTest {
             LoggingEvent loggingEvent = (LoggingEvent) argument;
 
             return loggingEvent.getMessage().equals("POST data for {} to audit service") &&
-                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[1]).getFieldName().equals("event_id");
+                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[1]).getFieldName().equals("event_id") &&
+                loggingEvent.getArgumentArray()[1].toString().equals("INCOME_PROVING_AUDIT_REQUEST");
         }));
     }
 }
