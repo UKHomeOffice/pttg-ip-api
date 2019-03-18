@@ -66,7 +66,7 @@ public class HmrcClient {
 
             serviceResponseLogger.record(identity, responseEntity.getBody());
 
-            log.info("Received {} incomes and {} employments ", responseEntity.getBody().paye().size(),
+            log.info("Received {} incomes and {} employments", responseEntity.getBody().paye().size(),
                 responseEntity.getBody().employments().size(), value(EVENT, HMRC_RESPONSE_SUCCESS));
 
             return responseEntity.getBody();

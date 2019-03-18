@@ -196,7 +196,7 @@ public class HmrcClientTest {
     }
 
     @Test
-    public void shouldLogEventType() {
+    public void shouldLogWhenCallingHmrc() {
         Logger rootLogger = (Logger) LoggerFactory.getLogger(HmrcClient.class);
         rootLogger.setLevel(Level.INFO);
         rootLogger.addAppender(mockAppender);
@@ -213,8 +213,31 @@ public class HmrcClientTest {
             LoggingEvent loggingEvent = (LoggingEvent) argument;
 
             return loggingEvent.getFormattedMessage().equals("About to call HMRC Service at http://income-service/income") &&
-                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[1]).getFieldName().equals("event_id");
+                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[1]).getFieldName().equals("event_id") &&
+                loggingEvent.getArgumentArray()[1].toString().equals("HMRC_REQUEST_SENT");
         }));
     }
 
+    @Test
+    public void shouldLogSuccessfulHmrcResponse() {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(HmrcClient.class);
+        rootLogger.setLevel(Level.INFO);
+        rootLogger.addAppender(mockAppender);
+
+        service.getIncomeRecord(
+            new Identity(
+                "John",
+                "Smith",
+                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+            LocalDate.of(2017, Month.JANUARY, 1),
+            LocalDate.of(2017, Month.JULY, 1)
+        );
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+
+            return loggingEvent.getFormattedMessage().equals("Received 0 incomes and 0 employments") &&
+                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[2]).getFieldName().equals("event_id") &&
+                loggingEvent.getArgumentArray()[2].toString().equals("HMRC_RESPONSE_SUCCESS");
+        }));
+    }
 }
