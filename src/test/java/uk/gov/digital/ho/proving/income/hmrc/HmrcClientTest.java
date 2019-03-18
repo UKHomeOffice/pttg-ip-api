@@ -212,7 +212,7 @@ public class HmrcClientTest {
         verify(mockAppender).doAppend(argThat(argument -> {
             LoggingEvent loggingEvent = (LoggingEvent) argument;
 
-            return loggingEvent.getFormattedMessage().equals("About to call Income Service at http://income-service/income") &&
+            return loggingEvent.getFormattedMessage().equals("About to call HMRC Service at http://income-service/income") &&
                 ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[1]).getFieldName().equals("event_id");
         }));
     }
