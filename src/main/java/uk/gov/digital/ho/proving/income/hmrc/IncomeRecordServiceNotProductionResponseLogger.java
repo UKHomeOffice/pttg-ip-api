@@ -9,11 +9,6 @@ import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.proving.income.application.LogEvent.EVENT;
-import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_JSON_FAILURE;
-import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_MAPPED_TO_JSON;
-
 @Slf4j
 public class IncomeRecordServiceNotProductionResponseLogger implements ServiceResponseLogger {
 
@@ -26,9 +21,9 @@ public class IncomeRecordServiceNotProductionResponseLogger implements ServiceRe
     @Override
     public void record(Identity identity, IncomeRecord incomeRecord) {
         try {
-            log.info(mapper.writeValueAsString(produceLogEntry(identity, incomeRecord)), value(EVENT, INCOME_PROVING_SERVICE_MAPPED_TO_JSON));
+            log.info(mapper.writeValueAsString(produceLogEntry(identity, incomeRecord)));
         } catch (JsonProcessingException e) {
-            log.error("Failed to turn IncomeRecord response data into JSON", value(EVENT, INCOME_PROVING_SERVICE_JSON_FAILURE));
+            log.error("Failed to turn IncomeRecord response data into JSON");
         }
     }
 

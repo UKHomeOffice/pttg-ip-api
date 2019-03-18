@@ -6,7 +6,6 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -104,17 +102,6 @@ public class HmrcClientNotProductionResponseLoggerTest {
         assertThat(logEntry.get("identity")).isEqualTo(stubIdentity);
         assertThat(logEntry.containsKey("incomeRecord"));
         assertThat(logEntry.get("incomeRecord")).isEqualTo(stubIncomeRecord);
-    }
-
-    @Test
-    public void shouldLogEventType() {
-        incomeRecordServiceNotProductionResponseLogger.record(stubIdentity, stubIncomeRecord);
-
-        verify(mockAppender).doAppend(argThat(argument -> {
-            LoggingEvent loggingEvent = (LoggingEvent) argument;
-
-            return ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[0]).getFieldName().equals("event_id");
-        }));
     }
 
     private HmrcIndividual aIndividual() {
