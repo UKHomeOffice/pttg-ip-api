@@ -13,6 +13,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
+import uk.gov.digital.ho.proving.income.application.LogEvent;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import uk.gov.digital.ho.proving.income.validator.frequencycalculator.Frequency;
@@ -35,6 +36,8 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_CALCULATE_FREQUENCY;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED;
 import static uk.gov.digital.ho.proving.income.validator.frequencycalculator.Frequency.*;
 import static uk.gov.digital.ho.proving.income.validator.frequencycalculator.FrequencyCalculator.calculate;
 import static uk.gov.digital.ho.proving.income.validator.frequencycalculator.FrequencyCalculator.calculateByPaymentNumbers;
@@ -77,7 +80,7 @@ public class FrequencyCalculatorTest {
     public void shouldLogWhenCalculateByPaymentNumbersCalled() {
         calculateByPaymentNumbers(mock(IncomeRecord.class));
 
-        verifyLogMessage("Calculating frequency by payment numbers");
+        verifyLogMessage("Calculating frequency by payment numbers", INCOME_PROVING_SERVICE_CALCULATE_FREQUENCY);
     }
 
     @Test
@@ -86,7 +89,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY");
+        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -96,7 +99,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY");
+        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -108,7 +111,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as UNKNOWN");
+        verifyLogMessage("Frequency calculated by payment numbers as UNKNOWN", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -120,7 +123,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as WEEKLY");
+        verifyLogMessage("Frequency calculated by payment numbers as WEEKLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -132,7 +135,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as FORTNIGHTLY");
+        verifyLogMessage("Frequency calculated by payment numbers as FORTNIGHTLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -144,7 +147,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as FOUR_WEEKLY");
+        verifyLogMessage("Frequency calculated by payment numbers as FOUR_WEEKLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -156,7 +159,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY");
+        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -168,7 +171,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as UNKNOWN");
+        verifyLogMessage("Frequency calculated by payment numbers as UNKNOWN", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     /*
@@ -504,7 +507,7 @@ public class FrequencyCalculatorTest {
         return new Random().nextInt(max - min + 1) + min;
     }
 
-    private void verifyLogMessage(final String message) {
+    private void verifyLogMessage(final String message, LogEvent event) {
         ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
         verify(mockAppender, times(2)).doAppend(captor.capture());
 
@@ -512,7 +515,7 @@ public class FrequencyCalculatorTest {
         for (ILoggingEvent loggingEvent : loggingEvents) {
             LoggingEvent logEvent = (LoggingEvent) loggingEvent;
             if (logEvent.getMessage().equals(message) && logEvent.getLevel().equals(Level.INFO) &&
-                ((ObjectAppendingMarker)logEvent.getArgumentArray()[0]).getFieldName().equals("event_id")) {
+                loggingEvent.getArgumentArray()[0].equals(new ObjectAppendingMarker("event_id", event))) {
                 return;
             }
         }
