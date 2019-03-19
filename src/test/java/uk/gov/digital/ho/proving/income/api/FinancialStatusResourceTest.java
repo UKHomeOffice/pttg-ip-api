@@ -7,13 +7,16 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import com.google.common.collect.ImmutableList;
 import net.logstash.logback.marker.ObjectAppendingMarker;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import uk.gov.digital.ho.proving.income.api.domain.*;
+import uk.gov.digital.ho.proving.income.application.LogEvent;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
@@ -26,8 +29,11 @@ import java.util.*;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_REQUEST_RECEIVED;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_RESPONSE_SUCCESS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FinancialStatusResourceTest {
@@ -51,6 +57,13 @@ public class FinancialStatusResourceTest {
         "surname",
         LocalDate.of(2000,01,01),
         realNino));
+
+    @Before
+    public void setUp() {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(FinancialStatusResource.class);
+        rootLogger.setLevel(Level.INFO);
+        rootLogger.addAppender(mockAppender);
+    }
 
     @Test
     public void shouldNeverLogSuppliedNino() {
@@ -135,13 +148,39 @@ public class FinancialStatusResourceTest {
 
         service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ));
 
-        verify(mockAppender).doAppend(argThat(argument -> {
-            LoggingEvent loggingEvent = (LoggingEvent) argument;
+        verifyLogMessage("Financial status check request received for RedactedNino - applicationRaisedDate = 2019-01-01, dependents = 0",
+            INCOME_PROVING_SERVICE_REQUEST_RECEIVED);
 
-            return loggingEvent.getFormattedMessage().equals("Financial status check request received for RedactedNino - applicationRaisedDate = 2019-01-01, dependents = 0") &&
-                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[3]).getFieldName().equals("event_id") &&
-                loggingEvent.getArgumentArray()[3].toString().equals("INCOME_PROVING_SERVICE_REQUEST_RECEIVED");
-        }));
     }
 
+    @Test
+    public void shouldLogWhenResponseReceived() {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(FinancialStatusResource.class);
+        rootLogger.setLevel(Level.INFO);
+        rootLogger.addAppender(mockAppender);
+
+        when(mockNinoUtils.sanitise(realNino)).thenReturn(sanitisedNino);
+        when(mockNinoUtils.redact(sanitisedNino)).thenReturn(redactedNino);
+        when(mockHelper.calculateResponse(any(), any(), any())).thenReturn(getResponse());
+
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ));
+
+        verifyLogMessage("Financial status check passed for RedactedNino is: false", INCOME_PROVING_SERVICE_RESPONSE_SUCCESS);
+
+    }
+
+    private void verifyLogMessage(final String message, LogEvent event) {
+        ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
+        verify(mockAppender, times(2)).doAppend(captor.capture());
+
+        List<ILoggingEvent> loggingEvents = captor.getAllValues();
+        for (ILoggingEvent loggingEvent : loggingEvents) {
+            LoggingEvent logEvent = (LoggingEvent) loggingEvent;
+            if (logEvent.getFormattedMessage().equals(message) && logEvent.getLevel().equals(Level.INFO) &&
+                loggingEvent.getArgumentArray()[loggingEvent.getArgumentArray().length - 1].equals(new ObjectAppendingMarker("event_id", event))) {
+                return;
+            }
+        }
+        fail(String.format("Failed to find log with message=\"%s\" and level=INFO", message));
+    }
 }
