@@ -4,9 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
@@ -35,12 +33,8 @@ public class AuditArchiveServiceIT {
     @Autowired
     private AuditArchiveService auditArchiveService;
 
-    @Value("classpath:json/AuditRecordRequestTemplate.json")
-    private Resource auditRecordRequestTemplate;
-    @Value("classpath:json/AuditRecordResponseTemplate.json")
-    private Resource auditRecordResponseTemplate;
-    @Value("classpath:json/AuditRecordResponseNotFoundTemplate.json")
-    private Resource auditRecordResourceNotFoundTemplate;
+    @Autowired
+    private FileUtils fileUtils;
 
     private MockRestServiceServer mockAuditService;
 
@@ -51,10 +45,10 @@ public class AuditArchiveServiceIT {
 
     @Test
     public void archiveAudit_multipleNinos_archiveAll() {
-        String request1 = buildRequest("corr-id-1", "2019-01-01 11:00:00.000", "nino_1");
-        String response1 = buildResponse("corr-id-1", "2019-01-01 12:00:00.000", "nino_1", "true");
-        String request2 = buildRequest("corr-id-2", "2019-01-01 11:00:00.000", "nino_2");
-        String response2 = buildResponse("corr-id-2", "2019-01-01 12:00:00.000", "nino_2", "true");
+        String request1 = fileUtils.buildRequest("corr-id-1", "2019-01-01 11:00:00.000", "nino_1");
+        String response1 = fileUtils.buildResponse("corr-id-1", "2019-01-01 12:00:00.000", "nino_1", "true");
+        String request2 = fileUtils.buildRequest("corr-id-2", "2019-01-01 11:00:00.000", "nino_2");
+        String response2 = fileUtils.buildResponse("corr-id-2", "2019-01-01 12:00:00.000", "nino_2", "true");
         String auditHistory = String.format("[%s, %s, %s, %s]", request1, request2, response1, response2);
         mockAuditService
             .expect(requestTo(containsString("/history")))
@@ -86,7 +80,7 @@ public class AuditArchiveServiceIT {
 
     @Test
     public void archiveAudit_noResponse_errorReturned() {
-        String errorRequest = buildRequest("corr-id-1", "2019-01-02 11:00:00.000", "nino_1");
+        String errorRequest = fileUtils.buildRequest("corr-id-1", "2019-01-02 11:00:00.000", "nino_1");
         String auditHistory = String.format("[%s]", errorRequest);
         mockAuditService
             .expect(requestTo(containsString("/history")))
@@ -107,9 +101,9 @@ public class AuditArchiveServiceIT {
 
     @Test
     public void archiveAudit_errorThenNotFound_bestResultReturned() {
-        String errorRequest = buildRequest("corr-id-1", "2019-01-02 11:00:00.000", "nino_1");
-        String notFoundRequest = buildRequest("corr-id-2", "2019-01-03 12:00:00.000", "nino_1");
-        String notFoundResponse = buildResponseNotFound("corr-id-2", "2019-01-03 13:00:00.000");
+        String errorRequest = fileUtils.buildRequest("corr-id-1", "2019-01-02 11:00:00.000", "nino_1");
+        String notFoundRequest = fileUtils.buildRequest("corr-id-2", "2019-01-03 12:00:00.000", "nino_1");
+        String notFoundResponse = fileUtils.buildResponseNotFound("corr-id-2", "2019-01-03 13:00:00.000");
         String auditHistory = String.format("[%s, %s, %s]", errorRequest, notFoundRequest, notFoundResponse);
         mockAuditService
             .expect(requestTo(containsString("/history")))
@@ -129,10 +123,10 @@ public class AuditArchiveServiceIT {
 
     @Test
     public void archiveAudit_multipleMatchingResults_latestResultReturned() {
-        String request1 = buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
-        String response1 = buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "true");
-        String request2 = buildRequest("corr-id-2", "2019-01-02 14:00:00.000", "nino_1");
-        String response2 = buildResponse("corr-id-2", "2019-01-02 15:00:00.000", "nino_1", "true");
+        String request1 = fileUtils.buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
+        String response1 = fileUtils.buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "true");
+        String request2 = fileUtils.buildRequest("corr-id-2", "2019-01-02 14:00:00.000", "nino_1");
+        String response2 = fileUtils.buildResponse("corr-id-2", "2019-01-02 15:00:00.000", "nino_1", "true");
         String auditHistory = String.format("[%s, %s, %s, %s]", request1, response1, request2, response2);
         mockAuditService
             .expect(requestTo(containsString("/history")))
@@ -152,20 +146,20 @@ public class AuditArchiveServiceIT {
 
     @Test
     public void archiveAudit_multipleMatchingAndMultipleresults_latestResultForAllRequestsReturned() {
-        String nino1request1 = buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
-        String nino1response1 = buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "false");
-        String nino1request2noResponse = buildRequest("corr-id-3", "2019-01-02 14:00:00.000", "nino_1");
+        String nino1request1 = fileUtils.buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
+        String nino1response1 = fileUtils.buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "false");
+        String nino1request2noResponse = fileUtils.buildRequest("corr-id-3", "2019-01-02 14:00:00.000", "nino_1");
 
-        String nino2request1 = buildRequest("corr-id-2", "2019-01-02 14:00:00.000", "nino_2");
-        String nino2response1 = buildResponse("corr-id-2", "2019-01-02 15:00:00.000", "nino_2", "true");
-        String nino2request2 = buildRequest("corr-id-5", "2019-01-03 14:00:00.000", "nino_2");
-        String nino2response2 = buildResponse("corr-id-5", "2019-01-03 15:00:00.000", "nino_2", "true");
-        String nino2request3 = buildRequest("corr-id-6", "2019-01-04 14:00:00.000", "nino_2");
-        String nino2response3 = buildResponseNotFound("corr-id-6", "2019-01-04 15:00:00.000");
+        String nino2request1 = fileUtils.buildRequest("corr-id-2", "2019-01-02 14:00:00.000", "nino_2");
+        String nino2response1 = fileUtils.buildResponse("corr-id-2", "2019-01-02 15:00:00.000", "nino_2", "true");
+        String nino2request2 = fileUtils.buildRequest("corr-id-5", "2019-01-03 14:00:00.000", "nino_2");
+        String nino2response2 = fileUtils.buildResponse("corr-id-5", "2019-01-03 15:00:00.000", "nino_2", "true");
+        String nino2request3 = fileUtils.buildRequest("corr-id-6", "2019-01-04 14:00:00.000", "nino_2");
+        String nino2response3 = fileUtils.buildResponseNotFound("corr-id-6", "2019-01-04 15:00:00.000");
 
-        String nino3request1noResponse = buildRequest("corr-id-7", "2019-01-02 14:00:00.000", "nino_3");
-        String nino3request2 = buildRequest("corr-id-8", "2019-01-03 14:00:00.000", "nino_3");
-        String nino3response2 = buildResponseNotFound("corr-id-8", "2019-01-03 15:00:00.000");
+        String nino3request1noResponse = fileUtils.buildRequest("corr-id-7", "2019-01-02 14:00:00.000", "nino_3");
+        String nino3request2 = fileUtils.buildRequest("corr-id-8", "2019-01-03 14:00:00.000", "nino_3");
+        String nino3response2 = fileUtils.buildResponseNotFound("corr-id-8", "2019-01-03 15:00:00.000");
 
         String auditHistory = String.format("[%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s]", nino1request1, nino1response1,
             nino2request1, nino2response1, nino1request2noResponse, nino2request2, nino2response2, nino2request3, nino2response3,
@@ -206,27 +200,4 @@ public class AuditArchiveServiceIT {
         auditArchiveService.archiveAudit();
     }
 
-    private String buildRequest(String correlationId, String dateTime, String nino) {
-        String requestTemplate = FileUtils.loadJsonResource(auditRecordRequestTemplate);
-        requestTemplate = requestTemplate.replaceAll("\\$\\{correlation-id}", correlationId);
-        requestTemplate = requestTemplate.replaceAll("\\$\\{date-time}", dateTime);
-        requestTemplate = requestTemplate.replaceAll("\\$\\{nino}", nino);
-        return requestTemplate;
-    }
-
-    private String buildResponse(String correlationId, String dateTime, String nino, String pass) {
-        String responseTemplate = FileUtils.loadJsonResource(auditRecordResponseTemplate);
-        responseTemplate = responseTemplate.replaceAll("\\$\\{correlation-id}", correlationId);
-        responseTemplate = responseTemplate.replaceAll("\\$\\{date-time}", dateTime);
-        responseTemplate = responseTemplate.replaceAll("\\$\\{nino}", nino);
-        responseTemplate = responseTemplate.replaceAll("\\$\\{pass}", pass);
-        return responseTemplate;
-    }
-
-    private String buildResponseNotFound(String correlationId, String dateTime) {
-        String responseTemplate = FileUtils.loadJsonResource(auditRecordResourceNotFoundTemplate);
-        responseTemplate = responseTemplate.replaceAll("\\$\\{correlation-id}", correlationId);
-        responseTemplate = responseTemplate.replaceAll("\\$\\{date-time}", dateTime);
-        return responseTemplate;
-    }
 }

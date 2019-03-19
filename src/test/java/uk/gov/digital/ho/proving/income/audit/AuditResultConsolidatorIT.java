@@ -4,17 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.Resource;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
@@ -27,36 +24,23 @@ import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
     AuditResultTypeComparator.class,
     AuditResultConsolidator.class
 })
+@ContextConfiguration(classes = FileUtils.class)
 public class AuditResultConsolidatorIT {
 
     @Autowired
     AuditResultConsolidator auditResultConsolidator;
     @Autowired
     ObjectMapper objectMapper;
-
-    @Value("classpath:json/AuditRecordRequest.json")
-    private Resource auditRecordRequest;
-    @Value("classpath:json/AuditRecordRequest2.json")
-    private Resource auditRecordRequest2;
-    @Value("classpath:json/AuditRecordRequest3.json")
-    private Resource auditRecordRequest3;
-    @Value("classpath:json/AuditRecordResponsePass.json")
-    private Resource auditRecordResponsePass;
-    @Value("classpath:json/AuditRecordResponsePass2.json")
-    private Resource auditRecordResponsePass2;
-    @Value("classpath:json/AuditRecordResponsePass3.json")
-    private Resource auditRecordResponsePass3;
-    @Value("classpath:json/AuditRecordResponseFail.json")
-    private Resource auditRecordResponseFail;
-    @Value("classpath:json/AuditRecordResponseNotFound.json")
-    private Resource auditRecordResponseNotFound;
+    @Autowired
+    FileUtils fileUtils;
 
     /*
      * auditResultsByCorrelationId
      */
     @Test
     public void byCorrelationId_requestOnly_allDetailsFilled() {
-        List<AuditRecord> records = loadJson(auditRecordRequest);
+        AuditRecord auditRecordRequest = fileUtils.buildRequestRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003", "PJ151008C");
+        List<AuditRecord> records = Arrays.asList(auditRecordRequest);
 
         List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
@@ -69,7 +53,9 @@ public class AuditResultConsolidatorIT {
 
     @Test
     public void byCorrelationId_requestAndPassResponse_allDetailsFilled() {
-        List<AuditRecord> records = loadJson(auditRecordRequest, auditRecordResponsePass);
+        AuditRecord auditRecordRequest = fileUtils.buildRequestRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003", "PJ151008C");
+        AuditRecord auditRecordResponse = fileUtils.buildResponseRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003", "PJ151008C", "true");
+        List<AuditRecord> records = Arrays.asList(auditRecordRequest, auditRecordResponse);
 
         List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
@@ -82,7 +68,9 @@ public class AuditResultConsolidatorIT {
 
     @Test
     public void byCorrelationId_requestAndFailResponse_allDetailsFilled() {
-        List<AuditRecord> records = loadJson(auditRecordRequest, auditRecordResponseFail);
+        AuditRecord auditRecordRequest = fileUtils.buildRequestRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003", "PJ151008C");
+        AuditRecord auditRecordResponse = fileUtils.buildResponseRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003", "PJ151008C", "false");
+        List<AuditRecord> records = Arrays.asList(auditRecordRequest, auditRecordResponse);
 
         List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
@@ -95,7 +83,9 @@ public class AuditResultConsolidatorIT {
 
     @Test
     public void byCorrelationId_requestAndNotFoundResponse_allDetailsFilled() {
-        List<AuditRecord> records = loadJson(auditRecordRequest, auditRecordResponseNotFound);
+        AuditRecord auditRecordRequest = fileUtils.buildRequestRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003", "PJ151008C");
+        AuditRecord auditRecordResponse = fileUtils.buildResponseNotFoundRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003");
+        List<AuditRecord> records = Arrays.asList(auditRecordRequest, auditRecordResponse);
 
         List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
@@ -108,7 +98,8 @@ public class AuditResultConsolidatorIT {
 
     @Test
     public void byCorrelationId_passResponseOnly_allDetailsFilled() {
-        List<AuditRecord> records = loadJson(auditRecordResponsePass);
+        AuditRecord auditRecordResponse = fileUtils.buildResponseRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003", "PJ151008C", "true");
+        List<AuditRecord> records = Arrays.asList(auditRecordResponse);
 
         List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
@@ -121,7 +112,8 @@ public class AuditResultConsolidatorIT {
 
     @Test
     public void byCorrelationId_failResponseOnly_allDetailsFilled() {
-        List<AuditRecord> records = loadJson(auditRecordResponseFail);
+        AuditRecord auditRecordResponse = fileUtils.buildResponseRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003", "PJ151008C", "false");
+        List<AuditRecord> records = Arrays.asList(auditRecordResponse);
 
         List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
@@ -134,7 +126,8 @@ public class AuditResultConsolidatorIT {
 
     @Test
     public void byCorrelationId_notFoundResponseOnly_allDetailsFilled() {
-        List<AuditRecord> records = loadJson(auditRecordResponseNotFound);
+        AuditRecord auditRecordResponse = fileUtils.buildResponseNotFoundRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003");
+        List<AuditRecord> records = Arrays.asList(auditRecordResponse);
 
         List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
@@ -147,8 +140,11 @@ public class AuditResultConsolidatorIT {
 
     @Test
     public void byCorrelationId_multipleRequestResponses_allDetailsFilled() {
-        List<AuditRecord> records = loadJson(auditRecordRequest, auditRecordResponseNotFound);
-        records.addAll(loadJson(auditRecordRequest2, auditRecordResponsePass2));
+        AuditRecord auditRecord1Request = fileUtils.buildRequestRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003", "PJ151008C");
+        AuditRecord auditRecord1Response = fileUtils.buildResponseNotFoundRecord("3743b803-bd87-4518-8cae-d5b3e0566396", "2019-02-25 12:01:02.003");
+        AuditRecord auditRecord2Request = fileUtils.buildRequestRecord("5e6d002f-fd09-4347-a7da-2cd23346da49", "2019-02-26 12:01:02.003", "PP151005D");
+        AuditRecord auditRecord2Response = fileUtils.buildResponseRecord("5e6d002f-fd09-4347-a7da-2cd23346da49", "2019-02-26 12:01:02.003", "PP151005D", "true");
+        List<AuditRecord> records = Arrays.asList(auditRecord1Request, auditRecord1Response, auditRecord2Request, auditRecord2Response);
 
         List<AuditResult> results = auditResultConsolidator.auditResultsByCorrelationId(records);
 
@@ -284,19 +280,4 @@ public class AuditResultConsolidatorIT {
         assertThat(resultsByNino).contains(expected.get(0), expected.get(1));
     }
 
-    private List<AuditRecord> loadJson(Resource... resourceFiles) {
-        return Arrays.stream(resourceFiles)
-            .map(FileUtils::loadJsonResource)
-            .map(this::readAuditRecord)
-            .collect(Collectors.toList());
-    }
-
-    private AuditRecord readAuditRecord(String content) {
-        try {
-            return objectMapper.readValue(content, AuditRecord.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Unable to parse json into AuditRecord: " + content);
-        }
-    }
 }
