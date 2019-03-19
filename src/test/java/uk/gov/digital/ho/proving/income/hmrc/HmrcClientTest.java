@@ -42,9 +42,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.POST;
@@ -216,7 +214,7 @@ public class HmrcClientTest {
             LocalDate.of(2017, Month.JULY, 1)
         );
 
-        verifyLogMessage("About to call HMRC Service at http://income-service/income", HMRC_REQUEST_SENT, INFO, 2);
+        verifyLogMessage("About to call HMRC Service at http://income-service/income", HMRC_REQUEST_SENT, INFO);
     }
 
     @Test
@@ -230,7 +228,7 @@ public class HmrcClientTest {
             LocalDate.of(2017, Month.JULY, 1)
         );
 
-        verifyLogMessage("Received 0 incomes and 0 employments", HMRC_RESPONSE_SUCCESS, INFO, 2);
+        verifyLogMessage("Received 0 incomes and 0 employments", HMRC_RESPONSE_SUCCESS, INFO);
     }
 
     @Test
@@ -252,7 +250,7 @@ public class HmrcClientTest {
             //not used for the purpose of this test
         }
 
-       verifyLogMessage("HMRC Service found no match", HMRC_NOT_FOUND_RESPONSE, ERROR, 2);
+       verifyLogMessage("HMRC Service found no match", HMRC_NOT_FOUND_RESPONSE, ERROR);
     }
 
     @Test
@@ -274,7 +272,7 @@ public class HmrcClientTest {
             //not used for the purpose of this test
         }
 
-        verifyLogMessage("HMRC Service failed", HMRC_ERROR_REPSONSE, ERROR, 2);
+        verifyLogMessage("HMRC Service failed", HMRC_ERROR_REPSONSE, ERROR);
     }
 
     @Test
@@ -288,12 +286,12 @@ public class HmrcClientTest {
             //not used for the purpose of this test
         }
 
-        verifyLogMessage("Failed to retrieve HMRC data after retries - 502 BAD_GATEWAY", HMRC_ERROR_REPSONSE, ERROR, 1);
+        verifyLogMessage("Failed to retrieve HMRC data after retries - 502 BAD_GATEWAY", HMRC_ERROR_REPSONSE, ERROR);
     }
 
-    public void verifyLogMessage(String message, LogEvent event, Level logLevel, int invocations) {
+    public void verifyLogMessage(String message, LogEvent event, Level logLevel) {
         ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(mockAppender, times(invocations)).doAppend(captor.capture());
+        verify(mockAppender, atLeastOnce()).doAppend(captor.capture());
         List<ILoggingEvent> loggingEvents = captor.getAllValues();
         for (ILoggingEvent loggingEvent : loggingEvents) {
             LoggingEvent logEvent = (LoggingEvent) loggingEvent;
