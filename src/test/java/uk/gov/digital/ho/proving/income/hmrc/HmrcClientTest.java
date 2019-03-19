@@ -26,17 +26,23 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.EarningsServiceNoUniqueMatchException;
+import uk.gov.digital.ho.proving.income.application.LogEvent;
 import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Identity;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
 
+import static ch.qos.logback.classic.Level.ERROR;
+import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -45,6 +51,7 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.api.RequestData.*;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HmrcClientTest {
@@ -100,6 +107,10 @@ public class HmrcClientTest {
             SOME_FROM_DATE,
             SOME_TO_DATE
         );
+
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(HmrcClient.class);
+        rootLogger.setLevel(INFO);
+        rootLogger.addAppender(mockAppender);
     }
 
     @Test
@@ -187,7 +198,6 @@ public class HmrcClientTest {
 
     @Test
     public void shouldRethrowHttpServerErrorException() {
-
         thrown.expect(HttpServerErrorException.class);
 
         HttpServerErrorException exception = new HttpServerErrorException(BAD_GATEWAY);
@@ -196,11 +206,7 @@ public class HmrcClientTest {
     }
 
     @Test
-    public void shouldLogWhenCallingHmrc() {
-        Logger rootLogger = (Logger) LoggerFactory.getLogger(HmrcClient.class);
-        rootLogger.setLevel(Level.INFO);
-        rootLogger.addAppender(mockAppender);
-
+    public void shouldLogWhenHmrcRequestSent() {
         service.getIncomeRecord(
             new Identity(
                 "John",
@@ -209,21 +215,12 @@ public class HmrcClientTest {
             LocalDate.of(2017, Month.JANUARY, 1),
             LocalDate.of(2017, Month.JULY, 1)
         );
-        verify(mockAppender).doAppend(argThat(argument -> {
-            LoggingEvent loggingEvent = (LoggingEvent) argument;
 
-            return loggingEvent.getFormattedMessage().equals("About to call HMRC Service at http://income-service/income") &&
-                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[1]).getFieldName().equals("event_id") &&
-                loggingEvent.getArgumentArray()[1].toString().equals("HMRC_REQUEST_SENT");
-        }));
+        verifyLogMessage("About to call HMRC Service at http://income-service/income", HMRC_REQUEST_SENT, INFO, 2);
     }
 
     @Test
-    public void shouldLogSuccessfulHmrcResponse() {
-        Logger rootLogger = (Logger) LoggerFactory.getLogger(HmrcClient.class);
-        rootLogger.setLevel(Level.INFO);
-        rootLogger.addAppender(mockAppender);
-
+    public void shouldLogWhenHmrcResponseReceived() {
         service.getIncomeRecord(
             new Identity(
                 "John",
@@ -232,12 +229,80 @@ public class HmrcClientTest {
             LocalDate.of(2017, Month.JANUARY, 1),
             LocalDate.of(2017, Month.JULY, 1)
         );
-        verify(mockAppender).doAppend(argThat(argument -> {
-            LoggingEvent loggingEvent = (LoggingEvent) argument;
 
-            return loggingEvent.getFormattedMessage().equals("Received 0 incomes and 0 employments") &&
-                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[2]).getFieldName().equals("event_id") &&
-                loggingEvent.getArgumentArray()[2].toString().equals("HMRC_RESPONSE_SUCCESS");
-        }));
+        verifyLogMessage("Received 0 incomes and 0 employments", HMRC_RESPONSE_SUCCESS, INFO, 2);
     }
+
+    @Test
+    public void shouldLogWhenHmrcNotFoundResponseReceived() {
+        when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
+            .thenThrow(new HttpClientErrorException(NOT_FOUND));
+
+        try {
+            service.getIncomeRecord(
+                new Identity(
+                    "John",
+                    "Smith",
+                    LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+                LocalDate.of(2017, Month.JANUARY, 1),
+                LocalDate.of(2017, Month.JULY, 1)
+            );
+        }
+        catch(EarningsServiceNoUniqueMatchException e){
+            //not used for the purpose of this test
+        }
+
+       verifyLogMessage("HMRC Service found no match", HMRC_NOT_FOUND_RESPONSE, ERROR, 2);
+    }
+
+    @Test
+    public void shouldLogWhenHmrcServiceFails() {
+        when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
+            .thenThrow(new HttpServerErrorException(INTERNAL_SERVER_ERROR));
+
+        try {
+            service.getIncomeRecord(
+                new Identity(
+                    "John",
+                    "Smith",
+                    LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+                LocalDate.of(2017, Month.JANUARY, 1),
+                LocalDate.of(2017, Month.JULY, 1)
+            );
+        }
+        catch(HttpServerErrorException e){
+            //not used for the purpose of this test
+        }
+
+        verifyLogMessage("HMRC Service failed", HMRC_ERROR_REPSONSE, ERROR, 2);
+    }
+
+    @Test
+    public void shouldLogOnIncomeRecordFailureRecovery() {
+        HttpServerErrorException exception = new HttpServerErrorException(BAD_GATEWAY);
+
+        try {
+            service.getIncomeRecordFailureRecovery(exception);
+        }
+        catch(HttpServerErrorException e) {
+            //not used for the purpose of this test
+        }
+
+        verifyLogMessage("Failed to retrieve HMRC data after retries - 502 BAD_GATEWAY", HMRC_ERROR_REPSONSE, ERROR, 1);
+    }
+
+    public void verifyLogMessage(String message, LogEvent event, Level logLevel, int invocations) {
+        ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
+        verify(mockAppender, times(invocations)).doAppend(captor.capture());
+        List<ILoggingEvent> loggingEvents = captor.getAllValues();
+        for (ILoggingEvent loggingEvent : loggingEvents) {
+            LoggingEvent logEvent = (LoggingEvent) loggingEvent;
+            if (logEvent.getFormattedMessage().equals(message) && logEvent.getLevel().equals(logLevel) &&
+                loggingEvent.getArgumentArray()[loggingEvent.getArgumentArray().length - 1].equals(new ObjectAppendingMarker("event_id", event))) {
+                return;
+            }
+        }
+        fail(String.format("Failed to find log with message=\"%s\" and level=\"%s\"", event, logLevel));
+    }
+
 }
