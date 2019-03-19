@@ -126,8 +126,7 @@ public class AuditClientTest {
 
     @Test
     public void shouldRequestAuditArchive() {
-        List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        ArchiveAuditRequest request = new ArchiveAuditRequest(eventTypes, "any_nino", LocalDate.now().minusMonths(6), Arrays.asList("corr1", "corr2"), "PASS");
+        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), Arrays.asList("corr1", "corr2"), "PASS", LocalDate.now());
         when(mockRestTemplate.exchange(eq("some archive endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<ArchiveAuditResponse>() {}))).thenReturn(ResponseEntity.ok(new ArchiveAuditResponse()));
 
         auditClient.archiveAudit(request);

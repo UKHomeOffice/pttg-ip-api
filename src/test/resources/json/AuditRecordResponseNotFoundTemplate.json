@@ -1,0 +1,16 @@
+{
+    "id": "${correlation-id}",
+    "date": "${date-time}",
+    "email": "any_email",
+    "ref": "INCOME_PROVING_FINANCIAL_STATUS_RESPONSE",
+    "detail": {
+        "method": "get-financial-status",
+        "response": {
+            "status": {
+                "code": "0009",
+                "message": "Resource not found: any_nino"
+            }
+        }
+    },
+    "nino": null
+}

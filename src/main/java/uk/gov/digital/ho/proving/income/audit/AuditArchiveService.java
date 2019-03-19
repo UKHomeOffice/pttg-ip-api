@@ -48,10 +48,10 @@ class AuditArchiveService {
     private ArchiveAuditRequest generateAuditHistoryRequest(AuditResultByNino auditResult, AuditArchiveConfig config) {
         return ArchiveAuditRequest.builder()
             .nino(auditResult.nino())
-            .eventTypes(config.eventTypes())
             .eventIds(auditResult.correlationIds())
             .lastArchiveDate(config.lastArchiveDate())
             .result(auditResult.resultType().name())
+            .resultDate(auditResult.date())
             .build();
     }
 

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,9 +16,14 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 class ArchiveAuditRequest {
-    private List<AuditEventType> eventTypes;
+    @JsonProperty
     private String nino;
+    @JsonProperty
     private LocalDate lastArchiveDate;
+    @JsonProperty
     private List<String> eventIds;
+    @JsonProperty
     private String result;
+    @JsonProperty
+    private LocalDate resultDate;
 }
