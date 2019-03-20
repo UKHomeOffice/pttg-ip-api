@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -63,7 +64,7 @@ public class AuditArchiveServiceIT {
         String auditHistory = String.format("[%s, %s, %s, %s]", request1, request2, response1, response2);
         mockAuditService
             .expect(requestTo(containsString("/history")))
-            .andExpect(method(POST))
+            .andExpect(method(GET))
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
         String endOfArchive = LocalDate.now().minusMonths(6).minusDays(1).format(DateTimeFormatter.ISO_DATE);
@@ -95,7 +96,7 @@ public class AuditArchiveServiceIT {
         String auditHistory = String.format("[%s]", errorRequest);
         mockAuditService
             .expect(requestTo(containsString("/history")))
-            .andExpect(method(POST))
+            .andExpect(method(GET))
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
         mockAuditService
@@ -118,7 +119,7 @@ public class AuditArchiveServiceIT {
         String auditHistory = String.format("[%s, %s, %s]", errorRequest, notFoundRequest, notFoundResponse);
         mockAuditService
             .expect(requestTo(containsString("/history")))
-            .andExpect(method(POST))
+            .andExpect(method(GET))
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
         mockAuditService
@@ -141,7 +142,7 @@ public class AuditArchiveServiceIT {
         String auditHistory = String.format("[%s, %s, %s, %s]", request1, response1, request2, response2);
         mockAuditService
             .expect(requestTo(containsString("/history")))
-            .andExpect(method(POST))
+            .andExpect(method(GET))
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
         String endOfArchive = LocalDate.now().minusMonths(6).minusDays(1).format(DateTimeFormatter.ISO_DATE);
@@ -178,7 +179,7 @@ public class AuditArchiveServiceIT {
 
         mockAuditService
             .expect(requestTo(containsString("/history")))
-            .andExpect(method(POST))
+            .andExpect(method(GET))
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
         mockAuditService

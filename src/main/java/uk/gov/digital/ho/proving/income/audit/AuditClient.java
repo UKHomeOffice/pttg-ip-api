@@ -14,16 +14,21 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
+import javax.swing.text.DateFormatter;
+import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -77,9 +82,16 @@ public class AuditClient {
     }
 
     List<AuditRecord> getAuditHistory(LocalDate toDate, List<AuditEventType> eventTypes) {
-        AuditHistoryRequest request = new AuditHistoryRequest(toDate, eventTypes);
-        HttpEntity<AuditHistoryRequest> entity = new HttpEntity<>(request, generateRestHeaders());
-        ResponseEntity<List<AuditRecord>> auditRecords = restTemplate.exchange(auditHistoryEndpoint, POST, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
+        URI uri = UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
+            .queryParam("toDate", toDate.format(DateTimeFormatter.ISO_DATE))
+            .queryParam("eventTypes", eventTypes)
+            .build()
+            .encode()
+            .toUri();
+
+//        AuditHistoryRequest request = new AuditHistoryRequest(toDate, eventTypes);
+        HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
+        ResponseEntity<List<AuditRecord>> auditRecords = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
         return auditRecords.getBody();
     }
 
