@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
@@ -43,6 +44,7 @@ class AuditResultConsolidator {
 
         return resultsByNino.values().stream()
             .map(this::consolidate)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 
@@ -50,6 +52,9 @@ class AuditResultConsolidator {
         AuditResult consolidatedResult = results.stream()
             .max(auditResultComparator)
             .orElse(null);
+        if (consolidatedResult == null) {
+            return null;
+        }
         List<String> allCorrelationIds = results.stream()
             .map(AuditResult::correlationId)
             .collect(Collectors.toList());

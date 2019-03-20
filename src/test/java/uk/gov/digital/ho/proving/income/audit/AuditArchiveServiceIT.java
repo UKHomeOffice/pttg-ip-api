@@ -44,6 +44,17 @@ public class AuditArchiveServiceIT {
     }
 
     @Test
+    public void archiveAudit_noHistoryData_noArchiveRequested() {
+        String auditHistory = "[]";
+        mockAuditService
+            .expect(requestTo(containsString("/history")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
+
+        auditArchiveService.archiveAudit();
+    }
+
+    @Test
     public void archiveAudit_multipleNinos_archiveAll() {
         String request1 = fileUtils.buildRequest("corr-id-1", "2019-01-01 11:00:00.000", "nino_1");
         String response1 = fileUtils.buildResponse("corr-id-1", "2019-01-01 12:00:00.000", "nino_1", "true");
