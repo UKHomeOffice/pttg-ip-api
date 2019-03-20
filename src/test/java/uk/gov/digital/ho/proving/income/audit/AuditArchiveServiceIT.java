@@ -91,7 +91,7 @@ public class AuditArchiveServiceIT {
     }
 
     @Test
-    public void archiveAudit_noResponse_errorReturned() {
+    public void archiveAudit_noResponseForCorrelationId_requestStatusIsError() {
         String errorRequest = fileUtils.buildRequest("corr-id-1", "2019-01-02 11:00:00.000", "nino_1");
         String auditHistory = String.format("[%s]", errorRequest);
         mockAuditService
