@@ -90,7 +90,6 @@ public class AuditClient {
             .encode()
             .toUri();
 
-//        AuditHistoryRequest request = new AuditHistoryRequest(toDate, eventTypes);
         HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
         ResponseEntity<List<AuditRecord>> auditRecords = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
         return auditRecords.getBody();
