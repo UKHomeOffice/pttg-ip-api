@@ -135,22 +135,21 @@ public class AuditArchiveServiceIT {
 
     @Test
     public void archiveAudit_multipleMatchingResults_latestResultReturned() {
-        String request1 = fileUtils.buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
-        String response1 = fileUtils.buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "true");
-        String request2 = fileUtils.buildRequest("corr-id-2", "2019-01-02 14:00:00.000", "nino_1");
-        String response2 = fileUtils.buildResponse("corr-id-2", "2019-01-02 15:00:00.000", "nino_1", "true");
-        String auditHistory = String.format("[%s, %s, %s, %s]", request1, response1, request2, response2);
+        String earlyRequest = fileUtils.buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
+        String earlyResponse = fileUtils.buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "true");
+        String laterRequest = fileUtils.buildRequest("corr-id-2", "2019-01-02 14:00:00.000", "nino_1");
+        String laterResponse = fileUtils.buildResponse("corr-id-2", "2019-01-02 15:00:00.000", "nino_1", "true");
+        String auditHistory = String.format("[%s, %s, %s, %s]", earlyRequest, earlyResponse, laterRequest, laterResponse);
         mockAuditService
             .expect(requestTo(containsString("/history")))
             .andExpect(method(GET))
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
-        String endOfArchive = LocalDate.now().minusMonths(6).minusDays(1).format(DateTimeFormatter.ISO_DATE);
         mockAuditService
             .expect(requestTo(containsString("/archive")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", equalTo("nino_1")))
-            .andExpect(jsonPath("$.lastArchiveDate", is(endOfArchive)))
+            .andExpect(jsonPath("$.resultDate", equalTo("2019-01-02")))
             .andRespond(withSuccess());
 
         auditArchiveService.archiveAudit();
