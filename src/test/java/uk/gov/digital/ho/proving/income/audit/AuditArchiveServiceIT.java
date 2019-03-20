@@ -177,7 +177,7 @@ public class AuditArchiveServiceIT {
 
         String auditHistory = String.format("[%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s]", nino1RequestFail, nino1ResponseFail,
             nino1RequestNoResponse, nino2FirstPassRequest, nino2FirstPassResponse, nino2SecondPassRequest, nino2SecondPassResponse,
-            nino2NotFoundRequest, nino3RequestNoResponse, nino3RequestNotFound, nino3ResponseNotFound);
+            nino2NotFoundRequest, nino3RequestNoResponse, nino3RequestNotFound, nino3ResponseNotFound, nino2NotFoundResponse);
 
         mockAuditService
             .expect(requestTo(containsString("/history")))
