@@ -157,7 +157,7 @@ public class AuditArchiveServiceIT {
     }
 
     @Test
-    public void archiveAudit_multipleMatchingAndMultipleresults_latestResultForAllRequestsReturned() {
+    public void archiveAudit_multipleMatchingAndMultipleResults_latestResultForAllRequestsReturned() {
         String nino1request1 = fileUtils.buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
         String nino1response1 = fileUtils.buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "false");
         String nino1request2noResponse = fileUtils.buildRequest("corr-id-3", "2019-01-02 14:00:00.000", "nino_1");
