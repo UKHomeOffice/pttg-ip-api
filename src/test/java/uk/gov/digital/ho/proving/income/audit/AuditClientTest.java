@@ -126,7 +126,6 @@ public class AuditClientTest {
 
         List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
 
-        verify(mockRestTemplate).exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}));
         URI uri = captorUri.getValue();
         assertThat(uri).hasHost(SOME_HISTORY_ENDPOINT.replace("http://", ""));
         assertThat(uri).hasQuery(String.format("toDate=%s&eventTypes=%s", LocalDate.now().toString(), eventTypes.toString()));

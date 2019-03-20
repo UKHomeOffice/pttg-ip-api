@@ -151,7 +151,6 @@ public class AuditResultConsolidatorIT {
         AuditResult expected1 = getExpectedAuditResult1();
         AuditResult expected2 = getExpectedAuditResult2();
 
-        assertThat(results.size()).isEqualTo(2);
         assertThat(results).containsExactlyInAnyOrder(expected1, expected2);
     }
 
