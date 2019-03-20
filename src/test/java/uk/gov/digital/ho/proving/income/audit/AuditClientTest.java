@@ -22,25 +22,34 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
+import uk.gov.digital.ho.proving.income.application.LogEvent;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import static ch.qos.logback.classic.Level.ERROR;
+import static ch.qos.logback.classic.Level.INFO;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_AUDIT_FAILURE;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_AUDIT_REQUEST;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_AUDIT_SUCCESS;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuditClientTest {
 
     private static TimeZone defaultTimeZone;
+    private static final UUID  UUID = new UUID(1, 1);
 
     @Mock private static ObjectMapper mockObjectMapper;
     @Mock private RestTemplate mockRestTemplate;
@@ -69,11 +78,15 @@ public class AuditClientTest {
                                         mockRequestData,
                                         "some endpoint",
                                         mockObjectMapper);
+
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
+        rootLogger.setLevel(Level.INFO);
+        rootLogger.addAppender(mockAppender);
     }
 
     @Test
     public void shouldUseCollaborators() {
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), null);
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, null);
 
         verify(mockRestTemplate).exchange(eq("some endpoint"), eq(POST), any(HttpEntity.class), eq(Void.class));
     }
@@ -82,7 +95,7 @@ public class AuditClientTest {
     public void shouldSetHeaders() {
 
         when(mockRequestData.auditBasicAuth()).thenReturn("some basic auth header value");
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), null);
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, null);
 
         verify(mockRestTemplate).exchange(eq("some endpoint"), eq(POST), captorHttpEntity.capture(), eq(Void.class));
 
@@ -101,7 +114,7 @@ public class AuditClientTest {
         when(mockRequestData.deploymentNamespace()).thenReturn("some deployment namespace");
         when(mockObjectMapper.writeValueAsString(any(Object.class))).thenReturn("{}");
 
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), Collections.emptyMap());
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
 
         verify(mockRestTemplate).exchange(eq("some endpoint"), eq(POST), captorHttpEntity.capture(), eq(Void.class));
 
@@ -119,54 +132,39 @@ public class AuditClientTest {
 
     @Test
     public void shouldLogWhenAddToAuditServiceEvent() {
-        Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
-        rootLogger.setLevel(Level.INFO);
-        rootLogger.addAppender(mockAppender);
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
 
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), Collections.emptyMap());
-
-        verify(mockAppender).doAppend(argThat(argument -> {
-            LoggingEvent loggingEvent = (LoggingEvent) argument;
-
-            return loggingEvent.getMessage().equals("POST data for {} to audit service") &&
-                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[1]).getFieldName().equals("event_id") &&
-                loggingEvent.getArgumentArray()[1].toString().equals("INCOME_PROVING_AUDIT_REQUEST");
-        }));
+        verifyLogMessage("POST data for 00000000-0000-0001-0000-000000000001 to audit service", INCOME_PROVING_AUDIT_REQUEST, INFO);
     }
 
     @Test
     public void shouldLogAfterSuccessfulAuditServiceCall() {
-        Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
-        rootLogger.setLevel(Level.INFO);
-        rootLogger.addAppender(mockAppender);
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
 
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), Collections.emptyMap());
-
-        verify(mockAppender).doAppend(argThat(argument -> {
-            LoggingEvent loggingEvent = (LoggingEvent) argument;
-
-            return loggingEvent.getMessage().equals("data POSTed to audit service") &&
-                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[0]).getFieldName().equals("event_id") &&
-                loggingEvent.getArgumentArray()[0].toString().equals("INCOME_PROVING_AUDIT_SUCCESS");
-        }));
+        verifyLogMessage("data POSTed to audit service", INCOME_PROVING_AUDIT_SUCCESS, INFO);
     }
 
     @Test
     public void shouldLogAfterFailureToAudit() throws JsonProcessingException {
-        Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
-        rootLogger.setLevel(Level.ERROR);
-        rootLogger.addAppender(mockAppender);
-
         when(mockObjectMapper.writeValueAsString(any(Object.class))).thenThrow(JsonProcessingException.class);
 
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), Collections.emptyMap());
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
 
-        verify(mockAppender).doAppend(argThat(argument -> {
-            LoggingEvent loggingEvent = (LoggingEvent) argument;
+        verifyLogMessage("Failed to create json representation of audit data", INCOME_PROVING_AUDIT_FAILURE, ERROR);
+    }
 
-            return loggingEvent.getMessage().equals("Failed to create json representation of audit data") &&
-                ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[0]).getFieldName().equals("event_id") &&
-                loggingEvent.getArgumentArray()[0].toString().equals("INCOME_PROVING_AUDIT_FAILURE");
-        }));
+    private void verifyLogMessage(final String message, LogEvent event, Level logLevel) {
+        ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
+        verify(mockAppender, atLeastOnce()).doAppend(captor.capture());
+
+        List<ILoggingEvent> loggingEvents = captor.getAllValues();
+        for (ILoggingEvent loggingEvent : loggingEvents) {
+            LoggingEvent logEvent = (LoggingEvent) loggingEvent;
+            if (logEvent.getFormattedMessage().equals(message) && logEvent.getLevel().equals(logLevel) &&
+                loggingEvent.getArgumentArray()[loggingEvent.getArgumentArray().length - 1].equals(new ObjectAppendingMarker("event_id", event))) {
+                return;
+            }
+        }
+        fail(String.format("Failed to find log with message=\"%s\" and level=\"%s\"", message, logLevel));
     }
 }
