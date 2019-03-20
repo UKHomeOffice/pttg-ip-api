@@ -149,7 +149,7 @@ public class AuditArchiveServiceIT {
         mockAuditService
             .expect(requestTo(containsString("/archive")))
             .andExpect(method(POST))
-            .andExpect(jsonPath("$.nino", is("nino_1")))
+            .andExpect(jsonPath("$.nino", equalTo("nino_1")))
             .andExpect(jsonPath("$.lastArchiveDate", is(endOfArchive)))
             .andRespond(withSuccess());
 
