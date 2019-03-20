@@ -28,15 +28,11 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 
 import static ch.qos.logback.classic.Level.ERROR;
 import static ch.qos.logback.classic.Level.INFO;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -49,14 +45,19 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 public class AuditClientTest {
 
     private static TimeZone defaultTimeZone;
-    private static final UUID  UUID = new UUID(1, 1);
+    private static final UUID UUID = new UUID(1, 1);
 
-    @Mock private static ObjectMapper mockObjectMapper;
-    @Mock private RestTemplate mockRestTemplate;
-    @Mock private RequestData mockRequestData;
-    @Mock private Appender<ILoggingEvent> mockAppender;
+    @Mock
+    private static ObjectMapper mockObjectMapper;
+    @Mock
+    private RestTemplate mockRestTemplate;
+    @Mock
+    private RequestData mockRequestData;
+    @Mock
+    private Appender<ILoggingEvent> mockAppender;
 
-    @Captor private ArgumentCaptor<HttpEntity> captorHttpEntity;
+    @Captor
+    private ArgumentCaptor<HttpEntity> captorHttpEntity;
 
     private AuditClient auditClient;
 
@@ -74,10 +75,10 @@ public class AuditClientTest {
     @Before
     public void setup() {
         auditClient = new AuditClient(Clock.fixed(Instant.parse("2017-08-29T08:00:00Z"), ZoneId.of("UTC")),
-                                        mockRestTemplate,
-                                        mockRequestData,
-                                        "some endpoint",
-                                        mockObjectMapper);
+            mockRestTemplate,
+            mockRequestData,
+            "some endpoint",
+            mockObjectMapper);
 
         Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
         rootLogger.setLevel(Level.INFO);
@@ -154,17 +155,11 @@ public class AuditClientTest {
     }
 
     private void verifyLogMessage(final String message, LogEvent event, Level logLevel) {
-        ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(mockAppender, atLeastOnce()).doAppend(captor.capture());
-
-        List<ILoggingEvent> loggingEvents = captor.getAllValues();
-        for (ILoggingEvent loggingEvent : loggingEvents) {
-            LoggingEvent logEvent = (LoggingEvent) loggingEvent;
-            if (logEvent.getFormattedMessage().equals(message) && logEvent.getLevel().equals(logLevel) &&
-                loggingEvent.getArgumentArray()[loggingEvent.getArgumentArray().length - 1].equals(new ObjectAppendingMarker("event_id", event))) {
-                return;
-            }
-        }
-        fail(String.format("Failed to find log with message=\"%s\" and level=\"%s\"", message, logLevel));
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+            return loggingEvent.getLevel().equals(logLevel) &&
+                loggingEvent.getFormattedMessage().equals(message) &&
+                Arrays.asList(loggingEvent.getArgumentArray()).contains(new ObjectAppendingMarker("event_id", event));
+        }));
     }
 }

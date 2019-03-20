@@ -9,7 +9,6 @@ import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
@@ -23,18 +22,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_CALCULATE_FREQUENCY;
 import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED;
@@ -508,17 +504,11 @@ public class FrequencyCalculatorTest {
     }
 
     private void verifyLogMessage(final String message, LogEvent event) {
-        ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(mockAppender, times(2)).doAppend(captor.capture());
-
-        List<ILoggingEvent> loggingEvents = captor.getAllValues();
-        for (ILoggingEvent loggingEvent : loggingEvents) {
-            LoggingEvent logEvent = (LoggingEvent) loggingEvent;
-            if (logEvent.getMessage().equals(message) && logEvent.getLevel().equals(Level.INFO) &&
-                loggingEvent.getArgumentArray()[0].equals(new ObjectAppendingMarker("event_id", event))) {
-                return;
-            }
-        }
-        fail(String.format("Failed to find log with message=\"%s\" and level=INFO", message));
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+            return loggingEvent.getLevel().equals(INFO) &&
+                loggingEvent.getFormattedMessage().equals(message) &&
+                Arrays.asList(loggingEvent.getArgumentArray()).contains(new ObjectAppendingMarker("event_id", event));
+        }));
     }
 }

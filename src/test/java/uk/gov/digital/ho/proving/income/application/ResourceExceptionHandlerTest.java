@@ -8,7 +8,6 @@ import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -20,11 +19,11 @@ import uk.gov.digital.ho.proving.income.api.NinoUtils;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import utils.LogCapturer;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static ch.qos.logback.classic.Level.ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -92,18 +91,12 @@ public class ResourceExceptionHandlerTest {
     }
 
     private void verifyLogMessage(final String message, LogEvent event) {
-        ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(mockAppender, atLeastOnce()).doAppend(captor.capture());
-
-        List<ILoggingEvent> loggingEvents = captor.getAllValues();
-        for (ILoggingEvent loggingEvent : loggingEvents) {
-            LoggingEvent logEvent = (LoggingEvent) loggingEvent;
-            if (logEvent.getFormattedMessage().equals(message) && logEvent.getLevel().equals(ERROR) &&
-                loggingEvent.getArgumentArray()[loggingEvent.getArgumentArray().length - 1].equals(new ObjectAppendingMarker("event_id", event))) {
-                return;
-            }
-        }
-        fail(String.format("Failed to find log with message=\"%s\" and level=ERROR", message));
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+            return loggingEvent.getLevel().equals(ERROR) &&
+                loggingEvent.getFormattedMessage().equals(message) &&
+                Arrays.asList(loggingEvent.getArgumentArray()).contains(new ObjectAppendingMarker("event_id", event));
+        }));
     }
 
     private HttpHeaders httpHeaders() {

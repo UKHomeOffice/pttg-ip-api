@@ -33,14 +33,13 @@ import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.List;
+import java.util.Arrays;
 
 import static ch.qos.logback.classic.Level.ERROR;
 import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -290,17 +289,12 @@ public class HmrcClientTest {
     }
 
     public void verifyLogMessage(String message, LogEvent event, Level logLevel) {
-        ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(mockAppender, atLeastOnce()).doAppend(captor.capture());
-        List<ILoggingEvent> loggingEvents = captor.getAllValues();
-        for (ILoggingEvent loggingEvent : loggingEvents) {
-            LoggingEvent logEvent = (LoggingEvent) loggingEvent;
-            if (logEvent.getFormattedMessage().equals(message) && logEvent.getLevel().equals(logLevel) &&
-                loggingEvent.getArgumentArray()[loggingEvent.getArgumentArray().length - 1].equals(new ObjectAppendingMarker("event_id", event))) {
-                return;
-            }
-        }
-        fail(String.format("Failed to find log with message=\"%s\" and level=\"%s\"", event, logLevel));
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+            return loggingEvent.getLevel().equals(logLevel) &&
+                loggingEvent.getFormattedMessage().equals(message) &&
+                Arrays.asList(loggingEvent.getArgumentArray()).contains(new ObjectAppendingMarker("event_id", event));
+        }));
     }
 
 }

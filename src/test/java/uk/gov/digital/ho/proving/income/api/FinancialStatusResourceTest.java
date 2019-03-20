@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.proving.income.api;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
@@ -10,7 +9,6 @@ import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -27,9 +25,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
+import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_REQUEST_RECEIVED;
@@ -61,7 +59,7 @@ public class FinancialStatusResourceTest {
     @Before
     public void setUp() {
         Logger rootLogger = (Logger) LoggerFactory.getLogger(FinancialStatusResource.class);
-        rootLogger.setLevel(Level.INFO);
+        rootLogger.setLevel(INFO);
         rootLogger.addAppender(mockAppender);
     }
 
@@ -139,7 +137,7 @@ public class FinancialStatusResourceTest {
     @Test
     public void shouldLogWhenRequestReceived() {
         Logger rootLogger = (Logger) LoggerFactory.getLogger(FinancialStatusResource.class);
-        rootLogger.setLevel(Level.INFO);
+        rootLogger.setLevel(INFO);
         rootLogger.addAppender(mockAppender);
 
         when(mockNinoUtils.sanitise(realNino)).thenReturn(sanitisedNino);
@@ -156,7 +154,7 @@ public class FinancialStatusResourceTest {
     @Test
     public void shouldLogWhenResponseReceived() {
         Logger rootLogger = (Logger) LoggerFactory.getLogger(FinancialStatusResource.class);
-        rootLogger.setLevel(Level.INFO);
+        rootLogger.setLevel(INFO);
         rootLogger.addAppender(mockAppender);
 
         when(mockNinoUtils.sanitise(realNino)).thenReturn(sanitisedNino);
@@ -170,17 +168,11 @@ public class FinancialStatusResourceTest {
     }
 
     private void verifyLogMessage(final String message, LogEvent event) {
-        ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(mockAppender, times(2)).doAppend(captor.capture());
-
-        List<ILoggingEvent> loggingEvents = captor.getAllValues();
-        for (ILoggingEvent loggingEvent : loggingEvents) {
-            LoggingEvent logEvent = (LoggingEvent) loggingEvent;
-            if (logEvent.getFormattedMessage().equals(message) && logEvent.getLevel().equals(Level.INFO) &&
-                loggingEvent.getArgumentArray()[loggingEvent.getArgumentArray().length - 1].equals(new ObjectAppendingMarker("event_id", event))) {
-                return;
-            }
-        }
-        fail(String.format("Failed to find log with message=\"%s\" and level=INFO", message));
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+            return loggingEvent.getLevel().equals(INFO) &&
+                loggingEvent.getFormattedMessage().equals(message) &&
+                Arrays.asList(loggingEvent.getArgumentArray()).contains(new ObjectAppendingMarker("event_id", event));
+        }));
     }
 }
