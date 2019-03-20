@@ -4,49 +4,55 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.digital.ho.proving.income.application.ServiceConfiguration;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
+@SpringBootTest( classes = {
+    ObjectMapper.class,
+    FileUtils.class,
+    AuditResultParser.class
+})
 public class AuditResultParserTest {
 
-    private ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0).createObjectMapper();
-    private AuditResultParser auditResultParser = new AuditResultParser(objectMapper);
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private FileUtils fileUtils;
+    @Autowired
+    private AuditResultParser auditResultParser;
 
-    @Value("classpath:json/AuditRecordRequest.json")
-    private Resource auditRecordRequest;
-    @Value("classpath:json/AuditRecordResponsePass.json")
-    private Resource auditRecordPassResponse;
-    @Value("classpath:json/AuditRecordResponseFail.json")
-    private Resource auditRecordFailResponse;
-    @Value("classpath:json/AuditRecordResponseNotFound.json")
-    private Resource auditRecordNotFoundResponse;
     @Value("classpath:json/AuditDetailWithNino.json")
     private Resource auditDetailWithNino;
     @Value("classpath:json/AuditDetailWithoutNino.json")
     private Resource auditDetailWithoutNino;
 
+    private DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
     @Test
     public void from_anyAuditRecord_fillsStandardFields() throws IOException {
-        String auditRecordRequestString = FileUtils.loadJsonResource(auditRecordRequest);
+        String auditRecordRequestString = fileUtils.buildRequest("any_corr_id", LocalDateTime.now().format(DATE_FORMATTER), "any_nino");
         AuditRecord record = objectMapper.readValue(auditRecordRequestString, AuditRecord.class);
 
         AuditResult auditResult = auditResultParser.from(record);
-        assertThat(auditResult.correlationId()).isEqualTo("3743b803-bd87-4518-8cae-d5b3e0566396");
-        assertThat(auditResult.date()).isEqualTo(LocalDate.of(2019, 2, 25));
-        assertThat(auditResult.nino()).isEqualTo("PJ151008C");
+        assertThat(auditResult.correlationId()).isEqualTo("any_corr_id");
+        assertThat(auditResult.date()).isEqualTo(LocalDate.now());
+        assertThat(auditResult.nino()).isEqualTo("any_nino");
     }
 
     @Test
     public void from_missingNino_ninoIsNull() throws IOException {
-        String auditRecordFailResponseString = FileUtils.loadJsonResource(auditRecordFailResponse);
+        String auditRecordFailResponseString = fileUtils.buildResponse("any_corr_id", LocalDateTime.now().format(DATE_FORMATTER), "any_nino", "false");
         AuditRecord record = objectMapper.readValue(auditRecordFailResponseString, AuditRecord.class);
 
         AuditResult auditResult = auditResultParser.from(record);
@@ -55,7 +61,7 @@ public class AuditResultParserTest {
 
     @Test
     public void from_requestNotResponse_errorResultType() throws IOException {
-        String auditRecordRequestString = FileUtils.loadJsonResource(auditRecordRequest);
+        String auditRecordRequestString = fileUtils.buildRequest("any_corr_id", LocalDateTime.now().format(DATE_FORMATTER), "any_nino");
         AuditRecord record = objectMapper.readValue(auditRecordRequestString, AuditRecord.class);
 
         assertThat(auditResultParser.from(record).resultType()).isEqualTo(AuditResultType.ERROR);
@@ -63,7 +69,7 @@ public class AuditResultParserTest {
 
     @Test
     public void from_pass_correctResultType() throws IOException {
-        String auditRecordResponseString = FileUtils.loadJsonResource(auditRecordPassResponse);
+        String auditRecordResponseString = fileUtils.buildResponse("any_corr_id", LocalDateTime.now().format(DATE_FORMATTER), "any_nino", "true");
         AuditRecord record = objectMapper.readValue(auditRecordResponseString, AuditRecord.class);
 
         assertThat(auditResultParser.from(record).resultType()).isEqualTo(AuditResultType.PASS);
@@ -71,7 +77,7 @@ public class AuditResultParserTest {
 
     @Test
     public void from_fail_correctResultType() throws IOException {
-        String auditRecordResponseString = FileUtils.loadJsonResource(auditRecordFailResponse);
+        String auditRecordResponseString = fileUtils.buildResponse("any_corr_id", LocalDateTime.now().format(DATE_FORMATTER), "any_nino", "false");
         AuditRecord record = objectMapper.readValue(auditRecordResponseString, AuditRecord.class);
 
         assertThat(auditResultParser.from(record).resultType()).isEqualTo(AuditResultType.FAIL);
@@ -79,7 +85,7 @@ public class AuditResultParserTest {
 
     @Test
     public void from_notFound_correctResultType() throws IOException {
-        String auditRecordRequestNotFoundString = FileUtils.loadJsonResource(auditRecordNotFoundResponse);
+        String auditRecordRequestNotFoundString = fileUtils.buildResponseNotFound("any_corr_id", LocalDateTime.now().format(DATE_FORMATTER));
         AuditRecord record = objectMapper.readValue(auditRecordRequestNotFoundString, AuditRecord.class);
 
         assertThat(auditResultParser.from(record).resultType()).isEqualTo(AuditResultType.NOTFOUND);
@@ -87,7 +93,7 @@ public class AuditResultParserTest {
 
     @Test
     public void getResultNino_ninoExists_ninoIsReturned() throws IOException {
-        String auditDetail = FileUtils.loadJsonResource(auditDetailWithNino);
+        String auditDetail = fileUtils.loadJsonResource(auditDetailWithNino);
         JsonNode auditDetailNode = objectMapper.readValue(auditDetail, JsonNode.class);
 
         assertThat(auditResultParser.getResultNino(auditDetailNode)).isEqualTo("ANY_NINO");
@@ -95,10 +101,11 @@ public class AuditResultParserTest {
 
     @Test
     public void getResultNino_ninoDoesntExist_blankIsReturned() throws IOException {
-        String auditDetail = FileUtils.loadJsonResource(auditDetailWithoutNino);
+        String auditDetail = fileUtils.loadJsonResource(auditDetailWithoutNino);
         JsonNode auditDetailNode = objectMapper.readValue(auditDetail, JsonNode.class);
 
         assertThat(auditResultParser.getResultNino(auditDetailNode)).isEqualTo("");
     }
 
 }
+

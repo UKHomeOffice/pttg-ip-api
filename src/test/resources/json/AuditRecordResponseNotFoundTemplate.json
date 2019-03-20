@@ -1,14 +1,14 @@
 {
-    "id": "3743b803-bd87-4518-8cae-d5b3e0566396",
-    "date": "2019-02-25 15:10:12.489",
-    "email": "james.cheetham@digital.homeoffice.gov.uk",
+    "id": "${correlation-id}",
+    "date": "${date-time}",
+    "email": "any_email",
     "ref": "INCOME_PROVING_FINANCIAL_STATUS_RESPONSE",
     "detail": {
         "method": "get-financial-status",
         "response": {
             "status": {
                 "code": "0009",
-                "message": "Resource not found: NN022****"
+                "message": "Resource not found: any_nino"
             }
         }
     },

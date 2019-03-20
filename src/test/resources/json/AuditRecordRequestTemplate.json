@@ -1,0 +1,16 @@
+    {
+    "id": "${correlation-id}",
+    "date": "${date-time}",
+    "email": "any_email",
+    "ref": "INCOME_PROVING_FINANCIAL_STATUS_REQUEST",
+    "detail": {
+        "forename": "any_forename",
+        "method": "get-financial-status",
+        "dependants": 0,
+        "surname": "any_surname",
+        "applicationRaisedDate": "2019-01-01",
+        "dateOfBirth": "1960-01-01",
+        "nino": "${nino}"
+    },
+    "nino": "${nino}"
+}
