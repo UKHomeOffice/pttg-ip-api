@@ -17,11 +17,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
@@ -37,8 +42,13 @@ public class AuditClientTest {
     @Mock private RequestData mockRequestData;
 
     @Captor private ArgumentCaptor<HttpEntity> captorHttpEntity;
+    @Captor private ArgumentCaptor<URI> captorUri;
 
     private AuditClient auditClient;
+
+    private static final String SOME_ENDPOINT = "http://some-endpoint";
+    private static final String SOME_HISTORY_ENDPOINT = "http://some-history-endpoint";
+    private static final String SOME_ARCHIVE_ENDPOINT = "http://some-archive-endpoint";
 
     @BeforeClass
     public static void beforeAllTests() {
@@ -56,9 +66,9 @@ public class AuditClientTest {
         auditClient = new AuditClient(Clock.fixed(Instant.parse("2017-08-29T08:00:00Z"), ZoneId.of("UTC")),
                                         mockRestTemplate,
                                         mockRequestData,
-                                        "some endpoint",
-                                        "some history endpoint",
-                                        "some archive endpoint",
+                                        SOME_ENDPOINT,
+                                        SOME_HISTORY_ENDPOINT,
+                                        SOME_ARCHIVE_ENDPOINT,
                                         mapper);
     }
 
@@ -66,7 +76,7 @@ public class AuditClientTest {
     public void shouldUseCollaborators() {
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), null);
 
-        verify(mockRestTemplate).exchange(eq("some endpoint"), eq(POST), any(HttpEntity.class), eq(Void.class));
+        verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class));
     }
 
     @Test
@@ -75,7 +85,7 @@ public class AuditClientTest {
         when(mockRequestData.auditBasicAuth()).thenReturn("some basic auth header value");
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), null);
 
-        verify(mockRestTemplate).exchange(eq("some endpoint"), eq(POST), captorHttpEntity.capture(), eq(Void.class));
+        verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class));
 
         HttpHeaders headers = captorHttpEntity.getValue().getHeaders();
         assertThat(headers.get("Authorization").get(0)).isEqualTo("some basic auth header value");
@@ -93,7 +103,7 @@ public class AuditClientTest {
 
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), Collections.emptyMap());
 
-        verify(mockRestTemplate).exchange(eq("some endpoint"), eq(POST), captorHttpEntity.capture(), eq(Void.class));
+        verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class));
 
         AuditableData auditableData = (AuditableData) captorHttpEntity.getValue().getBody();
         assertThat(auditableData.getEventId()).isNotEmpty();
@@ -112,26 +122,25 @@ public class AuditClientTest {
         List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
         List<AuditRecord> results = new ArrayList<>();
         ResponseEntity<List<AuditRecord>> resultsEntity = ResponseEntity.ok(results);
-        when(mockRestTemplate.exchange(eq("some history endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}))).thenReturn(resultsEntity);
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}))).thenReturn(resultsEntity);
 
         List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
 
-        verify(mockRestTemplate).exchange(eq("some history endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}));
-        AuditHistoryRequest request = (AuditHistoryRequest)captorHttpEntity.getValue().getBody();
-        assertThat(request.toDate()).isEqualTo(LocalDate.now());
-        assertThat(request.eventTypes().size()).isEqualTo(2);
-        assertThat(request.eventTypes()).containsExactlyInAnyOrder(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        verify(mockRestTemplate).exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}));
+        URI uri = captorUri.getValue();
+        assertThat(uri).hasHost(SOME_HISTORY_ENDPOINT.replace("http://", ""));
+        assertThat(uri).hasQuery(String.format("toDate=%s&eventTypes=%s", LocalDate.now().toString(), eventTypes.toString()));
         assertThat(auditRecords).isEqualTo(results);
     }
 
     @Test
     public void shouldRequestAuditArchive() {
         ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), Arrays.asList("corr1", "corr2"), "PASS", LocalDate.now());
-        when(mockRestTemplate.exchange(eq("some archive endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<ArchiveAuditResponse>() {}))).thenReturn(ResponseEntity.ok(new ArchiveAuditResponse()));
+        when(mockRestTemplate.exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<ArchiveAuditResponse>() {}))).thenReturn(ResponseEntity.ok(new ArchiveAuditResponse()));
 
         auditClient.archiveAudit(request);
 
-        verify(mockRestTemplate).exchange(eq("some archive endpoint"), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<ArchiveAuditResponse>() {}));
+        verify(mockRestTemplate).exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<ArchiveAuditResponse>() {}));
         ArchiveAuditRequest actual = (ArchiveAuditRequest) captorHttpEntity.getValue().getBody();
         assertThat(actual).isEqualTo(request);
     }
