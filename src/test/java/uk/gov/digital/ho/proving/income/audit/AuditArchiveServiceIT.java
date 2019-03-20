@@ -157,30 +157,34 @@ public class AuditArchiveServiceIT {
 
     @Test
     public void archiveAudit_multipleMatchingAndMultipleResults_latestResultForAllRequestsReturned() {
-        String nino1request1 = fileUtils.buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
-        String nino1response1 = fileUtils.buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "false");
-        String nino1request2noResponse = fileUtils.buildRequest("corr-id-3", "2019-01-02 14:00:00.000", "nino_1");
+        // nino_1 has best result of FAIL
+        String nino1RequestFail = fileUtils.buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
+        String nino1ResponseFail = fileUtils.buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "false");
+        String nino1RequestNoResponse = fileUtils.buildRequest("corr-id-3", "2019-01-02 14:00:00.000", "nino_1");
 
-        String nino2request1 = fileUtils.buildRequest("corr-id-2", "2019-01-02 14:00:00.000", "nino_2");
-        String nino2response1 = fileUtils.buildResponse("corr-id-2", "2019-01-02 15:00:00.000", "nino_2", "true");
-        String nino2request2 = fileUtils.buildRequest("corr-id-5", "2019-01-03 14:00:00.000", "nino_2");
-        String nino2response2 = fileUtils.buildResponse("corr-id-5", "2019-01-03 15:00:00.000", "nino_2", "true");
-        String nino2request3 = fileUtils.buildRequest("corr-id-6", "2019-01-04 14:00:00.000", "nino_2");
-        String nino2response3 = fileUtils.buildResponseNotFound("corr-id-6", "2019-01-04 15:00:00.000");
+        // nino_2 has best result of PASS, with the latest being on 2019-01-03
+        String nino2FirstPassRequest = fileUtils.buildRequest("corr-id-2", "2019-01-02 14:00:00.000", "nino_2");
+        String nino2FirstPassResponse = fileUtils.buildResponse("corr-id-2", "2019-01-02 15:00:00.000", "nino_2", "true");
+        String nino2SecondPassRequest = fileUtils.buildRequest("corr-id-5", "2019-01-03 14:00:00.000", "nino_2");
+        String nino2SecondPassResponse = fileUtils.buildResponse("corr-id-5", "2019-01-03 15:00:00.000", "nino_2", "true");
+        String nino2NotFoundRequest = fileUtils.buildRequest("corr-id-6", "2019-01-04 14:00:00.000", "nino_2");
+        String nino2NotFoundResponse = fileUtils.buildResponseNotFound("corr-id-6", "2019-01-04 15:00:00.000");
 
-        String nino3request1noResponse = fileUtils.buildRequest("corr-id-7", "2019-01-02 14:00:00.000", "nino_3");
-        String nino3request2 = fileUtils.buildRequest("corr-id-8", "2019-01-03 14:00:00.000", "nino_3");
-        String nino3response2 = fileUtils.buildResponseNotFound("corr-id-8", "2019-01-03 15:00:00.000");
+        // nino_3 has best result of NOTFOUND
+        String nino3RequestNoResponse = fileUtils.buildRequest("corr-id-7", "2019-01-02 14:00:00.000", "nino_3");
+        String nino3RequestNotFound = fileUtils.buildRequest("corr-id-8", "2019-01-03 14:00:00.000", "nino_3");
+        String nino3ResponseNotFound = fileUtils.buildResponseNotFound("corr-id-8", "2019-01-03 15:00:00.000");
 
-        String auditHistory = String.format("[%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s]", nino1request1, nino1response1,
-            nino2request1, nino2response1, nino1request2noResponse, nino2request2, nino2response2, nino2request3, nino2response3,
-            nino3request1noResponse, nino3request2, nino3response2);
+        String auditHistory = String.format("[%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s]", nino1RequestFail, nino1ResponseFail,
+            nino1RequestNoResponse, nino2FirstPassRequest, nino2FirstPassResponse, nino2SecondPassRequest, nino2SecondPassResponse,
+            nino2NotFoundRequest, nino3RequestNoResponse, nino3RequestNotFound, nino3ResponseNotFound);
 
         mockAuditService
             .expect(requestTo(containsString("/history")))
             .andExpect(method(GET))
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
+        // should have archived best result for nino_1 - FAIL
         mockAuditService
             .expect(requestTo(containsString("/archive")))
             .andExpect(method(POST))
@@ -190,6 +194,7 @@ public class AuditArchiveServiceIT {
             .andExpect(jsonPath("$.resultDate", is("2019-01-01")))
             .andRespond(withSuccess());
 
+        // should have archived latest PASS for nino_2
         mockAuditService
             .expect(requestTo(containsString("/archive")))
             .andExpect(method(POST))
@@ -199,6 +204,7 @@ public class AuditArchiveServiceIT {
             .andExpect(jsonPath("$.resultDate", is("2019-01-03")))
             .andRespond(withSuccess());
 
+        // should have archived best result for nino_3 - NOTFOUND
         mockAuditService
             .expect(requestTo(containsString("/archive")))
             .andExpect(method(POST))
