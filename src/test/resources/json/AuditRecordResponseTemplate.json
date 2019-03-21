@@ -1,7 +1,7 @@
 {
-    "id": "3743b803-bd87-4518-8cae-d5b3e0566396",
-    "date": "2019-02-25 15:31:29.140",
-    "email": "neil.crerar",
+    "id": "${correlation-id}",
+    "date": "${date-time}",
+    "email": "any_email",
     "ref": "INCOME_PROVING_FINANCIAL_STATUS_RESPONSE",
     "detail": {
         "method": "get-financial-status",
@@ -9,86 +9,86 @@
             "categoryChecks": [
                 {
                     "calculationType": "Category A Monthly Salary",
-                    "applicationRaisedDate": "2019-02-26",
-                    "failureReason": "NOT_ENOUGH_RECORDS",
+                    "applicationRaisedDate": "2019-01-01",
+                    "failureReason": "ANY_REASON",
                     "threshold": "1550.00",
-                    "passed": false,
+                    "passed": ${pass},
                     "category": "A",
                     "individuals": [
                         {
                             "employers": [],
-                            "nino": "PJ151008C"
+                            "nino": "${nino}"
                         }
                     ],
-                    "assessmentStartDate": "2018-08-26"
+                    "assessmentStartDate": "2019-01-01"
                 },
                 {
                     "calculationType": "Employment Check",
-                    "applicationRaisedDate": "2019-02-26",
-                    "failureReason": "EMPLOYMENT_CHECK_FAILED",
+                    "applicationRaisedDate": "2019-01-01",
+                    "failureReason": "ANY_REASON",
                     "threshold": "1550.00",
                     "passed": false,
                     "category": "B",
                     "individuals": [
                         {
                             "employers": [],
-                            "nino": "PJ151008C"
+                            "nino": "${nino}"
                         }
                     ],
-                    "assessmentStartDate": "2019-01-26"
+                    "assessmentStartDate": "2019-01-01"
                 },
                 {
                     "calculationType": "Category A Non Salaried",
-                    "applicationRaisedDate": "2019-02-26",
-                    "failureReason": "NOT_ENOUGH_RECORDS",
+                    "applicationRaisedDate": "2019-01-01",
+                    "failureReason": "ANY_REASON",
                     "threshold": "18600",
                     "passed": false,
                     "category": "A",
                     "individuals": [
                         {
                             "employers": [],
-                            "nino": "PJ151008C"
+                            "nino": "${nino}"
                         }
                     ],
-                    "assessmentStartDate": "2018-08-26"
+                    "assessmentStartDate": "2019-01-01"
                 },
                 {
                     "calculationType": "Category F Self-Assessment Income",
-                    "applicationRaisedDate": "2019-02-26",
-                    "failureReason": "SELF_ASSESSMENT_ONE_YEAR_FAILED",
+                    "applicationRaisedDate": "2019-01-01",
+                    "failureReason": "ANY_REASON",
                     "threshold": "18600",
                     "passed": false,
                     "category": "F",
                     "individuals": [
                         {
                             "employers": [],
-                            "nino": "PJ151008C"
+                            "nino": "${nino}"
                         }
                     ],
-                    "assessmentStartDate": "2017-04-06"
+                    "assessmentStartDate": "2019-01-01"
                 },
                 {
                     "calculationType": "Employment Check",
-                    "applicationRaisedDate": "2019-02-26",
-                    "failureReason": "EMPLOYMENT_CHECK_FAILED",
+                    "applicationRaisedDate": "2019-01-01",
+                    "failureReason": "ANY_REASON",
                     "threshold": "1550.00",
                     "passed": false,
                     "category": "B",
                     "individuals": [
                         {
                             "employers": [],
-                            "nino": "PJ151008C"
+                            "nino": "${nino}"
                         }
                     ],
-                    "assessmentStartDate": "2019-01-26"
+                    "assessmentStartDate": "2019-01-01"
                 }
             ],
             "individuals": [
                 {
-                    "forename": "Claude",
-                    "surname": "Draper",
+                    "forename": "any_firstname",
+                    "surname": "any_surname",
                     "title": "",
-                    "nino": "PJ151008C"
+                    "nino": "${nino}"
                 }
             ],
             "status": {
