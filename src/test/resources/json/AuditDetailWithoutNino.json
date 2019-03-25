@@ -1,0 +1,9 @@
+{
+    "response": {
+        "categoryChecks": {
+            "individuals": {
+                "not-a-nino": "NOT_A_NINO"
+            }
+        }
+    }
+}

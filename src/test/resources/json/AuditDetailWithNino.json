@@ -1,0 +1,11 @@
+{
+    "response": {
+        "categoryChecks": [
+            {
+                "individuals": [
+                    { "nino": "ANY_NINO" }
+                ]
+            }
+        ]
+    }
+}

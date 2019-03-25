@@ -1,0 +1,16 @@
+{
+    "id": "a1e33f3e-3f72-48b9-bdfb-44e17303bd6e",
+    "date": "2019-02-27 11:13:25.897",
+    "email": "jbuller",
+    "ref": "INCOME_PROVING_FINANCIAL_STATUS_REQUEST",
+    "detail": {
+        "forename": "Jackie",
+        "method": "get-financial-status",
+        "dependants": 0,
+        "surname": "Smith",
+        "applicationRaisedDate": "2019-02-11",
+        "dateOfBirth": "1960-06-01",
+        "nino": "PP151005D"
+    },
+    "nino": "PJ151008C"
+}
