@@ -4,8 +4,7 @@ import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import static uk.gov.digital.ho.proving.income.audit.AuditResultType.PASS;
+import java.util.stream.Collectors;
 
 class PassStatisticsAccumulator {
 
@@ -18,32 +17,42 @@ class PassStatisticsAccumulator {
     private int notFound;
     private int errors;
 
+
     PassStatisticsAccumulator(LocalDate fromDate, LocalDate toDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;
     }
 
     void accumulate(List<AuditResultByNino> records) {
-        totalRequests++;
-        switch (records.get(0).resultType()){
+        // TODO OJR EE-16843 Because if any date in range counts as included, filtering here won't work going forward. - filter in result method
+        List<AuditResultByNino> recordsInRange = records.stream()
+            .filter(this::isInDateRange)
+            .collect(Collectors.toList());
 
-            case PASS:
-                passes++;
-                break;
-            case FAIL:
-                failures++;
-                break;
-            case NOTFOUND:
-                notFound++;
-                break;
-            case ERROR:
-                errors++;
-                break;
+        for (AuditResultByNino record : recordsInRange) {
+            totalRequests++;
+            switch (record.resultType()) {
+                case PASS:
+                    passes++;
+                    break;
+                case FAIL:
+                    failures++;
+                    break;
+                case NOTFOUND:
+                    notFound++;
+                    break;
+                case ERROR:
+                    errors++;
+                    break;
+            }
         }
-
     }
 
     PassRateStatistics result() {
         return new PassRateStatistics(fromDate, toDate, totalRequests, passes, failures, notFound, errors);
+    }
+
+    private boolean isInDateRange(AuditResultByNino result) {
+        return !result.date().isBefore(fromDate) && !result.date().isAfter(toDate);
     }
 }
