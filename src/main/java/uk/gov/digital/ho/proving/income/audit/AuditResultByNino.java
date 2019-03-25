@@ -14,6 +14,7 @@ import java.util.List;
 @Accessors(fluent = true)
 @EqualsAndHashCode
 @ToString
+public
 class AuditResultByNino {
     private String nino;
     private List<String> correlationIds;
