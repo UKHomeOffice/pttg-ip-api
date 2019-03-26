@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
-import uk.gov.digital.ho.proving.income.audit.AuditResultTypeComparator;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -21,23 +20,18 @@ class PassStatisticsAccumulator {
     private final LocalDate toDate;
 
     private final Map<String, BestResult> bestResultByNino;
-    private final AuditResultTypeComparator resultTypeComparator;
-
 
     PassStatisticsAccumulator(LocalDate fromDate, LocalDate toDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;
         bestResultByNino = new HashMap<>();
-        resultTypeComparator = new AuditResultTypeComparator();
     }
 
     void accumulate(List<AuditResultByNino> records) {
         for (AuditResultByNino record : records) {
             BestResult currentBestResult = bestResultByNino.get(record.nino());
 
-            if (isNull(currentBestResult)
-                || betterThanCurrentBest(record, currentBestResult)
-                || sameResultButNewer(record, currentBestResult)) {
+            if (isNewBestResult(record, currentBestResult)) {
                 bestResultByNino.put(record.nino(), new BestResult(record.date(), record.resultType()));
             }
         }
@@ -61,9 +55,14 @@ class PassStatisticsAccumulator {
         return new PassRateStatistics(fromDate, toDate, totalRequests, passes, failures, notFound, errors);
     }
 
-    private boolean betterThanCurrentBest(AuditResultByNino record, BestResult currentBestResult) {
-        return resultTypeComparator.compare(record.resultType(), currentBestResult.resultType) > 0;
+    private boolean isNewBestResult(AuditResultByNino record, BestResult currentBestResult) {
+        return isNull(currentBestResult)
+            || betterThanCurrentBest(record, currentBestResult)
+            || sameResultButNewer(record, currentBestResult);
+    }
 
+    private boolean betterThanCurrentBest(AuditResultByNino record, BestResult currentBestResult) {
+        return record.resultType().compareTo(currentBestResult.resultType) < 0;
     }
 
     private boolean sameResultButNewer(AuditResultByNino record, BestResult currentBestResult) {
