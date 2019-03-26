@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.audit.statistics;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 import uk.gov.digital.ho.proving.income.audit.AuditResultTypeComparator;
@@ -21,12 +22,14 @@ class PassStatisticsAccumulator {
     private final LocalDate toDate;
 
     private final Map<String, BestResult> bestResultByNino;
+    private final AuditResultTypeComparator resultTypeComparator;
 
 
     PassStatisticsAccumulator(LocalDate fromDate, LocalDate toDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;
-        bestResultByNino = new HashMap<>(); 
+        bestResultByNino = new HashMap<>();
+        resultTypeComparator = new AuditResultTypeComparator();
     }
 
     void accumulate(List<AuditResultByNino> records) {
@@ -42,7 +45,7 @@ class PassStatisticsAccumulator {
     }
 
     private boolean betterThanCurrentBest(AuditResultByNino record, BestResult currentBestResult) {
-        return new AuditResultTypeComparator().compare(record.resultType(), currentBestResult.resultType) > 0;
+        return resultTypeComparator.compare(record.resultType(), currentBestResult.resultType) > 0;
 
     }
 

@@ -1,16 +1,21 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.collect.Iterables.concat;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.util.Lists.newArrayList;
 import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 
 
@@ -154,7 +159,48 @@ public class PassStatisticsAccumulatorMultipleCallsTest {
             .isEqualTo(statisticsForCounts(0, 0, 1, 0));
     }
 
-    // TODO OJR EE-16843 Test keeping best result logic
+    @Test
+    public void acceptanceTest_multipleNinosAndStatuses_expectedStatistics() {
+        String nino1 = "AA111111A";
+        String nino2 = "BB222222B";
+        String nino3 = "CC333333C";
+        String nino4 = "DD444444D";
+
+        // Will not count towards stats
+        List<AuditResultByNino> allOutOfRange = asList(
+            new AuditResultByNino(nino1, emptyList(), FROM_DATE.minusDays(2), PASS),
+            new AuditResultByNino(nino1, emptyList(), FROM_DATE.minusDays(1), PASS),
+            new AuditResultByNino(nino1, emptyList(), TO_DATE.plusDays(1), PASS),
+            new AuditResultByNino(nino1, emptyList(), TO_DATE.plusDays(2), PASS)
+        );
+
+        // Will count as a PASS
+        List<AuditResultByNino> allInRangePassBest = asList(
+            new AuditResultByNino(nino2, emptyList(), FROM_DATE.plusDays(1), FAIL),
+            new AuditResultByNino(nino2, emptyList(), FROM_DATE.plusDays(2), PASS),
+            new AuditResultByNino(nino2, emptyList(), TO_DATE.minusDays(1), FAIL)
+        );
+
+        // Will not contribute towards stats as best result is too early
+        List<AuditResultByNino> betterResultOutOfRange = asList(
+            new AuditResultByNino(nino3, emptyList(), FROM_DATE.plusDays(1), ERROR),
+            new AuditResultByNino(nino3, emptyList(), FROM_DATE.minusDays(1), PASS),
+            new AuditResultByNino(nino3, emptyList(), FROM_DATE.plusDays(2), NOTFOUND),
+            new AuditResultByNino(nino3, emptyList(), TO_DATE.plusDays(1), FAIL)
+        );
+
+        // Will count as an ERROR
+        List<AuditResultByNino> errorOnlyInRange = asList(
+            new AuditResultByNino(nino4, emptyList(), FROM_DATE.plusDays(1), ERROR),
+            new AuditResultByNino(nino4, emptyList(), TO_DATE.minusDays(1), ERROR)
+        );
+
+        accumulator.accumulate(newArrayList(concat(allOutOfRange, allInRangePassBest)));
+        accumulator.accumulate(newArrayList(concat(errorOnlyInRange, betterResultOutOfRange)));
+
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(1, 0, 0, 1));
+    }
 
     private List<AuditResultByNino> singleResult(LocalDate date, AuditResultType resultType) {
         return singletonList(new AuditResultByNino("some nino",
