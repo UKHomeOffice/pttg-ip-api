@@ -258,25 +258,25 @@ public class PassStatisticsAccumulatorTest {
             .isEqualTo(statisticsForCounts(0, 0, 0, 0));
     }
 
-    private List<AuditResultByNino> singleResult(LocalDate date, AuditResultType resultType) {
-        return singletonList(new AuditResultByNino("some nino",
-            emptyList(),
-            date,
-            resultType));
-    }
-
     // TODO OJR EE-16843 Test keeping best result logic
     // TODO OJR EE-16843 Test single call to accumulator with in and out of range data for same nino
 
+    private List<AuditResultByNino> singleResult(LocalDate date, AuditResultType resultType) {
+        return singletonList(result("some nino", date, resultType));
+    }
 
     private List<AuditResultByNino> singleResultInRange(AuditResultType resultType) {
         return singletonList(resultInRange("some nino", resultType));
     }
 
     private AuditResultByNino resultInRange(String nino, AuditResultType resultType) {
+        return result(nino, LocalDate.of(2019, Month.JANUARY, 2), resultType);
+    }
+
+    private AuditResultByNino result(String nino, LocalDate date, AuditResultType resultType) {
         return new AuditResultByNino(nino,
             emptyList(),
-            LocalDate.of(2019, Month.JANUARY, 2),
+            date,
             resultType);
     }
 
