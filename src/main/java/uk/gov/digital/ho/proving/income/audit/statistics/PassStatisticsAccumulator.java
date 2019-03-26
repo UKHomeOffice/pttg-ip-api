@@ -3,7 +3,6 @@ package uk.gov.digital.ho.proving.income.audit.statistics;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 import uk.gov.digital.ho.proving.income.audit.AuditResultTypeComparator;
@@ -44,15 +43,6 @@ class PassStatisticsAccumulator {
         }
     }
 
-    private boolean betterThanCurrentBest(AuditResultByNino record, BestResult currentBestResult) {
-        return resultTypeComparator.compare(record.resultType(), currentBestResult.resultType) > 0;
-
-    }
-
-    private boolean sameResultButNewer(AuditResultByNino record, BestResult currentBestResult) {
-        return record.resultType() == currentBestResult.resultType && record.date().isAfter(currentBestResult.dateOfBestResult);
-    }
-
     PassRateStatistics result() {
         List<BestResult> resultsInRange = bestResultByNino.values().stream()
             .filter(this::isInDateRange)
@@ -69,6 +59,15 @@ class PassStatisticsAccumulator {
         long errors = countsByResult.getOrDefault(AuditResultType.ERROR, 0L);
 
         return new PassRateStatistics(fromDate, toDate, totalRequests, passes, failures, notFound, errors);
+    }
+
+    private boolean betterThanCurrentBest(AuditResultByNino record, BestResult currentBestResult) {
+        return resultTypeComparator.compare(record.resultType(), currentBestResult.resultType) > 0;
+
+    }
+
+    private boolean sameResultButNewer(AuditResultByNino record, BestResult currentBestResult) {
+        return record.resultType() == currentBestResult.resultType && record.date().isAfter(currentBestResult.dateOfBestResult);
     }
 
     private boolean isInDateRange(BestResult bestResult) {
