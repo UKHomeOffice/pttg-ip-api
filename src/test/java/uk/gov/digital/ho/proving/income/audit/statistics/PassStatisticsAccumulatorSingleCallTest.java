@@ -184,7 +184,42 @@ public class PassStatisticsAccumulatorSingleCallTest {
         assertThat(accumulator.result())
             .isEqualTo(statisticsForCounts(0, 0, 0, 0));
     }
-    // TODO OJR EE-16843 Test single call to accumulator with in and out of range data for same nino
+
+    @Test
+    public void result_passAndFailSameDay_countPassAsBetterResult() {
+        List<AuditResultByNino> records = asList(
+            new AuditResultByNino("some nino", emptyList(), TO_DATE, FAIL),
+            new AuditResultByNino("some nino", emptyList(), TO_DATE, PASS),
+            new AuditResultByNino("some nino", emptyList(), TO_DATE, FAIL)
+        );
+        accumulator.accumulate(records);
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(1, 0, 0, 0));
+    }
+
+    @Test
+    public void result_failAndNotFoundSameDay_countFailAsBetterResult() {
+        List<AuditResultByNino> records = asList(
+            new AuditResultByNino("some nino", emptyList(), TO_DATE, NOTFOUND),
+            new AuditResultByNino("some nino", emptyList(), TO_DATE, FAIL),
+            new AuditResultByNino("some nino", emptyList(), TO_DATE, NOTFOUND)
+        );
+        accumulator.accumulate(records);
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(0, 1, 0, 0));
+    }
+
+    @Test
+    public void result_notFoundAndErrorSameDay_countNotFoundAsBetterResult() {
+        List<AuditResultByNino> records = asList(
+            new AuditResultByNino("some nino", emptyList(), TO_DATE, ERROR),
+            new AuditResultByNino("some nino", emptyList(), TO_DATE, NOTFOUND),
+            new AuditResultByNino("some nino", emptyList(), TO_DATE, ERROR)
+        );
+        accumulator.accumulate(records);
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(0, 0, 1, 0));
+    }
 
     private List<AuditResultByNino> singleResultInRange(AuditResultType resultType) {
         return singletonList(resultInRange("some nino", resultType));

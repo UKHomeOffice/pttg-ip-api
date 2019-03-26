@@ -18,6 +18,7 @@ public class PassStatisticsAccumulatorMultipleCallsTest {
 
     private static final LocalDate FROM_DATE = LocalDate.of(2019, Month.JANUARY, 1);
     private static final LocalDate TO_DATE = LocalDate.of(2019, Month.JANUARY, 31);
+    private static final LocalDate IN_RANGE = FROM_DATE.plusDays(1);
 
     private PassStatisticsAccumulator accumulator = new PassStatisticsAccumulator(FROM_DATE, TO_DATE);
 
@@ -91,6 +92,66 @@ public class PassStatisticsAccumulatorMultipleCallsTest {
 
         assertThat(accumulator.result())
             .isEqualTo(statisticsForCounts(0, 0, 0, 0));
+    }
+
+    @Test
+    public void accumulate_passOutOfRangeFailInRange_notCountedAsPassBestResult() {
+        accumulator.accumulate(singleResult(FROM_DATE.minusDays(1), PASS));
+        accumulator.accumulate(singleResult(IN_RANGE, FAIL));
+        accumulator.accumulate(singleResult(TO_DATE.plusDays(1), PASS));
+
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(0, 0, 0, 0));
+    }
+
+    @Test
+    public void accumulate_passInRangeFailOutOfRange_countedAsPassBestResult() {
+        accumulator.accumulate(singleResult(FROM_DATE.minusDays(1), FAIL));
+        accumulator.accumulate(singleResult(IN_RANGE, PASS));
+        accumulator.accumulate(singleResult(TO_DATE.plusDays(1), FAIL));
+
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(1, 0, 0, 0));
+    }
+
+    @Test
+    public void accumulate_failOutOfRangeNotFoundInRange_notCountedAsFailBestResult() {
+        accumulator.accumulate(singleResult(FROM_DATE.minusDays(1), FAIL));
+        accumulator.accumulate(singleResult(IN_RANGE, NOTFOUND));
+        accumulator.accumulate(singleResult(TO_DATE.plusDays(1), FAIL));
+
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(0, 0, 0, 0));
+    }
+
+    @Test
+    public void accumulate_failInRangeNotFoundOutOfRange_countedAsFailBestResult() {
+        accumulator.accumulate(singleResult(FROM_DATE.minusDays(1), NOTFOUND));
+        accumulator.accumulate(singleResult(IN_RANGE, FAIL));
+        accumulator.accumulate(singleResult(TO_DATE.plusDays(1), NOTFOUND));
+
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(0, 1, 0, 0));
+    }
+
+    @Test
+    public void accumulate_notFoundOutOfRangeErrorInRange_notCountedAsNotFoundBestResult() {
+        accumulator.accumulate(singleResult(FROM_DATE.minusDays(1), NOTFOUND));
+        accumulator.accumulate(singleResult(IN_RANGE, ERROR));
+        accumulator.accumulate(singleResult(TO_DATE.plusDays(1), NOTFOUND));
+
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(0, 0, 0, 0));
+    }
+
+    @Test
+    public void accumulate_notFoundInRangeErrorOutOfRange_countedAsNotFoundBestResult() {
+        accumulator.accumulate(singleResult(FROM_DATE.minusDays(1), ERROR));
+        accumulator.accumulate(singleResult(IN_RANGE, NOTFOUND));
+        accumulator.accumulate(singleResult(TO_DATE.plusDays(1), ERROR));
+
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(0, 0, 1, 0));
     }
 
     // TODO OJR EE-16843 Test keeping best result logic

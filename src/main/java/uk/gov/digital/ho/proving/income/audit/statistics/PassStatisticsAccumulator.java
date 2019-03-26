@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
+import uk.gov.digital.ho.proving.income.audit.AuditResultTypeComparator;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -32,10 +33,21 @@ class PassStatisticsAccumulator {
         for (AuditResultByNino record : records) {
             BestResult currentBestResult = bestResultByNino.get(record.nino());
 
-            if (isNull(currentBestResult) || currentBestResult.dateOfBestResult.isBefore(record.date())) {
+            if (isNull(currentBestResult)
+                || betterThanCurrentBest(record, currentBestResult)
+                || sameResultButNewer(record, currentBestResult)) {
                 bestResultByNino.put(record.nino(), new BestResult(record.date(), record.resultType()));
             }
         }
+    }
+
+    private boolean betterThanCurrentBest(AuditResultByNino record, BestResult currentBestResult) {
+        return new AuditResultTypeComparator().compare(record.resultType(), currentBestResult.resultType) > 0;
+
+    }
+
+    private boolean sameResultButNewer(AuditResultByNino record, BestResult currentBestResult) {
+        return record.resultType() == currentBestResult.resultType && record.date().isAfter(currentBestResult.dateOfBestResult);
     }
 
     PassRateStatistics result() {
