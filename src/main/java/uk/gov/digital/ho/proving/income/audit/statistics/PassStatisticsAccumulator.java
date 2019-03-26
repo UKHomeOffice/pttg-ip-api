@@ -28,13 +28,9 @@ class PassStatisticsAccumulator {
     }
 
     void accumulate(List<AuditResultByNino> records) {
-        for (AuditResultByNino record : records) {
-            BestResult currentBestResult = bestResultByNino.get(record.nino());
-
-            if (isNewBestResult(record, currentBestResult)) {
-                bestResultByNino.put(record.nino(), new BestResult(record.date(), record.resultType()));
-            }
-        }
+        records.stream()
+            .filter(record -> isNewBestResult(record, bestResultByNino.get(record.nino())))
+            .forEach(record -> bestResultByNino.put(record.nino(), new BestResult(record.date(), record.resultType())));
     }
 
     PassRateStatistics result() {
