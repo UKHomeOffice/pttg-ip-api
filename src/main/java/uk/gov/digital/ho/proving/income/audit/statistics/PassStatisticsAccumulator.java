@@ -29,8 +29,8 @@ class PassStatisticsAccumulator {
 
     void accumulate(List<AuditResultByNino> records) {
         records.stream()
-            .filter(record -> isNewBestResult(record, bestResultByNino.get(record.nino())))
-            .forEach(record -> bestResultByNino.put(record.nino(), new BestResult(record.date(), record.resultType())));
+            .filter(this::isNewBestResult)
+            .forEach(this::updateBestResult);
     }
 
     PassRateStatistics result() {
@@ -51,7 +51,8 @@ class PassStatisticsAccumulator {
         return new PassRateStatistics(fromDate, toDate, totalRequests, passes, failures, notFound, errors);
     }
 
-    private boolean isNewBestResult(AuditResultByNino record, BestResult currentBestResult) {
+    private boolean isNewBestResult(AuditResultByNino record) {
+        BestResult currentBestResult = bestResultByNino.get(record.nino());
         return isNull(currentBestResult)
             || betterThanCurrentBest(record, currentBestResult)
             || sameResultButNewer(record, currentBestResult);
@@ -68,6 +69,10 @@ class PassStatisticsAccumulator {
     private boolean isInDateRange(BestResult bestResult) {
         LocalDate resultDate = bestResult.dateOfBestResult();
         return !resultDate.isBefore(fromDate) && !resultDate.isAfter(toDate);
+    }
+
+    private void updateBestResult(AuditResultByNino record) {
+        bestResultByNino.put(record.nino(), new BestResult(record.date(), record.resultType()));
     }
 
     @AllArgsConstructor

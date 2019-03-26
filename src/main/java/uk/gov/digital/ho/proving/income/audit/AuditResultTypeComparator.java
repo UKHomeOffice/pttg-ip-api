@@ -9,7 +9,7 @@ import java.util.List;
 import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 
 @Component
-public class AuditResultTypeComparator implements Comparator<AuditResultType> {
+class AuditResultTypeComparator implements Comparator<AuditResultType> {
     private static final List<AuditResultType> naturalOrder
         = Arrays.asList(ERROR, NOTFOUND, FAIL, PASS);
 
