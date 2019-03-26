@@ -1,13 +1,11 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
-import org.assertj.core.util.Lists;
 import org.junit.Test;
 import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.concat;
@@ -46,18 +44,18 @@ public class PassStatisticsAccumulatorMultipleCallsTest {
     }
 
     @Test
-    public void accumulate_firstFailureTooEarlySecondInRange_onlyCountOne() {
-        accumulator.accumulate(singleResult(FROM_DATE.minusDays(1), FAIL));
+    public void accumulate_firstFailureInRangeSecondFailureTooEarly_onlyCountOne() {
         accumulator.accumulate(singleResult(FROM_DATE, FAIL));
+        accumulator.accumulate(singleResult(FROM_DATE.minusDays(1), FAIL));
 
         assertThat(accumulator.result())
             .isEqualTo(statisticsForCounts(0, 1, 0, 0));
     }
 
     @Test
-    public void accumulate_firstFailureInRangeSecondTooLate_notCounted() {
-        accumulator.accumulate(singleResult(TO_DATE, FAIL));
+    public void accumulate_firstFailureTooLateSecondInRange_notCounted() {
         accumulator.accumulate(singleResult(TO_DATE.plusDays(1), FAIL));
+        accumulator.accumulate(singleResult(TO_DATE, FAIL));
 
         assertThat(accumulator.result())
             .isEqualTo(statisticsForCounts(0, 0, 0, 0));
@@ -166,7 +164,7 @@ public class PassStatisticsAccumulatorMultipleCallsTest {
         String nino3 = "CC333333C";
         String nino4 = "DD444444D";
 
-        // Will not count towards stats
+        // Will not count towards stats as all out of date range.
         List<AuditResultByNino> allOutOfRange = asList(
             new AuditResultByNino(nino1, emptyList(), FROM_DATE.minusDays(2), PASS),
             new AuditResultByNino(nino1, emptyList(), FROM_DATE.minusDays(1), PASS),
@@ -174,14 +172,14 @@ public class PassStatisticsAccumulatorMultipleCallsTest {
             new AuditResultByNino(nino1, emptyList(), TO_DATE.plusDays(2), PASS)
         );
 
-        // Will count as a PASS
+        // Will count as a PASS as this is best result and is in the date range.
         List<AuditResultByNino> allInRangePassBest = asList(
             new AuditResultByNino(nino2, emptyList(), FROM_DATE.plusDays(1), FAIL),
             new AuditResultByNino(nino2, emptyList(), FROM_DATE.plusDays(2), PASS),
             new AuditResultByNino(nino2, emptyList(), TO_DATE.minusDays(1), FAIL)
         );
 
-        // Will not contribute towards stats as best result is too early
+        // Will not contribute towards stats as best result is too early.
         List<AuditResultByNino> betterResultOutOfRange = asList(
             new AuditResultByNino(nino3, emptyList(), FROM_DATE.plusDays(1), ERROR),
             new AuditResultByNino(nino3, emptyList(), FROM_DATE.minusDays(1), PASS),
@@ -189,7 +187,7 @@ public class PassStatisticsAccumulatorMultipleCallsTest {
             new AuditResultByNino(nino3, emptyList(), TO_DATE.plusDays(1), FAIL)
         );
 
-        // Will count as an ERROR
+        // Will count as an ERROR as this is only result and is in date range.
         List<AuditResultByNino> errorOnlyInRange = asList(
             new AuditResultByNino(nino4, emptyList(), FROM_DATE.plusDays(1), ERROR),
             new AuditResultByNino(nino4, emptyList(), TO_DATE.minusDays(1), ERROR)
