@@ -1,16 +1,17 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
+import uk.gov.digital.ho.proving.income.audit.statistics.PassRateStatistics.PassRateStatisticsBuilder;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 
 class PassStatisticsCalculator {
 
@@ -23,24 +24,35 @@ class PassStatisticsCalculator {
     }
 
     PassRateStatistics result(List<AuditResultByNino> records) {
-        List<AuditResultByNino> resultsInRange = records.stream()
+        PassRateStatisticsBuilder statisticsBuilder = PassRateStatistics.builder()
+            .fromDate(fromDate)
+            .toDate(toDate);
+
+        List<AuditResultByNino> resultsInRange = filterInDateRange(records);
+        statisticsBuilder.totalRequests(resultsInRange.size());
+
+        Map<AuditResultType, Long> countsByResult = countByResultType(resultsInRange);
+
+        return statisticsBuilder
+            .passes(countsByResult.getOrDefault(PASS, 0L))
+            .failures(countsByResult.getOrDefault(FAIL, 0L))
+            .notFound(countsByResult.getOrDefault(NOTFOUND, 0L))
+            .errors(countsByResult.getOrDefault(ERROR, 0L))
+            .build();
+    }
+
+    private List<AuditResultByNino> filterInDateRange(List<AuditResultByNino> records) {
+        return records.stream()
             .filter(this::isInDateRange)
-            .collect(Collectors.toList());
-
-        int totalRequests = resultsInRange.size();
-
-        Map<AuditResultType, Long> countsByResult = resultsInRange.stream()
-            .collect(Collectors.groupingBy(AuditResultByNino::resultType, Collectors.counting()));
-
-        long passes = countsByResult.getOrDefault(AuditResultType.PASS, 0L);
-        long failures = countsByResult.getOrDefault(AuditResultType.FAIL, 0L);
-        long notFound = countsByResult.getOrDefault(AuditResultType.NOTFOUND, 0L);
-        long errors = countsByResult.getOrDefault(AuditResultType.ERROR, 0L);
-
-        return new PassRateStatistics(fromDate, toDate, totalRequests, passes, failures, notFound, errors);
+            .collect(toList());
     }
 
     private boolean isInDateRange(AuditResultByNino auditResult) {
         return !auditResult.date().isBefore(fromDate) && !auditResult.date().isAfter(toDate);
+    }
+
+    private Map<AuditResultType, Long> countByResultType(List<AuditResultByNino> resultsInRange) {
+        return resultsInRange.stream()
+            .collect(groupingBy(AuditResultByNino::resultType, Collectors.counting()));
     }
 }
