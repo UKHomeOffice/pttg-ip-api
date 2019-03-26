@@ -11,9 +11,9 @@ class PassRateStatistics {
     private final LocalDate fromDate;
     private final LocalDate toDate;
 
-    private final int totalRequests;
-    private final int passes;
-    private final int failures;
-    private final int notFound;
-    private final int errors;
+    private final long totalRequests;
+    private final long passes;
+    private final long failures;
+    private final long notFound;
+    private final long errors;
 }

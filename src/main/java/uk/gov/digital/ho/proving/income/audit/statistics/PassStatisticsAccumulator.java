@@ -1,58 +1,71 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
+import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 class PassStatisticsAccumulator {
 
     private final LocalDate fromDate;
     private final LocalDate toDate;
 
-    private int totalRequests;
-    private int passes;
-    private int failures;
-    private int notFound;
-    private int errors;
+    private final Map<String, BestResult> bestResultByNino;
 
 
     PassStatisticsAccumulator(LocalDate fromDate, LocalDate toDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;
+        bestResultByNino = new HashMap<>(); 
     }
 
     void accumulate(List<AuditResultByNino> records) {
-        // TODO OJR EE-16843 Because if any date in range counts as included, filtering here won't work going forward. - filter in result method
-        List<AuditResultByNino> recordsInRange = records.stream()
-            .filter(this::isInDateRange)
-            .collect(Collectors.toList());
+        for (AuditResultByNino record : records) {
+            BestResult currentBestResult = bestResultByNino.get(record.nino());
 
-        for (AuditResultByNino record : recordsInRange) {
-            totalRequests++;
-            switch (record.resultType()) {
-                case PASS:
-                    passes++;
-                    break;
-                case FAIL:
-                    failures++;
-                    break;
-                case NOTFOUND:
-                    notFound++;
-                    break;
-                case ERROR:
-                    errors++;
-                    break;
+            if (isNull(currentBestResult) || currentBestResult.dateOfBestResult.isBefore(record.date())) {
+                bestResultByNino.put(record.nino(), new BestResult(record.date(), record.resultType()));
             }
         }
     }
 
     PassRateStatistics result() {
+        List<BestResult> resultsInRange = bestResultByNino.values().stream()
+            .filter(this::isInDateRange)
+            .collect(Collectors.toList());
+
+        int totalRequests = resultsInRange.size();
+
+        Map<AuditResultType, Long> countsByResult = resultsInRange.stream()
+            .collect(Collectors.groupingBy(BestResult::resultType, Collectors.counting()));
+
+        long passes = countsByResult.getOrDefault(AuditResultType.PASS, 0L);
+        long failures = countsByResult.getOrDefault(AuditResultType.FAIL, 0L);
+        long notFound = countsByResult.getOrDefault(AuditResultType.NOTFOUND, 0L);
+        long errors = countsByResult.getOrDefault(AuditResultType.ERROR, 0L);
+
         return new PassRateStatistics(fromDate, toDate, totalRequests, passes, failures, notFound, errors);
     }
 
-    private boolean isInDateRange(AuditResultByNino result) {
-        return !result.date().isBefore(fromDate) && !result.date().isAfter(toDate);
+    private boolean isInDateRange(BestResult bestResult) {
+        LocalDate resultDate = bestResult.dateOfBestResult();
+        return !resultDate.isBefore(fromDate) && !resultDate.isAfter(toDate);
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @Accessors(fluent = true)
+    private class BestResult {
+        private final LocalDate dateOfBestResult;
+        private final AuditResultType resultType;
     }
 }

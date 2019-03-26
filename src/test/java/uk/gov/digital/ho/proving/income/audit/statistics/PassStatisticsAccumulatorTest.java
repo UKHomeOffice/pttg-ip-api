@@ -84,14 +84,14 @@ public class PassStatisticsAccumulatorTest {
     @Test
     public void result_twoOfEachStatusInRange_expectedResult() {
         List<AuditResultByNino> records = asList(
-            resultInRange(PASS),
-            resultInRange(FAIL),
-            resultInRange(NOTFOUND),
-            resultInRange(ERROR),
-            resultInRange(PASS),
-            resultInRange(FAIL),
-            resultInRange(NOTFOUND),
-            resultInRange(ERROR)
+            resultInRange("AA111111A", PASS),
+            resultInRange("BA111111A", FAIL),
+            resultInRange("CA111111A", NOTFOUND),
+            resultInRange("DA111111A", ERROR),
+            resultInRange("EA111111A", PASS),
+            resultInRange("FA111111A", FAIL),
+            resultInRange("GA111111A", NOTFOUND),
+            resultInRange("HA111111A", ERROR)
         );
         accumulator.accumulate(records);
         assertThat(accumulator.result())
@@ -110,14 +110,14 @@ public class PassStatisticsAccumulatorTest {
     }
 
     @Test
-    public void result_onePassInRangeOneAfter_onlyCountInRange() {
+    public void result_onePassInRangeOneAfter_doNotCount() {
         List<AuditResultByNino> records = asList(
             new AuditResultByNino("some nino", emptyList(), TO_DATE, PASS),
             new AuditResultByNino("some nino", emptyList(), TO_DATE.plusDays(1), PASS)
         );
         accumulator.accumulate(records);
         assertThat(accumulator.result())
-            .isEqualTo(statisticsForCounts(1, 0, 0, 0));
+            .isEqualTo(statisticsForCounts(0, 0, 0, 0));
     }
 
     @Test
@@ -132,14 +132,14 @@ public class PassStatisticsAccumulatorTest {
     }
 
     @Test
-    public void result_oneFailureInRangeOneAfter_onlyCountInRange() {
+    public void result_oneFailureInRangeOneAfter_doNotCount() {
         List<AuditResultByNino> records = asList(
             new AuditResultByNino("some nino", emptyList(), TO_DATE, FAIL),
             new AuditResultByNino("some nino", emptyList(), TO_DATE.plusDays(1), FAIL)
         );
         accumulator.accumulate(records);
         assertThat(accumulator.result())
-            .isEqualTo(statisticsForCounts(0, 1, 0, 0));
+            .isEqualTo(statisticsForCounts(0, 0, 0, 0));
     }
 
     @Test
@@ -154,14 +154,14 @@ public class PassStatisticsAccumulatorTest {
     }
 
     @Test
-    public void result_oneNotFoundInRangeOneAfter_onlyCountInRange() {
+    public void result_oneNotFoundInRangeOneAfter_doNotCount() {
         List<AuditResultByNino> records = asList(
             new AuditResultByNino("some nino", emptyList(), TO_DATE, NOTFOUND),
             new AuditResultByNino("some nino", emptyList(), TO_DATE.plusDays(1), NOTFOUND)
         );
         accumulator.accumulate(records);
         assertThat(accumulator.result())
-            .isEqualTo(statisticsForCounts(0, 0, 1, 0));
+            .isEqualTo(statisticsForCounts(0, 0, 0, 0));
     }
 
     @Test
@@ -176,24 +176,52 @@ public class PassStatisticsAccumulatorTest {
     }
 
     @Test
-    public void result_oneErrorInRangeOneAfter_onlyCountInRange() {
+    public void result_oneErrorInRangeOneAfter_doNotCount() {
         List<AuditResultByNino> records = asList(
             new AuditResultByNino("some nino", emptyList(), TO_DATE, ERROR),
             new AuditResultByNino("some nino", emptyList(), TO_DATE.plusDays(1), ERROR)
         );
         accumulator.accumulate(records);
         assertThat(accumulator.result())
-            .isEqualTo(statisticsForCounts(0, 0, 0, 1));
+            .isEqualTo(statisticsForCounts(0, 0, 0, 0));
+    }
+
+    @Test
+    public void accumulate_firstPassTooEarlySecondInRange_onlyCountOne() {
+        accumulator.accumulate(singleResult(FROM_DATE.minusDays(1), PASS));
+        accumulator.accumulate(singleResult(FROM_DATE, PASS));
+
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(1, 0, 0, 0));
+    }
+
+    @Test
+    public void accumulate_firstPassInRangeSecondTooLate_notCounted() {
+        accumulator.accumulate(singleResult(TO_DATE, PASS));
+        accumulator.accumulate(singleResult(TO_DATE.plusDays(1), PASS));
+
+        assertThat(accumulator.result())
+            .isEqualTo(statisticsForCounts(0, 0, 0, 0));
+    }
+
+    private List<AuditResultByNino> singleResult(LocalDate date, AuditResultType resultType) {
+        return singletonList(new AuditResultByNino("some nino",
+            emptyList(),
+            date,
+            resultType));
     }
 
     // TODO OJR EE-16843 Test calling accumulate multiple times, bringing things into and out of range
+    // TODO OJR EE-16843 Test keeping best result logic
+    // TODO OJR EE-16843 Test single call to accumulator with in and out of range data for same nino
+
 
     private List<AuditResultByNino> singleResultInRange(AuditResultType resultType) {
-        return singletonList(resultInRange(resultType));
+        return singletonList(resultInRange("some nino", resultType));
     }
 
-    private AuditResultByNino resultInRange(AuditResultType resultType) {
-        return new AuditResultByNino("some nino",
+    private AuditResultByNino resultInRange(String nino, AuditResultType resultType) {
+        return new AuditResultByNino(nino,
             emptyList(),
             LocalDate.of(2019, Month.JANUARY, 2),
             resultType);
