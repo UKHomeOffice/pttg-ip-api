@@ -122,7 +122,6 @@ public class PassStatisticsCalculatorTest {
 
         assertThat(accumulator.result(asList(tooEarly, passInRange, errorInRange, error2InRange, notFoundInRange, tooLate)))
             .isEqualTo(statisticsForCounts(1, 0, 1, 2));
-
     }
 
     private PassRateStatistics statisticsForCounts(int passes, int failures, int notFound, int errors) {
@@ -134,6 +133,5 @@ public class PassStatisticsCalculatorTest {
             failures,
             notFound,
             errors);
-
     }
 }
