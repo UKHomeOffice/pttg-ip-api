@@ -38,17 +38,17 @@ class AuditResultConsolidator {
             .collect(Collectors.toList());
     }
 
-    List<AuditResultByNino> auditResultsByNino(List<AuditResult> results) {
+    List<AuditResultByNino> consolidatedAuditResultsByNino(List<AuditResult> results) {
         Map<String, List<AuditResult>> resultsByNino =
             results.stream().collect(Collectors.groupingBy(AuditResult::nino));
 
         return resultsByNino.values().stream()
-            .map(this::consolidate)
+            .map(this::consolidateLatestBestResult)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 
-    private AuditResultByNino consolidate(List<AuditResult> results) {
+    private AuditResultByNino consolidateLatestBestResult(List<AuditResult> results) {
         AuditResult consolidatedResult = results.stream()
             .max(auditResultComparator)
             .orElse(null);
