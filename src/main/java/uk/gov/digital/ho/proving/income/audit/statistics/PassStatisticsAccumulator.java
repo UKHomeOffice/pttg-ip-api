@@ -12,36 +12,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
-
 class PassStatisticsAccumulator {
 
     private final LocalDate fromDate;
     private final LocalDate toDate;
 
-    private final Map<String, BestResult> bestResultByNino;
-
     PassStatisticsAccumulator(LocalDate fromDate, LocalDate toDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;
-        bestResultByNino = new HashMap<>();
     }
 
-    void accumulate(List<AuditResultByNino> records) {
-        records.stream()
-            .filter(this::isNewBestResult)
-            .forEach(this::updateBestResult);
-    }
-
-    PassRateStatistics result() {
-        List<BestResult> resultsInRange = bestResultByNino.values().stream()
+    PassRateStatistics result(List<AuditResultByNino> records) {
+        List<AuditResultByNino> resultsInRange = records.stream()
             .filter(this::isInDateRange)
             .collect(Collectors.toList());
 
         int totalRequests = resultsInRange.size();
 
         Map<AuditResultType, Long> countsByResult = resultsInRange.stream()
-            .collect(Collectors.groupingBy(BestResult::resultType, Collectors.counting()));
+            .collect(Collectors.groupingBy(AuditResultByNino::resultType, Collectors.counting()));
 
         long passes = countsByResult.getOrDefault(AuditResultType.PASS, 0L);
         long failures = countsByResult.getOrDefault(AuditResultType.FAIL, 0L);
@@ -51,35 +40,7 @@ class PassStatisticsAccumulator {
         return new PassRateStatistics(fromDate, toDate, totalRequests, passes, failures, notFound, errors);
     }
 
-    private boolean isNewBestResult(AuditResultByNino record) {
-        BestResult currentBestResult = bestResultByNino.get(record.nino());
-        return isNull(currentBestResult)
-            || betterThanCurrentBest(record, currentBestResult)
-            || sameResultButNewer(record, currentBestResult);
-    }
-
-    private boolean betterThanCurrentBest(AuditResultByNino record, BestResult currentBestResult) {
-        return record.resultType().compareTo(currentBestResult.resultType) < 0;
-    }
-
-    private boolean sameResultButNewer(AuditResultByNino record, BestResult currentBestResult) {
-        return record.resultType() == currentBestResult.resultType && record.date().isAfter(currentBestResult.dateOfBestResult);
-    }
-
-    private boolean isInDateRange(BestResult bestResult) {
-        LocalDate resultDate = bestResult.dateOfBestResult();
-        return !resultDate.isBefore(fromDate) && !resultDate.isAfter(toDate);
-    }
-
-    private void updateBestResult(AuditResultByNino record) {
-        bestResultByNino.put(record.nino(), new BestResult(record.date(), record.resultType()));
-    }
-
-    @AllArgsConstructor
-    @Getter
-    @Accessors(fluent = true)
-    private class BestResult {
-        private final LocalDate dateOfBestResult;
-        private final AuditResultType resultType;
+    private boolean isInDateRange(AuditResultByNino auditResult) {
+        return !auditResult.date().isBefore(fromDate) && !auditResult.date().isAfter(toDate);
     }
 }
