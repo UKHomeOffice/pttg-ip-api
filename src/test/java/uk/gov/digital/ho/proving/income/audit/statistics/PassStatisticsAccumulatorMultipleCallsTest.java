@@ -94,7 +94,6 @@ public class PassStatisticsAccumulatorMultipleCallsTest {
     }
 
     // TODO OJR EE-16843 Test keeping best result logic
-    // TODO OJR EE-16843 Test single call to accumulator with in and out of range data for same nino
 
     private List<AuditResultByNino> singleResult(LocalDate date, AuditResultType resultType) {
         return singletonList(new AuditResultByNino("some nino",
