@@ -13,21 +13,21 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 
-public class PassStatisticsAccumulatorTest {
+public class PassStatisticsCalculatorTest {
 
     private static final LocalDate SOME_DATE = LocalDate.now();
     private static final LocalDate FROM_DATE = LocalDate.of(2019, Month.JANUARY, 1);
     private static final LocalDate TO_DATE = LocalDate.of(2019, Month.JANUARY, 31);
     private static final LocalDate IN_RANGE = FROM_DATE.plusDays(2);
 
-    private PassStatisticsAccumulator accumulator = new PassStatisticsAccumulator(FROM_DATE, TO_DATE);
+    private PassStatisticsCalculator accumulator = new PassStatisticsCalculator(FROM_DATE, TO_DATE);
 
     @Test
     public void result_givenFromDate_inResult() {
         List<AuditResultByNino> someList = emptyList();
 
         LocalDate fromDate = LocalDate.of(2019, 2, 3);
-        PassStatisticsAccumulator accumulator = new PassStatisticsAccumulator(fromDate, SOME_DATE);
+        PassStatisticsCalculator accumulator = new PassStatisticsCalculator(fromDate, SOME_DATE);
 
         assertThat(accumulator.result(someList).fromDate()).isEqualTo(fromDate);
     }
@@ -37,7 +37,7 @@ public class PassStatisticsAccumulatorTest {
         List<AuditResultByNino> someList = emptyList();
 
         LocalDate toDate = LocalDate.of(2019, 3, 4);
-        PassStatisticsAccumulator accumulator = new PassStatisticsAccumulator(SOME_DATE, toDate);
+        PassStatisticsCalculator accumulator = new PassStatisticsCalculator(SOME_DATE, toDate);
 
         assertThat(accumulator.result(someList).toDate()).isEqualTo(toDate);
     }

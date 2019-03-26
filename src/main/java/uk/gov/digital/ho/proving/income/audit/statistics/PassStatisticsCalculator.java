@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class PassStatisticsAccumulator {
+class PassStatisticsCalculator {
 
     private final LocalDate fromDate;
     private final LocalDate toDate;
 
-    PassStatisticsAccumulator(LocalDate fromDate, LocalDate toDate) {
+    PassStatisticsCalculator(LocalDate fromDate, LocalDate toDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;
     }
