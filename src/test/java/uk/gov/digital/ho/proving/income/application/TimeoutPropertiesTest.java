@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.proving.income.application;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,17 +24,13 @@ public class TimeoutPropertiesTest {
     @EnableConfigurationProperties
     public static class TestConfig {}
 
-    private TimeoutProperties timeoutProperties = new TimeoutProperties();
-
-    @Before
-    public void setup() {
-        timeoutProperties.setHmrcService(new TimeoutProperties.HmrcService());
-    }
+    @Autowired
+    private TimeoutProperties timeoutProperties;
 
     @Test
     public void shouldLoadRestTemplateTimeouts() {
-        assertThat(timeoutProperties.getHmrcService().getReadMs()).isEqualTo(1000);
-        assertThat(timeoutProperties.getHmrcService().getConnectMs()).isEqualTo(2000);
+        assertThat(timeoutProperties.getHmrcService().getReadMs()).isEqualTo(120000);
+        assertThat(timeoutProperties.getHmrcService().getConnectMs()).isEqualTo(1000);
     }
 }
 

@@ -14,7 +14,7 @@ public class TimeoutProperties {
 
     private HmrcService hmrcService;
 
-    static class HmrcService extends TimeoutPropertiesTemplate {}
+    public static class HmrcService extends TimeoutPropertiesTemplate {}
 
     @NoArgsConstructor
     @Setter
