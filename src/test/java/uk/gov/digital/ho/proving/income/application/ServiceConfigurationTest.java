@@ -41,10 +41,8 @@ public class ServiceConfigurationTest {
         timeoutProperties.getHmrcService().setReadMs(readTimeout);
         timeoutProperties.getHmrcService().setConnectMs(connectTimeout);
         ServiceConfiguration springConfig = new ServiceConfiguration(null, timeoutProperties);
-
         // when
         RestTemplate restTemplate = springConfig.createHmrcRestTemplate(mockRestTemplateBuilder);
-
         // then
         verify(mockRestTemplateBuilder).setReadTimeout(readTimeout);
         verify(mockRestTemplateBuilder).setConnectTimeout(connectTimeout);
