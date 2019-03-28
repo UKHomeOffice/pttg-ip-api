@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.hmrc.domain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.digital.ho.proving.income.application.ServiceConfiguration;
+import uk.gov.digital.ho.proving.income.application.TimeoutProperties;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -63,7 +64,7 @@ public class IncomeRecordTest {
 
     @Test
     public void shouldDeserializeJson() throws IOException {
-        ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0).createObjectMapper();
+        ObjectMapper objectMapper = new ServiceConfiguration("", new TimeoutProperties()).createObjectMapper();
 
         String json = "{\"paye\":[],\"selfAssessment\":[],\"employments\":[],\"individual\":{\"firstName\": \"firstname\", \"lastName\": \"lastname\", \"dateOfBirth\": \"1970-01-01\", \"nino\": \"QQ123456C\"}}";
 

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.digital.ho.proving.income.application.ServiceConfiguration;
+import uk.gov.digital.ho.proving.income.application.TimeoutProperties;
 
 import java.io.IOException;
 
@@ -14,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class BaseResponseSerializeTest {
 
-    private ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0).createObjectMapper();
+    private ObjectMapper objectMapper = new ServiceConfiguration("", new TimeoutProperties()).createObjectMapper();
 
     @Test
     public void thatJsonIsDeserialized() throws IOException {

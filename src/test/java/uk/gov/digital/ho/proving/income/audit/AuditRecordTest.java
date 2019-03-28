@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.proving.income.application.ServiceConfiguration;
+import uk.gov.digital.ho.proving.income.application.TimeoutProperties;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 public class AuditRecordTest {
 
-    private ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0).createObjectMapper();
+    private ObjectMapper objectMapper = new ServiceConfiguration("", new TimeoutProperties()).createObjectMapper();
 
     @Value("classpath:json/AuditRecordRequest.json")
     private Resource auditRecordRequest;

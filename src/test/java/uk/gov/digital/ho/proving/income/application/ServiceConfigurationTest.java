@@ -22,23 +22,28 @@ public class ServiceConfigurationTest {
     @Mock
     private RestTemplate mockRestTemplate;
 
+    private TimeoutProperties timeoutProperties = new TimeoutProperties();
+
     @Before
     public void setUp() {
         when(mockRestTemplateBuilder.setReadTimeout(anyInt())).thenReturn(mockRestTemplateBuilder);
         when(mockRestTemplateBuilder.setConnectTimeout(anyInt())).thenReturn(mockRestTemplateBuilder);
-
         when(mockRestTemplateBuilder.build()).thenReturn(mockRestTemplate);
+
+        timeoutProperties.setHmrcService(new TimeoutProperties.HmrcService());
     }
 
     @Test
-    public void shouldSetTimeoutsOnRestTemplate() {
+    public void shouldSetTimeoutsOnHmrcRestTemplate() {
         // given
         int readTimeout = 1234;
         int connectTimeout = 4321;
-        ServiceConfiguration springConfig = new ServiceConfiguration(null, readTimeout, connectTimeout);
+        timeoutProperties.getHmrcService().setReadMs(readTimeout);
+        timeoutProperties.getHmrcService().setConnectMs(connectTimeout);
+        ServiceConfiguration springConfig = new ServiceConfiguration(null, timeoutProperties);
 
         // when
-        RestTemplate restTemplate = springConfig.createRestTemplate(mockRestTemplateBuilder);
+        RestTemplate restTemplate = springConfig.createHmrcRestTemplate(mockRestTemplateBuilder);
 
         // then
         verify(mockRestTemplateBuilder).setReadTimeout(readTimeout);

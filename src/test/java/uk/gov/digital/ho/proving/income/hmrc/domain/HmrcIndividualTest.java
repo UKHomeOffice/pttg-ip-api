@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.hmrc.domain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.digital.ho.proving.income.application.ServiceConfiguration;
+import uk.gov.digital.ho.proving.income.application.TimeoutProperties;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class HmrcIndividualTest {
-    private ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0).createObjectMapper();
+    private ObjectMapper objectMapper = new ServiceConfiguration("", new TimeoutProperties()).createObjectMapper();
 
     @Test
     public void thatJsonIsDeserialized() throws IOException {

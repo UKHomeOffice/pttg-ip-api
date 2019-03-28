@@ -32,12 +32,10 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     private final int restTemplateReadTimeoutInMillis;
     private final int restTemplateConnectTimeoutInMillis;
 
-    public ServiceConfiguration(@Value("${apidocs.dir}") String apiDocsDir,
-                                @Value("${resttemplate.timeout.read:30000}") int restTemplateReadTimeoutInMillis,
-                                @Value("${resttemplate.timeout.connect:30000}") int restTemplateConnectTimeoutInMillis) {
+    public ServiceConfiguration(@Value("${apidocs.dir}") String apiDocsDir, TimeoutProperties timeoutProperties) {
         this.apiDocsDir = apiDocsDir;
-        this.restTemplateReadTimeoutInMillis = restTemplateReadTimeoutInMillis;
-        this.restTemplateConnectTimeoutInMillis = restTemplateConnectTimeoutInMillis;
+        this.restTemplateReadTimeoutInMillis = timeoutProperties.getHmrcService().getReadMs();
+        this.restTemplateConnectTimeoutInMillis = timeoutProperties.getHmrcService().getConnectMs();
     }
 
     @Bean
@@ -89,6 +87,14 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
 
     @Bean
     public RestTemplate createRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+        return restTemplateBuilder
+            .setReadTimeout(restTemplateReadTimeoutInMillis)
+            .setConnectTimeout(restTemplateConnectTimeoutInMillis)
+            .build();
+    }
+
+    @Bean
+    public RestTemplate createHmrcRestTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder
             .setReadTimeout(restTemplateReadTimeoutInMillis)
             .setConnectTimeout(restTemplateConnectTimeoutInMillis)
