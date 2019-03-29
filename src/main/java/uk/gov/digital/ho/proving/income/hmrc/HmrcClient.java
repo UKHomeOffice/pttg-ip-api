@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.proving.income.hmrc;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,10 +36,10 @@ public class HmrcClient {
     private final RequestData requestData;
     private final ServiceResponseLogger serviceResponseLogger;
 
-    public HmrcClient(RestTemplate restTemplate,
-                      @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
-                      RequestData requestData,
-                      ServiceResponseLogger serviceResponseLogger) {
+    HmrcClient(@Qualifier("createHmrcRestTemplate") RestTemplate restTemplate,
+               @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
+               RequestData requestData,
+               ServiceResponseLogger serviceResponseLogger) {
         this.restTemplate = restTemplate;
         this.hmrcServiceEndpoint = hmrcServiceEndpoint;
         this.requestData = requestData;

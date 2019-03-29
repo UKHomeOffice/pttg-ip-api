@@ -29,13 +29,11 @@ import java.time.format.DateTimeFormatter;
 public class ServiceConfiguration extends WebMvcConfigurerAdapter {
 
     private final String apiDocsDir;
-    private final int restTemplateReadTimeoutInMillis;
-    private final int restTemplateConnectTimeoutInMillis;
+    private final TimeoutProperties timeoutProperties;
 
     public ServiceConfiguration(@Value("${apidocs.dir}") String apiDocsDir, TimeoutProperties timeoutProperties) {
         this.apiDocsDir = apiDocsDir;
-        this.restTemplateReadTimeoutInMillis = timeoutProperties.getHmrcService().getReadMs();
-        this.restTemplateConnectTimeoutInMillis = timeoutProperties.getHmrcService().getConnectMs();
+        this.timeoutProperties = timeoutProperties;
     }
 
     @Bean
@@ -81,23 +79,31 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public RequestData createRequestData() {
+    RequestData createRequestData() {
         return new RequestData();
     }
 
+//    @Bean
+//    public RestTemplate createRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+//        return restTemplateBuilder
+//            .setReadTimeout()
+//            .setConnectTimeout(timeoutProperties.getHmrcService().getConnectMs())
+//            .build();
+//    }
+
     @Bean
-    public RestTemplate createRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+    RestTemplate createHmrcRestTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder
-            .setReadTimeout(restTemplateReadTimeoutInMillis)
-            .setConnectTimeout(restTemplateConnectTimeoutInMillis)
+            .setReadTimeout(timeoutProperties.getHmrcService().getReadMs())
+            .setConnectTimeout(timeoutProperties.getHmrcService().getConnectMs())
             .build();
     }
 
     @Bean
-    public RestTemplate createHmrcRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+    public RestTemplate createAuditRestTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder
-            .setReadTimeout(restTemplateReadTimeoutInMillis)
-            .setConnectTimeout(restTemplateConnectTimeoutInMillis)
+            .setReadTimeout(timeoutProperties.getAuditService().getReadMs())
+            .setConnectTimeout(timeoutProperties.getAuditService().getConnectMs())
             .build();
     }
 

@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.audit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -17,13 +18,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
-import javax.swing.text.DateFormatter;
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -46,7 +45,7 @@ public class AuditClient {
     private final ObjectMapper mapper;
 
     public AuditClient(Clock clock,
-                       RestTemplate restTemplate,
+                       @Qualifier("createAuditRestTemplate")RestTemplate restTemplate,
                        RequestData requestData,
                        @Value("${pttg.audit.endpoint}") String auditEndpoint,
                        @Value("${audit.history.endpoint}") String auditHistoryEndpoint,

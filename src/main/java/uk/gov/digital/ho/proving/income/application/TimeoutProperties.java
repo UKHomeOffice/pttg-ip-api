@@ -13,8 +13,10 @@ import org.springframework.context.annotation.Configuration;
 public class TimeoutProperties {
 
     private HmrcService hmrcService;
+    private AuditService auditService;
 
     public static class HmrcService extends TimeoutPropertiesTemplate {}
+    public static class AuditService extends TimeoutPropertiesTemplate {}
 
     @NoArgsConstructor
     @Setter
