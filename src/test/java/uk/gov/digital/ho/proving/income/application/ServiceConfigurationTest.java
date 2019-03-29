@@ -31,6 +31,7 @@ public class ServiceConfigurationTest {
         when(mockRestTemplateBuilder.build()).thenReturn(mockRestTemplate);
 
         timeoutProperties.setHmrcService(new TimeoutProperties.HmrcService());
+        timeoutProperties.setAuditService(new TimeoutProperties.AuditService());
     }
 
     @Test
@@ -43,6 +44,23 @@ public class ServiceConfigurationTest {
         ServiceConfiguration springConfig = new ServiceConfiguration(null, timeoutProperties);
         // when
         RestTemplate restTemplate = springConfig.createHmrcRestTemplate(mockRestTemplateBuilder);
+        // then
+        verify(mockRestTemplateBuilder).setReadTimeout(readTimeout);
+        verify(mockRestTemplateBuilder).setConnectTimeout(connectTimeout);
+
+        assertThat(restTemplate).isEqualTo(mockRestTemplate);
+    }
+
+    @Test
+    public void shouldSetTimeoutsOnAuditRestTemplate() {
+        // given
+        int readTimeout = 2468;
+        int connectTimeout = 1357;
+        timeoutProperties.getAuditService().setReadMs(readTimeout);
+        timeoutProperties.getAuditService().setConnectMs(connectTimeout);
+        ServiceConfiguration springConfig = new ServiceConfiguration(null, timeoutProperties);
+        // when
+        RestTemplate restTemplate = springConfig.createAuditRestTemplate(mockRestTemplateBuilder);
         // then
         verify(mockRestTemplateBuilder).setReadTimeout(readTimeout);
         verify(mockRestTemplateBuilder).setConnectTimeout(connectTimeout);

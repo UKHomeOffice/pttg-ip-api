@@ -15,14 +15,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = {TimeoutProperties.class, TimeoutPropertiesTest.TestConfig.class})
 @TestPropertySource(properties = {
     "timeouts.hmrc-service.read-ms=120000",
-    "timeouts.hmrc-service.connect-ms=1000"
+    "timeouts.hmrc-service.connect-ms=1000",
+    "timeouts.audit-service.read-ms=10000",
+    "timeouts.audit-service.connect-ms=1000"
 })
 
 public class TimeoutPropertiesTest {
 
     @TestConfiguration
     @EnableConfigurationProperties
-    public static class TestConfig {}
+    static class TestConfig {}
 
     @Autowired
     private TimeoutProperties timeoutProperties;
@@ -31,6 +33,8 @@ public class TimeoutPropertiesTest {
     public void shouldLoadRestTemplateTimeouts() {
         assertThat(timeoutProperties.getHmrcService().getReadMs()).isEqualTo(120000);
         assertThat(timeoutProperties.getHmrcService().getConnectMs()).isEqualTo(1000);
+        assertThat(timeoutProperties.getAuditService().getReadMs()).isEqualTo(10000);
+        assertThat(timeoutProperties.getAuditService().getConnectMs()).isEqualTo(1000);
     }
 }
 
