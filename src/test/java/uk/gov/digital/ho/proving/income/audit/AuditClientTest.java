@@ -17,13 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.util.*;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.GET;
@@ -142,5 +140,36 @@ public class AuditClientTest {
         verify(mockRestTemplate).exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<ArchiveAuditResponse>() {}));
         ArchiveAuditRequest actual = (ArchiveAuditRequest) captorHttpEntity.getValue().getBody();
         assertThat(actual).isEqualTo(request);
+    }
+
+    @Test
+    public void getAuditHistoryPaginated_givenParams_expectedUri() {
+        List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        int page = 23;
+        int size = 8;
+        when(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .thenReturn(ResponseEntity.ok(emptyList()));
+
+        auditClient.getAuditHistoryPaginated(eventTypes, page, size);
+
+        URI uri = captorUri.getValue();
+        assertThat(uri).hasHost(SOME_HISTORY_ENDPOINT.replace("http://", ""));
+        assertThat(uri).hasQuery(String.format("eventTypes=%s&page=%s&size=%s", eventTypes.toString(), page, size));
+    }
+
+    @Test
+    public void getAuditHistoryPaginated_givenResponse_returnRecords() {
+        List<AuditRecord> results = emptyList();
+        ResponseEntity<List<AuditRecord>> response = ResponseEntity.ok(results);
+
+        when(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .thenReturn(response);
+
+        List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        int somePage = 23;
+        int someSize = 8;
+        List<AuditRecord> returnedResults = auditClient.getAuditHistoryPaginated(eventTypes, somePage, someSize);
+
+        assertThat(returnedResults).isEqualTo(results);
     }
 }
