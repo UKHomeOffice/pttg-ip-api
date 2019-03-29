@@ -31,7 +31,7 @@ properties = {
 public class AuditArchiveServiceIT {
 
     @Autowired
-    @Qualifier("createAuditRestTemplate")
+    @Qualifier("auditRestTemplate")
     private RestTemplate restTemplate;
     @Autowired
     private AuditArchiveService auditArchiveService;

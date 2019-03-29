@@ -36,7 +36,7 @@ public class HmrcClient {
     private final RequestData requestData;
     private final ServiceResponseLogger serviceResponseLogger;
 
-    HmrcClient(@Qualifier("createHmrcRestTemplate") RestTemplate restTemplate,
+    HmrcClient(@Qualifier("hmrcRestTemplate") RestTemplate restTemplate,
                @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
                RequestData requestData,
                ServiceResponseLogger serviceResponseLogger) {
