@@ -83,14 +83,6 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
         return new RequestData();
     }
 
-//    @Bean
-//    public RestTemplate createRestTemplate(RestTemplateBuilder restTemplateBuilder) {
-//        return restTemplateBuilder
-//            .setReadTimeout()
-//            .setConnectTimeout(timeoutProperties.getHmrcService().getConnectMs())
-//            .build();
-//    }
-
     @Bean
     RestTemplate createHmrcRestTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder
@@ -100,7 +92,7 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public RestTemplate createAuditRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+    RestTemplate createAuditRestTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder
             .setReadTimeout(timeoutProperties.getAuditService().getReadMs())
             .setConnectTimeout(timeoutProperties.getAuditService().getConnectMs())
