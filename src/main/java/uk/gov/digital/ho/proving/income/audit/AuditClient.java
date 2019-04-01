@@ -44,8 +44,8 @@ public class AuditClient {
     private final RequestData requestData;
     private final ObjectMapper mapper;
 
-    public AuditClient(Clock clock,
-                       @Qualifier("auditRestTemplate") RestTemplate restTemplate,
+    AuditClient(Clock clock,
+                @Qualifier("auditRestTemplate") RestTemplate restTemplate,
                        RequestData requestData,
                        @Value("${pttg.audit.endpoint}") String auditEndpoint,
                        @Value("${audit.history.endpoint}") String auditHistoryEndpoint,
@@ -128,6 +128,7 @@ public class AuditClient {
 
         headers.add(AUTHORIZATION, requestData.auditBasicAuth());
         headers.setContentType(APPLICATION_JSON);
+        headers.add(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
 
         return headers;
     }

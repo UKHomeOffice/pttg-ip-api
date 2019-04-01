@@ -14,7 +14,7 @@ pipeline:
     commands:
       - docker build -t pttg-ip-api .
     when:
-      branch: [master, refs/tags/*]
+      branch: [master, refs/tags/*, EE-8760-correlationId]
       event: [push, tag]
 
   install-docker-image:
@@ -28,7 +28,7 @@ pipeline:
       - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
     when:
-      branch: master
+      branch: [master, EE-8760-correlationId]
       event: push
 
   tag-docker-image-with-git-tag:
@@ -43,7 +43,7 @@ pipeline:
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}
     when:
       event: tag
-  
+
   clone-kube-project:
     image: plugins/git
     commands:
@@ -64,7 +64,7 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-      branch: master
+      branch: [master, EE-8760-correlationId]
       event: [push, tag]
 
   deployment:

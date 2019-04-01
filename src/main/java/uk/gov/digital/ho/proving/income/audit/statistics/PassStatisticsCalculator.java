@@ -15,20 +15,12 @@ import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 
 class PassStatisticsCalculator {
 
-    private final LocalDate fromDate;
-    private final LocalDate toDate;
-
-    PassStatisticsCalculator(LocalDate fromDate, LocalDate toDate) {
-        this.fromDate = fromDate;
-        this.toDate = toDate;
-    }
-
-    PassRateStatistics result(List<AuditResultByNino> records) {
+    PassRateStatistics result(List<AuditResultByNino> records, LocalDate fromDate, LocalDate toDate) {
         PassRateStatisticsBuilder statisticsBuilder = PassRateStatistics.builder()
             .fromDate(fromDate)
             .toDate(toDate);
 
-        List<AuditResultByNino> resultsInRange = filterInDateRange(records);
+        List<AuditResultByNino> resultsInRange = filterInDateRange(records, fromDate, toDate);
         statisticsBuilder.totalRequests(resultsInRange.size());
 
         Map<AuditResultType, Long> countsByResult = countByResultType(resultsInRange);
@@ -41,13 +33,13 @@ class PassStatisticsCalculator {
             .build();
     }
 
-    private List<AuditResultByNino> filterInDateRange(List<AuditResultByNino> records) {
+    private List<AuditResultByNino> filterInDateRange(List<AuditResultByNino> records, LocalDate fromDate, LocalDate toDate) {
         return records.stream()
-            .filter(this::isInDateRange)
+            .filter(auditResult -> isInDateRange(auditResult, fromDate, toDate))
             .collect(toList());
     }
 
-    private boolean isInDateRange(AuditResultByNino auditResult) {
+    private boolean isInDateRange(AuditResultByNino auditResult, LocalDate fromDate, LocalDate toDate) {
         return !auditResult.date().isBefore(fromDate) && !auditResult.date().isAfter(toDate);
     }
 
