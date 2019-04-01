@@ -35,14 +35,13 @@ public class PassRateStatisticsService {
 
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         List<AuditRecord> allAuditRecords = getAllAuditRecords();
-
-        consolidateRecords(allAuditRecords);
-        return null;
+        List<AuditResultByNino> resultsByNino = consolidateRecords(allAuditRecords);
+        return calculator.result(resultsByNino);
     }
 
-    private void consolidateRecords(List<AuditRecord> allAuditRecords) {
+    private List<AuditResultByNino> consolidateRecords(List<AuditRecord> allAuditRecords) {
         List<AuditResult> byCorrelationId = consolidator.auditResultsByCorrelationId(allAuditRecords);
-        consolidator.consolidatedAuditResultsByNino(byCorrelationId);
+        return consolidator.consolidatedAuditResultsByNino(byCorrelationId);
     }
 
     private List<AuditRecord> getAllAuditRecords() {
