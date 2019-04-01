@@ -93,7 +93,7 @@ public class AuditClient {
         return auditRecords.getBody();
     }
 
-    List<AuditRecord> getAuditHistoryPaginated(List<AuditEventType> eventTypes, int page, int size) {
+    public List<AuditRecord> getAuditHistoryPaginated(List<AuditEventType> eventTypes, int page, int size) {
         URI uri = UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
             .queryParam("eventTypes", eventTypes)
             .queryParam("page", page)
