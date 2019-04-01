@@ -46,14 +46,18 @@ public class PassRateStatisticsService {
     }
 
     private List<AuditRecord> getAllAuditRecords() {
-        List<AuditRecord> auditRecords;
         List<AuditRecord> allAuditRecords = new ArrayList<>();
+
         int page = 0;
-        do {
-            auditRecords = auditClient.getAuditHistoryPaginated(AUDIT_EVENTS_TO_RETRIEVE, page, requestPageSize);
-            allAuditRecords.addAll(auditRecords);
+        while (addAuditRecords(allAuditRecords, page)) {
             page++;
-        } while (!auditRecords.isEmpty());
+        }
         return allAuditRecords;
+    }
+
+    private boolean addAuditRecords(List<AuditRecord> allAuditRecords, int page) {
+        List<AuditRecord> auditRecords = auditClient.getAuditHistoryPaginated(AUDIT_EVENTS_TO_RETRIEVE, page, requestPageSize);
+        allAuditRecords.addAll(auditRecords);
+        return !auditRecords.isEmpty();
     }
 }
