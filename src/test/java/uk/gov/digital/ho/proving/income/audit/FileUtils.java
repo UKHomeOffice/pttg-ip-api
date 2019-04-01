@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 
 @Component
 @Configuration
+public
 class FileUtils {
 
     private ObjectMapper objectMapper;
@@ -37,7 +38,7 @@ class FileUtils {
         }
     }
 
-    String buildRequest(String correlationId, String dateTime, String nino) {
+    public String buildRequest(String correlationId, String dateTime, String nino) {
         String requestTemplate = loadJsonResource(auditRecordRequestTemplate);
         requestTemplate = requestTemplate.replaceAll("\\$\\{correlation-id}", correlationId);
         requestTemplate = requestTemplate.replaceAll("\\$\\{date-time}", dateTime);
@@ -45,7 +46,7 @@ class FileUtils {
         return requestTemplate;
     }
 
-    String buildResponse(String correlationId, String dateTime, String nino, String pass) {
+    public String buildResponse(String correlationId, String dateTime, String nino, String pass) {
         String responseTemplate = loadJsonResource(auditRecordResponseTemplate);
         responseTemplate = responseTemplate.replaceAll("\\$\\{correlation-id}", correlationId);
         responseTemplate = responseTemplate.replaceAll("\\$\\{date-time}", dateTime);
@@ -54,7 +55,7 @@ class FileUtils {
         return responseTemplate;
     }
 
-    String buildResponseNotFound(String correlationId, String dateTime) {
+    public String buildResponseNotFound(String correlationId, String dateTime) {
         String responseTemplate = loadJsonResource(auditRecordResourceNotFoundTemplate);
         responseTemplate = responseTemplate.replaceAll("\\$\\{correlation-id}", correlationId);
         responseTemplate = responseTemplate.replaceAll("\\$\\{date-time}", dateTime);
