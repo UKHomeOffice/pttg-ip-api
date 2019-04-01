@@ -146,12 +146,12 @@ public class AuditClientTest {
 
     @Test
     public void getAuditHistoryPaginated_givenParams_expectedUri() {
-        List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        int page = 23;
-        int size = 8;
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
             .thenReturn(ResponseEntity.ok(emptyList()));
 
+        List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        int page = 23;
+        int size = 8;
         auditClient.getAuditHistoryPaginated(eventTypes, page, size);
 
         URI uri = captorUri.getValue();
@@ -162,16 +162,19 @@ public class AuditClientTest {
     @Test
     public void getAuditHistoryPaginated_givenResponse_returnRecords() {
         List<AuditRecord> results = emptyList();
+        stubResponse(results);
+
+        List<AuditEventType> someEventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        int somePage = 1;
+        int someSize = 1;
+
+        assertThat(auditClient.getAuditHistoryPaginated(someEventTypes, somePage, someSize))
+            .isEqualTo(results);
+    }
+
+    private void stubResponse(List<AuditRecord> results) {
         ResponseEntity<List<AuditRecord>> response = ResponseEntity.ok(results);
-
-        when(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
             .thenReturn(response);
-
-        List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        int somePage = 23;
-        int someSize = 8;
-        List<AuditRecord> returnedResults = auditClient.getAuditHistoryPaginated(eventTypes, somePage, someSize);
-
-        assertThat(returnedResults).isEqualTo(results);
     }
 }

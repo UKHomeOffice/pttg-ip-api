@@ -13,8 +13,7 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 import static uk.gov.digital.ho.proving.income.audit.AuditResultType.ERROR;
 
 @Component
-public
-class AuditResultConsolidator {
+public class AuditResultConsolidator {
 
     private AuditResultParser auditResultParser;
     private AuditResultTypeComparator auditResultTypeComparator;

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.*;
 
@@ -26,7 +27,8 @@ public class PassRateStatisticsService {
     public PassRateStatisticsService(AuditClient auditClient,
                                      PassStatisticsCalculator calculator,
                                      AuditResultConsolidator consolidator,
-                                     int requestPageSize) { // TODO OJR EE-16843 put in config
+                                     @Value("${audit.history.passratestats.pagesize}") int requestPageSize) {
+
         this.auditClient = auditClient;
         this.calculator = calculator;
         this.consolidator = consolidator;

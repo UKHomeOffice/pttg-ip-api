@@ -48,6 +48,10 @@ public class PassRateStatisticsServiceTest {
         service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, PAGE_SIZE);
     }
 
+    /**************************
+     * AuditClient collaborator
+     **************************/
+
     @Test
     public void generatePassStatistics_givenPageSize_requestedPageSize() {
         int pageSize = 200;
@@ -81,7 +85,7 @@ public class PassRateStatisticsServiceTest {
     }
 
     @Test
-    public void generatePassStatistics_resultsFromAuditSerivce_requestAnotherPage() {
+    public void generatePassStatistics_resultsFromAuditService_requestAnotherPage() {
         AuditRecord someAuditRecord = new AuditRecord("some id", SOME_DATE_TIME, "some email", SOME_AUDIT_EVENT_TYPE, SOME_JSON, "some nino");
 
         when(mockAuditClient.getAuditHistoryPaginated(anyList(), eq(0), eq(PAGE_SIZE)))
@@ -93,6 +97,10 @@ public class PassRateStatisticsServiceTest {
         verify(mockAuditClient)
             .getAuditHistoryPaginated(anyList(), eq(1), eq(PAGE_SIZE));
     }
+
+    /***************************************
+     * AuditResultConsolidator collaborator
+     ***************************************/
 
     @Test
     public void generatePassStatistics_givenResultsFromAuditService_passedToConsolidator() {
@@ -115,6 +123,10 @@ public class PassRateStatisticsServiceTest {
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
         verify(mockConsolidator).consolidatedAuditResultsByNino(byCorrelationId);
     }
+
+    /****************************************
+     * PassStatisticsCalculator collaborator
+     ****************************************/
 
     @Test
     public void generatePassStatistics_givenFromDate_passedToCalculator() {
