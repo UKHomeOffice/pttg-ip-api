@@ -36,7 +36,7 @@ public class PassRateStatisticsService {
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         List<AuditRecord> allAuditRecords = getAllAuditRecords();
         List<AuditResultByNino> resultsByNino = consolidateRecords(allAuditRecords);
-        return calculator.result(resultsByNino);
+        return calculator.result(resultsByNino, fromDate, toDate);
     }
 
     private List<AuditResultByNino> consolidateRecords(List<AuditRecord> allAuditRecords) {

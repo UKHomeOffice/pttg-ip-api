@@ -37,8 +37,8 @@ public class PassRateStatisticsServiceTest {
     private static final int PAGE_SIZE = 1;
 
     private static final long SOME_LONG = 3;
-    private static final LocalDate SOME_DATE = LocalDate.now();
-    private static final LocalDateTime SOME_DATE_TIME = LocalDateTime.now();
+    private static final LocalDate SOME_DATE = LocalDate.MAX;
+    private static final LocalDateTime SOME_DATE_TIME = LocalDateTime.MAX;
     private static final AuditEventType SOME_AUDIT_EVENT_TYPE = INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
     private static final JsonNode SOME_JSON = null;
     private static final AuditResultType SOME_AUDIT_RESULT_TYPE = AuditResultType.PASS;
@@ -114,6 +114,22 @@ public class PassRateStatisticsServiceTest {
 
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
         verify(mockConsolidator).consolidatedAuditResultsByNino(byCorrelationId);
+    }
+
+    @Test
+    public void generatePassStatistics_givenFromDate_passedToCalculator() {
+        LocalDate fromDate = LocalDate.now();
+        service.generatePassRateStatistics(fromDate, SOME_DATE);
+
+        verify(mockPassStatisticsCalculator).result(anyList(), eq(fromDate), any(LocalDate.class));
+    }
+
+    @Test
+    public void generatePassStatistics_givenToDate_passedToCalculator() {
+        LocalDate toDate = LocalDate.now();
+        service.generatePassRateStatistics(SOME_DATE, toDate);
+
+        verify(mockPassStatisticsCalculator).result(anyList(), any(LocalDate.class), eq(toDate));
     }
 
     @Test
