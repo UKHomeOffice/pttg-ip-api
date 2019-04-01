@@ -127,6 +127,7 @@ public class AuditClient {
 
         headers.add(AUTHORIZATION, requestData.auditBasicAuth());
         headers.setContentType(APPLICATION_JSON);
+        headers.add(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
 
         return headers;
     }

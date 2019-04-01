@@ -103,6 +103,7 @@ public class AuditClientTest {
     public void shouldSetHeaders() {
 
         when(mockRequestData.auditBasicAuth()).thenReturn("some basic auth header value");
+        when(mockRequestData.correlationId()).thenReturn("some correlation id");
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, null);
 
         verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class));
@@ -110,6 +111,7 @@ public class AuditClientTest {
         HttpHeaders headers = captorHttpEntity.getValue().getHeaders();
         assertThat(headers.get("Authorization").get(0)).isEqualTo("some basic auth header value");
         assertThat(headers.get("Content-Type").get(0)).isEqualTo(APPLICATION_JSON_VALUE);
+        assertThat(headers.get("x-correlation-id").get(0)).isEqualTo("some correlation id");
     }
 
     @Test
