@@ -123,13 +123,13 @@ public class PassRateStatisticsServiceTest {
             .thenReturn(resultsByNino);
 
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
-        verify(mockPassStatisticsCalculator).result(resultsByNino);
+        verify(mockPassStatisticsCalculator).result(resultsByNino, SOME_DATE, SOME_DATE);
     }
 
     @Test
     public void generatePassStatistics_givenResultFromCalculator_returnedToCaller() {
         PassRateStatistics passRateStatistics = new PassRateStatistics(SOME_DATE, SOME_DATE, SOME_LONG, SOME_LONG, SOME_LONG, SOME_LONG, SOME_LONG);
-        when(mockPassStatisticsCalculator.result(anyList()))
+        when(mockPassStatisticsCalculator.result(anyList(), any(LocalDate.class), any(LocalDate.class)))
             .thenReturn(passRateStatistics);
 
         PassRateStatistics actualStatistics = service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
