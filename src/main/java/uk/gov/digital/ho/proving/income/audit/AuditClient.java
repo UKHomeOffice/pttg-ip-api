@@ -74,9 +74,9 @@ public class AuditClient {
     }
 
     @Retryable(
-        value = {RestClientException.class},
-        maxAttemptsExpression = "#{${audit.service.retry.attempts}}",
-        backoff = @Backoff(delayExpression = "#{${audit.service.retry.delay}}"))
+            value = { RestClientException.class },
+            maxAttemptsExpression = "#{${audit.service.retry.attempts}}",
+            backoff = @Backoff(delayExpression = "#{${audit.service.retry.delay}}"))
     private void dispatchAuditableData(AuditableData auditableData) {
         restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
     }
@@ -90,15 +90,13 @@ public class AuditClient {
             .toUri();
 
         HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
-        ResponseEntity<List<AuditRecord>> auditRecords = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {
-        });
+        ResponseEntity<List<AuditRecord>> auditRecords = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
         return auditRecords.getBody();
     }
 
     void archiveAudit(ArchiveAuditRequest request) {
         HttpEntity<ArchiveAuditRequest> entity = new HttpEntity<>(request, generateRestHeaders());
-        ResponseEntity<ArchiveAuditResponse> response = restTemplate.exchange(auditArchiveEndpoint, POST, entity, new ParameterizedTypeReference<ArchiveAuditResponse>() {
-        });
+        ResponseEntity<ArchiveAuditResponse> response = restTemplate.exchange(auditArchiveEndpoint, POST, entity, new ParameterizedTypeReference<ArchiveAuditResponse>() {});
     }
 
     @Recover
@@ -108,14 +106,14 @@ public class AuditClient {
 
     private AuditableData generateAuditableData(AuditEventType eventType, UUID eventId, Map<String, Object> auditDetail) throws JsonProcessingException {
         return new AuditableData(eventId.toString(),
-            LocalDateTime.now(clock),
-            requestData.sessionId(),
-            requestData.correlationId(),
-            requestData.userId(),
-            requestData.deploymentName(),
-            requestData.deploymentNamespace(),
-            eventType,
-            mapper.writeValueAsString(auditDetail));
+                                    LocalDateTime.now(clock),
+                                    requestData.sessionId(),
+                                    requestData.correlationId(),
+                                    requestData.userId(),
+                                    requestData.deploymentName(),
+                                    requestData.deploymentNamespace(),
+                                    eventType,
+                                    mapper.writeValueAsString(auditDetail));
     }
 
     private HttpEntity<AuditableData> toEntity(AuditableData auditableData) {
