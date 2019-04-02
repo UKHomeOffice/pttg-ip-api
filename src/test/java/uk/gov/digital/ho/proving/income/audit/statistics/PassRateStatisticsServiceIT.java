@@ -12,13 +12,11 @@ import uk.gov.digital.ho.proving.income.audit.FileUtils;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.client.ExpectedCount.times;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -70,7 +68,7 @@ public class PassRateStatisticsServiceIT {
         String nino2FailRequest = fileUtils.buildRequest("correlationID 2", "2018-08-01 09:00:00.000", "nino 2");
         String nino2FailResponse = fileUtils.buildResponse("correlationID 2", "2018-08-01 09:00:01.000", "nino 2", "false");
 
-        String auditHistory = String.format("[%s]", String.join(", ", nino1PassRequest, nino1PassResponse, nino2FailRequest, nino2FailResponse));
+        String auditHistory = joinAuditRecordsAsJsonList(nino1PassRequest, nino1PassResponse, nino2FailRequest, nino2FailResponse);
 
         mockAuditServiceResponses(auditHistory, EMPTY_RESPONSE);
 
@@ -96,8 +94,8 @@ public class PassRateStatisticsServiceIT {
         String nino5PassRequest = fileUtils.buildRequest("correlationID 5", "2018-08-03 11:30:00.000", "nino 5");
         String nino5PassResponse = fileUtils.buildResponse("correlationID 5", "2018-08-03 11:31:00.000", "nino 5", "true");
 
-        String response1 = String.format("[%s]", String.join(", ", nino1PassRequest, nino2FailResponse, nino3NotFoundResponse, nino5PassRequest, nino5PassResponse));
-        String response2 = String.format("[%s]", String.join(", ", nino4PassResponse, nino3NotFoundRequest, nino4PassRequest, nino2FailRequest, nino1PassResponse));
+        String response1 = joinAuditRecordsAsJsonList(nino1PassRequest, nino2FailResponse, nino3NotFoundResponse, nino5PassRequest, nino5PassResponse);
+        String response2 = joinAuditRecordsAsJsonList(nino4PassResponse, nino3NotFoundRequest, nino4PassRequest, nino2FailRequest, nino1PassResponse);
         mockAuditServiceResponses(response1, response2, EMPTY_RESPONSE);
 
         PassRateStatistics actualStatistics = passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE);
@@ -131,9 +129,9 @@ public class PassRateStatisticsServiceIT {
         // no corresponding response so this is an error
         String nino4ErrorRequest = fileUtils.buildRequest("correlationID 7", "2018-08-01 09:11:00.000", "nino 4");
 
-        String auditHistoryResponse1 = String.format("[%s]", String.join(", ", nino1FailRequest, nino1FailResponse, nino2FailRequest, nino2NotFoundRequest, nino4ErrorRequest));
-        String auditHistoryResponse2 = String.format("[%s]", String.join(", ", nino1PassResponse, nino1PassRequest, nino2FailResponse, nino3ErrorRequest, nino3NotFoundResponse));
-        String auditHistoryResponse3 = String.format("[%s]", String.join(", ", nino2NotFoundResponse, nino3NotFoundRequest));
+        String auditHistoryResponse1 = joinAuditRecordsAsJsonList(nino1FailRequest, nino1FailResponse, nino2FailRequest, nino2NotFoundRequest, nino4ErrorRequest);
+        String auditHistoryResponse2 = joinAuditRecordsAsJsonList(nino1PassResponse, nino1PassRequest, nino2FailResponse, nino3ErrorRequest, nino3NotFoundResponse);
+        String auditHistoryResponse3 = joinAuditRecordsAsJsonList(nino2NotFoundResponse, nino3NotFoundRequest);
 
         mockAuditServiceResponses(auditHistoryResponse1, auditHistoryResponse2, auditHistoryResponse3, EMPTY_RESPONSE);
 
@@ -146,34 +144,33 @@ public class PassRateStatisticsServiceIT {
     @Test
     public void passRateStatistics_requestsOutOfRange_notCounted() {
         // Both request and response too early - should NOT be counted
-        String passRequestTooEarly = fileUtils.buildRequest("correlationID 1", FROM_DATE.minusDays(1).atTime(9, 0).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")), "nino1");
-        String passResponseTooEarly = fileUtils.buildResponse("correlationID 1", FROM_DATE.minusDays(1).atTime(9, 1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")), "nino1", "true");
+        String passRequestTooEarly = fileUtils.buildRequest("correlationID 1", FROM_DATE.minusDays(1).atTime(9, 0), "nino1");
+        String passResponseTooEarly = fileUtils.buildResponse("correlationID 1", FROM_DATE.minusDays(1).atTime(9, 1), "nino1", "true");
 
         // Both request and response too late - should NOT be counted
-        String failRequestTooLate = fileUtils.buildRequest("correlationID 2", TO_DATE.plusDays(1).atTime(9, 0).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")), "nino2");
-        String failResponseTooLate = fileUtils.buildResponse("correlationID 2", TO_DATE.plusDays(1).atTime(9, 0).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")), "nino2", "false");
+        String failRequestTooLate = fileUtils.buildRequest("correlationID 2", TO_DATE.plusDays(1).atTime(9, 0), "nino2");
+        String failResponseTooLate = fileUtils.buildResponse("correlationID 2", TO_DATE.plusDays(1).atTime(9, 0), "nino2", "false");
 
         // Request too early but response in range - should be counted
-        String passRequest2TooEarly = fileUtils.buildRequest("correlationID 3", FROM_DATE.minusDays(1).atTime(9, 0).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")), "nino3");
-        String passResponse2InRange = fileUtils.buildResponse("correlationID 3", FROM_DATE.atTime(9, 0).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")), "nino3", "true");
+        String passRequest2TooEarly = fileUtils.buildRequest("correlationID 3", FROM_DATE.minusDays(1).atTime(9, 0), "nino3");
+        String passResponse2InRange = fileUtils.buildResponse("correlationID 3", FROM_DATE.atTime(9, 0), "nino3", "true");
 
         // Request in range but response too late - should NOT be counted
-        String failRequest2InRange = fileUtils.buildRequest("correlationID 4", TO_DATE.atTime(9, 0).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")), "nino4");
-        String failResponse2InRange = fileUtils.buildResponse("correlationID 4", TO_DATE.plusDays(1).atTime(9, 0).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")), "nino4", "false");
+        String failRequest2InRange = fileUtils.buildRequest("correlationID 4", TO_DATE.atTime(9, 0), "nino4");
+        String failResponse2InRange = fileUtils.buildResponse("correlationID 4", TO_DATE.plusDays(1).atTime(9, 0), "nino4", "false");
 
         // Request and response last day - counted
-        String notFoundRequestLastDay = fileUtils.buildRequest("correlationID 5", TO_DATE.atTime(23, 58).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")), "nino5");
-        String notFoundResponseLastDay = fileUtils.buildResponseNotFound("correlationID 5", TO_DATE.atTime(23, 59).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")));
+        String notFoundRequestLastDay = fileUtils.buildRequest("correlationID 5", TO_DATE.atTime(23, 58), "nino5");
+        String notFoundResponseLastDay = fileUtils.buildResponseNotFound("correlationID 5", TO_DATE.atTime(23, 59));
 
-        String auditHistoryResponse1 = String.format("[%s]", String.join(", ", passRequestTooEarly, failRequestTooLate, failResponseTooLate, notFoundRequestLastDay, notFoundResponseLastDay));
-        String auditHistoryResponse2 = String.format("[%s]", String.join(", ", passRequest2TooEarly, failResponse2InRange, failRequest2InRange, passResponse2InRange, passResponseTooEarly));
+        String auditHistoryResponse1 = joinAuditRecordsAsJsonList(passRequestTooEarly, failRequestTooLate, failResponseTooLate, notFoundRequestLastDay, notFoundResponseLastDay);
+        String auditHistoryResponse2 = joinAuditRecordsAsJsonList(passRequest2TooEarly, failResponse2InRange, failRequest2InRange, passResponse2InRange, passResponseTooEarly);
         mockAuditServiceResponses(auditHistoryResponse1, auditHistoryResponse2, EMPTY_RESPONSE);
 
         PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 1, 0, 0, 1, 0);
         assertThat(passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE))
             .isEqualTo(expectedStatistics);
     }
-
 
     private void mockAuditServiceResponses(String... responses) {
         for (int i = 0; i < responses.length; i++) {
@@ -184,5 +181,9 @@ public class PassRateStatisticsServiceIT {
                 .andRespond(withSuccess(response, APPLICATION_JSON));
 
         }
+    }
+
+    private String joinAuditRecordsAsJsonList(String... auditRecords) {
+        return String.format("[%s]", String.join(", ", auditRecords));
     }
 }
