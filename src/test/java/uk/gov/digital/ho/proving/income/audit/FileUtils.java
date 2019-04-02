@@ -14,8 +14,7 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 @Configuration
-public
-class FileUtils {
+public class FileUtils {
 
     private ObjectMapper objectMapper;
 
