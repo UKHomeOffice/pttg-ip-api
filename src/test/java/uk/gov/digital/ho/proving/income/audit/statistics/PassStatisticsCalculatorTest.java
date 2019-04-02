@@ -93,7 +93,7 @@ public class PassStatisticsCalculatorTest {
     }
 
     @Test
-    public void result_lastDay_counted() {
+    public void result_lastDay_notCounted() {
         List<AuditResultByNino> resultByLastDay = singletonList(new AuditResultByNino("some nino", emptyList(), TO_DATE, NOTFOUND));
 
         assertThat(accumulator.result(resultByLastDay, FROM_DATE, TO_DATE))

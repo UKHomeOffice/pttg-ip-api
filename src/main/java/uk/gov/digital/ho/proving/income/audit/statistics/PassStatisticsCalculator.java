@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
+import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 import uk.gov.digital.ho.proving.income.audit.statistics.PassRateStatistics.PassRateStatisticsBuilder;
@@ -13,6 +14,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 
+@Component
 class PassStatisticsCalculator {
 
     PassRateStatistics result(List<AuditResultByNino> records, LocalDate fromDate, LocalDate toDate) {

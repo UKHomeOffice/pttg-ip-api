@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
-class AuditRecord {
+public class AuditRecord {
 
     @JsonProperty(value="id")
     private String id;
