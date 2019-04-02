@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 @Configuration
-class FileUtils {
+public class FileUtils {
 
     private ObjectMapper objectMapper;
 
@@ -37,7 +39,12 @@ class FileUtils {
         }
     }
 
-    String buildRequest(String correlationId, String dateTime, String nino) {
+    public String buildRequest(String correlationId, LocalDateTime dateTime, String nino) {
+        String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+        return buildRequest(correlationId, formattedDateTime, nino);
+    }
+
+    public String buildRequest(String correlationId, String dateTime, String nino) {
         String requestTemplate = loadJsonResource(auditRecordRequestTemplate);
         requestTemplate = requestTemplate.replaceAll("\\$\\{correlation-id}", correlationId);
         requestTemplate = requestTemplate.replaceAll("\\$\\{date-time}", dateTime);
@@ -45,7 +52,12 @@ class FileUtils {
         return requestTemplate;
     }
 
-    String buildResponse(String correlationId, String dateTime, String nino, String pass) {
+    public String buildResponse(String correlationId, LocalDateTime dateTime, String nino, String pass) {
+        String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+        return buildResponse(correlationId, formattedDateTime, nino, pass);
+    }
+
+    public String buildResponse(String correlationId, String dateTime, String nino, String pass) {
         String responseTemplate = loadJsonResource(auditRecordResponseTemplate);
         responseTemplate = responseTemplate.replaceAll("\\$\\{correlation-id}", correlationId);
         responseTemplate = responseTemplate.replaceAll("\\$\\{date-time}", dateTime);
@@ -54,7 +66,12 @@ class FileUtils {
         return responseTemplate;
     }
 
-    String buildResponseNotFound(String correlationId, String dateTime) {
+    public String buildResponseNotFound(String correlationId, LocalDateTime dateTime) {
+        String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+        return buildResponseNotFound(correlationId, formattedDateTime);
+    }
+
+    public String buildResponseNotFound(String correlationId, String dateTime) {
         String responseTemplate = loadJsonResource(auditRecordResourceNotFoundTemplate);
         responseTemplate = responseTemplate.replaceAll("\\$\\{correlation-id}", correlationId);
         responseTemplate = responseTemplate.replaceAll("\\$\\{date-time}", dateTime);
