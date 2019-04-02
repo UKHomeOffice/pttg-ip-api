@@ -59,6 +59,11 @@ public class PassRateStatisticsService {
     private boolean addAuditRecords(List<AuditRecord> allAuditRecords, int page) {
         List<AuditRecord> auditRecords = auditClient.getAuditHistoryPaginated(AUDIT_EVENTS_TO_RETRIEVE, page, requestPageSize);
         allAuditRecords.addAll(auditRecords);
-        return !auditRecords.isEmpty();
+
+        return isFullPage(auditRecords);
+    }
+
+    private boolean isFullPage(List<AuditRecord> auditRecords) {
+        return auditRecords.size() == requestPageSize;
     }
 }

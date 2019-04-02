@@ -34,7 +34,7 @@ public class PassRateStatisticsServiceTest {
 
     private PassRateStatisticsService service;
 
-    private static final int PAGE_SIZE = 1;
+    private static final int PAGE_SIZE = 2;
 
     private static final long SOME_LONG = 3;
     private static final LocalDate SOME_DATE = LocalDate.MAX;
@@ -85,7 +85,21 @@ public class PassRateStatisticsServiceTest {
     }
 
     @Test
-    public void generatePassStatistics_resultsFromAuditService_requestAnotherPage() {
+    public void generatePassStatistics_fullPageOfResultsFromAuditService_requestAnotherPage() {
+        AuditRecord someAuditRecord = new AuditRecord("some id", SOME_DATE_TIME, "some email", SOME_AUDIT_EVENT_TYPE, SOME_JSON, "some nino");
+
+        when(mockAuditClient.getAuditHistoryPaginated(anyList(), eq(0), eq(PAGE_SIZE)))
+            .thenReturn(asList(someAuditRecord, someAuditRecord));
+
+        service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
+        verify(mockAuditClient)
+            .getAuditHistoryPaginated(anyList(), eq(0), eq(PAGE_SIZE));
+        verify(mockAuditClient)
+            .getAuditHistoryPaginated(anyList(), eq(1), eq(PAGE_SIZE));
+    }
+
+    @Test
+    public void generatePassStatistics_partialOfResultsFromAuditService_noMoreRequests() {
         AuditRecord someAuditRecord = new AuditRecord("some id", SOME_DATE_TIME, "some email", SOME_AUDIT_EVENT_TYPE, SOME_JSON, "some nino");
 
         when(mockAuditClient.getAuditHistoryPaginated(anyList(), eq(0), eq(PAGE_SIZE)))
@@ -94,8 +108,7 @@ public class PassRateStatisticsServiceTest {
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
         verify(mockAuditClient)
             .getAuditHistoryPaginated(anyList(), eq(0), eq(PAGE_SIZE));
-        verify(mockAuditClient)
-            .getAuditHistoryPaginated(anyList(), eq(1), eq(PAGE_SIZE));
+        verifyNoMoreInteractions(mockAuditClient);
     }
 
     /***************************************

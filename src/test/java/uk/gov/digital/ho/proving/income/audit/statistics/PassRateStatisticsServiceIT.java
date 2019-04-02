@@ -70,7 +70,7 @@ public class PassRateStatisticsServiceIT {
 
         String auditHistory = joinAuditRecordsAsJsonList(nino1PassRequest, nino1PassResponse, nino2FailRequest, nino2FailResponse);
 
-        mockAuditServiceResponses(auditHistory, EMPTY_RESPONSE);
+        mockAuditServiceResponses(auditHistory);
 
         PassRateStatistics actualStatistics = passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE);
         PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 2, 1, 1, 0, 0);
@@ -133,7 +133,7 @@ public class PassRateStatisticsServiceIT {
         String auditHistoryResponse2 = joinAuditRecordsAsJsonList(nino1PassResponse, nino1PassRequest, nino2FailResponse, nino3ErrorRequest, nino3NotFoundResponse);
         String auditHistoryResponse3 = joinAuditRecordsAsJsonList(nino2NotFoundResponse, nino3NotFoundRequest);
 
-        mockAuditServiceResponses(auditHistoryResponse1, auditHistoryResponse2, auditHistoryResponse3, EMPTY_RESPONSE);
+        mockAuditServiceResponses(auditHistoryResponse1, auditHistoryResponse2, auditHistoryResponse3);
 
         PassRateStatistics expectedPassRateStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 4, 1, 1, 1, 1);
         assertThat(passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE))
