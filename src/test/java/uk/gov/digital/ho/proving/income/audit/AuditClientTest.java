@@ -156,7 +156,13 @@ public class AuditClientTest {
 
         URI uri = captorUri.getValue();
         assertThat(uri).hasHost(SOME_HISTORY_ENDPOINT.replace("http://", ""));
-        assertThat(uri).hasQuery(String.format("eventTypes=%s&page=%s&size=%s", eventTypes.toString(), page, size));
+
+        String[] queryStringComponents = uri.getQuery().split("&");
+        assertThat(queryStringComponents).containsExactlyInAnyOrder(
+            "eventTypes=" + eventTypes,
+            "page=" + page,
+            "size=" + size
+        );
     }
 
     @Test
