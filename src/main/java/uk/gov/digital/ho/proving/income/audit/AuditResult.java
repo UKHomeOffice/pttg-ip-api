@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Accessors(fluent = true)
 @EqualsAndHashCode
 @ToString
-class AuditResult {
+public class AuditResult {
     private String correlationId;
     private LocalDate date;
     private String nino;
