@@ -95,6 +95,20 @@ public class AuditClient {
         return auditRecords.getBody();
     }
 
+    public List<AuditRecord> getAuditHistoryPaginated(List<AuditEventType> eventTypes, int page, int size) {
+        URI uri = UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
+            .queryParam("eventTypes", eventTypes)
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .build()
+            .encode()
+            .toUri();
+
+        HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
+        ResponseEntity<List<AuditRecord>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
+        return response.getBody();
+    }
+
     void archiveAudit(ArchiveAuditRequest request) {
         HttpEntity<ArchiveAuditRequest> entity = new HttpEntity<>(request, generateRestHeaders());
         ResponseEntity<ArchiveAuditResponse> response = restTemplate.exchange(auditArchiveEndpoint, POST, entity, new ParameterizedTypeReference<ArchiveAuditResponse>() {});
@@ -127,6 +141,7 @@ public class AuditClient {
 
         headers.add(AUTHORIZATION, requestData.auditBasicAuth());
         headers.setContentType(APPLICATION_JSON);
+        headers.add(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
 
         return headers;
     }

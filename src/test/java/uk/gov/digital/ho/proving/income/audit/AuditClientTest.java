@@ -30,8 +30,10 @@ import java.net.URI;
 import java.time.*;
 import java.util.*;
 
+
 import static ch.qos.logback.classic.Level.ERROR;
 import static ch.qos.logback.classic.Level.INFO;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.GET;
@@ -103,6 +105,7 @@ public class AuditClientTest {
     public void shouldSetHeaders() {
 
         when(mockRequestData.auditBasicAuth()).thenReturn("some basic auth header value");
+        when(mockRequestData.correlationId()).thenReturn("some correlation id");
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, null);
 
         verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class));
@@ -110,6 +113,7 @@ public class AuditClientTest {
         HttpHeaders headers = captorHttpEntity.getValue().getHeaders();
         assertThat(headers.get("Authorization").get(0)).isEqualTo("some basic auth header value");
         assertThat(headers.get("Content-Type").get(0)).isEqualTo(APPLICATION_JSON_VALUE);
+        assertThat(headers.get("x-correlation-id").get(0)).isEqualTo("some correlation id");
     }
 
     @Test
@@ -195,5 +199,45 @@ public class AuditClientTest {
                 loggingEvent.getFormattedMessage().equals(message) &&
                 Arrays.asList(loggingEvent.getArgumentArray()).contains(new ObjectAppendingMarker("event_id", event));
         }));
+    }
+
+    @Test
+    public void getAuditHistoryPaginated_givenParams_expectedUri() {
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .thenReturn(ResponseEntity.ok(emptyList()));
+
+        List<AuditEventType> eventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        int page = 23;
+        int size = 8;
+        auditClient.getAuditHistoryPaginated(eventTypes, page, size);
+
+        URI uri = captorUri.getValue();
+        assertThat(uri).hasHost(SOME_HISTORY_ENDPOINT.replace("http://", ""));
+
+        String[] queryStringComponents = uri.getQuery().split("&");
+        assertThat(queryStringComponents).containsExactlyInAnyOrder(
+            "eventTypes=" + eventTypes,
+            "page=" + page,
+            "size=" + size
+        );
+    }
+
+    @Test
+    public void getAuditHistoryPaginated_givenResponse_returnRecords() {
+        List<AuditRecord> results = emptyList();
+        stubResponse(results);
+
+        List<AuditEventType> someEventTypes = Arrays.asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        int somePage = 1;
+        int someSize = 1;
+
+        assertThat(auditClient.getAuditHistoryPaginated(someEventTypes, somePage, someSize))
+            .isEqualTo(results);
+    }
+
+    private void stubResponse(List<AuditRecord> results) {
+        ResponseEntity<List<AuditRecord>> response = ResponseEntity.ok(results);
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .thenReturn(response);
     }
 }

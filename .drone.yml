@@ -43,7 +43,7 @@ pipeline:
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}
     when:
       event: tag
-  
+
   clone-kube-project:
     image: plugins/git
     commands:

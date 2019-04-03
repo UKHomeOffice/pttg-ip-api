@@ -41,13 +41,13 @@ public class AuditArchiveServiceTest {
         List<AuditResult> resultsByCorrelationId = getAuditResultsByCorrelationId();
         when(mockAuditResultConsolidator.auditResultsByCorrelationId(anyList())).thenReturn(resultsByCorrelationId);
         List<AuditResultByNino> resultsByNino = getAuditResultsByNino();
-        when(mockAuditResultConsolidator.auditResultsByNino(anyList())).thenReturn(resultsByNino);
+        when(mockAuditResultConsolidator.consolidatedAuditResultsByNino(anyList())).thenReturn(resultsByNino);
 
         auditArchiveService.archiveAudit();
 
         verify(mockAuditClient).getAuditHistory(auditEndDate, AUDIT_EVENTS_TO_ARCHIVE);
         verify(mockAuditResultConsolidator).auditResultsByCorrelationId(history);
-        verify(mockAuditResultConsolidator).auditResultsByNino(resultsByCorrelationId);
+        verify(mockAuditResultConsolidator).consolidatedAuditResultsByNino(resultsByCorrelationId);
         verify(mockAuditClient).archiveAudit(any(ArchiveAuditRequest.class));
     }
 
