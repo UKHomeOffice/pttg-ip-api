@@ -199,7 +199,9 @@ public class AuditClientTest {
                 loggingEvent.getFormattedMessage().equals(message) &&
                 Arrays.asList(loggingEvent.getArgumentArray()).contains(new ObjectAppendingMarker("event_id", event));
         }));
+    }
 
+    @Test
     public void getAuditHistoryPaginated_givenParams_expectedUri() {
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
             .thenReturn(ResponseEntity.ok(emptyList()));
