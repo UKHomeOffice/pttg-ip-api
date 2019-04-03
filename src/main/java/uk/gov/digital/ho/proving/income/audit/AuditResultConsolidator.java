@@ -13,7 +13,7 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 import static uk.gov.digital.ho.proving.income.audit.AuditResultType.ERROR;
 
 @Component
-class AuditResultConsolidator {
+public class AuditResultConsolidator {
 
     private AuditResultParser auditResultParser;
     private AuditResultTypeComparator auditResultTypeComparator;
@@ -29,7 +29,7 @@ class AuditResultConsolidator {
         this.auditResultComparator = auditResultComparator;
     }
 
-    List<AuditResult> auditResultsByCorrelationId(List<AuditRecord> auditRecords) {
+    public List<AuditResult> auditResultsByCorrelationId(List<AuditRecord> auditRecords) {
         Map<String, List<AuditRecord>> recordsByCorrelationId =
             auditRecords.stream().collect(Collectors.groupingBy(AuditRecord::getId));
 
@@ -38,7 +38,7 @@ class AuditResultConsolidator {
             .collect(Collectors.toList());
     }
 
-    List<AuditResultByNino> consolidatedAuditResultsByNino(List<AuditResult> results) {
+    public List<AuditResultByNino> consolidatedAuditResultsByNino(List<AuditResult> results) {
         Map<String, List<AuditResult>> resultsByNino =
             results.stream().collect(Collectors.groupingBy(AuditResult::nino));
 
