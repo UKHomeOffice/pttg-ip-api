@@ -48,7 +48,7 @@ pipeline:
     image: plugins/git
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
-      - git checkout -b EE-12142-timeout-proxy
+      - cd kube-pttg-ip-api && git checkout -b EE-12142-timeout-proxy && cd ..
     when:
       event: [push, tag, deployment]
 
