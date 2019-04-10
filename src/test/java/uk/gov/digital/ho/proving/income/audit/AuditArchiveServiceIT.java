@@ -17,7 +17,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -217,4 +217,61 @@ public class AuditArchiveServiceIT {
         auditArchiveService.archiveAudit();
     }
 
+    @Test
+    public void archiveAudit_serverErrorReturned_continuesProcessing() {
+        String earlyRequest = fileUtils.buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
+        String earlyResponse = fileUtils.buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "true");
+        String laterRequest = fileUtils.buildRequest("corr-id-2", "2019-01-02 14:00:00.000", "nino_2");
+        String laterResponse = fileUtils.buildResponse("corr-id-2", "2019-01-02 15:00:00.000", "nino_2", "true");
+        String auditHistory = String.format("[%s, %s, %s, %s]", earlyRequest, earlyResponse, laterRequest, laterResponse);
+        mockAuditService
+            .expect(requestTo(containsString("/history")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
+
+        mockAuditService
+            .expect(requestTo(containsString("/archive")))
+            .andExpect(method(POST))
+            .andExpect(jsonPath("$.nino", equalTo("nino_1")))
+            .andExpect(jsonPath("$.resultDate", equalTo("2019-01-01")))
+            .andRespond(withServerError());
+
+        mockAuditService
+            .expect(requestTo(containsString("/archive")))
+            .andExpect(method(POST))
+            .andExpect(jsonPath("$.nino", equalTo("nino_2")))
+            .andExpect(jsonPath("$.resultDate", equalTo("2019-01-02")))
+            .andRespond(withSuccess());
+
+        auditArchiveService.archiveAudit();
+    }
+
+    @Test
+    public void archiveAudit_clientErrorReturned_continuesProcessing() {
+        String earlyRequest = fileUtils.buildRequest("corr-id-1", "2019-01-01 12:00:00.000", "nino_1");
+        String earlyResponse = fileUtils.buildResponse("corr-id-1", "2019-01-01 13:00:00.000", "nino_1", "true");
+        String laterRequest = fileUtils.buildRequest("corr-id-2", "2019-01-02 14:00:00.000", "nino_2");
+        String laterResponse = fileUtils.buildResponse("corr-id-2", "2019-01-02 15:00:00.000", "nino_2", "true");
+        String auditHistory = String.format("[%s, %s, %s, %s]", earlyRequest, earlyResponse, laterRequest, laterResponse);
+        mockAuditService
+            .expect(requestTo(containsString("/history")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
+
+        mockAuditService
+            .expect(requestTo(containsString("/archive")))
+            .andExpect(method(POST))
+            .andExpect(jsonPath("$.nino", equalTo("nino_1")))
+            .andExpect(jsonPath("$.resultDate", equalTo("2019-01-01")))
+            .andRespond(withBadRequest());
+
+        mockAuditService
+            .expect(requestTo(containsString("/archive")))
+            .andExpect(method(POST))
+            .andExpect(jsonPath("$.nino", equalTo("nino_2")))
+            .andExpect(jsonPath("$.resultDate", equalTo("2019-01-02")))
+            .andRespond(withSuccess());
+
+        auditArchiveService.archiveAudit();
+    }
 }

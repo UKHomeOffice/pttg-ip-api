@@ -1,5 +1,7 @@
 package uk.gov.digital.ho.proving.income.audit;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.AfterClass;
@@ -15,9 +17,10 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
+import utils.LogCapturer;
 
 import java.io.IOException;
 import java.net.URI;
@@ -234,13 +237,37 @@ public class AuditClientTest {
     @Test
     public void shouldRequestAuditArchive() {
         ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), asList("corr1", "corr2"), "PASS", LocalDate.now());
-        when(mockRestTemplate.exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<ArchiveAuditResponse>() {}))).thenReturn(ResponseEntity.ok(new ArchiveAuditResponse()));
+        when(mockRestTemplate.exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class))).thenReturn(ResponseEntity.ok(null));
 
         auditClient.archiveAudit(request);
 
-        verify(mockRestTemplate).exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<ArchiveAuditResponse>() {}));
+        verify(mockRestTemplate).exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class));
         ArchiveAuditRequest actual = (ArchiveAuditRequest) captorHttpEntity.getValue().getBody();
         assertThat(actual).isEqualTo(request);
+    }
+
+    @Test
+    public void shouldLogAuditArchiveErrors() {
+        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), asList("corr1", "corr2"), "PASS", LocalDate.now());
+        when(mockRestTemplate.exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class)))
+            .thenThrow(new RestClientException("exception text"));
+        LogCapturer<AuditClient> logCapturer = LogCapturer.forClass(AuditClient.class);
+        logCapturer.start();
+
+        auditClient.archiveAudit(request);
+
+        List<ILoggingEvent> allLogEvents = logCapturer.getAllEvents();
+        String errorMessage = "";
+        for(ILoggingEvent loggingEvent: allLogEvents) {
+            if (loggingEvent.getLevel().equals(Level.ERROR)) {
+                errorMessage = loggingEvent.getFormattedMessage();
+            }
+        }
+        assertThat(errorMessage).isNotEmpty();
+        assertThat(errorMessage).contains("corr1");
+        assertThat(errorMessage).contains("corr2");
+        assertThat(errorMessage).contains("PASS");
+        assertThat(errorMessage).contains("exception text");
     }
 
     @Test
