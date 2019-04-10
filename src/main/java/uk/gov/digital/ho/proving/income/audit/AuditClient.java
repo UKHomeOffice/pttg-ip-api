@@ -116,7 +116,7 @@ public class AuditClient {
 
     void archiveAudit(ArchiveAuditRequest request) {
         HttpEntity<ArchiveAuditRequest> entity = new HttpEntity<>(request, generateRestHeaders());
-        ResponseEntity<ArchiveAuditResponse> response = restTemplate.exchange(auditArchiveEndpoint, POST, entity, new ParameterizedTypeReference<ArchiveAuditResponse>() {});
+        restTemplate.exchange(auditArchiveEndpoint, POST, entity, new ParameterizedTypeReference<ArchiveAuditResponse>() {});
     }
 
     @Recover
