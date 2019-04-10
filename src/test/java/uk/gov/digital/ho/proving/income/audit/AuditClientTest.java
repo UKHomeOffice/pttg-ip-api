@@ -127,17 +127,38 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldRetrieveAuditHistory() {
+    public void getAuditHistory_basicCall_correctHostUsed() {
         List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        List<AuditRecord> results = new ArrayList<>();
-        ResponseEntity<List<AuditRecord>> resultsEntity = ResponseEntity.ok(results);
+        ResponseEntity<List<AuditRecord>> resultsEntity = ResponseEntity.ok(emptyList());
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}))).thenReturn(resultsEntity);
 
-        List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+        auditClient.getAuditHistory(LocalDate.now(), eventTypes);
 
         URI uri = captorUri.getValue();
         assertThat(uri).hasHost(SOME_HISTORY_ENDPOINT.replace("http://", ""));
+    }
+
+    @Test
+    public void getAuditHistory_basicCall_expectedResultsReturned() {
+        List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<AuditRecord> results = new ArrayList<>();
+        ResponseEntity<List<AuditRecord>> resultsEntity = ResponseEntity.ok(results);
+        when(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}))).thenReturn(resultsEntity);
+
+        List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+
         assertThat(auditRecords).isEqualTo(results);
+    }
+
+    @Test
+    public void getAuditHistory_basicCall_queryParametersCorrect() {
+        List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        ResponseEntity<List<AuditRecord>> resultsEntity = ResponseEntity.ok(emptyList());
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}))).thenReturn(resultsEntity);
+
+        auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+
+        URI uri = captorUri.getValue();
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).containsExactlyInAnyOrder(
             "eventTypes=" + eventTypes,
@@ -148,9 +169,9 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldRetrieveAuditHistory_returnsAllRecords() throws IOException {
+    public void getAuditHistory_multiplePages_returnsAllRecords() throws IOException {
         List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        List<AuditRecord> results = mockMultiplePages();
+        mockMultiplePages();
 
         List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
 
@@ -160,15 +181,13 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldRetrieveAuditHistory_loadsFirstPage() throws IOException {
+    public void getAuditHistory_multiplePages_requestsFirstPage() throws IOException {
         List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        List<AuditRecord> results = mockMultiplePages();
+        mockMultiplePages();
 
-        List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+        auditClient.getAuditHistory(LocalDate.now(), eventTypes);
 
         URI uri = captorUri.getAllValues().get(0);
-        assertThat(uri).hasHost(SOME_HISTORY_ENDPOINT.replace("http://", ""));
-        assertThat(auditRecords).isEqualTo(results);
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).containsExactlyInAnyOrder(
             "eventTypes=" + eventTypes,
@@ -179,16 +198,14 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldRetrieveAuditHistory_loadSecondPage() throws IOException {
+    public void getAuditHistory_multiplePages_requestsSecondPage() throws IOException {
         List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        List<AuditRecord> results = mockMultiplePages();
+        mockMultiplePages();
 
-        List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+        auditClient.getAuditHistory(LocalDate.now(), eventTypes);
 
         assertThat(captorUri.getAllValues()).hasSize(2);
         URI uri = captorUri.getAllValues().get(1);
-        assertThat(uri).hasHost(SOME_HISTORY_ENDPOINT.replace("http://", ""));
-        assertThat(auditRecords).isEqualTo(results);
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).containsExactlyInAnyOrder(
             "eventTypes=" + eventTypes,
@@ -199,19 +216,27 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldRetrieveAuditHistory_handlesEmptySecondPage() throws IOException {
+    public void getAuditHistory_multiplePages_returnsResultsFromAllPages() throws IOException {
+        List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<AuditRecord> results = mockMultiplePages();
+
+        List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+
+        assertThat(auditRecords).isEqualTo(results);
+    }
+
+    @Test
+    public void getAuditHistory_emptySecondPage_requestsSecondPage() throws IOException {
         List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
         List<AuditRecord> firstPage = getAuditRecords(2);
         List<AuditRecord> secondPage = Collections.emptyList();
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
             .thenReturn(ResponseEntity.ok(firstPage), ResponseEntity.ok(secondPage));
 
-        List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+        auditClient.getAuditHistory(LocalDate.now(), eventTypes);
 
         assertThat(captorUri.getAllValues()).hasSize(2);
         URI uri = captorUri.getAllValues().get(1);
-        assertThat(uri).hasHost(SOME_HISTORY_ENDPOINT.replace("http://", ""));
-        assertThat(auditRecords).isEqualTo(firstPage);
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).containsExactlyInAnyOrder(
             "eventTypes=" + eventTypes,
@@ -219,6 +244,19 @@ public class AuditClientTest {
             "size=" + HISTORY_PAGE_SIZE,
             "toDate=" + LocalDate.now().toString()
         );
+    }
+
+    @Test
+    public void getAuditHistory_emptySecondPage_returnsResultsFromFirstPage() throws IOException {
+        List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<AuditRecord> firstPage = getAuditRecords(2);
+        List<AuditRecord> secondPage = Collections.emptyList();
+        when(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .thenReturn(ResponseEntity.ok(firstPage), ResponseEntity.ok(secondPage));
+
+        List<AuditRecord> auditRecords = auditClient.getAuditHistory(LocalDate.now(), eventTypes);
+
+        assertThat(auditRecords).isEqualTo(firstPage);
     }
 
     private List<AuditRecord> mockMultiplePages() throws IOException {
