@@ -46,9 +46,6 @@ public class ArchiveResourceTest {
 
     @Test
     public void archive_logsRequestReceived() {
-        LogCapturer<ArchiveResource> logCapturer = LogCapturer.forClass(ArchiveResource.class);
-        logCapturer.start();
-
         archiveResource.archive();
 
         verify(mockAppender).doAppend(argThat(arg -> {
@@ -60,9 +57,6 @@ public class ArchiveResourceTest {
 
     @Test
     public void archive_logsResponseReturned() {
-        LogCapturer<ArchiveResource> logCapturer = LogCapturer.forClass(ArchiveResource.class);
-        logCapturer.start();
-
         archiveResource.archive();
 
         verify(mockAppender).doAppend(argThat(arg -> {
@@ -74,9 +68,6 @@ public class ArchiveResourceTest {
 
     @Test
     public void archive_logsRequestDuration() {
-        LogCapturer<ArchiveResource> logCapturer = LogCapturer.forClass(ArchiveResource.class);
-        logCapturer.start();
-
         archiveResource.archive();
 
         verify(mockAppender).doAppend(argThat(arg -> {
