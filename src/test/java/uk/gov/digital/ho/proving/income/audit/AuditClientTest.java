@@ -164,7 +164,8 @@ public class AuditClientTest {
         URI uri = captorUri.getValue();
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).containsExactlyInAnyOrder(
-            "eventTypes=" + eventTypes,
+            "eventTypes=" + eventTypes.get(0),
+            "eventTypes=" + eventTypes.get(1),
             "page=0",
             "size=" + HISTORY_PAGE_SIZE,
             "toDate=" + LocalDate.now().toString()
@@ -185,7 +186,7 @@ public class AuditClientTest {
 
     @Test
     public void getAuditHistory_multiplePages_requestsFirstPage() throws IOException {
-        List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<AuditEventType> eventTypes = singletonList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST);
         mockMultiplePages();
 
         auditClient.getAuditHistory(LocalDate.now(), eventTypes);
@@ -193,7 +194,7 @@ public class AuditClientTest {
         URI uri = captorUri.getAllValues().get(0);
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).containsExactlyInAnyOrder(
-            "eventTypes=" + eventTypes,
+            "eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST",
             "page=0",
             "size=" + HISTORY_PAGE_SIZE,
             "toDate=" + LocalDate.now().toString()
@@ -202,7 +203,7 @@ public class AuditClientTest {
 
     @Test
     public void getAuditHistory_multiplePages_requestsSecondPage() throws IOException {
-        List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<AuditEventType> eventTypes = singletonList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST);
         mockMultiplePages();
 
         auditClient.getAuditHistory(LocalDate.now(), eventTypes);
@@ -211,7 +212,7 @@ public class AuditClientTest {
         URI uri = captorUri.getAllValues().get(1);
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).containsExactlyInAnyOrder(
-            "eventTypes=" + eventTypes,
+            "eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST",
             "page=1",
             "size=" + HISTORY_PAGE_SIZE,
             "toDate=" + LocalDate.now().toString()
@@ -230,7 +231,7 @@ public class AuditClientTest {
 
     @Test
     public void getAuditHistory_emptySecondPage_requestsSecondPage() throws IOException {
-        List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<AuditEventType> eventTypes = singletonList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST);
         List<AuditRecord> firstPage = getAuditRecords(2);
         List<AuditRecord> secondPage = Collections.emptyList();
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
@@ -242,7 +243,7 @@ public class AuditClientTest {
         URI uri = captorUri.getAllValues().get(1);
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).containsExactlyInAnyOrder(
-            "eventTypes=" + eventTypes,
+            "eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST",
             "page=1",
             "size=" + HISTORY_PAGE_SIZE,
             "toDate=" + LocalDate.now().toString()
@@ -313,7 +314,7 @@ public class AuditClientTest {
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
             .thenReturn(ResponseEntity.ok(emptyList()));
 
-        List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<AuditEventType> eventTypes = singletonList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST);
         int page = 23;
         int size = 8;
         auditClient.getAuditHistoryPaginated(eventTypes, page, size);
@@ -323,7 +324,7 @@ public class AuditClientTest {
 
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).containsExactlyInAnyOrder(
-            "eventTypes=" + eventTypes,
+            "eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST",
             "page=" + page,
             "size=" + size,
             "toDate=" + LocalDate.MAX.toString()
@@ -341,6 +342,23 @@ public class AuditClientTest {
 
         assertThat(auditClient.getAuditHistoryPaginated(someEventTypes, somePage, someSize))
             .isEqualTo(results);
+    }
+
+    @Test
+    public void generateUri_singleEventType_correctlyFormatted() {
+        URI uri = auditClient.generateUri(LocalDate.of(2019, 6, 30), singletonList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST), 1, 1);
+
+        String[] queryStringComponents = uri.getQuery().split("&");
+        assertThat(queryStringComponents).contains("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST");
+    }
+
+    @Test
+    public void generateUri_multipleEventTypes_correctlyFormatted() {
+        URI uri = auditClient.generateUri(LocalDate.of(2019, 6, 30), asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE), 1, 1);
+
+        String[] queryStringComponents = uri.getQuery().split("&");
+        assertThat(queryStringComponents).contains("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST");
+        assertThat(queryStringComponents).contains("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE");
     }
 
     private void stubResponse(List<AuditRecord> results) {

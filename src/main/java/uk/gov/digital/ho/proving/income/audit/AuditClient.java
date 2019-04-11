@@ -100,14 +100,7 @@ public class AuditClient {
     }
 
     private List<AuditRecord> getAuditHistoryPaginated(LocalDate toDate, List<AuditEventType> eventTypes, int page, int size) {
-    URI uri = UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
-        .queryParam("eventTypes", eventTypes)
-        .queryParam("page", page)
-        .queryParam("size", size)
-        .queryParam("toDate", toDate)
-        .build()
-        .encode()
-        .toUri();
+        URI uri = generateUri(toDate, eventTypes, page, size);
 
         HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
         ResponseEntity<List<AuditRecord>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
@@ -121,6 +114,17 @@ public class AuditClient {
         } catch(RestClientException ex) {
             log.error(String.format("Archive audit request for %s returned error %s", request, ex));
         }
+    }
+
+    URI generateUri(LocalDate toDate, List<AuditEventType> eventTypes, int page, int size) {
+        return UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
+            .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .queryParam("toDate", toDate)
+            .build()
+            .encode()
+            .toUri();
     }
 
     @Recover
