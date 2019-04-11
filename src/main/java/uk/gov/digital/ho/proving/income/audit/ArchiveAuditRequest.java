@@ -17,13 +17,11 @@ import java.util.List;
 @ToString
 class ArchiveAuditRequest {
     @JsonProperty
-    private String nino;
+    private String result;
     @JsonProperty
     private LocalDate lastArchiveDate;
     @JsonProperty
-    private List<String> eventIds;
+    private List<String> correlationIds;
     @JsonProperty
-    private String result;
-    @JsonProperty
-    private LocalDate resultDate;
+    private String nino;
 }

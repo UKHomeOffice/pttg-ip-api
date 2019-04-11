@@ -37,7 +37,7 @@ class AuditArchiveService {
         List<AuditResultByNino> consolidatedByNino = auditResultConsolidator.consolidatedAuditResultsByNino(byCorrelationId);
 
         for (AuditResultByNino auditResult : consolidatedByNino) {
-            auditClient.archiveAudit(generateAuditHistoryRequest(auditResult, config));
+            auditClient.archiveAudit(generateAuditHistoryRequest(auditResult, config), auditResult.date());
         }
     }
 
@@ -48,10 +48,9 @@ class AuditArchiveService {
     private ArchiveAuditRequest generateAuditHistoryRequest(AuditResultByNino auditResult, AuditArchiveConfig config) {
         return ArchiveAuditRequest.builder()
             .nino(auditResult.nino())
-            .eventIds(auditResult.correlationIds())
+            .correlationIds(auditResult.correlationIds())
             .lastArchiveDate(config.lastArchiveDate())
             .result(auditResult.resultType().name())
-            .resultDate(auditResult.date())
             .build();
     }
 

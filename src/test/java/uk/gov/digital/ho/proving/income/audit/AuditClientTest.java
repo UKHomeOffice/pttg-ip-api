@@ -51,6 +51,7 @@ public class AuditClientTest {
 
     @Captor private ArgumentCaptor<HttpEntity> captorHttpEntity;
     @Captor private ArgumentCaptor<URI> captorUri;
+    @Captor private ArgumentCaptor<String> captorUrl;
 
     private AuditClient auditClient;
 
@@ -274,26 +275,37 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldRequestAuditArchive() {
-        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), asList("corr1", "corr2"), "PASS", LocalDate.now());
-        when(mockRestTemplate.exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class))).thenReturn(ResponseEntity.ok(null));
+    public void archiveAudit_shouldRequestAuditArchive() {
+        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), asList("corr1", "corr2"), "PASS");
+        when(mockRestTemplate.exchange(eq(SOME_ARCHIVE_ENDPOINT + "/2019-06-30"), eq(POST), captorHttpEntity.capture(), eq(Void.class))).thenReturn(ResponseEntity.ok(null));
 
-        auditClient.archiveAudit(request);
+        auditClient.archiveAudit(request, LocalDate.of(2019, 6, 30));
 
-        verify(mockRestTemplate).exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class));
+        verify(mockRestTemplate).exchange(eq(SOME_ARCHIVE_ENDPOINT + "/2019-06-30"), eq(POST), captorHttpEntity.capture(), eq(Void.class));
         ArchiveAuditRequest actual = (ArchiveAuditRequest) captorHttpEntity.getValue().getBody();
         assertThat(actual).isEqualTo(request);
     }
 
     @Test
-    public void shouldLogAuditArchiveErrors() {
-        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), asList("corr1", "corr2"), "PASS", LocalDate.now());
-        when(mockRestTemplate.exchange(eq(SOME_ARCHIVE_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class)))
+    public void archiveAudit_shouldFormatResultDateOnUrl() {
+        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), asList("corr1", "corr2"), "PASS");
+        when(mockRestTemplate.exchange(captorUrl.capture(), eq(POST), captorHttpEntity.capture(), eq(Void.class))).thenReturn(ResponseEntity.ok(null));
+
+        auditClient.archiveAudit(request, LocalDate.of(2019, 6, 30));
+
+        String url = captorUrl.getValue();
+        assertThat(url).endsWith("/2019-06-30");
+    }
+
+    @Test
+    public void archiveAudit_shouldLogAuditArchiveErrors() {
+        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), asList("corr1", "corr2"), "PASS");
+        when(mockRestTemplate.exchange(eq(SOME_ARCHIVE_ENDPOINT + "/2019-06-30"), eq(POST), captorHttpEntity.capture(), eq(Void.class)))
             .thenThrow(new RestClientException("exception text"));
         LogCapturer<AuditClient> logCapturer = LogCapturer.forClass(AuditClient.class);
         logCapturer.start();
 
-        auditClient.archiveAudit(request);
+        auditClient.archiveAudit(request, LocalDate.of(2019, 6, 30));
 
         List<ILoggingEvent> allLogEvents = logCapturer.getAllEvents();
         String errorMessage = "";

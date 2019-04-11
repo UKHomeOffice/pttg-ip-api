@@ -69,22 +69,20 @@ public class AuditArchiveServiceIT {
 
         String endOfArchive = LocalDate.now().minusMonths(6).minusDays(1).format(DateTimeFormatter.ISO_DATE);
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-01")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", is("nino_1")))
             .andExpect(jsonPath("$.lastArchiveDate", is(endOfArchive)))
-            .andExpect(jsonPath("$.eventIds.*", containsInAnyOrder("corr-id-1")))
+            .andExpect(jsonPath("$.correlationIds.*", containsInAnyOrder("corr-id-1")))
             .andExpect(jsonPath("$.result", is("PASS")))
-            .andExpect(jsonPath("$.resultDate", is("2019-01-01")))
             .andRespond(withSuccess());
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-01")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", is("nino_2")))
             .andExpect(jsonPath("$.lastArchiveDate", is(endOfArchive)))
-            .andExpect(jsonPath("$.eventIds.*", containsInAnyOrder("corr-id-2")))
+            .andExpect(jsonPath("$.correlationIds.*", containsInAnyOrder("corr-id-2")))
             .andExpect(jsonPath("$.result", is("PASS")))
-            .andExpect(jsonPath("$.resultDate", is("2019-01-01")))
             .andRespond(withSuccess());
 
         auditArchiveService.archiveAudit();
@@ -100,12 +98,11 @@ public class AuditArchiveServiceIT {
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-02")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", is("nino_1")))
-            .andExpect(jsonPath("$.eventIds.*", containsInAnyOrder("corr-id-1")))
+            .andExpect(jsonPath("$.correlationIds.*", containsInAnyOrder("corr-id-1")))
             .andExpect(jsonPath("$.result", is("ERROR")))
-            .andExpect(jsonPath("$.resultDate", is("2019-01-02")))
             .andRespond(withSuccess());
 
         auditArchiveService.archiveAudit();
@@ -126,7 +123,7 @@ public class AuditArchiveServiceIT {
             .expect(requestTo(containsString("/archive")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", is("nino_1")))
-            .andExpect(jsonPath("$.eventIds.*", containsInAnyOrder("corr-id-1", "corr-id-2")))
+            .andExpect(jsonPath("$.correlationIds.*", containsInAnyOrder("corr-id-1", "corr-id-2")))
             .andExpect(jsonPath("$.result", is("NOTFOUND")))
             .andRespond(withSuccess());
 
@@ -146,10 +143,9 @@ public class AuditArchiveServiceIT {
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-02")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", equalTo("nino_1")))
-            .andExpect(jsonPath("$.resultDate", equalTo("2019-01-02")))
             .andRespond(withSuccess());
 
         auditArchiveService.archiveAudit();
@@ -186,32 +182,29 @@ public class AuditArchiveServiceIT {
 
         // should have archived best result for nino_1 - FAIL
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-01")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", is("nino_1")))
-            .andExpect(jsonPath("$.eventIds.*", containsInAnyOrder("corr-id-1", "corr-id-3")))
+            .andExpect(jsonPath("$.correlationIds.*", containsInAnyOrder("corr-id-1", "corr-id-3")))
             .andExpect(jsonPath("$.result", is("FAIL")))
-            .andExpect(jsonPath("$.resultDate", is("2019-01-01")))
             .andRespond(withSuccess());
 
         // should have archived latest PASS for nino_2
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-03")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", is("nino_2")))
-            .andExpect(jsonPath("$.eventIds.*", containsInAnyOrder("corr-id-2", "corr-id-5", "corr-id-6")))
+            .andExpect(jsonPath("$.correlationIds.*", containsInAnyOrder("corr-id-2", "corr-id-5", "corr-id-6")))
             .andExpect(jsonPath("$.result", is("PASS")))
-            .andExpect(jsonPath("$.resultDate", is("2019-01-03")))
             .andRespond(withSuccess());
 
         // should have archived best result for nino_3 - NOTFOUND
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-03")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", is("nino_3")))
-            .andExpect(jsonPath("$.eventIds.*", containsInAnyOrder("corr-id-7", "corr-id-8")))
+            .andExpect(jsonPath("$.correlationIds.*", containsInAnyOrder("corr-id-7", "corr-id-8")))
             .andExpect(jsonPath("$.result", is("NOTFOUND")))
-            .andExpect(jsonPath("$.resultDate", is("2019-01-03")))
             .andRespond(withSuccess());
 
         auditArchiveService.archiveAudit();
@@ -230,17 +223,15 @@ public class AuditArchiveServiceIT {
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-01")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", equalTo("nino_1")))
-            .andExpect(jsonPath("$.resultDate", equalTo("2019-01-01")))
             .andRespond(withServerError());
 
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-02")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", equalTo("nino_2")))
-            .andExpect(jsonPath("$.resultDate", equalTo("2019-01-02")))
             .andRespond(withSuccess());
 
         auditArchiveService.archiveAudit();
@@ -259,17 +250,15 @@ public class AuditArchiveServiceIT {
             .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
 
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-01")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", equalTo("nino_1")))
-            .andExpect(jsonPath("$.resultDate", equalTo("2019-01-01")))
             .andRespond(withBadRequest());
 
         mockAuditService
-            .expect(requestTo(containsString("/archive")))
+            .expect(requestTo(containsString("/archive/2019-01-02")))
             .andExpect(method(POST))
             .andExpect(jsonPath("$.nino", equalTo("nino_2")))
-            .andExpect(jsonPath("$.resultDate", equalTo("2019-01-02")))
             .andRespond(withSuccess());
 
         auditArchiveService.archiveAudit();

@@ -17,10 +17,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
+import javax.swing.text.DateFormatter;
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -107,10 +109,11 @@ public class AuditClient {
         return response.getBody();
     }
 
-    void archiveAudit(ArchiveAuditRequest request) {
+    void archiveAudit(ArchiveAuditRequest request, LocalDate resultDate) {
         HttpEntity<ArchiveAuditRequest> entity = new HttpEntity<>(request, generateRestHeaders());
+        String date = DateTimeFormatter.ISO_DATE.format(resultDate);
         try {
-            restTemplate.exchange(auditArchiveEndpoint, POST, entity, Void.class);
+            restTemplate.exchange(auditArchiveEndpoint + "/" + date, POST, entity, Void.class);
         } catch(RestClientException ex) {
             log.error(String.format("Archive audit request for %s returned error %s", request, ex));
         }
