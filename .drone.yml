@@ -14,7 +14,7 @@ pipeline:
     commands:
       - docker build -t pttg-ip-api .
     when:
-      branch: [master, refs/tags/*]
+      branch: [master, refs/tags/*, EE-16064-test-in-dev]
       event: [push, tag]
 
   install-docker-image:
@@ -28,7 +28,7 @@ pipeline:
       - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
     when:
-      branch: [master]
+      branch: [master, EE-16064-test-in-dev]
       event: push
 
   tag-docker-image-with-git-tag:
@@ -48,6 +48,7 @@ pipeline:
     image: plugins/git
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+      - git checkout EE-16064-archive
     when:
       event: [push, tag, deployment]
 
@@ -64,7 +65,7 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-      branch: [master]
+      branch: [master, EE-16064-test-in-dev]
       event: [push, tag]
 
   deployment:
