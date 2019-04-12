@@ -219,7 +219,7 @@ public class AuditResultConsolidatorIT {
     }
 
     @Test
-    public void byNino_multipleSameResults_mostRecentUsed() {
+    public void byNino_multipleSameResults_oldestUsed() {
         List<AuditResult> results =
             Arrays.asList(
                 new AuditResult("any_correlation_id", LocalDate.now(), "any_nino", PASS),
@@ -233,7 +233,7 @@ public class AuditResultConsolidatorIT {
             "any_correlation_id_3",
             "any_correlation_id_4"
         );
-        AuditResultByNino expected = new AuditResultByNino("any_nino", expectedCorrelationIds, LocalDate.now().plusDays(2), PASS);
+        AuditResultByNino expected = new AuditResultByNino("any_nino", expectedCorrelationIds, LocalDate.now(), PASS);
 
         List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
 
@@ -270,7 +270,7 @@ public class AuditResultConsolidatorIT {
             );
         List<AuditResultByNino> expected = Arrays.asList(
                 new AuditResultByNino("any_nino", Arrays.asList("any_correlation_id_2", "any_correlation_id"), LocalDate.now(), PASS),
-                new AuditResultByNino("any_nino_2", Arrays.asList("any_correlation_id_3", "any_correlation_id_4"), LocalDate.now().plusDays(1), PASS)
+                new AuditResultByNino("any_nino_2", Arrays.asList("any_correlation_id_3", "any_correlation_id_4"), LocalDate.now(), PASS)
             );
 
         List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
