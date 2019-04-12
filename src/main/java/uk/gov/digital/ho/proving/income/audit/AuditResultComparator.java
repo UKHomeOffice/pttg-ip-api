@@ -17,7 +17,7 @@ class AuditResultComparator implements Comparator<AuditResult> {
     public int compare(AuditResult first, AuditResult second) {
         int result = auditResultTypeComparator.compare(first.resultType(), second.resultType());
         if (result == 0) {
-            result = first.date().compareTo(second.date());
+            result = second.date().compareTo(first.date());
         }
         return result;
     }

@@ -17,10 +17,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
+import javax.swing.text.DateFormatter;
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -100,27 +102,32 @@ public class AuditClient {
     }
 
     private List<AuditRecord> getAuditHistoryPaginated(LocalDate toDate, List<AuditEventType> eventTypes, int page, int size) {
-    URI uri = UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
-        .queryParam("eventTypes", eventTypes)
-        .queryParam("page", page)
-        .queryParam("size", size)
-        .queryParam("toDate", toDate)
-        .build()
-        .encode()
-        .toUri();
+        URI uri = generateUri(toDate, eventTypes, page, size);
 
         HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
         ResponseEntity<List<AuditRecord>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
         return response.getBody();
     }
 
-    void archiveAudit(ArchiveAuditRequest request) {
+    void archiveAudit(ArchiveAuditRequest request, LocalDate resultDate) {
         HttpEntity<ArchiveAuditRequest> entity = new HttpEntity<>(request, generateRestHeaders());
+        String date = DateTimeFormatter.ISO_DATE.format(resultDate);
         try {
-            restTemplate.exchange(auditArchiveEndpoint, POST, entity, Void.class);
+            restTemplate.exchange(auditArchiveEndpoint + "/" + date, POST, entity, Void.class);
         } catch(RestClientException ex) {
             log.error(String.format("Archive audit request for %s returned error %s", request, ex));
         }
+    }
+
+    URI generateUri(LocalDate toDate, List<AuditEventType> eventTypes, int page, int size) {
+        return UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
+            .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .queryParam("toDate", toDate)
+            .build()
+            .encode()
+            .toUri();
     }
 
     @Recover

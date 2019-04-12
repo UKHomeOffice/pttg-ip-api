@@ -38,19 +38,19 @@ public class AuditResultComparatorTest {
     }
 
     @Test
-    public void compareTo_sameStatus_moreRecent_greater() {
+    public void compareTo_sameStatus_moreRecent_lesser() {
         AuditResult auditResult1 = new AuditResult("any_correlation_id", now().plusDays(1), "any_nino", FAIL);
         AuditResult auditResult2 = new AuditResult("any_correlation_id", now(), "any_nino", FAIL);
 
-        assertThat(auditResultComparator.compare(auditResult1, auditResult2)).isEqualTo(1);
+        assertThat(auditResultComparator.compare(auditResult1, auditResult2)).isEqualTo(-1);
     }
 
     @Test
-    public void compareTo_sameStatus_older_lesser() {
+    public void compareTo_sameStatus_older_greater() {
         AuditResult auditResult1 = new AuditResult("any_correlation_id", now(), "any_nino", FAIL);
         AuditResult auditResult2 = new AuditResult("any_correlation_id", now().plusDays(1), "any_nino", FAIL);
 
-        assertThat(auditResultComparator.compare(auditResult1, auditResult2)).isEqualTo(-1);
+        assertThat(auditResultComparator.compare(auditResult1, auditResult2)).isEqualTo(1);
     }
 
     @Test
@@ -62,8 +62,8 @@ public class AuditResultComparatorTest {
         List<AuditResult> results = Arrays.asList(auditResult1, auditResult2,  auditResult3);
         results.sort(auditResultComparator);
 
-        assertThat(results.get(0).correlationId()).isEqualTo("any_correlation_id_3");
-        assertThat(results.get(1).correlationId()).isEqualTo("any_correlation_id_2");
+        assertThat(results.get(0).correlationId()).isEqualTo("any_correlation_id_2");
+        assertThat(results.get(1).correlationId()).isEqualTo("any_correlation_id_3");
         assertThat(results.get(2).correlationId()).isEqualTo("any_correlation_id_1");
     }
 
