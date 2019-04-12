@@ -64,7 +64,7 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-      branch: [mast7]
+      branch: [master]
       event: [push, tag]
 
   deployment:
