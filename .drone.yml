@@ -48,6 +48,7 @@ pipeline:
     image: plugins/git
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+      - cd kube-pttg-ip-api && git checkout EE-16064-archive && cd ..
     when:
       event: [push, tag, deployment]
 
@@ -62,7 +63,6 @@ pipeline:
       - pttg_ip_dev
     commands:
       - cd kube-pttg-ip-api
-      - git checkout EE-16064-archive
       - ./deploy.sh
     when:
       branch: [master, EE-16064-test-in-dev]
