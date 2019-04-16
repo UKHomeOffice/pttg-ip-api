@@ -24,6 +24,7 @@ public class PassStatisticsCalculatorTest {
 
     private static final List<AuditResultByNino> SOME_AUDIT_RESULTS = emptyList();
     private static final List<ArchivedResult> SOME_ARCHIVED_RESULTS = emptyList();
+    private static final List<String> SOME_CORRELATION_IDS = emptyList();
 
     private PassStatisticsCalculator accumulator = new PassStatisticsCalculator();
 
@@ -145,10 +146,10 @@ public class PassStatisticsCalculatorTest {
     @Test
     public void result_oneDayArchivedResults_addToTotal() {
         List<AuditResultByNino> results = asList(
-            new AuditResultByNino("nino 1", emptyList(), IN_RANGE, PASS),
-            new AuditResultByNino("nino 2", emptyList(), IN_RANGE, FAIL),
-            new AuditResultByNino("nino 3", emptyList(), IN_RANGE, NOTFOUND),
-            new AuditResultByNino("nino 4", emptyList(), IN_RANGE, ERROR)
+            new AuditResultByNino("nino 1", SOME_CORRELATION_IDS, IN_RANGE, PASS),
+            new AuditResultByNino("nino 2", SOME_CORRELATION_IDS, IN_RANGE, FAIL),
+            new AuditResultByNino("nino 3", SOME_CORRELATION_IDS, IN_RANGE, NOTFOUND),
+            new AuditResultByNino("nino 4", SOME_CORRELATION_IDS, IN_RANGE, ERROR)
         );
 
         List<ArchivedResult> archivedResults = singletonList(new ArchivedResult(ImmutableMap.<String, Integer>builder()
@@ -165,10 +166,10 @@ public class PassStatisticsCalculatorTest {
     @Test
     public void result_multipleDaysOfArchivedResults_addToTotal() {
         List<AuditResultByNino> results = asList(
-            new AuditResultByNino("nino 1", emptyList(), IN_RANGE, PASS),
-            new AuditResultByNino("nino 2", emptyList(), IN_RANGE, FAIL),
-            new AuditResultByNino("nino 3", emptyList(), IN_RANGE, NOTFOUND),
-            new AuditResultByNino("nino 4", emptyList(), IN_RANGE, ERROR)
+            new AuditResultByNino("nino 1", SOME_CORRELATION_IDS, IN_RANGE, PASS),
+            new AuditResultByNino("nino 2", SOME_CORRELATION_IDS, IN_RANGE, FAIL),
+            new AuditResultByNino("nino 3", SOME_CORRELATION_IDS, IN_RANGE, NOTFOUND),
+            new AuditResultByNino("nino 4", SOME_CORRELATION_IDS, IN_RANGE, ERROR)
         );
 
         List<ArchivedResult> archivedResults = asList(new ArchivedResult(ImmutableMap.<String, Integer>builder()
