@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,10 @@ public class PassRateStatisticsService {
         this.calculator = calculator;
         this.consolidator = consolidator;
         this.requestPageSize = requestPageSize;
+    }
+
+    public PassRateStatistics generatePassRateStatistics(YearMonth calendarMonth) {
+        return generatePassRateStatistics(calendarMonth.atDay(1), calendarMonth.atEndOfMonth());
     }
 
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
