@@ -28,6 +28,8 @@ public class FileUtils {
     private Resource auditRecordResponseTemplate;
     @Value("classpath:json/AuditRecordResponseNotFoundTemplate.json")
     private Resource auditRecordResourceNotFoundTemplate;
+    @Value("classpath:json/ArchivedResultTemplate.json")
+    private Resource archivedResultTemplate;
 
     String loadJsonResource(Resource resource) {
 
@@ -111,4 +113,27 @@ public class FileUtils {
         }
     }
 
+    public String buildArchivedResults(int pass, int fail, int notFound, int error) {
+        String responseTemplate = loadJsonResource(archivedResultTemplate);
+
+        responseTemplate = responseTemplate.replaceAll("\\$\\{pass}", getResultEntry(pass, "PASS", fail + notFound + error));
+        responseTemplate = responseTemplate.replaceAll("\\$\\{fail}", getResultEntry(fail, "FAIL", notFound + error));
+        responseTemplate = responseTemplate.replaceAll("\\$\\{notfound}", getResultEntry(notFound, "NOTFOUND", error));
+        responseTemplate = responseTemplate.replaceAll("\\$\\{error}", getResultEntry(error, "ERROR"));
+        return responseTemplate;
+    }
+
+    private String getResultEntry(int count, String result) {
+        return getResultEntry(count, result, 0);
+    }
+
+    private String getResultEntry(int count, String result, int remainingResultsCount) {
+        if (count == 0) {
+            return "";
+        }
+
+        String resultLine = String.format("\"%s\": %d", result, count);
+        String trailingCommaIfNeeded = remainingResultsCount != 0 ? "," : "";
+        return resultLine + trailingCommaIfNeeded;
+    }
 }

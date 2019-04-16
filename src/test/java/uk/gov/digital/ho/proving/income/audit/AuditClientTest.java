@@ -21,7 +21,7 @@ import java.net.URI;
 import java.time.*;
 import java.util.*;
 
-import static java.util.Collections.emptyList;
+import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.GET;
@@ -176,6 +176,36 @@ public class AuditClientTest {
 
         assertThat(auditClient.getAuditHistoryPaginated(someEventTypes, somePage, someSize))
             .isEqualTo(results);
+    }
+
+    @Test
+    public void getArchivedResults_givenDates_expectedUri() {
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<ArchivedResult>>() {})))
+            .thenReturn(ResponseEntity.ok(emptyList()));
+
+        LocalDate fromDate = LocalDate.of(2018, 12, 1);
+        LocalDate toDate = LocalDate.of(2018, 12, 31);
+        auditClient.getArchivedResults(fromDate, toDate);
+
+        URI uri = captorUri.getValue();
+        assertThat(uri).hasHost(SOME_ARCHIVE_ENDPOINT.replace("http://", ""));
+
+        String[] queryStringComponents = uri.getQuery().split("&");
+        assertThat(queryStringComponents).containsExactlyInAnyOrder(
+            "fromDate=" + fromDate,
+            "toDate=" + toDate
+        );
+    }
+
+    @Test
+    public void getArchivedResults_givenResponse_returnResults() {
+        List<ArchivedResult> expectedResults = singletonList(new ArchivedResult(singletonMap("PASSED", 5)));
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<ArchivedResult>>() {})))
+            .thenReturn(ResponseEntity.ok(expectedResults));
+
+        LocalDate someDate = LocalDate.now();
+        List<ArchivedResult> actualResults = auditClient.getArchivedResults(someDate, someDate);
+        assertThat(actualResults).isEqualTo(expectedResults);
     }
 
     private void stubResponse(List<AuditRecord> results) {

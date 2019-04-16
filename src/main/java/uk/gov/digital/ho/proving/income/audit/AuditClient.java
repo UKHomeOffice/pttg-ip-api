@@ -112,6 +112,19 @@ public class AuditClient {
         ResponseEntity<ArchiveAuditResponse> response = restTemplate.exchange(auditArchiveEndpoint, POST, entity, new ParameterizedTypeReference<ArchiveAuditResponse>() {});
     }
 
+    public List<ArchivedResult> getArchivedResults(LocalDate fromDate, LocalDate toDate) {
+        URI uri = UriComponentsBuilder.fromHttpUrl(auditArchiveEndpoint)
+            .queryParam("fromDate", fromDate)
+            .queryParam("toDate", toDate)
+            .build()
+            .encode()
+            .toUri();
+
+        HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
+        ResponseEntity<List<ArchivedResult>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<ArchivedResult>>() {});
+        return response.getBody();
+    }
+
     @Recover
     void addRetryFailureRecovery(RestClientException e, AuditEventType eventType) {
         log.error("Failed to audit {} after retries - {}", eventType, e.getMessage());

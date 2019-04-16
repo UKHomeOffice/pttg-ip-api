@@ -6,6 +6,7 @@ import uk.gov.digital.ho.proving.income.audit.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -38,7 +39,9 @@ public class PassRateStatisticsService {
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         List<AuditRecord> allAuditRecords = getAllAuditRecords();
         List<AuditResultByNino> resultsByNino = consolidateRecords(allAuditRecords);
-        return calculator.result(resultsByNino, fromDate, toDate);
+
+        List<ArchivedResult> archivedResults = auditClient.getArchivedResults(fromDate, toDate);
+        return calculator.result(resultsByNino, archivedResults, fromDate, toDate);
     }
 
     private List<AuditResultByNino> consolidateRecords(List<AuditRecord> allAuditRecords) {
