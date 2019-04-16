@@ -31,7 +31,7 @@ public class PassStatisticsCalculatorTest {
     public void result_givenFromDate_inResult() {
         LocalDate fromDate = LocalDate.of(2019, 2, 3);
 
-        assertThat(accumulator.result(SOME_AUDIT_RESULTS, emptyList(), fromDate, SOME_DATE).fromDate())
+        assertThat(accumulator.result(SOME_AUDIT_RESULTS, SOME_ARCHIVED_RESULTS, fromDate, SOME_DATE).fromDate())
             .isEqualTo(fromDate);
     }
 
@@ -45,7 +45,7 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_emptyList_emptyResult() {
-        assertThat(accumulator.result(SOME_AUDIT_RESULTS, SOME_ARCHIVED_RESULTS, FROM_DATE, TO_DATE))
+        assertThat(accumulator.result(emptyList(), emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 0, 0));
     }
 
@@ -53,7 +53,7 @@ public class PassStatisticsCalculatorTest {
     public void result_onePassInRange_onePassInStatistics() {
         List<AuditResultByNino> singlePassInRange = singletonList(new AuditResultByNino("some nino", emptyList(), IN_RANGE, PASS));
 
-        assertThat(accumulator.result(singlePassInRange, SOME_ARCHIVED_RESULTS, FROM_DATE, TO_DATE))
+        assertThat(accumulator.result(singlePassInRange, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(1, 0, 0, 0));
     }
 
@@ -61,7 +61,7 @@ public class PassStatisticsCalculatorTest {
     public void result_oneFailInRange_oneFailInStatistics() {
         List<AuditResultByNino> singleFailInRange = singletonList(new AuditResultByNino("some nino", emptyList(), IN_RANGE, FAIL));
 
-        assertThat(accumulator.result(singleFailInRange, SOME_ARCHIVED_RESULTS, FROM_DATE, TO_DATE))
+        assertThat(accumulator.result(singleFailInRange, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 1, 0, 0));
     }
 
@@ -69,7 +69,7 @@ public class PassStatisticsCalculatorTest {
     public void result_oneNotFoundInRange_oneNotFoundInStatistics() {
         List<AuditResultByNino> singleNotFoundInRange = singletonList(new AuditResultByNino("some nino", emptyList(), IN_RANGE, NOTFOUND));
 
-        assertThat(accumulator.result(singleNotFoundInRange, SOME_ARCHIVED_RESULTS, FROM_DATE, TO_DATE))
+        assertThat(accumulator.result(singleNotFoundInRange, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 1, 0));
     }
 
@@ -77,7 +77,7 @@ public class PassStatisticsCalculatorTest {
     public void result_oneErrorInRange_oneErrorInStatistics() {
         List<AuditResultByNino> singleErrorInRange = singletonList(new AuditResultByNino("some nino", emptyList(), IN_RANGE, ERROR));
 
-        assertThat(accumulator.result(singleErrorInRange, SOME_ARCHIVED_RESULTS, FROM_DATE, TO_DATE))
+        assertThat(accumulator.result(singleErrorInRange, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 0, 1));
     }
 
@@ -85,7 +85,7 @@ public class PassStatisticsCalculatorTest {
     public void result_tooEarly_notCounted() {
         List<AuditResultByNino> tooEarlyResult = singletonList(new AuditResultByNino("some nino", emptyList(), FROM_DATE.minusDays(1), PASS));
 
-        assertThat(accumulator.result(tooEarlyResult, SOME_ARCHIVED_RESULTS, FROM_DATE, TO_DATE))
+        assertThat(accumulator.result(tooEarlyResult, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 0, 0));
     }
 
@@ -93,7 +93,7 @@ public class PassStatisticsCalculatorTest {
     public void result_firstDay_counted() {
         List<AuditResultByNino> resultOnFirstDay = singletonList(new AuditResultByNino("some nino", emptyList(), FROM_DATE, FAIL));
 
-        assertThat(accumulator.result(resultOnFirstDay, SOME_ARCHIVED_RESULTS, FROM_DATE, TO_DATE))
+        assertThat(accumulator.result(resultOnFirstDay, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 1, 0, 0));
     }
 
@@ -101,7 +101,7 @@ public class PassStatisticsCalculatorTest {
     public void result_lastDay_notCounted() {
         List<AuditResultByNino> resultByLastDay = singletonList(new AuditResultByNino("some nino", emptyList(), TO_DATE, NOTFOUND));
 
-        assertThat(accumulator.result(resultByLastDay, SOME_ARCHIVED_RESULTS, FROM_DATE, TO_DATE))
+        assertThat(accumulator.result(resultByLastDay, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 1, 0));
     }
 
@@ -109,7 +109,7 @@ public class PassStatisticsCalculatorTest {
     public void result_tooLate_counted() {
         List<AuditResultByNino> tooLateResult = singletonList(new AuditResultByNino("some nino", emptyList(), TO_DATE.plusDays(1), ERROR));
 
-        assertThat(accumulator.result(tooLateResult, SOME_ARCHIVED_RESULTS, FROM_DATE, TO_DATE))
+        assertThat(accumulator.result(tooLateResult, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 0, 0));
     }
 
