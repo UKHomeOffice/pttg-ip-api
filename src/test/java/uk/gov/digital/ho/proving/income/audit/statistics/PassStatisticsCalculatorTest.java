@@ -22,22 +22,25 @@ public class PassStatisticsCalculatorTest {
     private static final LocalDate TO_DATE = LocalDate.of(2019, Month.JANUARY, 31);
     private static final LocalDate IN_RANGE = FROM_DATE.plusDays(2);
 
+    private static final List<AuditResultByNino> SOME_AUDIT_RESULTS = emptyList();
+    private static final List<ArchivedResult> SOME_ARCHIVED_RESULTS = emptyList();
+
     private PassStatisticsCalculator accumulator = new PassStatisticsCalculator();
 
     @Test
     public void result_givenFromDate_inResult() {
-        List<AuditResultByNino> someList = emptyList();
-
         LocalDate fromDate = LocalDate.of(2019, 2, 3);
-        assertThat(accumulator.result(someList, emptyList(), fromDate, SOME_DATE).fromDate()).isEqualTo(fromDate);
+
+        assertThat(accumulator.result(SOME_AUDIT_RESULTS, SOME_ARCHIVED_RESULTS, fromDate, SOME_DATE).fromDate())
+            .isEqualTo(fromDate);
     }
 
     @Test
     public void result_givenToDate_inResult() {
-        List<AuditResultByNino> someList = emptyList();
-
         LocalDate toDate = LocalDate.of(2019, 3, 4);
-        assertThat(accumulator.result(someList, emptyList(), SOME_DATE, toDate).toDate()).isEqualTo(toDate);
+
+        assertThat(accumulator.result(SOME_AUDIT_RESULTS, SOME_ARCHIVED_RESULTS, SOME_DATE, toDate).toDate())
+            .isEqualTo(toDate);
     }
 
     @Test
