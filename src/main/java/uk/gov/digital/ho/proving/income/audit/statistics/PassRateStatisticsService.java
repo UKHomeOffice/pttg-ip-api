@@ -2,6 +2,7 @@ package uk.gov.digital.ho.proving.income.audit.statistics;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.proving.income.api.domain.TaxYear;
 import uk.gov.digital.ho.proving.income.audit.*;
 
 import java.time.LocalDate;
@@ -38,6 +39,10 @@ public class PassRateStatisticsService {
 
     public PassRateStatistics generatePassRateStatistics(YearMonth calendarMonth) {
         return generatePassRateStatistics(calendarMonth.atDay(1), calendarMonth.atEndOfMonth());
+    }
+
+    public PassRateStatistics generatePassRateStatistics(TaxYear taxYear) {
+        return generatePassRateStatistics(taxYear.startDate(), taxYear.endDate());
     }
 
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
