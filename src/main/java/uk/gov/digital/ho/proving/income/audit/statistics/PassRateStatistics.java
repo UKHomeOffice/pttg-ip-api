@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 @Accessors(fluent = true)
 @Builder
-class PassRateStatistics {
+public class PassRateStatistics {
     private final LocalDate fromDate;
     private final LocalDate toDate;
 
