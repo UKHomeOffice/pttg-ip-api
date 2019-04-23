@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
@@ -38,7 +39,7 @@ public class PassRateStatisticsService {
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         List<AuditRecord> allAuditRecords = getAllAuditRecords();
         List<AuditResultByNino> resultsByNino = consolidateRecords(allAuditRecords);
-        return calculator.result(resultsByNino, fromDate, toDate);
+        return calculator.result(resultsByNino, emptyList(), fromDate, toDate);
     }
 
     private List<AuditResultByNino> consolidateRecords(List<AuditRecord> allAuditRecords) {

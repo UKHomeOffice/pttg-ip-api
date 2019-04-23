@@ -146,7 +146,7 @@ public class PassRateStatisticsServiceTest {
         LocalDate fromDate = LocalDate.now();
         service.generatePassRateStatistics(fromDate, SOME_DATE);
 
-        verify(mockPassStatisticsCalculator).result(anyList(), eq(fromDate), any(LocalDate.class));
+        verify(mockPassStatisticsCalculator).result(anyList(), anyList(), eq(fromDate), any(LocalDate.class));
     }
 
     @Test
@@ -154,7 +154,7 @@ public class PassRateStatisticsServiceTest {
         LocalDate toDate = LocalDate.now();
         service.generatePassRateStatistics(SOME_DATE, toDate);
 
-        verify(mockPassStatisticsCalculator).result(anyList(), any(LocalDate.class), eq(toDate));
+        verify(mockPassStatisticsCalculator).result(anyList(), anyList(), any(LocalDate.class), eq(toDate));
     }
 
     @Test
@@ -164,13 +164,13 @@ public class PassRateStatisticsServiceTest {
             .thenReturn(resultsByNino);
 
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
-        verify(mockPassStatisticsCalculator).result(resultsByNino, SOME_DATE, SOME_DATE);
+        verify(mockPassStatisticsCalculator).result(eq(resultsByNino), anyList(), eq(SOME_DATE), eq(SOME_DATE));
     }
 
     @Test
     public void generatePassStatistics_givenResultFromCalculator_returnedToCaller() {
         PassRateStatistics passRateStatistics = new PassRateStatistics(SOME_DATE, SOME_DATE, SOME_LONG, SOME_LONG, SOME_LONG, SOME_LONG, SOME_LONG);
-        when(mockPassStatisticsCalculator.result(anyList(), any(LocalDate.class), any(LocalDate.class)))
+        when(mockPassStatisticsCalculator.result(anyList(), anyList(), any(LocalDate.class), any(LocalDate.class)))
             .thenReturn(passRateStatistics);
 
         PassRateStatistics actualStatistics = service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
