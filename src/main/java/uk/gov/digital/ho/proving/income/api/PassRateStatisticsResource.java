@@ -1,10 +1,10 @@
 package uk.gov.digital.ho.proving.income.api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.proving.income.api.domain.TaxYear;
 import uk.gov.digital.ho.proving.income.audit.statistics.PassRateStatistics;
 import uk.gov.digital.ho.proving.income.audit.statistics.PassRateStatisticsService;
@@ -12,7 +12,7 @@ import uk.gov.digital.ho.proving.income.audit.statistics.PassRateStatisticsServi
 import java.time.LocalDate;
 import java.time.YearMonth;
 
-@RestController
+@Controller
 @Slf4j
 public class PassRateStatisticsResource {
 
@@ -35,7 +35,7 @@ public class PassRateStatisticsResource {
         model.addAttribute("statistics", statistics);
 
         log.info("Returning results for pass rate statistics - fromDate={} toDate={} totalRequests={}",
-            statistics.fromDate(), statistics.toDate(), statistics.totalRequests());
+            statistics.getFromDate(), statistics.getToDate(), statistics.getTotalRequests());
         return "";
     }
 

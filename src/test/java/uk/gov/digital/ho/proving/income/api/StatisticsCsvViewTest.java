@@ -47,6 +47,13 @@ public class StatisticsCsvViewTest {
     }
 
     @Test
+    public void renderMergedOutputModel_anyParams_setHeaderCsv() throws Exception {
+        view.renderMergedOutputModel(mockModel, mockRequest, mockResponse);
+
+        verify(mockResponse).setHeader("content-type", "text/csv;charset=UTF-8");
+    }
+
+    @Test
     public void renderMergedOutputModel_anyParams_writeHeader() throws Exception {
         view.renderMergedOutputModel(mockModel, mockRequest, mockResponse);
 
@@ -64,7 +71,7 @@ public class StatisticsCsvViewTest {
 
         view.renderMergedOutputModel(model, mockRequest, mockResponse);
 
-        verify(mockCsvWriter).write(somePassRateStatistics, "From Date", "To Date", "Total Requests", "Passed", "Not Passed", "Not Found", "Error");
+        verify(mockCsvWriter).write(somePassRateStatistics, "fromDate", "toDate", "totalRequests", "passes", "failures", "notFound", "errors");
     }
 
     @Test

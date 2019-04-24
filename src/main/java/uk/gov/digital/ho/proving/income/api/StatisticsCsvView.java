@@ -21,14 +21,24 @@ public class StatisticsCsvView extends AbstractView {
         "Not Found",
         "Error"
     };
+    private static final String[] FIELD_MAPPINGS = {
+        "fromDate",
+        "toDate",
+        "totalRequests",
+        "passes",
+        "failures",
+        "notFound",
+        "errors"
+    };
 
     @Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/csv");
+        response.setHeader("content-type", "text/csv;charset=UTF-8");
 
         try (ICsvBeanWriter csvWriter = getCsvWriter(response)) {
             csvWriter.writeHeader(HEADERS);
-            csvWriter.write(model.get("statistics"), HEADERS);
+            csvWriter.write(model.get("statistics"), FIELD_MAPPINGS);
         }
     }
 
