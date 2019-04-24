@@ -16,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
-import org.springframework.web.servlet.view.ResourceBundleViewResolver;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.hmrc.IncomeRecordServiceNotProductionResponseLogger;
 import uk.gov.digital.ho.proving.income.hmrc.IncomeRecordServiceProductionResponseLogger;
@@ -26,9 +25,6 @@ import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static java.util.Collections.singletonList;
 
@@ -126,12 +122,8 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
         ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
         viewResolver.setContentNegotiationManager(manager);
 
-        viewResolver.setViewResolvers(singletonList(getCsvViewResolver()));
+        viewResolver.setViewResolvers(singletonList(new CsvViewResolver()));
         return viewResolver;
     }
 
-    @Bean
-    public ViewResolver getCsvViewResolver(){
-        return new CsvViewResolver();
-    }
 }

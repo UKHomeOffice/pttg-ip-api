@@ -23,7 +23,7 @@ public class PassRateStatisticsResource {
     }
 
     @GetMapping(value = "/statistics")
-    public String getPassRateStatisticsCsv(@RequestParam(value = "taxYear", required = false) TaxYear taxYear,
+    public void getPassRateStatisticsCsv(@RequestParam(value = "taxYear", required = false) TaxYear taxYear,
                                            @RequestParam(value = "month", required = false) YearMonth month,
                                            @RequestParam(value = "fromDate", required = false) LocalDate fromDate,
                                            @RequestParam(value = "toDate", required = false) LocalDate toDate,
@@ -36,7 +36,6 @@ public class PassRateStatisticsResource {
 
         log.info("Returning results for pass rate statistics - fromDate={} toDate={} totalRequests={}",
             statistics.getFromDate(), statistics.getToDate(), statistics.getTotalRequests());
-        return "";
     }
 
     private PassRateStatistics getPassRateStatistics(TaxYear taxYear, YearMonth month, LocalDate fromDate, LocalDate toDate) {
@@ -51,7 +50,7 @@ public class PassRateStatisticsResource {
 
     private void validateParameters(TaxYear taxYear, YearMonth month, LocalDate fromDate, LocalDate toDate) {
         if (taxYear == null && month == null && fromDate == null && toDate == null) {
-            throw new IllegalArgumentException("No arguments provided");
+            throw new IllegalArgumentException("No valid arguments provided");
         }
 
         checkNotBothProvided(taxYear, month, "Cannot have taxYear and month in same request");

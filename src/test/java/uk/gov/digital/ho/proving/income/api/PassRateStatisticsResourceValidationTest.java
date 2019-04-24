@@ -47,7 +47,7 @@ public class PassRateStatisticsResourceValidationTest {
     public void getPassRateStatisticsCsv_noParams_illegalArgumentException() {
         assertThatThrownBy(() -> resource.getPassRateStatisticsCsv(null, null, null, null, SOME_MODEL))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("No arguments");
+            .hasMessageContaining("No valid arguments");
     }
 
     @Test

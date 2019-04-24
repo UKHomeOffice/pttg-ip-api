@@ -3,7 +3,6 @@ package uk.gov.digital.ho.proving.income.api.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;

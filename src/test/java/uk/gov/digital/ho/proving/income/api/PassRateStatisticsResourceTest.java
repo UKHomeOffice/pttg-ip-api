@@ -21,7 +21,6 @@ import java.time.YearMonth;
 import java.util.Arrays;
 
 import static ch.qos.logback.classic.Level.INFO;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,14 +53,6 @@ public class PassRateStatisticsResourceTest {
         resource = new PassRateStatisticsResource(mockService);
         Logger logger = (Logger) LoggerFactory.getLogger(PassRateStatisticsResource.class);
         logger.addAppender(mockAppender);
-    }
-
-    @Test
-    public void getPassRateStatisticsCsv_anyValidParams_returnEmptyString() {
-        mockStatisticsForTaxYear();
-
-        assertThat(resource.getPassRateStatisticsCsv(SOME_TAX_YEAR, null, null, null, SOME_MODEL))
-            .isEqualTo("");
     }
 
     @Test
