@@ -40,7 +40,7 @@ public class PassStatisticsCalculatorTest {
     public void result_givenToDate_inResult() {
         LocalDate toDate = LocalDate.of(2019, 3, 4);
 
-        assertThat(accumulator.result(SOME_AUDIT_RESULTS, SOME_ARCHIVED_RESULTS, SOME_DATE, toDate).getFromDate())
+        assertThat(accumulator.result(SOME_AUDIT_RESULTS, SOME_ARCHIVED_RESULTS, SOME_DATE, toDate).getToDate())
             .isEqualTo(toDate);
     }
 
