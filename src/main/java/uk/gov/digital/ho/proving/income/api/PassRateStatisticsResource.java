@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.proving.income.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,12 +28,14 @@ public class PassRateStatisticsResource {
                                            @RequestParam(value = "fromDate", required = false) LocalDate fromDate,
                                            @RequestParam(value = "toDate", required = false) LocalDate toDate,
                                            Model model) {
-
+        log.info("Request for pass rate statistics. taxYear={} month={} fromDate={} toDate={}", taxYear, month, fromDate, toDate);
         validateParameters(taxYear, month, fromDate, toDate);
 
         PassRateStatistics statistics = getPassRateStatistics(taxYear, month, fromDate, toDate);
         model.addAttribute("statistics", statistics);
 
+        log.info("Returning results for pass rate statistics - fromDate={} toDate={} totalRequests={}",
+            statistics.fromDate(), statistics.toDate(), statistics.totalRequests());
         return "";
     }
 

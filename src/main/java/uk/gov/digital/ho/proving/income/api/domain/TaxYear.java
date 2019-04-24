@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.api.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
@@ -48,5 +49,10 @@ public class TaxYear {
         }
 
         return new Year[]{Year.of(startYear), Year.of(endYear)};
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d/%d", startDate.getYear(), endDate.getYear());
     }
 }

@@ -103,4 +103,13 @@ public class TaxYearTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("format");
     }
+
+    @Test
+    public void toString_givenTaxYear_expectedFormat() {
+        String expectedTaxYearString = "2018/2019";
+        TaxYear taxYear = TaxYear.valueOf(expectedTaxYearString);
+
+        assertThat(taxYear.toString())
+            .isEqualTo(expectedTaxYearString);
+    }
 }
