@@ -97,6 +97,8 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-aspects', version: '3.2.0.RELEASE'
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.0.RELEASE'
 
+    compile 'net.sf.supercsv:super-csv:2.4.0'
+
     compileOnly 'org.projectlombok:lombok:1.16.12'
 
     testCompile 'org.hamcrest:hamcrest-core:1.3'

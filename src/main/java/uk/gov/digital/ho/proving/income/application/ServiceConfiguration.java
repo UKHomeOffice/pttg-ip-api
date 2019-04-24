@@ -12,7 +12,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.view.ResourceBundleViewResolver;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.hmrc.IncomeRecordServiceNotProductionResponseLogger;
 import uk.gov.digital.ho.proving.income.hmrc.IncomeRecordServiceProductionResponseLogger;
@@ -110,5 +112,15 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     @Bean
     public Clock createClock() {
         return Clock.systemDefaultZone();
+    }
+
+    @Bean
+    public ViewResolver getCsvViewResolver(){
+
+        ResourceBundleViewResolver resolver = new ResourceBundleViewResolver();
+        resolver.setBasename("views");
+        resolver.setOrder(1);
+
+        return resolver;
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.proving.income.api.domain.TaxYear;
 import uk.gov.digital.ho.proving.income.audit.statistics.PassRateStatistics;
 import uk.gov.digital.ho.proving.income.audit.statistics.PassRateStatisticsService;
@@ -12,7 +13,7 @@ import uk.gov.digital.ho.proving.income.audit.statistics.PassRateStatisticsServi
 import java.time.LocalDate;
 import java.time.YearMonth;
 
-@Component
+@RestController
 @Slf4j
 public class PassRateStatisticsResource {
 
