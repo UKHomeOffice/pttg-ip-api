@@ -10,11 +10,11 @@ import uk.gov.digital.ho.proving.income.audit.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -50,6 +50,7 @@ public class PassRateStatisticsServiceTest {
 
     /**************************
      * AuditClient collaborator
+     * getAuditHistoryPaginated
      **************************/
 
     @Test
@@ -108,7 +109,30 @@ public class PassRateStatisticsServiceTest {
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
         verify(mockAuditClient)
             .getAuditHistoryPaginated(anyList(), eq(0), eq(PAGE_SIZE));
-        verifyNoMoreInteractions(mockAuditClient);
+    }
+
+    /**************************
+     * AuditClient collaborator
+     * getArchivedResults
+     **************************/
+
+    @Test
+    public void generatePassStatistics_givenDate_getArchivedResultsForDates() {
+        LocalDate fromDate = LocalDate.of(2019, Month.JANUARY, 1);
+        LocalDate toDate = LocalDate.of(2019, Month.JANUARY, 31);
+
+        service.generatePassRateStatistics(fromDate, toDate);
+        verify(mockAuditClient).getArchivedResults(eq(fromDate), eq(toDate));
+    }
+
+    @Test
+    public void generatePassStatistics_returnedArchivedResults_passToCalculator() {
+        List<ArchivedResult> someArchivedResults = singletonList(new ArchivedResult(singletonMap("PASSED", 20)));
+        when(mockAuditClient.getArchivedResults(any(LocalDate.class), any(LocalDate.class)))
+            .thenReturn(someArchivedResults);
+
+        service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
+        verify(mockPassStatisticsCalculator).result(anyList(), eq(someArchivedResults), any(LocalDate.class), any(LocalDate.class));
     }
 
     /***************************************
