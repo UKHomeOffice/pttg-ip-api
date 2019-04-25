@@ -13,6 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
@@ -200,7 +201,7 @@ public class AuditClientTest {
     @Test
     public void getArchivedResults_givenResponse_returnResults() {
         List<ArchivedResult> expectedResults = singletonList(new ArchivedResult(singletonMap("PASSED", 5)));
-        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<ArchivedResult>>() {})))
+        when(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<ArchivedResult>>() {})))
             .thenReturn(ResponseEntity.ok(expectedResults));
 
         LocalDate someDate = LocalDate.now();
