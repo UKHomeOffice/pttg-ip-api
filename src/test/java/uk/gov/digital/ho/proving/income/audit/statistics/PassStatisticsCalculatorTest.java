@@ -17,14 +17,14 @@ import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 
 public class PassStatisticsCalculatorTest {
 
-    private static final LocalDate SOME_DATE = LocalDate.now();
+    private static final LocalDate ANY_DATE = LocalDate.now();
     private static final LocalDate FROM_DATE = LocalDate.of(2019, Month.JANUARY, 1);
     private static final LocalDate TO_DATE = LocalDate.of(2019, Month.JANUARY, 31);
     private static final LocalDate IN_RANGE = FROM_DATE.plusDays(2);
 
-    private static final List<AuditResultByNino> SOME_AUDIT_RESULTS = emptyList();
-    private static final List<ArchivedResult> SOME_ARCHIVED_RESULTS = emptyList();
-    private static final List<String> SOME_CORRELATION_IDS = emptyList();
+    private static final List<AuditResultByNino> ANY_AUDIT_RESULTS = emptyList();
+    private static final List<ArchivedResult> ANY_ARCHIVED_RESULTS = emptyList();
+    private static final List<String> ANY_CORRELATION_IDS = emptyList();
 
     private PassStatisticsCalculator accumulator = new PassStatisticsCalculator();
 
@@ -32,7 +32,7 @@ public class PassStatisticsCalculatorTest {
     public void result_givenFromDate_inResult() {
         LocalDate fromDate = LocalDate.of(2019, 2, 3);
 
-        assertThat(accumulator.result(SOME_AUDIT_RESULTS, SOME_ARCHIVED_RESULTS, fromDate, SOME_DATE).fromDate())
+        assertThat(accumulator.result(ANY_AUDIT_RESULTS, ANY_ARCHIVED_RESULTS, fromDate, ANY_DATE).fromDate())
             .isEqualTo(fromDate);
     }
 
@@ -40,7 +40,7 @@ public class PassStatisticsCalculatorTest {
     public void result_givenToDate_inResult() {
         LocalDate toDate = LocalDate.of(2019, 3, 4);
 
-        assertThat(accumulator.result(SOME_AUDIT_RESULTS, SOME_ARCHIVED_RESULTS, SOME_DATE, toDate).toDate())
+        assertThat(accumulator.result(ANY_AUDIT_RESULTS, ANY_ARCHIVED_RESULTS, ANY_DATE, toDate).toDate())
             .isEqualTo(toDate);
     }
 
@@ -146,10 +146,10 @@ public class PassStatisticsCalculatorTest {
     @Test
     public void result_oneDayArchivedResults_addToTotal() {
         List<AuditResultByNino> results = asList(
-            new AuditResultByNino("nino 1", SOME_CORRELATION_IDS, IN_RANGE, PASS),
-            new AuditResultByNino("nino 2", SOME_CORRELATION_IDS, IN_RANGE, FAIL),
-            new AuditResultByNino("nino 3", SOME_CORRELATION_IDS, IN_RANGE, NOTFOUND),
-            new AuditResultByNino("nino 4", SOME_CORRELATION_IDS, IN_RANGE, ERROR)
+            new AuditResultByNino("nino 1", ANY_CORRELATION_IDS, IN_RANGE, PASS),
+            new AuditResultByNino("nino 2", ANY_CORRELATION_IDS, IN_RANGE, FAIL),
+            new AuditResultByNino("nino 3", ANY_CORRELATION_IDS, IN_RANGE, NOTFOUND),
+            new AuditResultByNino("nino 4", ANY_CORRELATION_IDS, IN_RANGE, ERROR)
         );
 
         List<ArchivedResult> archivedResults = singletonList(new ArchivedResult(ImmutableMap.<String, Integer>builder()
@@ -166,10 +166,10 @@ public class PassStatisticsCalculatorTest {
     @Test
     public void result_multipleDaysOfArchivedResults_addToTotal() {
         List<AuditResultByNino> results = asList(
-            new AuditResultByNino("nino 1", SOME_CORRELATION_IDS, IN_RANGE, PASS),
-            new AuditResultByNino("nino 2", SOME_CORRELATION_IDS, IN_RANGE, FAIL),
-            new AuditResultByNino("nino 3", SOME_CORRELATION_IDS, IN_RANGE, NOTFOUND),
-            new AuditResultByNino("nino 4", SOME_CORRELATION_IDS, IN_RANGE, ERROR)
+            new AuditResultByNino("nino 1", ANY_CORRELATION_IDS, IN_RANGE, PASS),
+            new AuditResultByNino("nino 2", ANY_CORRELATION_IDS, IN_RANGE, FAIL),
+            new AuditResultByNino("nino 3", ANY_CORRELATION_IDS, IN_RANGE, NOTFOUND),
+            new AuditResultByNino("nino 4", ANY_CORRELATION_IDS, IN_RANGE, ERROR)
         );
 
         List<ArchivedResult> archivedResults = asList(new ArchivedResult(ImmutableMap.<String, Integer>builder()
