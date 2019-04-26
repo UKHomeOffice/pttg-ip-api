@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.proving.income.api.domain.TaxYear;
 import uk.gov.digital.ho.proving.income.audit.*;
 
 import java.time.LocalDate;
@@ -199,5 +200,14 @@ public class PassRateStatisticsServiceTest {
 
         PassRateStatistics actualStatistics = service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
         assertThat(actualStatistics).isEqualTo(passRateStatistics);
+    }
+
+    @Test
+    public void generatePassStatistics_taxYear_datesPassedToCalculator() {
+        TaxYear taxYear = TaxYear.valueOf("2017/2018");
+        service.generatePassRateStatistics(taxYear);
+
+        verify(mockPassStatisticsCalculator)
+            .result(anyList(), anyList(), eq(taxYear.startDate()), eq(taxYear.endDate()));
     }
 }
