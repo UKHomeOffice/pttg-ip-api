@@ -68,7 +68,7 @@ public class PassRateStatisticsResourceIT {
         assertThat(response.getHeaders().getContentType().toString()).isEqualTo("text/csv;charset=UTF-8");
         assertThat(response.getBody()).isEqualToNormalizingNewlines(readResource(expectedResultsCsv));
     }
-    
+
     @Test
     public void passRateStatistics_requestByDate_returnSuccess() {
         mockAuditService.expect(requestTo(containsString("/history")))
