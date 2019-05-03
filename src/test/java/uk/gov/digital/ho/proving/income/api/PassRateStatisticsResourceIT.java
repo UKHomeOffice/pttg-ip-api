@@ -68,6 +68,21 @@ public class PassRateStatisticsResourceIT {
         assertThat(response.getHeaders().getContentType().toString()).isEqualTo("text/csv;charset=UTF-8");
         assertThat(response.getBody()).isEqualToNormalizingNewlines(readResource(expectedResultsCsv));
     }
+    
+    @Test
+    public void passRateStatistics_requestByDate_returnSuccess() {
+        mockAuditService.expect(requestTo(containsString("/history")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+        mockAuditService.expect(requestTo(containsString("/archive")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+
+        ResponseEntity<String> response = testRestTemplate.exchange("/statistics?fromDate={fromDate}&toDate={toDate}",
+            GET, null, String.class, ImmutableMap.of("fromDate", "2019-02-01", "toDate", "2019-02-28"));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 
     private String readResource(Resource resource) {
         try {
