@@ -16,7 +16,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -32,7 +31,6 @@ import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.GET;
@@ -339,8 +337,7 @@ public class AuditClientTest {
         assertThat(queryStringComponents).containsExactlyInAnyOrder(
             "eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST",
             "page=" + page,
-            "size=" + size,
-            "toDate=" + LocalDate.MAX.toString()
+            "size=" + size
         );
     }
 
@@ -388,16 +385,33 @@ public class AuditClientTest {
     }
 
     @Test
-    public void generateUri_singleEventType_correctlyFormatted() {
-        URI uri = auditClient.generateUri(LocalDate.of(2019, 6, 30), singletonList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST), 1, 1);
+    public void generateUri_withDate_singleEventType_correctlyFormatted() {
+        URI uri = auditClient.generateUri(singletonList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST), 1, 1, LocalDate.of(2019, 6, 30));
 
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).contains("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST");
     }
 
     @Test
-    public void generateUri_multipleEventTypes_correctlyFormatted() {
-        URI uri = auditClient.generateUri(LocalDate.of(2019, 6, 30), asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE), 1, 1);
+    public void generateUri_withDate_multipleEventTypes_correctlyFormatted() {
+        URI uri = auditClient.generateUri(asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE), 1, 1, LocalDate.of(2019, 6, 30));
+
+        String[] queryStringComponents = uri.getQuery().split("&");
+        assertThat(queryStringComponents).contains("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST");
+        assertThat(queryStringComponents).contains("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE");
+    }
+
+    @Test
+    public void generateUri_withoutDate_singleEventType_correctlyFormatted() {
+        URI uri = auditClient.generateUri(singletonList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST), 1, 1);
+
+        String[] queryStringComponents = uri.getQuery().split("&");
+        assertThat(queryStringComponents).contains("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST");
+    }
+
+    @Test
+    public void generateUri_withoutDate_multipleEventTypes_correctlyFormatted() {
+        URI uri = auditClient.generateUri(asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE), 1, 1);
 
         String[] queryStringComponents = uri.getQuery().split("&");
         assertThat(queryStringComponents).contains("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST");
