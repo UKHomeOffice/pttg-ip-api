@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.proving.income.api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +25,10 @@ public class PassRateStatisticsResource {
 
     @GetMapping(value = "/statistics")
     public void getPassRateStatisticsCsv(@RequestParam(value = "taxYear", required = false) TaxYear taxYear,
-                                           @RequestParam(value = "month", required = false) YearMonth month,
-                                           @RequestParam(value = "fromDate", required = false) LocalDate fromDate,
-                                           @RequestParam(value = "toDate", required = false) LocalDate toDate,
-                                           Model model) {
+                                         @RequestParam(value = "month", required = false) YearMonth month,
+                                         @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+                                         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+                                         Model model) {
         log.info("Request for pass rate statistics. taxYear={} month={} fromDate={} toDate={}", taxYear, month, fromDate, toDate);
         validateParameters(taxYear, month, fromDate, toDate);
 
