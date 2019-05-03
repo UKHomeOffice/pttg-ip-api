@@ -91,6 +91,13 @@ public class TaxYearTest {
     }
 
     @Test
+    public void valueOf_consecutiveYearsLatestFirst_illegalArgumentException() {
+        assertThatThrownBy(() -> TaxYear.valueOf("2014/2013"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("consecutive");
+    }
+
+    @Test
     public void valueOf_nonNumericalEndYear_illegalArgumentException() {
         assertThatThrownBy(() -> TaxYear.valueOf("2014/201A"))
             .isInstanceOf(IllegalArgumentException.class)
