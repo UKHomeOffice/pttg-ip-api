@@ -17,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
-import javax.swing.text.DateFormatter;
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -88,21 +87,25 @@ public class AuditClient {
     List<AuditRecord> getAuditHistory(LocalDate toDate, List<AuditEventType> eventTypes) {
         int page = 0;
         List<AuditRecord> auditRecords = new ArrayList<>();
-        List<AuditRecord> auditRecordsPage = getAuditHistoryPaginated(toDate, eventTypes, page++, historyPageSize);
+        List<AuditRecord> auditRecordsPage = getAuditHistoryPaginated(eventTypes, page++, historyPageSize, toDate);
         auditRecords.addAll(auditRecordsPage);
         while(auditRecordsPage.size() == historyPageSize) {
-            auditRecordsPage = getAuditHistoryPaginated(toDate, eventTypes, page++, historyPageSize);
+            auditRecordsPage = getAuditHistoryPaginated(eventTypes, page++, historyPageSize, toDate);
             auditRecords.addAll(auditRecordsPage);
         }
         return auditRecords;
     }
 
     public List<AuditRecord> getAuditHistoryPaginated(List<AuditEventType> eventTypes, int page, int size) {
-        return getAuditHistoryPaginated(LocalDate.MAX, eventTypes, page, size);
+        URI uri = generateUri(eventTypes, page, size);
+
+        HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
+        ResponseEntity<List<AuditRecord>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
+        return response.getBody();
     }
 
-    private List<AuditRecord> getAuditHistoryPaginated(LocalDate toDate, List<AuditEventType> eventTypes, int page, int size) {
-        URI uri = generateUri(toDate, eventTypes, page, size);
+    private List<AuditRecord> getAuditHistoryPaginated(List<AuditEventType> eventTypes, int page, int size, LocalDate toDate) {
+        URI uri = generateUri(eventTypes, page, size, toDate);
 
         HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
         ResponseEntity<List<AuditRecord>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
@@ -119,12 +122,22 @@ public class AuditClient {
         }
     }
 
-    URI generateUri(LocalDate toDate, List<AuditEventType> eventTypes, int page, int size) {
+    URI generateUri(List<AuditEventType> eventTypes, int page, int size, LocalDate toDate) {
         return UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
             .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
             .queryParam("page", page)
             .queryParam("size", size)
             .queryParam("toDate", toDate)
+            .build()
+            .encode()
+            .toUri();
+    }
+
+    URI generateUri(List<AuditEventType> eventTypes, int page, int size) {
+        return UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
+            .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
+            .queryParam("page", page)
+            .queryParam("size", size)
             .build()
             .encode()
             .toUri();
