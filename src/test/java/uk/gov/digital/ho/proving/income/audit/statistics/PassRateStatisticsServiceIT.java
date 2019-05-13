@@ -55,6 +55,8 @@ public class PassRateStatisticsServiceIT {
             .andExpect(method(GET))
             .andRespond(withSuccess(EMPTY_RESPONSE, APPLICATION_JSON));
 
+        mockArchivedResultsResponse(EMPTY_RESPONSE);
+
         PassRateStatistics actualStatistics = passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE);
         PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 0, 0, 0, 0, 0);
         assertThat(actualStatistics).isEqualTo(expectedStatistics);
@@ -71,6 +73,7 @@ public class PassRateStatisticsServiceIT {
         String auditHistory = joinAuditRecordsAsJsonList(nino1PassRequest, nino1PassResponse, nino2FailRequest, nino2FailResponse);
 
         mockAuditServiceResponses(auditHistory);
+        mockArchivedResultsResponse(EMPTY_RESPONSE);
 
         PassRateStatistics actualStatistics = passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE);
         PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 2, 1, 1, 0, 0);
@@ -97,6 +100,8 @@ public class PassRateStatisticsServiceIT {
         String response1 = joinAuditRecordsAsJsonList(nino1PassRequest, nino2FailResponse, nino3NotFoundResponse, nino5PassRequest, nino5PassResponse);
         String response2 = joinAuditRecordsAsJsonList(nino4PassResponse, nino3NotFoundRequest, nino4PassRequest, nino2FailRequest, nino1PassResponse);
         mockAuditServiceResponses(response1, response2, EMPTY_RESPONSE);
+
+        mockArchivedResultsResponse(EMPTY_RESPONSE);
 
         PassRateStatistics actualStatistics = passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE);
         PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 5, 3, 1, 1, 0);
@@ -134,6 +139,7 @@ public class PassRateStatisticsServiceIT {
         String auditHistoryResponse3 = joinAuditRecordsAsJsonList(nino2NotFoundResponse, nino3NotFoundRequest);
 
         mockAuditServiceResponses(auditHistoryResponse1, auditHistoryResponse2, auditHistoryResponse3);
+        mockArchivedResultsResponse(EMPTY_RESPONSE);
 
         PassRateStatistics expectedPassRateStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 4, 1, 1, 1, 1);
         assertThat(passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE))
@@ -167,7 +173,27 @@ public class PassRateStatisticsServiceIT {
         String auditHistoryResponse2 = joinAuditRecordsAsJsonList(passRequest2TooEarly, failResponse2InRange, failRequest2InRange, passResponse2InRange, passResponseTooEarly);
         mockAuditServiceResponses(auditHistoryResponse1, auditHistoryResponse2, EMPTY_RESPONSE);
 
+        mockArchivedResultsResponse(EMPTY_RESPONSE);
+
         PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 1, 0, 0, 1, 0);
+        assertThat(passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE))
+            .isEqualTo(expectedStatistics);
+    }
+
+    @Test
+    public void passRateStatistics_archivedResults_addedToCount() {
+        String passRequest = fileUtils.buildRequest("correlationID 1", "2018-08-01 09:02:00.000", "nino 1");
+        String passResponse = fileUtils.buildResponse("correlationID 1", "2018-08-01 09:03:00.000", "nino 1", "true");
+        String failRequest = fileUtils.buildRequest("correlationID 2", "2018-08-01 09:02:00.000", "nino 2");
+        String failResponse = fileUtils.buildResponse("correlationID 2", "2018-08-01 09:03:00.000", "nino 2", "false");
+
+        String auditHistoryResponse = joinAuditRecordsAsJsonList(passRequest, passResponse, failRequest, failResponse);
+        mockAuditServiceResponses(auditHistoryResponse);
+
+        String archivedResults = fileUtils.buildArchivedResults(0, 0, 1, 2);
+        mockArchivedResultsResponse(archivedResults);
+
+        PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 5, 1, 1, 1, 2);
         assertThat(passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE))
             .isEqualTo(expectedStatistics);
     }
@@ -185,5 +211,14 @@ public class PassRateStatisticsServiceIT {
 
     private String joinAuditRecordsAsJsonList(String... auditRecords) {
         return String.format("[%s]", String.join(", ", auditRecords));
+    }
+
+    private void mockArchivedResultsResponse(String response) {
+        mockAuditService
+            .expect(requestTo(containsString("/archive")))
+            .andExpect(requestTo(containsString("fromDate=2018-08-01")))
+            .andExpect(requestTo(containsString("toDate=2018-08-31")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(response, APPLICATION_JSON));
     }
 }

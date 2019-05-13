@@ -6,15 +6,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.proving.income.api.domain.TaxYear;
 import uk.gov.digital.ho.proving.income.audit.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -50,6 +51,7 @@ public class PassRateStatisticsServiceTest {
 
     /**************************
      * AuditClient collaborator
+     * getAuditHistoryPaginated
      **************************/
 
     @Test
@@ -108,7 +110,30 @@ public class PassRateStatisticsServiceTest {
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
         verify(mockAuditClient)
             .getAuditHistoryPaginated(anyList(), eq(0), eq(PAGE_SIZE));
-        verifyNoMoreInteractions(mockAuditClient);
+    }
+
+    /**************************
+     * AuditClient collaborator
+     * getArchivedResults
+     **************************/
+
+    @Test
+    public void generatePassStatistics_givenDate_getArchivedResultsForDates() {
+        LocalDate fromDate = LocalDate.of(2019, Month.JANUARY, 1);
+        LocalDate toDate = LocalDate.of(2019, Month.JANUARY, 31);
+
+        service.generatePassRateStatistics(fromDate, toDate);
+        verify(mockAuditClient).getArchivedResults(eq(fromDate), eq(toDate));
+    }
+
+    @Test
+    public void generatePassStatistics_returnedArchivedResults_passToCalculator() {
+        List<ArchivedResult> someArchivedResults = singletonList(new ArchivedResult(singletonMap("PASSED", 20)));
+        when(mockAuditClient.getArchivedResults(any(LocalDate.class), any(LocalDate.class)))
+            .thenReturn(someArchivedResults);
+
+        service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
+        verify(mockPassStatisticsCalculator).result(anyList(), eq(someArchivedResults), any(LocalDate.class), any(LocalDate.class));
     }
 
     /***************************************
@@ -146,7 +171,7 @@ public class PassRateStatisticsServiceTest {
         LocalDate fromDate = LocalDate.now();
         service.generatePassRateStatistics(fromDate, SOME_DATE);
 
-        verify(mockPassStatisticsCalculator).result(anyList(), eq(fromDate), any(LocalDate.class));
+        verify(mockPassStatisticsCalculator).result(anyList(), anyList(), eq(fromDate), any(LocalDate.class));
     }
 
     @Test
@@ -154,7 +179,7 @@ public class PassRateStatisticsServiceTest {
         LocalDate toDate = LocalDate.now();
         service.generatePassRateStatistics(SOME_DATE, toDate);
 
-        verify(mockPassStatisticsCalculator).result(anyList(), any(LocalDate.class), eq(toDate));
+        verify(mockPassStatisticsCalculator).result(anyList(), anyList(), any(LocalDate.class), eq(toDate));
     }
 
     @Test
@@ -164,16 +189,25 @@ public class PassRateStatisticsServiceTest {
             .thenReturn(resultsByNino);
 
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
-        verify(mockPassStatisticsCalculator).result(resultsByNino, SOME_DATE, SOME_DATE);
+        verify(mockPassStatisticsCalculator).result(eq(resultsByNino), anyList(), eq(SOME_DATE), eq(SOME_DATE));
     }
 
     @Test
     public void generatePassStatistics_givenResultFromCalculator_returnedToCaller() {
         PassRateStatistics passRateStatistics = new PassRateStatistics(SOME_DATE, SOME_DATE, SOME_LONG, SOME_LONG, SOME_LONG, SOME_LONG, SOME_LONG);
-        when(mockPassStatisticsCalculator.result(anyList(), any(LocalDate.class), any(LocalDate.class)))
+        when(mockPassStatisticsCalculator.result(anyList(), anyList(), any(LocalDate.class), any(LocalDate.class)))
             .thenReturn(passRateStatistics);
 
         PassRateStatistics actualStatistics = service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
         assertThat(actualStatistics).isEqualTo(passRateStatistics);
+    }
+
+    @Test
+    public void generatePassStatistics_taxYear_datesPassedToCalculator() {
+        TaxYear taxYear = TaxYear.valueOf("2017/2018");
+        service.generatePassRateStatistics(taxYear);
+
+        verify(mockPassStatisticsCalculator)
+            .result(anyList(), anyList(), eq(taxYear.startDate()), eq(taxYear.endDate()));
     }
 }
