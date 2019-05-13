@@ -11,6 +11,7 @@ import org.springframework.web.util.WebUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.util.Base64;
 
 @Component
@@ -19,6 +20,8 @@ public class RequestData implements HandlerInterceptor {
     public static final String SESSION_ID_HEADER = "x-session-id";
     public static final String CORRELATION_ID_HEADER = "x-correlation-id";
     public static final String USER_ID_HEADER = "x-auth-userid";
+    private static final String REQUEST_START_TIMESTAMP = "request-timestamp";
+    public static final String REQUEST_DURATION_MS = "request_duration_ms";
 
     @Value("${auditing.deployment.name}") private String deploymentName;
     @Value("${auditing.deployment.namespace}") private String deploymentNamespace;
@@ -26,13 +29,14 @@ public class RequestData implements HandlerInterceptor {
     @Value("${audit.service.auth}") private String auditBasicAuth;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         MDC.clear();
         MDC.put(SESSION_ID_HEADER, initialiseSessionId(request));
         MDC.put(CORRELATION_ID_HEADER, initialiseCorrelationId(request));
         MDC.put(USER_ID_HEADER, initialiseUserName(request));
         MDC.put("userHost", request.getRemoteHost());
+        MDC.put(REQUEST_START_TIMESTAMP, initialiseRequestStart());
 
         return true;
     }
@@ -52,14 +56,24 @@ public class RequestData implements HandlerInterceptor {
         return StringUtils.isNotBlank(userId) ? userId : "anonymous";
     }
 
+    private String initialiseRequestStart() {
+        long requestStart = Instant.now().toEpochMilli();
+        return Long.toString(requestStart);
+    }
+
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         MDC.clear();
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,   Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,   Exception ex) {
 
+    }
+
+    public long calculateRequestDuration() {
+        long timeStamp = Instant.now().toEpochMilli();
+        return timeStamp - Long.parseLong(MDC.get(REQUEST_START_TIMESTAMP));
     }
 
     public String deploymentName() {

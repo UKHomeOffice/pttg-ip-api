@@ -43,12 +43,12 @@ public class AuditResultConsolidator {
             results.stream().collect(Collectors.groupingBy(AuditResult::nino));
 
         return resultsByNino.values().stream()
-            .map(this::consolidateLatestBestResult)
+            .map(this::consolidateFirstBestResult)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 
-    private AuditResultByNino consolidateLatestBestResult(List<AuditResult> results) {
+    private AuditResultByNino consolidateFirstBestResult(List<AuditResult> results) {
         AuditResult consolidatedResult = results.stream()
             .max(auditResultComparator)
             .orElse(null);

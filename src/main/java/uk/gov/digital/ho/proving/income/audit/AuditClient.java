@@ -17,11 +17,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 
+import javax.swing.text.DateFormatter;
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,6 +44,7 @@ public class AuditClient {
     private final String auditArchiveEndpoint;
     private final RequestData requestData;
     private final ObjectMapper mapper;
+    private final int historyPageSize;
 
     AuditClient(Clock clock,
                 RestTemplate restTemplate,
@@ -49,6 +52,7 @@ public class AuditClient {
                 @Value("${pttg.audit.endpoint}") String auditEndpoint,
                        @Value("${audit.history.endpoint}") String auditHistoryEndpoint,
                        @Value("${audit.archive.endpoint}") String auditArchiveEndpoint,
+                       @Value("${audit.archive.history.pagesize}") int historyPagesize,
                        ObjectMapper mapper) {
         this.clock = clock;
         this.restTemplate = restTemplate;
@@ -56,6 +60,7 @@ public class AuditClient {
         this.auditEndpoint = auditEndpoint;
         this.auditHistoryEndpoint = auditHistoryEndpoint;
         this.auditArchiveEndpoint = auditArchiveEndpoint;
+        this.historyPageSize = historyPagesize;
         this.mapper = mapper;
     }
 
@@ -81,35 +86,48 @@ public class AuditClient {
     }
 
     List<AuditRecord> getAuditHistory(LocalDate toDate, List<AuditEventType> eventTypes) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
-            .queryParam("toDate", toDate.format(DateTimeFormatter.ISO_DATE))
-            .queryParam("eventTypes", eventTypes)
-            .build()
-            .encode()
-            .toUri();
-
-        HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
-        ResponseEntity<List<AuditRecord>> auditRecords = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
-        return auditRecords.getBody();
+        int page = 0;
+        List<AuditRecord> auditRecords = new ArrayList<>();
+        List<AuditRecord> auditRecordsPage = getAuditHistoryPaginated(toDate, eventTypes, page++, historyPageSize);
+        auditRecords.addAll(auditRecordsPage);
+        while(auditRecordsPage.size() == historyPageSize) {
+            auditRecordsPage = getAuditHistoryPaginated(toDate, eventTypes, page++, historyPageSize);
+            auditRecords.addAll(auditRecordsPage);
+        }
+        return auditRecords;
     }
 
     public List<AuditRecord> getAuditHistoryPaginated(List<AuditEventType> eventTypes, int page, int size) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
-            .queryParam("eventTypes", eventTypes)
-            .queryParam("page", page)
-            .queryParam("size", size)
-            .build()
-            .encode()
-            .toUri();
+        return getAuditHistoryPaginated(LocalDate.MAX, eventTypes, page, size);
+    }
+
+    private List<AuditRecord> getAuditHistoryPaginated(LocalDate toDate, List<AuditEventType> eventTypes, int page, int size) {
+        URI uri = generateUri(toDate, eventTypes, page, size);
 
         HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
         ResponseEntity<List<AuditRecord>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
         return response.getBody();
     }
 
-    void archiveAudit(ArchiveAuditRequest request) {
+    void archiveAudit(ArchiveAuditRequest request, LocalDate resultDate) {
         HttpEntity<ArchiveAuditRequest> entity = new HttpEntity<>(request, generateRestHeaders());
-        ResponseEntity<ArchiveAuditResponse> response = restTemplate.exchange(auditArchiveEndpoint, POST, entity, new ParameterizedTypeReference<ArchiveAuditResponse>() {});
+        String date = DateTimeFormatter.ISO_DATE.format(resultDate);
+        try {
+            restTemplate.exchange(auditArchiveEndpoint + "/" + date, POST, entity, Void.class);
+        } catch(RestClientException ex) {
+            log.error(String.format("Archive audit request for %s returned error %s", request, ex));
+        }
+    }
+
+    URI generateUri(LocalDate toDate, List<AuditEventType> eventTypes, int page, int size) {
+        return UriComponentsBuilder.fromHttpUrl(auditHistoryEndpoint)
+            .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .queryParam("toDate", toDate)
+            .build()
+            .encode()
+            .toUri();
     }
 
     public List<ArchivedResult> getArchivedResults(LocalDate fromDate, LocalDate toDate) {
