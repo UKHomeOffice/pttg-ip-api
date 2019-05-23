@@ -42,15 +42,9 @@ Note that this API needs collaborating services [pttg-ip-audit] and [pttg-ip-hmr
 
 ## Dependencies
 
-The full suite of components in the whole Income Proving service are:
-* [pttg-ip-fm-ui]
+This service depends upon:
 * [pttg-ip-hmrc]
-* [pttg-ip-hmrc-access-code]
 * [pttg-ip-audit]
-* [pttg-feedback]
-* [pttg-feedback-export]
-* [pttg-postgres]
-* [pttg-ip-stats-ui]
 
 ## Versioning
 
@@ -77,11 +71,5 @@ file for details.
 [LICENCE.md]:                       LICENCE.md
 [GitHub]:                           https://github.com/orgs/UKHomeOffice/teams/pttg
 [Drone]:                            https://drone.acp.homeoffice.gov.uk/UKHomeOffice/pttg-ip-api
-[pttg-ip-fm-ui]:                    https://github.com/UKHomeOffice/pttg-ip-fm-ui
 [pttg-ip-hmrc]:                     https://github.com/UKHomeOffice/pttg-ip-hmrc
-[pttg-ip-hmrc-access-code]:         https://github.com/UKHomeOffice/pttg-ip-hmrc-access-code
 [pttg-ip-audit]:                    https://github.com/UKHomeOffice/pttg-ip-audit
-[pttg-feedback]:                    https://github.com/UKHomeOffice/pttg-feedback
-[pttg-feedback-export]:             https://github.com/UKHomeOffice/pttg-feedback-export
-[pttg-postgres]:                    https://github.com/UKHomeOffice/pttg-postgres
-[pttg-ip-stats-ui]:                 https://github.com/UKHomeOffice/pttg-ip-stats-ui
