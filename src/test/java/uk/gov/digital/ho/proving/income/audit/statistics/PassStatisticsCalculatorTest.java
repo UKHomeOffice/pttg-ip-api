@@ -32,7 +32,7 @@ public class PassStatisticsCalculatorTest {
     public void result_givenFromDate_inResult() {
         LocalDate fromDate = LocalDate.of(2019, 2, 3);
 
-        assertThat(accumulator.result(ANY_AUDIT_RESULTS, ANY_ARCHIVED_RESULTS, fromDate, ANY_DATE).fromDate())
+        assertThat(accumulator.result(ANY_AUDIT_RESULTS, ANY_ARCHIVED_RESULTS, fromDate, ANY_DATE).getFromDate())
             .isEqualTo(fromDate);
     }
 
@@ -40,7 +40,7 @@ public class PassStatisticsCalculatorTest {
     public void result_givenToDate_inResult() {
         LocalDate toDate = LocalDate.of(2019, 3, 4);
 
-        assertThat(accumulator.result(ANY_AUDIT_RESULTS, ANY_ARCHIVED_RESULTS, ANY_DATE, toDate).toDate())
+        assertThat(accumulator.result(ANY_AUDIT_RESULTS, ANY_ARCHIVED_RESULTS, ANY_DATE, toDate).getToDate())
             .isEqualTo(toDate);
     }
 

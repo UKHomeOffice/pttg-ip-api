@@ -49,4 +49,9 @@ public class TaxYear {
 
         return new Year[]{Year.of(startYear), Year.of(endYear)};
     }
+
+    @Override
+    public String toString() {
+        return String.format("%d/%d", startDate.getYear(), endDate.getYear());
+    }
 }

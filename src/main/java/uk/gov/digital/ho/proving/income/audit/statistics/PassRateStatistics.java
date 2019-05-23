@@ -7,9 +7,9 @@ import lombok.experimental.Accessors;
 import java.time.LocalDate;
 
 @Data
-@Accessors(fluent = true)
 @Builder
-class PassRateStatistics {
+// Accessors not fluent because SuperCsv relies on setters following the "getX" format.
+public class PassRateStatistics {
     private final LocalDate fromDate;
     private final LocalDate toDate;
 
