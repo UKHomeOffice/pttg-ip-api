@@ -1,38 +1,56 @@
 Income Proving API
 =
 
-[![Build Status](https://drone.acp.homeoffice.gov.uk/api/badges/UKHomeOffice/pttg-ip-api/status.svg)](https://drone.acp.homeoffice.gov.uk/UKHomeOffice/pttg-ip-api)
-
 [![Docker Repository on Quay](https://quay.io/repository/ukhomeofficedigital/pttg-ip-api/status "Docker Repository on Quay")](https://quay.io/repository/ukhomeofficedigital/pttg-ip-api)
 
-Overview
--
+## Overview
 
-This is the Income Proving API. Interfaces with the HMRC via [pttg-ip-hmrc] to retrieve previous incomes and employments and calculates if a migrant has sufficient income to support further family members migrating to the UK. 
+This is the Income Proving API. The service talks with HMRC via [pttg-ip-hmrc] to retrieve previous incomes and employments and calculates if a migrant has sufficient income to support themselves and any associated dependants during their time in the UK.  
 
-Currently the only client of this service is [pttg-ip-fm-ui] though it is likely future version may be integrated directed with existing UKVI Case-working systems.
+Currently the only client of this service is [pttg-ip-fm-ui].
 
 ## Find Us
 
 * [GitHub]
-* [Quay.io]
 
-### Technical Notes
+## Technical Notes
 
 The API is implemented using Spring Boot and exposes a RESTFul interface.
 
-* /incomeproving/v2/individual/financialstatus
-* /incomeproving/v2/individual/income
+The endpoint is defined in `FinancialStatusResource.java#getFinancialStatus`.
+
+## Building
+
+This service is built using Gradle on [Drone] using [Drone yaml]
 
 ### Infrastructure
 
 This service is packaged as a Docker image and stored on [Quay.io]
 
-This service currently runs in AWS and has an associated [kubernetes configuration]
+This service is deployed by [Drone] onto a Kubernetes cluster running on the ACP platform using its [Kubernetes configuration]
 
-## Building
+## Running Locally
 
-This service is built using Gradle on Drone using [Drone yaml]
+Check out the project and run the command `./gradlew bootRun` which will install gradle locally, download all dependencies, build the project and run it.
+
+The API should then be available on http://localhost:8081/incomeproving/v3/individual/financialstatus, where:
+- port 8081 is defined in `application.properties` with key `server.port`
+- path `/incomeproving/v3/individual/financialstatus` is defined in `FinancialStatusResource.java#getFinancialStatus`
+- the expected request body contains a JSON representation of `FinancialStatusRequest.java`
+
+Note that this API needs collaborating services [pttg-ip-audit] and [pttg-ip-hmrc]. Connection details for these services can be found in `application.properties` with keys `hmrc.service.*` and `pttg.audit.*`, which should include the default ports of the services. 
+
+## Dependencies
+
+The full suite of components in the whole Income Proving service are:
+* [pttg-ip-fm-ui]
+* [pttg-ip-hmrc]
+* [pttg-ip-hmrc-access-code]
+* [pttg-ip-audit]
+* [pttg-feedback]
+* [pttg-feedback-export]
+* [pttg-postgres]
+* [pttg-ip-stats-ui]
 
 ## Versioning
 
@@ -57,4 +75,13 @@ file for details.
 [Drone yaml]:                       .drone.yml
 [tags on this repository]:          https://github.com/UKHomeOffice/pttg-ip-api/tags
 [LICENCE.md]:                       LICENCE.md
-[GitHub]:                           https://github.com/UKHomeOffice/pttg-ip-api
+[GitHub]:                           https://github.com/orgs/UKHomeOffice/teams/pttg
+[Drone]:                            https://drone.acp.homeoffice.gov.uk/UKHomeOffice/pttg-ip-api
+[pttg-ip-fm-ui]:                    https://github.com/UKHomeOffice/pttg-ip-fm-ui
+[pttg-ip-hmrc]:                     https://github.com/UKHomeOffice/pttg-ip-hmrc
+[pttg-ip-hmrc-access-code]:         https://github.com/UKHomeOffice/pttg-ip-hmrc-access-code
+[pttg-ip-audit]:                    https://github.com/UKHomeOffice/pttg-ip-audit
+[pttg-feedback]:                    https://github.com/UKHomeOffice/pttg-feedback
+[pttg-feedback-export]:             https://github.com/UKHomeOffice/pttg-feedback-export
+[pttg-postgres]:                    https://github.com/UKHomeOffice/pttg-postgres
+[pttg-ip-stats-ui]:                 https://github.com/UKHomeOffice/pttg-ip-stats-ui
