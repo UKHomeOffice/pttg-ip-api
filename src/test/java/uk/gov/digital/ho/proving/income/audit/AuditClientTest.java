@@ -53,8 +53,6 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 public class AuditClientTest {
 
     private static TimeZone defaultTimeZone;
-    private static ObjectMapper mapper = new ObjectMapper();
-
     private static final UUID UUID = new UUID(1, 1);
 
     @Mock
@@ -97,7 +95,7 @@ public class AuditClientTest {
             SOME_HISTORY_ENDPOINT,
             SOME_ARCHIVE_ENDPOINT,
             HISTORY_PAGE_SIZE,
-            mapper);
+            mockObjectMapper);
 
         Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
         rootLogger.setLevel(Level.INFO);
