@@ -11,8 +11,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.hmrc.IncomeRecordServiceNotProductionResponseLogger;
 import uk.gov.digital.ho.proving.income.hmrc.IncomeRecordServiceProductionResponseLogger;
@@ -22,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import static java.util.Collections.singletonList;
 
 @EnableWebMvc
 @Configuration
@@ -111,4 +116,14 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     public Clock createClock() {
         return Clock.systemDefaultZone();
     }
+
+    @Bean
+    public ViewResolver contentNegotiatingViewResolver(ContentNegotiationManager manager) {
+        ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
+        viewResolver.setContentNegotiationManager(manager);
+
+        viewResolver.setViewResolvers(singletonList(new CsvViewResolver()));
+        return viewResolver;
+    }
+
 }

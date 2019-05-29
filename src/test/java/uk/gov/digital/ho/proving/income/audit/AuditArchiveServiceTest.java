@@ -48,7 +48,7 @@ public class AuditArchiveServiceTest {
         verify(mockAuditClient).getAuditHistory(auditEndDate, AUDIT_EVENTS_TO_ARCHIVE);
         verify(mockAuditResultConsolidator).auditResultsByCorrelationId(history);
         verify(mockAuditResultConsolidator).consolidatedAuditResultsByNino(resultsByCorrelationId);
-        verify(mockAuditClient).archiveAudit(any(ArchiveAuditRequest.class));
+        verify(mockAuditClient).archiveAudit(any(ArchiveAuditRequest.class), any(LocalDate.class));
     }
 
     private List<AuditResult> getAuditResultsByCorrelationId() {

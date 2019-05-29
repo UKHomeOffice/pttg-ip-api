@@ -2,9 +2,11 @@ package uk.gov.digital.ho.proving.income.audit.statistics;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.proving.income.api.domain.TaxYear;
 import uk.gov.digital.ho.proving.income.audit.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +37,20 @@ public class PassRateStatisticsService {
         this.requestPageSize = requestPageSize;
     }
 
+    public PassRateStatistics generatePassRateStatistics(YearMonth calendarMonth) {
+        return generatePassRateStatistics(calendarMonth.atDay(1), calendarMonth.atEndOfMonth());
+    }
+
+    public PassRateStatistics generatePassRateStatistics(TaxYear taxYear) {
+        return generatePassRateStatistics(taxYear.startDate(), taxYear.endDate());
+    }
+
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         List<AuditRecord> allAuditRecords = getAllAuditRecords();
         List<AuditResultByNino> resultsByNino = consolidateRecords(allAuditRecords);
-        return calculator.result(resultsByNino, fromDate, toDate);
+
+        List<ArchivedResult> archivedResults = auditClient.getArchivedResults(fromDate, toDate);
+        return calculator.result(resultsByNino, archivedResults, fromDate, toDate);
     }
 
     private List<AuditResultByNino> consolidateRecords(List<AuditRecord> allAuditRecords) {
