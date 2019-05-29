@@ -53,6 +53,8 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 public class AuditClientTest {
 
     private static TimeZone defaultTimeZone;
+    private static ObjectMapper mapper = new ObjectMapper();
+
     private static final UUID UUID = new UUID(1, 1);
 
     @Mock
@@ -64,8 +66,7 @@ public class AuditClientTest {
     @Mock
     private Appender<ILoggingEvent> mockAppender;
 
-    @Captor
-    private ArgumentCaptor<HttpEntity> captorHttpEntity;
+    @Captor private ArgumentCaptor<HttpEntity> captorHttpEntity;
     @Captor private ArgumentCaptor<URI> captorUri;
     @Captor private ArgumentCaptor<String> captorUrl;
 
