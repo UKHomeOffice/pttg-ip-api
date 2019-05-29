@@ -5,13 +5,14 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
+import uk.gov.digital.ho.proving.income.application.LogEvent;
 import uk.gov.digital.ho.proving.income.hmrc.domain.Income;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import uk.gov.digital.ho.proving.income.validator.frequencycalculator.Frequency;
@@ -21,19 +22,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_CALCULATE_FREQUENCY;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED;
 import static uk.gov.digital.ho.proving.income.validator.frequencycalculator.Frequency.*;
 import static uk.gov.digital.ho.proving.income.validator.frequencycalculator.FrequencyCalculator.calculate;
 import static uk.gov.digital.ho.proving.income.validator.frequencycalculator.FrequencyCalculator.calculateByPaymentNumbers;
@@ -76,7 +76,7 @@ public class FrequencyCalculatorTest {
     public void shouldLogWhenCalculateByPaymentNumbersCalled() {
         calculateByPaymentNumbers(mock(IncomeRecord.class));
 
-        verifyLogMessage("Calculating frequency by payment numbers");
+        verifyLogMessage("Calculating frequency by payment numbers", INCOME_PROVING_SERVICE_CALCULATE_FREQUENCY);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY");
+        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY");
+        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as UNKNOWN");
+        verifyLogMessage("Frequency calculated by payment numbers as UNKNOWN", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as WEEKLY");
+        verifyLogMessage("Frequency calculated by payment numbers as WEEKLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -131,7 +131,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as FORTNIGHTLY");
+        verifyLogMessage("Frequency calculated by payment numbers as FORTNIGHTLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as FOUR_WEEKLY");
+        verifyLogMessage("Frequency calculated by payment numbers as FOUR_WEEKLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -155,7 +155,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY");
+        verifyLogMessage("Frequency calculated by payment numbers as CALENDAR_MONTHLY", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     @Test
@@ -167,7 +167,7 @@ public class FrequencyCalculatorTest {
 
         calculateByPaymentNumbers(incomeRecord);
 
-        verifyLogMessage("Frequency calculated by payment numbers as UNKNOWN");
+        verifyLogMessage("Frequency calculated by payment numbers as UNKNOWN", INCOME_PROVING_SERVICE_FREQUENCY_CALCULATED);
     }
 
     /*
@@ -503,25 +503,12 @@ public class FrequencyCalculatorTest {
         return new Random().nextInt(max - min + 1) + min;
     }
 
-    private void createConsecutiveDuplicates(List<Income> list) {
-        list.add(3, list.get(3));
-    }
-
-    private void createNonConsecutiveDuplicates(List<Income> list) {
-        list.add(0, list.get(4));
-    }
-
-    private void verifyLogMessage(final String message) {
-        ArgumentCaptor<ILoggingEvent> captor = ArgumentCaptor.forClass(ILoggingEvent.class);
-        verify(mockAppender, times(2)).doAppend(captor.capture());
-
-        List<ILoggingEvent> loggingEvents = captor.getAllValues();
-        for (ILoggingEvent loggingEvent : loggingEvents) {
-            LoggingEvent logEvent = (LoggingEvent) loggingEvent;
-            if (logEvent.getMessage().equals(message) && logEvent.getLevel().equals(Level.INFO)) {
-                return;
-            }
-        }
-        fail(String.format("Failed to find log with message=\"%s\" and level=INFO", message));
+    private void verifyLogMessage(final String message, LogEvent event) {
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+            return loggingEvent.getLevel().equals(INFO) &&
+                loggingEvent.getFormattedMessage().equals(message) &&
+                Arrays.asList(loggingEvent.getArgumentArray()).contains(new ObjectAppendingMarker("event_id", event));
+        }));
     }
 }

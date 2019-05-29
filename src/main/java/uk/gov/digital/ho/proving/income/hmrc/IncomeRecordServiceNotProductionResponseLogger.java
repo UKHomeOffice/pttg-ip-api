@@ -27,7 +27,7 @@ public class IncomeRecordServiceNotProductionResponseLogger implements ServiceRe
         }
     }
 
-    public Map<String, Object> produceLogEntry(Identity identity, IncomeRecord incomeRecord) {
+    Map<String, Object> produceLogEntry(Identity identity, IncomeRecord incomeRecord) {
         Map<String, Object> logEntry = new LinkedHashMap<>();
 
         logEntry.put("identity", identity);

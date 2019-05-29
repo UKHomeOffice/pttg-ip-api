@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.proving.income.hmrc;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.when;
 public class HmrcClientNotProductionResponseLoggerTest {
 
     @Mock private ObjectMapper mockMapper;
-    @Mock private Appender mockAppender;
+    @Mock private Appender<ILoggingEvent> mockAppender;
 
     @InjectMocks private IncomeRecordServiceNotProductionResponseLogger incomeRecordServiceNotProductionResponseLogger;
 
@@ -45,6 +46,7 @@ public class HmrcClientNotProductionResponseLoggerTest {
     @Before
     public void setup() {
         ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(IncomeRecordServiceNotProductionResponseLogger.class);
+        logger.setLevel(Level.INFO);
         logger.addAppender(mockAppender);
 
         stubIncomeRecord = new IncomeRecord(emptyList(), emptyList(), emptyList(), aIndividual());

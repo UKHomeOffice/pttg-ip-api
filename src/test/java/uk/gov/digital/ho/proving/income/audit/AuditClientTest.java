@@ -1,9 +1,14 @@
 package uk.gov.digital.ho.proving.income.audit;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
 import com.fasterxml.jackson.databind.JsonNode;
+import ch.qos.logback.core.Appender;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -13,6 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
+import uk.gov.digital.ho.proving.income.application.LogEvent;
 import utils.LogCapturer;
 
 import java.io.IOException;
@@ -29,6 +36,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static ch.qos.logback.classic.Level.ERROR;
+import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +45,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.digital.ho.proving.income.application.LogEvent.*;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
@@ -43,10 +53,16 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 public class AuditClientTest {
 
     private static TimeZone defaultTimeZone;
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final UUID UUID = new UUID(1, 1);
 
-    @Mock private RestTemplate mockRestTemplate;
-    @Mock private RequestData mockRequestData;
+    @Mock
+    private static ObjectMapper mockObjectMapper;
+    @Mock
+    private RestTemplate mockRestTemplate;
+    @Mock
+    private RequestData mockRequestData;
+    @Mock
+    private Appender<ILoggingEvent> mockAppender;
 
     @Captor private ArgumentCaptor<HttpEntity> captorHttpEntity;
     @Captor private ArgumentCaptor<URI> captorUri;
@@ -73,18 +89,22 @@ public class AuditClientTest {
     @Before
     public void setup() {
         auditClient = new AuditClient(Clock.fixed(Instant.parse("2017-08-29T08:00:00Z"), ZoneId.of("UTC")),
-                                        mockRestTemplate,
-                                        mockRequestData,
-                                        SOME_ENDPOINT,
-                                        SOME_HISTORY_ENDPOINT,
-                                        SOME_ARCHIVE_ENDPOINT,
+            mockRestTemplate,
+            mockRequestData,
+            SOME_ENDPOINT,
+            SOME_HISTORY_ENDPOINT,
+            SOME_ARCHIVE_ENDPOINT,
             HISTORY_PAGE_SIZE,
-                                        mapper);
+            mockObjectMapper);
+
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
+        rootLogger.setLevel(Level.INFO);
+        rootLogger.addAppender(mockAppender);
     }
 
     @Test
     public void shouldUseCollaborators() {
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), null);
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, null);
 
         verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class));
     }
@@ -94,7 +114,7 @@ public class AuditClientTest {
 
         when(mockRequestData.auditBasicAuth()).thenReturn("some basic auth header value");
         when(mockRequestData.correlationId()).thenReturn("some correlation id");
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), null);
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, null);
 
         verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class));
 
@@ -105,15 +125,16 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldSetAuditableData() {
+    public void shouldSetAuditableData() throws JsonProcessingException {
 
         when(mockRequestData.sessionId()).thenReturn("some session id");
         when(mockRequestData.correlationId()).thenReturn("some correlation id");
         when(mockRequestData.userId()).thenReturn("some user id");
         when(mockRequestData.deploymentName()).thenReturn("some deployment name");
         when(mockRequestData.deploymentNamespace()).thenReturn("some deployment namespace");
+        when(mockObjectMapper.writeValueAsString(any(Object.class))).thenReturn("{}");
 
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID.randomUUID(), Collections.emptyMap());
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
 
         verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class));
 
@@ -318,6 +339,38 @@ public class AuditClientTest {
         assertThat(errorMessage).contains("corr2");
         assertThat(errorMessage).contains("PASS");
         assertThat(errorMessage).contains("exception text");
+    }
+
+    @Test
+    public void shouldLogWhenAddToAuditServiceEvent() {
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
+
+        verifyLogMessage("POST data for 00000000-0000-0001-0000-000000000001 to audit service", INCOME_PROVING_AUDIT_REQUEST, INFO);
+    }
+
+    @Test
+    public void shouldLogAfterSuccessfulAuditServiceCall() {
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
+
+        verifyLogMessage("data POSTed to audit service", INCOME_PROVING_AUDIT_SUCCESS, INFO);
+    }
+
+    @Test
+    public void shouldLogAfterFailureToAudit() throws JsonProcessingException {
+        when(mockObjectMapper.writeValueAsString(any(Object.class))).thenThrow(JsonProcessingException.class);
+
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
+
+        verifyLogMessage("Failed to create json representation of audit data", INCOME_PROVING_AUDIT_FAILURE, ERROR);
+    }
+
+    private void verifyLogMessage(final String message, LogEvent event, Level logLevel) {
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+            return loggingEvent.getLevel().equals(logLevel) &&
+                loggingEvent.getFormattedMessage().equals(message) &&
+                Arrays.asList(loggingEvent.getArgumentArray()).contains(new ObjectAppendingMarker("event_id", event));
+        }));
     }
 
     @Test
