@@ -63,6 +63,7 @@ pipeline:
     secrets:
       - pttg_ip_dev
     commands:
+      - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
       branch: [master, EE-19191-archive-timeout]
