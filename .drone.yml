@@ -48,6 +48,8 @@ pipeline:
     image: plugins/git
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+      - cd kube-pttg-ip-api
+      - git checkout EE-19191-archive-timeout
     when:
       event: [push, tag, deployment]
 
@@ -61,8 +63,6 @@ pipeline:
     secrets:
       - pttg_ip_dev
     commands:
-      - cd kube-pttg-ip-api
-      - git checkout EE-19191-archive-timeout
       - ./deploy.sh
     when:
       branch: [master, EE-19191-archive-timeout]
