@@ -14,7 +14,7 @@ pipeline:
     commands:
       - docker build -t pttg-ip-api .
     when:
-      branch: [master, refs/tags/*]
+      branch: [master, refs/tags/*, EE-19191-archive-timeout]
       event: [push, tag]
 
   install-docker-image:
@@ -28,7 +28,7 @@ pipeline:
       - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
     when:
-      branch: [master]
+      branch: [master, EE-19191-archive-timeout]
       event: push
 
   tag-docker-image-with-git-tag:
@@ -62,9 +62,10 @@ pipeline:
       - pttg_ip_dev
     commands:
       - cd kube-pttg-ip-api
+      - git checkout EE-19191-archive-timeout
       - ./deploy.sh
     when:
-      branch: [master]
+      branch: [master, EE-19191-archive-timeout]
       event: [push, tag]
 
   deployment:

@@ -27,6 +27,13 @@ public class ArchiveResource {
     public void archive() {
         log.info("Request received on /archive");
 
+        // TODO Remove this - it's just for a test
+        try {
+            Thread.sleep(61000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         auditArchiveService.archiveAudit();
 
         log.info("OK response returned for /archive",
