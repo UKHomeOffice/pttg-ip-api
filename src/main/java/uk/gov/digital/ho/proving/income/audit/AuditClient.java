@@ -53,7 +53,7 @@ public class AuditClient {
                 RequestData requestData,
                 @Value("${pttg.audit.endpoint}") String auditEndpoint,
                 @Value("${audit.history.endpoint}") String auditHistoryEndpoint,
-                @Value("${audit.history.correlationids.endpoint") String correlationIdsEndpoint,
+                @Value("${audit.history.correlationids.endpoint}") String correlationIdsEndpoint,
                 @Value("${audit.archive.endpoint}") String auditArchiveEndpoint,
                 @Value("${audit.archive.history.pagesize}") int historyPagesize,
                 ObjectMapper mapper) {
