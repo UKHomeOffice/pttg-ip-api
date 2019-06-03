@@ -521,9 +521,7 @@ public class AuditClientTest {
 
     @Test
     public void getHistoryByCorrelationId_anyRequest_expectedUriCalled() {
-        List<AuditRecord> anyAuditRecords = singletonList(new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino"));
-        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
-            .thenReturn(ResponseEntity.ok(anyAuditRecords));
+        stubGetHistoryForCorrelationId();
 
         List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
         auditClient.getHistoryByCorrelationId("any correlation id", anyEventTypes);
@@ -534,9 +532,7 @@ public class AuditClientTest {
 
     @Test
     public void getHistoryByCorrelationId_givenParameters_expectedQueryString() {
-        List<AuditRecord> anyAuditRecords = singletonList(new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino"));
-        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
-            .thenReturn(ResponseEntity.ok(anyAuditRecords));
+        stubGetHistoryForCorrelationId();
 
         List<AuditEventType> someEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
         String someCorrelationId = "some-correlation-id";
@@ -551,12 +547,9 @@ public class AuditClientTest {
     @Test
     public void getHistoryByCorrelationId_anyRequest_shouldSetHeaders() {
         stubRequestData();
+        stubGetHistoryForCorrelationId();
+
         List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        List<AuditRecord> anyAuditRecords = singletonList(new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino"));
-
-        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
-            .thenReturn(ResponseEntity.ok(anyAuditRecords));
-
         auditClient.getHistoryByCorrelationId("any correlation ID", anyEventTypes);
 
         verify(mockRestTemplate).exchange(any(URI.class), eq(GET), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}));
@@ -565,12 +558,13 @@ public class AuditClientTest {
         assertHeaders(headers);
     }
 
-
     @Test
     public void getHistoryByCorrelationId_givenResponse_returnAuditRecords() {
         List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
 
-        List<AuditRecord> expectedAuditRecords = singletonList(new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino"));
+        AuditRecord someAuditRecord = new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino");
+        List<AuditRecord> expectedAuditRecords = singletonList(someAuditRecord);
+        
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
             .thenReturn(ResponseEntity.ok(expectedAuditRecords));
 
@@ -598,6 +592,12 @@ public class AuditClientTest {
     private void stubGetAllCorrelationIds(List<String> correlationIds) {
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<String>>() {})))
             .thenReturn(ResponseEntity.ok(correlationIds));
+    }
+
+    private void stubGetHistoryForCorrelationId() {
+        AuditRecord anyAuditRecord = new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino");
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .thenReturn(ResponseEntity.ok(singletonList(anyAuditRecord)));
     }
 
     private List<AuditRecord> getAuditRecords(int quantity) throws IOException {
