@@ -113,17 +113,13 @@ public class AuditClientTest {
 
     @Test
     public void shouldSetHeaders() {
-
-        when(mockRequestData.auditBasicAuth()).thenReturn("some basic auth header value");
-        when(mockRequestData.correlationId()).thenReturn("some correlation id");
+        stubRequestData();
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, null);
 
         verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class));
 
         HttpHeaders headers = captorHttpEntity.getValue().getHeaders();
-        assertThat(headers.get("Authorization").get(0)).isEqualTo("some basic auth header value");
-        assertThat(headers.get("Content-Type").get(0)).isEqualTo(APPLICATION_JSON_VALUE);
-        assertThat(headers.get("x-correlation-id").get(0)).isEqualTo("some correlation id");
+        assertHeaders(headers);
     }
 
     @Test
@@ -477,8 +473,7 @@ public class AuditClientTest {
     public void getAllCorrelationIdsForEventType_anyRequest_expectedUrlCalled() {
         List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
 
-        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<String>>() {})))
-            .thenReturn(ResponseEntity.ok(asList("some correlation id", "some other correlation id")));
+        stubGetAllCorrelationIds(asList("any correlation id", "any other correlation id"));
 
         auditClient.getAllCorrelationIdsForEventType(anyEventTypes);
         assertThat(captorUri.getValue())
@@ -489,8 +484,7 @@ public class AuditClientTest {
     public void getAllCorrelationIdsForEventType_givenEventTypes_queryParametersCorrect() {
         List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
 
-        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<String>>() {})))
-            .thenReturn(ResponseEntity.ok(asList("some correlation id", "some other correlation id")));
+        stubGetAllCorrelationIds(asList("any correlation id", "any other correlation id"));
 
         auditClient.getAllCorrelationIdsForEventType(eventTypes);
 
@@ -501,28 +495,21 @@ public class AuditClientTest {
     @Test
     public void getAllCorrelationIdsForEventType_anyRequest_shouldSetHeaders() {
         List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        when(mockRequestData.auditBasicAuth()).thenReturn("some basic auth header value");
-        when(mockRequestData.correlationId()).thenReturn("some correlation id");
-        when(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<String>>() {})))
-            .thenReturn(ResponseEntity.ok(asList("some correlation id", "some other correlation id")));
+        stubRequestData();
+        stubGetAllCorrelationIds(asList("any correlation id", "any other correlation id"));
 
         auditClient.getAllCorrelationIdsForEventType(anyEventTypes);
 
         verify(mockRestTemplate).exchange(any(URI.class), eq(GET), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<String>>() {}));
 
         HttpHeaders headers = captorHttpEntity.getValue().getHeaders();
-        assertThat(headers.get("Authorization").get(0)).isEqualTo("some basic auth header value");
-        assertThat(headers.get("Content-Type").get(0)).isEqualTo(APPLICATION_JSON_VALUE);
-        assertThat(headers.get("x-correlation-id").get(0)).isEqualTo("some correlation id");
+        assertHeaders(headers);
     }
 
     @Test
     public void getAllCorrelationIdsForEventType_givenResponse_returnCorrelationIds() {
         List<String> expectedCorrelationIds = asList("some correlation id", "some other correlation id");
-        ResponseEntity<List<String>> mockResponse = ResponseEntity.ok(expectedCorrelationIds);
-
-        when(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<String>>() {})))
-            .thenReturn(mockResponse);
+        stubGetAllCorrelationIds(expectedCorrelationIds);
 
         List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
         List<String> actualCorrelationIds = auditClient.getAllCorrelationIdsForEventType(anyEventTypes);
@@ -530,10 +517,26 @@ public class AuditClientTest {
         assertThat(actualCorrelationIds).isEqualTo(expectedCorrelationIds);
     }
 
+    private void assertHeaders(HttpHeaders headers) {
+        assertThat(headers.get("Authorization").get(0)).isEqualTo("some basic auth header value");
+        assertThat(headers.get("Content-Type").get(0)).isEqualTo(APPLICATION_JSON_VALUE);
+        assertThat(headers.get("x-correlation-id").get(0)).isEqualTo("some correlation id");
+    }
+
+    private void stubRequestData() {
+        when(mockRequestData.auditBasicAuth()).thenReturn("some basic auth header value");
+        when(mockRequestData.correlationId()).thenReturn("some correlation id");
+    }
+
     private void stubResponse(List<AuditRecord> results) {
         ResponseEntity<List<AuditRecord>> response = ResponseEntity.ok(results);
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
             .thenReturn(response);
+    }
+
+    private void stubGetAllCorrelationIds(List<String> correlationIds) {
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<String>>() {})))
+            .thenReturn(ResponseEntity.ok(correlationIds));
     }
 
     private List<AuditRecord> getAuditRecords(int quantity) throws IOException {
