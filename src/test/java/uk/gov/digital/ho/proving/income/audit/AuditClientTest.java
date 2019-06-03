@@ -563,10 +563,9 @@ public class AuditClientTest {
         List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
 
         AuditRecord someAuditRecord = new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino");
+        stubGetHistoryForCorrelationId(someAuditRecord);
+
         List<AuditRecord> expectedAuditRecords = singletonList(someAuditRecord);
-        
-        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
-            .thenReturn(ResponseEntity.ok(expectedAuditRecords));
 
         List<AuditRecord> actualAuditRecords = auditClient.getHistoryByCorrelationId("any correlation ID", anyEventTypes);
         assertThat(actualAuditRecords).isEqualTo(expectedAuditRecords);
@@ -596,6 +595,10 @@ public class AuditClientTest {
 
     private void stubGetHistoryForCorrelationId() {
         AuditRecord anyAuditRecord = new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino");
+        stubGetHistoryForCorrelationId(anyAuditRecord);
+    }
+
+    private void stubGetHistoryForCorrelationId(AuditRecord anyAuditRecord) {
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
             .thenReturn(ResponseEntity.ok(singletonList(anyAuditRecord)));
     }
