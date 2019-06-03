@@ -74,6 +74,7 @@ public class AuditClientTest {
     private static final String SOME_HISTORY_ENDPOINT = "http://some-history-endpoint";
     private static final String SOME_ARCHIVE_ENDPOINT = "http://some-archive-endpoint";
     private static final String SOME_CORRELATION_IDS_ENDPOINT = "http://some-correlation-ids-endpoint";
+    private static final String SOME_HISTORY_BY_CORRELATION_ID_ENDPOINT = "http://some-history-by-correlation-id-endpoint";
     private static final int HISTORY_PAGE_SIZE = 2;
 
     @BeforeClass
@@ -95,6 +96,7 @@ public class AuditClientTest {
                                       SOME_ENDPOINT,
                                       SOME_HISTORY_ENDPOINT,
                                       SOME_CORRELATION_IDS_ENDPOINT,
+                                      SOME_HISTORY_BY_CORRELATION_ID_ENDPOINT,
                                       SOME_ARCHIVE_ENDPOINT,
                                       HISTORY_PAGE_SIZE,
                                       mockObjectMapper);
@@ -515,6 +517,65 @@ public class AuditClientTest {
         List<String> actualCorrelationIds = auditClient.getAllCorrelationIdsForEventType(anyEventTypes);
 
         assertThat(actualCorrelationIds).isEqualTo(expectedCorrelationIds);
+    }
+
+    @Test
+    public void getHistoryByCorrelationId_anyRequest_expectedUriCalled() {
+        List<AuditRecord> anyAuditRecords = singletonList(new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino"));
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .thenReturn(ResponseEntity.ok(anyAuditRecords));
+
+        List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        auditClient.getHistoryByCorrelationId("any correlation id", anyEventTypes);
+
+        assertThat(captorUri.getValue())
+            .hasHost(SOME_HISTORY_BY_CORRELATION_ID_ENDPOINT.replace("http://", ""));
+    }
+
+    @Test
+    public void getHistoryByCorrelationId_givenParameters_expectedQueryString() {
+        List<AuditRecord> anyAuditRecords = singletonList(new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino"));
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .thenReturn(ResponseEntity.ok(anyAuditRecords));
+
+        List<AuditEventType> someEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        String someCorrelationId = "some-correlation-id";
+        auditClient.getHistoryByCorrelationId(someCorrelationId, someEventTypes);
+
+        String[] queryParams = captorUri.getValue().getQuery().split("&");
+        assertThat(queryParams)
+            .containsExactlyInAnyOrder("correlationId=some-correlation-id", "eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST",
+                                       "eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE");
+    }
+
+    @Test
+    public void getHistoryByCorrelationId_anyRequest_shouldSetHeaders() {
+        stubRequestData();
+        List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        List<AuditRecord> anyAuditRecords = singletonList(new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino"));
+
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .thenReturn(ResponseEntity.ok(anyAuditRecords));
+
+        auditClient.getHistoryByCorrelationId("any correlation ID", anyEventTypes);
+
+        verify(mockRestTemplate).exchange(any(URI.class), eq(GET), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}));
+
+        HttpHeaders headers = captorHttpEntity.getValue().getHeaders();
+        assertHeaders(headers);
+    }
+
+
+    @Test
+    public void getHistoryByCorrelationId_givenResponse_returnAuditRecords() {
+        List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+
+        List<AuditRecord> expectedAuditRecords = singletonList(new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino"));
+        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .thenReturn(ResponseEntity.ok(expectedAuditRecords));
+
+        List<AuditRecord> actualAuditRecords = auditClient.getHistoryByCorrelationId("any correlation ID", anyEventTypes);
+        assertThat(actualAuditRecords).isEqualTo(expectedAuditRecords);
     }
 
     private void assertHeaders(HttpHeaders headers) {

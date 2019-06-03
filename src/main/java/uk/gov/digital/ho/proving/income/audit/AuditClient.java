@@ -43,6 +43,7 @@ public class AuditClient {
     private final String auditEndpoint;
     private final String auditHistoryEndpoint;
     private final String correlationIdsEndpoint;
+    private final String historyByCorrelationIdEndpoint;
     private final String auditArchiveEndpoint;
     private final RequestData requestData;
     private final ObjectMapper mapper;
@@ -54,6 +55,7 @@ public class AuditClient {
                 @Value("${pttg.audit.endpoint}") String auditEndpoint,
                 @Value("${audit.history.endpoint}") String auditHistoryEndpoint,
                 @Value("${audit.history.correlationids.endpoint}") String correlationIdsEndpoint,
+                @Value("${audit.history.bycorrelationid.endpoint}") String historyByCorrelationIdEndpoint,
                 @Value("${audit.archive.endpoint}") String auditArchiveEndpoint,
                 @Value("${audit.archive.history.pagesize}") int historyPagesize,
                 ObjectMapper mapper) {
@@ -63,6 +65,7 @@ public class AuditClient {
         this.auditEndpoint = auditEndpoint;
         this.auditHistoryEndpoint = auditHistoryEndpoint;
         this.correlationIdsEndpoint = correlationIdsEndpoint;
+        this.historyByCorrelationIdEndpoint = historyByCorrelationIdEndpoint;
         this.auditArchiveEndpoint = auditArchiveEndpoint;
         this.historyPageSize = historyPagesize;
         this.mapper = mapper;
@@ -129,13 +132,29 @@ public class AuditClient {
 
     public List<String> getAllCorrelationIdsForEventType(List<AuditEventType> eventTypes) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(generateRestHeaders());
-        URI uri = generateUri(eventTypes);
+        URI uri = generateCorrelationIdsUri(eventTypes);
         ResponseEntity<List<String>> response = restTemplate.exchange(uri, GET, requestEntity, new ParameterizedTypeReference<List<String>>() {});
         return response.getBody();
     }
 
-    private URI generateUri(List<AuditEventType> eventTypes) {
+    public List<AuditRecord> getHistoryByCorrelationId(String correlationId, List<AuditEventType> eventTypes) {
+        HttpEntity<Void> requestEntity = new HttpEntity<>(generateRestHeaders());
+        URI uri = generateHistoryByCorrelationIdUri(correlationId, eventTypes);
+        ResponseEntity<List<AuditRecord>> response = restTemplate.exchange(uri, GET, requestEntity, new ParameterizedTypeReference<List<AuditRecord>>() {});
+        return response.getBody();
+    }
+
+    private URI generateCorrelationIdsUri(List<AuditEventType> eventTypes) {
         return UriComponentsBuilder.fromHttpUrl(correlationIdsEndpoint)
+                                   .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
+                                   .build()
+                                   .encode()
+                                   .toUri();
+    }
+
+    private URI generateHistoryByCorrelationIdUri(String correlationId, List<AuditEventType> eventTypes) {
+        return UriComponentsBuilder.fromHttpUrl(historyByCorrelationIdEndpoint)
+                                   .queryParam("correlationId", correlationId)
                                    .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
                                    .build()
                                    .encode()
