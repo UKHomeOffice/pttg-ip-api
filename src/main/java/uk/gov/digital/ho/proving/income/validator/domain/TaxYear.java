@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 @Getter
 @Accessors(fluent = true)
 @EqualsAndHashCode
-public class TaxYear {
+public final class TaxYear {
     private static final Pattern TAX_YEAR_PATTERN = Pattern.compile("^\\d{4}\\s*?-\\d{2,4}$");
 
     private static final MonthDay TAX_YEAR_START_MONTH_DAY = MonthDay.of(Month.APRIL, 6);
