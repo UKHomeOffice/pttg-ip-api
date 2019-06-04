@@ -57,7 +57,7 @@ public class FinancialStatusResource {
         validateApplicationRaisedDate(request.applicationRaisedDate());
 
         LocalDate startSearchDate = request.applicationRaisedDate().minusDays(NUMBER_OF_DAYS_INCOME);
-        LinkedHashMap<Individual, IncomeRecord> incomeRecords = financialStatusService.getIncomeRecords(applicants, startSearchDate, request.applicationRaisedDate());
+        Map<Individual, IncomeRecord> incomeRecords = financialStatusService.getIncomeRecords(applicants, startSearchDate, request.applicationRaisedDate());
 
 
         FinancialStatusCheckResponse response = financialStatusService.calculateResponse(request.applicationRaisedDate(), request.dependants(), incomeRecords);

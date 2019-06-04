@@ -25,6 +25,7 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
     private static final String CATEGORY = "A";
 
     @Override
+    @SuppressWarnings("StrictDuplicateCode") // Looks very like CatASalariedWeeklyIncomeValidator but there's no obvious way of consolidating them.
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
 
         ApplicantIncome applicantIncome = incomeValidationRequest.applicantIncome();

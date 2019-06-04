@@ -13,10 +13,7 @@ import uk.gov.digital.ho.proving.income.validator.IncomeValidationService;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class FinancialStatusService {
@@ -29,8 +26,10 @@ public class FinancialStatusService {
         this.incomeValidationService = incomeValidationService;
     }
 
-    LinkedHashMap<Individual, IncomeRecord> getIncomeRecords(List<Applicant> applicants, LocalDate startSearchDate, LocalDate applicationRaisedDate) {
-        LinkedHashMap<Individual, IncomeRecord> incomeRecords = new LinkedHashMap<>();
+    Map<Individual, IncomeRecord> getIncomeRecords(List<Applicant> applicants, LocalDate startSearchDate, LocalDate applicationRaisedDate) {
+        // The IPS UI relies on the first individual in the response being the applicant and the second the partner. This is why we must
+        // use a LinkedHashMap to ensure the order.
+        Map<Individual, IncomeRecord> incomeRecords = new LinkedHashMap<>();
 
         for (Applicant applicant : applicants) {
 
@@ -45,7 +44,7 @@ public class FinancialStatusService {
         return incomeRecords;
     }
 
-    FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, LinkedHashMap<Individual, IncomeRecord> incomeRecords) {
+    FinancialStatusCheckResponse calculateResponse(LocalDate applicationRaisedDate, Integer dependants, Map<Individual, IncomeRecord> incomeRecords) {
 
         List<Individual> individuals = new LinkedList<>(incomeRecords.keySet());
 
