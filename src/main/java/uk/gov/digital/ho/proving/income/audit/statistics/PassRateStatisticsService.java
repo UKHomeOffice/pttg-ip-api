@@ -46,8 +46,13 @@ public class PassRateStatisticsService {
     }
 
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
-        List<AuditRecord> allAuditRecords = getAllAuditRecords();
-        List<AuditResultByNino> resultsByNino = consolidateRecords(allAuditRecords);
+        List<String> allCorrelationIds = auditClient.getAllCorrelationIdsForEventType(AUDIT_EVENTS_TO_RETRIEVE);
+
+        List<AuditResultByNino> resultsByNino = new ArrayList<>();
+        for (String correlationId : allCorrelationIds) {
+            List<AuditRecord> auditRecordsForCorrelationId = auditClient.getHistoryByCorrelationId(correlationId, AUDIT_EVENTS_TO_RETRIEVE);
+            resultsByNino.addAll(consolidateRecords(auditRecordsForCorrelationId));
+        }
 
         List<ArchivedResult> archivedResults = auditClient.getArchivedResults(fromDate, toDate);
         return calculator.result(resultsByNino, archivedResults, fromDate, toDate);
