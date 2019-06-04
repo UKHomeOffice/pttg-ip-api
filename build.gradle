@@ -51,6 +51,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.asciidoctor.convert'
 apply plugin: 'project-report'
+apply plugin: 'checkstyle'
 
 group 'pttg-ip-api'
 version = '0.1.0'
@@ -239,4 +240,10 @@ task('buildWithApiDocs', type: Jar, dependsOn: ['generateApiDocs', 'build']) {
 task buildSpringBootWithApiDocs(type: BootRepackage, dependsOn: buildWithApiDocs) {
     group 'build'
     description 'Builds the jar as a Spring Boot executable jar containing the api docs'
+}
+
+checkstyleTest.enabled = false
+checkstyle {
+    toolVersion = "5.9"
+    ignoreFailures = false
 }
