@@ -96,6 +96,8 @@ public class AuditClientTest {
         endpointProperties.setHistoryEndpoint(SOME_HISTORY_ENDPOINT);
         endpointProperties.setArchiveEndpoint(SOME_ARCHIVE_ENDPOINT);
         endpointProperties.setArchiveHistoryPageSize(HISTORY_PAGE_SIZE);
+        endpointProperties.setCorrelationIdsEndpoint(SOME_CORRELATION_IDS_ENDPOINT);
+        endpointProperties.setHistoryByCorrelationIdEndpoint(SOME_HISTORY_BY_CORRELATION_ID_ENDPOINT);
 
         auditClient = new AuditClient(Clock.fixed(Instant.parse("2017-08-29T08:00:00Z"), ZoneId.of("UTC")),
             mockRestTemplate,

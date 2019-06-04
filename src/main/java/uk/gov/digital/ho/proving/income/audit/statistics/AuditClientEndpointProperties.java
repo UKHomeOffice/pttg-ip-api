@@ -17,6 +17,8 @@ public class AuditClientEndpointProperties {
     private String auditEndpoint;
     private String historyEndpoint;
     private String archiveEndpoint;
+    private String correlationIdsEndpoint;
+    private String historyByCorrelationIdEndpoint;
     private int archiveHistoryPageSize;
 }
 

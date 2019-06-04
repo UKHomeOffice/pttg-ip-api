@@ -59,8 +59,8 @@ public class AuditClient {
         this.requestData = requestData;
         this.auditEndpoint = endpointProperties.getAuditEndpoint();
         this.auditHistoryEndpoint = endpointProperties.getHistoryEndpoint();
-        this.correlationIdsEndpoint = correlationIdsEndpoint;
-        this.historyByCorrelationIdEndpoint = historyByCorrelationIdEndpoint;
+        this.correlationIdsEndpoint = endpointProperties.getCorrelationIdsEndpoint();
+        this.historyByCorrelationIdEndpoint = endpointProperties.getHistoryByCorrelationIdEndpoint();
         this.auditArchiveEndpoint = endpointProperties.getArchiveEndpoint();
         this.historyPageSize = endpointProperties.getArchiveHistoryPageSize();
         this.mapper = mapper;

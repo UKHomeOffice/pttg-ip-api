@@ -18,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     "pttg.audit.audit-endpoint=${pttg.audit.url}/audit",
     "pttg.audit.history-endpoint=${pttg.audit.url}/history",
     "pttg.audit.archive-endpoint=${pttg.audit.url}/archive",
+    "pttg.audit.correlation-ids-endpoint=${pttg.audit.url}/correlationIds",
+    "pttg.audit.history-by-correlation-id-endpoint=${pttg.audit.url}/historyByCorrelationId",
     "pttg.audit.archive-history-page-size=1000"
 })
 public class AuditClientEndpointPropertiesTest {
@@ -34,6 +36,8 @@ public class AuditClientEndpointPropertiesTest {
         assertThat(auditClientEndpointProperties.getAuditEndpoint()).isEqualTo("http://somehost:8000/audit");
         assertThat(auditClientEndpointProperties.getHistoryEndpoint()).isEqualTo("http://somehost:8000/history");
         assertThat(auditClientEndpointProperties.getArchiveEndpoint()).isEqualTo("http://somehost:8000/archive");
+        assertThat(auditClientEndpointProperties.getCorrelationIdsEndpoint()).isEqualTo("http://somehost:8000/correlationIds");
+        assertThat(auditClientEndpointProperties.getHistoryByCorrelationIdEndpoint()).isEqualTo("http://somehost:8000/historyByCorrelationId");
         assertThat(auditClientEndpointProperties.getArchiveHistoryPageSize()).isEqualTo(1000);
     }
 }
