@@ -3,7 +3,6 @@ package uk.gov.digital.ho.proving.income.audit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +15,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.digital.ho.proving.income.api.RequestData;
+import uk.gov.digital.ho.proving.income.audit.statistics.AuditClientEndpointProperties;
 
 import java.net.URI;
 import java.time.Clock;
@@ -50,18 +50,15 @@ public class AuditClient {
     AuditClient(Clock clock,
                 RestTemplate restTemplate,
                 RequestData requestData,
-                @Value("${pttg.audit.endpoint}") String auditEndpoint,
-                       @Value("${audit.history.endpoint}") String auditHistoryEndpoint,
-                       @Value("${audit.archive.endpoint}") String auditArchiveEndpoint,
-                       @Value("${audit.archive.history.pagesize}") int historyPagesize,
-                       ObjectMapper mapper) {
+                AuditClientEndpointProperties endpointProperties,
+                ObjectMapper mapper) {
         this.clock = clock;
         this.restTemplate = restTemplate;
         this.requestData = requestData;
-        this.auditEndpoint = auditEndpoint;
-        this.auditHistoryEndpoint = auditHistoryEndpoint;
-        this.auditArchiveEndpoint = auditArchiveEndpoint;
-        this.historyPageSize = historyPagesize;
+        this.auditEndpoint = endpointProperties.getAuditEndpoint();
+        this.auditHistoryEndpoint = endpointProperties.getHistoryEndpoint();
+        this.auditArchiveEndpoint = endpointProperties.getArchiveEndpoint();
+        this.historyPageSize = endpointProperties.getArchiveHistoryPageSize();
         this.mapper = mapper;
     }
 

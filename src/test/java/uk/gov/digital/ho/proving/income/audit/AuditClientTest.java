@@ -4,9 +4,9 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
-import com.fasterxml.jackson.databind.JsonNode;
 import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.AfterClass;
@@ -27,6 +27,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.application.LogEvent;
+import uk.gov.digital.ho.proving.income.audit.statistics.AuditClientEndpointProperties;
 import utils.LogCapturer;
 
 import java.io.IOException;
@@ -88,13 +89,16 @@ public class AuditClientTest {
 
     @Before
     public void setup() {
+        AuditClientEndpointProperties endpointProperties = new AuditClientEndpointProperties();
+        endpointProperties.setAuditEndpoint(SOME_ENDPOINT);
+        endpointProperties.setHistoryEndpoint(SOME_HISTORY_ENDPOINT);
+        endpointProperties.setArchiveEndpoint(SOME_ARCHIVE_ENDPOINT);
+        endpointProperties.setArchiveHistoryPageSize(HISTORY_PAGE_SIZE);
+
         auditClient = new AuditClient(Clock.fixed(Instant.parse("2017-08-29T08:00:00Z"), ZoneId.of("UTC")),
             mockRestTemplate,
             mockRequestData,
-            SOME_ENDPOINT,
-            SOME_HISTORY_ENDPOINT,
-            SOME_ARCHIVE_ENDPOINT,
-            HISTORY_PAGE_SIZE,
+            endpointProperties,
             mockObjectMapper);
 
         Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
