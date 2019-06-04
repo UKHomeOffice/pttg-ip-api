@@ -17,7 +17,7 @@ public interface ApplicationExceptions {
     }
 
     class EarningsServiceNoUniqueMatchException extends RuntimeException {
-        private String nino;
+        private final String nino;
         public EarningsServiceNoUniqueMatchException(String nino) {
             this.nino = nino;
         }

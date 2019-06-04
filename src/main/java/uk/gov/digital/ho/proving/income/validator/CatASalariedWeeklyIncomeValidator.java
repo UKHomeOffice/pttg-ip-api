@@ -17,7 +17,7 @@ import static uk.gov.digital.ho.proving.income.validator.IncomeValidationHelper.
 @Service
 public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
-    private final static Integer WEEKS_OF_INCOME = 26;
+    private static final Integer WEEKS_OF_INCOME = 26;
     private static final String CALCULATION_TYPE = "Category A Weekly Salary";
     private static final String CATEGORY = "A";
 

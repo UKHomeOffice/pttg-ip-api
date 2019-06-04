@@ -2,7 +2,6 @@ package uk.gov.digital.ho.proving.income.audit.statistics;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 
