@@ -48,39 +48,23 @@ public class PassRateStatisticsService {
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         List<String> allCorrelationIds = auditClient.getAllCorrelationIdsForEventType(AUDIT_EVENTS_TO_RETRIEVE);
 
-        List<AuditResultByNino> resultsByNino = new ArrayList<>();
-        for (String correlationId : allCorrelationIds) {
-            List<AuditRecord> auditRecordsForCorrelationId = auditClient.getHistoryByCorrelationId(correlationId, AUDIT_EVENTS_TO_RETRIEVE);
-            resultsByNino.addAll(consolidateRecords(auditRecordsForCorrelationId));
-        }
+        List<AuditResultByNino> resultsByNino = getAuditResultByNinos(allCorrelationIds);
 
         List<ArchivedResult> archivedResults = auditClient.getArchivedResults(fromDate, toDate);
         return calculator.result(resultsByNino, archivedResults, fromDate, toDate);
     }
 
+    private List<AuditResultByNino> getAuditResultByNinos(List<String> allCorrelationIds) {
+        List<AuditResultByNino> resultsByNino = new ArrayList<>();
+        for (String correlationId : allCorrelationIds) {
+            List<AuditRecord> auditRecordsForCorrelationId = auditClient.getHistoryByCorrelationId(correlationId, AUDIT_EVENTS_TO_RETRIEVE);
+            resultsByNino.addAll(consolidateRecords(auditRecordsForCorrelationId));
+        }
+        return resultsByNino;
+    }
+
     private List<AuditResultByNino> consolidateRecords(List<AuditRecord> allAuditRecords) {
         List<AuditResult> byCorrelationId = consolidator.auditResultsByCorrelationId(allAuditRecords);
         return consolidator.consolidatedAuditResultsByNino(byCorrelationId);
-    }
-
-    private List<AuditRecord> getAllAuditRecords() {
-        List<AuditRecord> allAuditRecords = new ArrayList<>();
-
-        int page = 0;
-        while (addAuditRecords(allAuditRecords, page)) {
-            page++;
-        }
-        return allAuditRecords;
-    }
-
-    private boolean addAuditRecords(List<AuditRecord> allAuditRecords, int page) {
-        List<AuditRecord> auditRecords = auditClient.getAuditHistoryPaginated(AUDIT_EVENTS_TO_RETRIEVE, page, requestPageSize);
-        allAuditRecords.addAll(auditRecords);
-
-        return isFullPage(auditRecords);
-    }
-
-    private boolean isFullPage(List<AuditRecord> auditRecords) {
-        return auditRecords.size() == requestPageSize;
     }
 }
