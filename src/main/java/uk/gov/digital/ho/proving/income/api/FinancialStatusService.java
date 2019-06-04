@@ -27,6 +27,8 @@ public class FinancialStatusService {
     }
 
     Map<Individual, IncomeRecord> getIncomeRecords(List<Applicant> applicants, LocalDate startSearchDate, LocalDate applicationRaisedDate) {
+        // The IPS UI relies on the first individual in the response being the applicant and the second the partner. This is why we must
+        // use a LinkedHashMap to ensure the order.
         Map<Individual, IncomeRecord> incomeRecords = new LinkedHashMap<>();
 
         for (Applicant applicant : applicants) {
