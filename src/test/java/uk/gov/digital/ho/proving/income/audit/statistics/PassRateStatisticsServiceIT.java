@@ -22,7 +22,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest()
+@SpringBootTest
 public class PassRateStatisticsServiceIT {
 
     private static final LocalDate FROM_DATE = LocalDate.of(2018, Month.AUGUST, 1);

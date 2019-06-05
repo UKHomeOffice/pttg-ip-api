@@ -31,8 +31,6 @@ public class PassRateStatisticsServiceCalendarMonthTest {
 
     private PassRateStatisticsService service;
 
-    private static final int PAGE_SIZE = 2;
-
     @Before
     public void setUp() {
         service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, mockResultComparator);

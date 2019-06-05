@@ -2,7 +2,6 @@ package uk.gov.digital.ho.proving.income.audit;
 
 import org.junit.Test;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -79,4 +78,5 @@ public class AuditResultComparatorTest {
 
         assertThat(max.correlationId()).isEqualTo("any_correlation_id_1");
     }
+
 }
