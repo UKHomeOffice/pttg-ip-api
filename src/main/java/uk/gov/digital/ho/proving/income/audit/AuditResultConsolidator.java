@@ -62,7 +62,6 @@ public class AuditResultConsolidator {
     }
 
     public AuditResult getAuditResult(List<AuditRecord> auditRecords) {
-        // TODO OJR EE-19133 - unit test this
         String correlationId = auditRecords.get(0).getId();
         String nino = findingNino(auditRecords);
         LocalDate date = auditRecords.get(0).getDate().toLocalDate();

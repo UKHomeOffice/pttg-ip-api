@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,9 +9,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -279,4 +283,80 @@ public class AuditResultConsolidatorIT {
         assertThat(resultsByNino).contains(expected.get(0), expected.get(1));
     }
 
+    /*
+     * getAuditResult
+     */
+    @Test
+    public void getAuditResult_singleRequest_expectedAuditResultERROR() {
+        AuditRecord request = fileUtils.buildRequestRecord("some correlation id", "2019-02-25 12:01:02.003", "some nino");
+
+        AuditResult auditResult = auditResultConsolidator.getAuditResult(Collections.singletonList(request));
+        assertThat(auditResult).isEqualTo(new AuditResult("some correlation id", LocalDate.parse("2019-02-25"), "some nino", ERROR));
+    }
+
+    @Test
+    public void getAuditResult_singlePassResponse_expectedAuditResultPASS() {
+        AuditRecord passResponse = fileUtils.buildResponseRecord("some correlation id", "2019-02-25 12:01:02.003", "some nino", "true");
+
+        AuditResult auditResult = auditResultConsolidator.getAuditResult(Collections.singletonList(passResponse));
+        assertThat(auditResult).isEqualTo(new AuditResult("some correlation id", LocalDate.parse("2019-02-25"), "some nino", PASS));
+    }
+
+    @Test
+    public void getAuditResult_singleFailResponse_expectedAuditResultFAIL() {
+        AuditRecord failResponse = fileUtils.buildResponseRecord("some correlation id", "2019-02-25 12:01:02.003", "some nino", "false");
+
+        AuditResult auditResult = auditResultConsolidator.getAuditResult(Collections.singletonList(failResponse));
+        assertThat(auditResult).isEqualTo(new AuditResult("some correlation id", LocalDate.parse("2019-02-25"), "some nino", FAIL));
+    }
+
+    @Test
+    public void getAuditResult_singleNotFoundResponse_expectedAuditResultNOTFOUND() {
+        AuditRecord notFoundResponse = fileUtils.buildResponseNotFoundRecord("some correlation id", "2019-02-25 12:01:02.003");
+
+        AuditResult auditResult = auditResultConsolidator.getAuditResult(Collections.singletonList(notFoundResponse));
+        assertThat(auditResult).isEqualTo(new AuditResult("some correlation id", LocalDate.parse("2019-02-25"), "", NOTFOUND));
+    }
+
+    @Test
+    public void getAuditResult_requestAndPassResponse_expectedAuditResultPASS() {
+        AuditRecord request = fileUtils.buildRequestRecord("some correlation id", "2019-02-25 12:01:02.003", "some nino");
+        AuditRecord passResponse = fileUtils.buildResponseRecord("some correlation id", "2019-02-25 12:01:03.000", "some nino", "true");
+
+        AuditResult auditResult = auditResultConsolidator.getAuditResult(Arrays.asList(request, passResponse));
+
+        assertThat(auditResult).isEqualTo(new AuditResult("some correlation id", LocalDate.parse("2019-02-25"), "some nino", PASS));
+    }
+
+    @Test
+    public void getAuditResult_requestAndFailResponse_expectedAuditResultFAIL() {
+        AuditRecord request = fileUtils.buildRequestRecord("some correlation id", "2019-02-25 12:01:02.003", "some nino");
+        AuditRecord failResponse = fileUtils.buildResponseRecord("some correlation id", "2019-02-25 12:01:03.000", "some nino", "false");
+
+        AuditResult auditResult = auditResultConsolidator.getAuditResult(Arrays.asList(request, failResponse));
+
+        assertThat(auditResult).isEqualTo(new AuditResult("some correlation id", LocalDate.parse("2019-02-25"), "some nino", FAIL));
+    }
+
+    @Test
+    public void getAuditResult_requestAndNotFoundResponse_expectedAuditResultNOTFOUND() {
+        AuditRecord request = fileUtils.buildRequestRecord("some correlation id", "2019-02-25 12:01:02.003", "some nino");
+        AuditRecord notFoundResponse = fileUtils.buildResponseNotFoundRecord("some correlation id", "2019-02-25 12:01:03.000");
+
+        AuditResult auditResult = auditResultConsolidator.getAuditResult(Arrays.asList(request, notFoundResponse));
+
+        assertThat(auditResult).isEqualTo(new AuditResult("some correlation id", LocalDate.parse("2019-02-25"), "some nino", NOTFOUND));
+    }
+
+    @Test
+    public void getAuditResult_passAndFail_auditResultPASS() {
+        AuditRecord request1 = fileUtils.buildRequestRecord("some correlation id", "2019-02-25 12:01:02.003", "some nino");
+        AuditRecord passResponse = fileUtils.buildResponseRecord("some correlation id", "2019-02-25 12:01:03.000", "some nino", "true");
+        AuditRecord request2 = fileUtils.buildRequestRecord("some correlation id", "2019-02-25 12:01:02.003", "some nino");
+        AuditRecord failResponse = fileUtils.buildResponseRecord("some correlation id", "2019-02-25 12:01:03.000", "some nino", "false");
+
+        AuditResult auditResult = auditResultConsolidator.getAuditResult(Arrays.asList(request1, passResponse, request2, failResponse));
+
+        assertThat(auditResult).isEqualTo(new AuditResult("some correlation id", LocalDate.parse("2019-02-25"), "some nino", PASS));
+    }
 }
