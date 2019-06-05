@@ -12,6 +12,9 @@ import uk.gov.digital.ho.proving.income.audit.FileUtils;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -211,6 +214,34 @@ public class PassRateStatisticsServiceIT {
 
     private String joinAuditRecordsAsJsonList(String... auditRecords) {
         return String.format("[%s]", String.join(", ", auditRecords));
+    }
+
+    private String joinCorrelationIdsAsJsonList(String... correlationIds) {
+        List<String> quotedCorrelationIds = Arrays.stream(correlationIds)
+                                                  .map(correlationId -> String.format("\"%s\"", correlationId))
+                                                  .collect(Collectors.toList());
+
+        return String.format("[ %s ]", String.join(", ", quotedCorrelationIds));
+    }
+
+    private void mockGetCorrelationIds(String... correlationIds) {
+        mockAuditService
+            .expect(requestTo(containsString("/correlationIds")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(joinCorrelationIdsAsJsonList(correlationIds), APPLICATION_JSON));
+
+    }
+
+    private void mockGetHistoryByCorrelationId(String correlationId, String... auditRecords) {
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=" + correlationId)))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(joinAuditRecordsAsJsonList(auditRecords), APPLICATION_JSON));
     }
 
     private void mockArchivedResultsResponse(String response) {
