@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.api.domain.TaxYear;
 import uk.gov.digital.ho.proving.income.audit.*;
@@ -8,7 +7,9 @@ import uk.gov.digital.ho.proving.income.audit.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
@@ -24,17 +25,17 @@ public class PassRateStatisticsService {
     private final AuditClient auditClient;
     private final PassStatisticsCalculator calculator;
     private final AuditResultConsolidator consolidator;
-    private final int requestPageSize;
+    private final AuditResultComparator resultComparator;
 
     public PassRateStatisticsService(AuditClient auditClient,
                                      PassStatisticsCalculator calculator,
                                      AuditResultConsolidator consolidator,
-                                     @Value("${audit.history.passratestats.pagesize}") int requestPageSize) {
+                                     AuditResultComparator resultComparator) {
 
         this.auditClient = auditClient;
         this.calculator = calculator;
         this.consolidator = consolidator;
-        this.requestPageSize = requestPageSize;
+        this.resultComparator = resultComparator;
     }
 
     public PassRateStatistics generatePassRateStatistics(YearMonth calendarMonth) {
@@ -48,23 +49,31 @@ public class PassRateStatisticsService {
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         List<String> allCorrelationIds = auditClient.getAllCorrelationIdsForEventType(AUDIT_EVENTS_TO_RETRIEVE);
 
-        List<AuditResultByNino> resultsByNino = getAuditResultByNinos(allCorrelationIds);
+        List<AuditResult> results = getAuditResultByNinos(allCorrelationIds);
 
         List<ArchivedResult> archivedResults = auditClient.getArchivedResults(fromDate, toDate);
-        return calculator.result(resultsByNino, archivedResults, fromDate, toDate);
+        return calculator.result(results, archivedResults, fromDate, toDate);
     }
 
-    private List<AuditResultByNino> getAuditResultByNinos(List<String> allCorrelationIds) {
-        List<AuditResultByNino> resultsByNino = new ArrayList<>();
+    private List<AuditResult> getAuditResultByNinos(List<String> allCorrelationIds) {
+        Map<String, AuditResult> bestResultsByNino = new HashMap<>();
         for (String correlationId : allCorrelationIds) {
             List<AuditRecord> auditRecordsForCorrelationId = auditClient.getHistoryByCorrelationId(correlationId, AUDIT_EVENTS_TO_RETRIEVE);
-            resultsByNino.addAll(consolidateRecords(auditRecordsForCorrelationId));
+            AuditResult auditResult = consolidator.getAuditResult(auditRecordsForCorrelationId);
+            updateBestResults(bestResultsByNino, auditResult);
         }
-        return resultsByNino;
+        return new ArrayList<>(bestResultsByNino.values());
     }
 
-    private List<AuditResultByNino> consolidateRecords(List<AuditRecord> allAuditRecords) {
-        List<AuditResult> byCorrelationId = consolidator.auditResultsByCorrelationId(allAuditRecords);
-        return consolidator.consolidatedAuditResultsByNino(byCorrelationId);
+    private void updateBestResults(Map<String, AuditResult> bestResultsByNino, AuditResult newResult) {
+        String nino = newResult.nino();
+
+        if (!bestResultsByNino.containsKey(nino) || isBetterResult(bestResultsByNino.get(nino), newResult)) {
+            bestResultsByNino.put(nino, newResult);
+        }
+    }
+
+    private boolean isBetterResult(AuditResult currentResult, AuditResult newResult) {
+        return resultComparator.compare(currentResult, newResult) < 0;
     }
 }

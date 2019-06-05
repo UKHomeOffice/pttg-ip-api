@@ -16,7 +16,8 @@ import java.time.Month;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.*;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
@@ -32,27 +33,28 @@ public class PassRateStatisticsServiceTest {
     private AuditResultConsolidator mockConsolidator;
     @Mock
     private PassStatisticsCalculator mockPassStatisticsCalculator;
+    @Mock
+    private AuditResultComparator mockResultComparator;
 
     private PassRateStatisticsService service;
 
-    private static final int PAGE_SIZE = 2;
-
-
     // TODO OJR EE-19133 - ANY_X is more appropriate in most (maybe all) cases than SOME_X - try to clean up when done
     private static final long SOME_LONG = 3;
-    private static final LocalDate SOME_DATE = LocalDate.MAX;
-    private static final LocalDate ANY_DATE = LocalDate.MAX;
-    private static final LocalDateTime SOME_DATE_TIME = LocalDateTime.MAX;
-    private static final LocalDateTime ANY_DATE_TIME = LocalDateTime.MAX;
+    private static final LocalDate SOME_DATE = LocalDate.now();
+    private static final LocalDate ANY_DATE = LocalDate.now();
+    private static final LocalDateTime SOME_DATE_TIME = LocalDateTime.now();
+    private static final LocalDateTime ANY_DATE_TIME = LocalDateTime.now();
     private static final AuditEventType SOME_AUDIT_EVENT_TYPE = INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
     private static final AuditEventType ANY_AUDIT_EVENT_TYPE = INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
     private static final JsonNode SOME_JSON = null;
     private static final JsonNode ANY_JSON = null;
     private static final AuditResultType SOME_AUDIT_RESULT_TYPE = AuditResultType.PASS;
+    private static final AuditResultType ANY_AUDIT_RESULT_TYPE = AuditResultType.PASS;
+    private static final AuditResult ANY_AUDIT_RECORD = new AuditResult("any correlation id", LocalDate.now(), "any nino", ANY_AUDIT_RESULT_TYPE);
 
     @Before
     public void setUp() {
-        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, PAGE_SIZE);
+        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, new AuditResultComparator(new AuditResultTypeComparator()));
     }
 
     /**************************************************************
@@ -65,6 +67,7 @@ public class PassRateStatisticsServiceTest {
         ArgumentCaptor<List<AuditEventType>> eventTypesCaptor = ArgumentCaptor.forClass(List.class);
         when(mockAuditClient.getAllCorrelationIdsForEventType(eventTypesCaptor.capture()))
             .thenReturn(asList("any correlationId", "any other correlation id"));
+        when(mockConsolidator.getAuditResult(any())).thenReturn(ANY_AUDIT_RECORD);
 
         service.generatePassRateStatistics(ANY_DATE, ANY_DATE);
 
@@ -77,6 +80,7 @@ public class PassRateStatisticsServiceTest {
         List<String> expectedCorrelationIds = stubGetAllCorrelationIds("some correlationId", "some other correlation id");
 
         List<AuditRecord> anyAuditRecords = singletonList(new AuditRecord("any id", ANY_DATE_TIME, "any email", ANY_AUDIT_EVENT_TYPE, ANY_JSON, "any nino"));
+        when(mockConsolidator.getAuditResult(any())).thenReturn(ANY_AUDIT_RECORD);
 
         List<AuditEventType> expectedEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
         ArgumentCaptor<String> correlationIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -132,25 +136,12 @@ public class PassRateStatisticsServiceTest {
             .thenReturn(someAuditRecords);
         when(mockAuditClient.getHistoryByCorrelationId(eq(correlationIds.get(1)), anyList()))
             .thenReturn(someOtherAuditRecords);
+        when(mockConsolidator.getAuditResult(any())).thenReturn(ANY_AUDIT_RECORD);
 
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
 
-        verify(mockConsolidator).auditResultsByCorrelationId(someAuditRecords);
-        verify(mockConsolidator).auditResultsByCorrelationId(someOtherAuditRecords);
-    }
-
-    @Test
-    public void generatePassStatistics_givenResultsByCorrelationIdFromConsolidator_consolidateByNino() {
-        stubGetAllCorrelationIds();
-
-        List<AuditResult> resultsByCorrelationId = singletonList(new AuditResult("some correlation id", SOME_DATE, "some nino", SOME_AUDIT_RESULT_TYPE));
-        List<AuditResult> moreResultsByCorrelationId = singletonList(new AuditResult("some other correlation id", SOME_DATE, "some other nino", SOME_AUDIT_RESULT_TYPE));
-        when(mockConsolidator.auditResultsByCorrelationId(anyList()))
-            .thenReturn(resultsByCorrelationId, moreResultsByCorrelationId);
-
-        service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
-        verify(mockConsolidator).consolidatedAuditResultsByNino(resultsByCorrelationId);
-        verify(mockConsolidator).consolidatedAuditResultsByNino(moreResultsByCorrelationId);
+        verify(mockConsolidator).getAuditResult(someAuditRecords);
+        verify(mockConsolidator).getAuditResult(someOtherAuditRecords);
     }
 
     /****************************************
@@ -174,15 +165,62 @@ public class PassRateStatisticsServiceTest {
     }
 
     @Test
-    public void generatePassStatistics_givenResultsByNinoFromConsolidator_passedToCalculator() {
-        stubGetAllCorrelationIds("any correlation id");
+    public void generatePassStatistics_givenAuditResultsFromConsolidator_expectedListPassedToCalculator() {
+        stubGetAllCorrelationIds("some correlation id", "some other correlation id");
 
-        List<AuditResultByNino> resultsByNino = singletonList(new AuditResultByNino("some nino", emptyList(), SOME_DATE, SOME_AUDIT_RESULT_TYPE));
-        when(mockConsolidator.consolidatedAuditResultsByNino(anyList()))
-            .thenReturn(resultsByNino);
+        List<AuditResult> expectedResults = asList(
+            new AuditResult("some correlation id", SOME_DATE, "some nino", SOME_AUDIT_RESULT_TYPE),
+            new AuditResult("some other correlation id", SOME_DATE, "some other nino", SOME_AUDIT_RESULT_TYPE));
+
+        when(mockConsolidator.getAuditResult(anyList()))
+            .thenReturn(expectedResults.get(0), expectedResults.get(1));
 
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
-        verify(mockPassStatisticsCalculator).result(eq(resultsByNino), anyList(), eq(SOME_DATE), eq(SOME_DATE));
+
+        ArgumentCaptor<List<AuditResult>> auditResultsCaptor = ArgumentCaptor.forClass(List.class);
+        verify(mockPassStatisticsCalculator).result(auditResultsCaptor.capture(), anyList(), eq(SOME_DATE), eq(SOME_DATE));
+
+        assertThat(auditResultsCaptor.getValue())
+            .containsOnly(expectedResults.get(0), expectedResults.get(1));
+    }
+
+    @Test
+    public void generatePassStatistics_multipleResultsPerNino_passOnlyBestToCalculator() {
+        stubGetAllCorrelationIds("some correlation id", "some other correlation id");
+
+        AuditResult passResult = new AuditResult("some correlation id", SOME_DATE, "some nino", AuditResultType.PASS);
+        AuditResult failResult = new AuditResult("some other correlation id", SOME_DATE, "some nino", AuditResultType.FAIL);
+
+        when(mockConsolidator.getAuditResult(anyList()))
+            .thenReturn(passResult, failResult);
+
+        service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
+
+        ArgumentCaptor<List<AuditResult>> auditResultsCaptor = ArgumentCaptor.forClass(List.class);
+        verify(mockPassStatisticsCalculator).result(auditResultsCaptor.capture(), anyList(), eq(SOME_DATE), eq(SOME_DATE));
+
+        assertThat(auditResultsCaptor.getValue())
+            .containsOnly(passResult);
+    }
+
+    @Test
+    public void generatePassStatistics_multipleResultsPerNino_passOldestBestResultToCalculator() {
+        stubGetAllCorrelationIds("some correlation id", "some other correlation id", "yet some other correlation id");
+
+        AuditResult firstNotFound = new AuditResult("some correlation id", SOME_DATE, "some nino", AuditResultType.NOTFOUND);
+        AuditResult firstFail = new AuditResult("some other correlation id", SOME_DATE.minusDays(2), "some nino", AuditResultType.FAIL);
+        AuditResult secondFail = new AuditResult("yet some other correlation id", SOME_DATE.minusDays(1), "some nino", AuditResultType.FAIL);
+
+        when(mockConsolidator.getAuditResult(anyList()))
+            .thenReturn(firstNotFound, firstFail, secondFail);
+
+        service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
+
+        ArgumentCaptor<List<AuditResult>> auditResultsCaptor = ArgumentCaptor.forClass(List.class);
+        verify(mockPassStatisticsCalculator).result(auditResultsCaptor.capture(), anyList(), eq(SOME_DATE), eq(SOME_DATE));
+
+        assertThat(auditResultsCaptor.getValue())
+            .containsOnly(firstFail);
     }
 
     @Test
@@ -202,6 +240,25 @@ public class PassRateStatisticsServiceTest {
 
         verify(mockPassStatisticsCalculator)
             .result(anyList(), anyList(), eq(taxYear.startDate()), eq(taxYear.endDate()));
+    }
+
+
+    /*****************************************
+     * AuditResultTypeComparator collaborator
+     *****************************************/
+    @Test
+    public void generatePassStatistics_multipleResultsPerNino_usesComparator() {
+        stubGetAllCorrelationIds("some correlation id", "some other correlation id");
+
+        AuditResult passResult = new AuditResult("some correlation id", SOME_DATE, "some nino", AuditResultType.PASS);
+        AuditResult failResult = new AuditResult("some other correlation id", SOME_DATE, "some nino", AuditResultType.FAIL);
+
+        when(mockConsolidator.getAuditResult(anyList()))
+            .thenReturn(passResult, failResult);
+        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, mockResultComparator);
+        service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
+
+        verify(mockResultComparator).compare(passResult, failResult);
     }
 
     private void stubGetAllCorrelationIds() {

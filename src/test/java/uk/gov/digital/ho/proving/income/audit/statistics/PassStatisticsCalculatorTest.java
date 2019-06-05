@@ -3,7 +3,7 @@ package uk.gov.digital.ho.proving.income.audit.statistics;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.digital.ho.proving.income.audit.ArchivedResult;
-import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
+import uk.gov.digital.ho.proving.income.audit.AuditResult;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -22,7 +22,7 @@ public class PassStatisticsCalculatorTest {
     private static final LocalDate TO_DATE = LocalDate.of(2019, Month.JANUARY, 31);
     private static final LocalDate IN_RANGE = FROM_DATE.plusDays(2);
 
-    private static final List<AuditResultByNino> ANY_AUDIT_RESULTS = emptyList();
+    private static final List<AuditResult> ANY_AUDIT_RESULTS = emptyList();
     private static final List<ArchivedResult> ANY_ARCHIVED_RESULTS = emptyList();
     private static final List<String> ANY_CORRELATION_IDS = emptyList();
 
@@ -52,7 +52,7 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_onePassInRange_onePassInStatistics() {
-        List<AuditResultByNino> singlePassInRange = singletonList(new AuditResultByNino("some nino", emptyList(), IN_RANGE, PASS));
+        List<AuditResult> singlePassInRange = singletonList(new AuditResult("any correlation id", IN_RANGE, "any nino", PASS));
 
         assertThat(accumulator.result(singlePassInRange, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(1, 0, 0, 0));
@@ -60,7 +60,7 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_oneFailInRange_oneFailInStatistics() {
-        List<AuditResultByNino> singleFailInRange = singletonList(new AuditResultByNino("some nino", emptyList(), IN_RANGE, FAIL));
+        List<AuditResult> singleFailInRange = singletonList(new AuditResult("any correlation id", IN_RANGE, "any nino", FAIL));
 
         assertThat(accumulator.result(singleFailInRange, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 1, 0, 0));
@@ -68,7 +68,7 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_oneNotFoundInRange_oneNotFoundInStatistics() {
-        List<AuditResultByNino> singleNotFoundInRange = singletonList(new AuditResultByNino("some nino", emptyList(), IN_RANGE, NOTFOUND));
+        List<AuditResult> singleNotFoundInRange = singletonList(new AuditResult("any correlation id", IN_RANGE, "any nino", NOTFOUND));
 
         assertThat(accumulator.result(singleNotFoundInRange, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 1, 0));
@@ -76,7 +76,7 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_oneErrorInRange_oneErrorInStatistics() {
-        List<AuditResultByNino> singleErrorInRange = singletonList(new AuditResultByNino("some nino", emptyList(), IN_RANGE, ERROR));
+        List<AuditResult> singleErrorInRange = singletonList(new AuditResult("any correlation id", IN_RANGE, "any nino", ERROR));
 
         assertThat(accumulator.result(singleErrorInRange, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 0, 1));
@@ -84,7 +84,7 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_tooEarly_notCounted() {
-        List<AuditResultByNino> tooEarlyResult = singletonList(new AuditResultByNino("some nino", emptyList(), FROM_DATE.minusDays(1), PASS));
+        List<AuditResult> tooEarlyResult = singletonList(new AuditResult("any correlation id", FROM_DATE.minusDays(1), "any nino", PASS));
 
         assertThat(accumulator.result(tooEarlyResult, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 0, 0));
@@ -92,7 +92,7 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_firstDay_counted() {
-        List<AuditResultByNino> resultOnFirstDay = singletonList(new AuditResultByNino("some nino", emptyList(), FROM_DATE, FAIL));
+        List<AuditResult> resultOnFirstDay = singletonList(new AuditResult("any correlation id", FROM_DATE, "any nino", FAIL));
 
         assertThat(accumulator.result(resultOnFirstDay, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 1, 0, 0));
@@ -100,7 +100,7 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_lastDay_notCounted() {
-        List<AuditResultByNino> resultByLastDay = singletonList(new AuditResultByNino("some nino", emptyList(), TO_DATE, NOTFOUND));
+        List<AuditResult> resultByLastDay = singletonList(new AuditResult("any correlation id", TO_DATE, "any nino", NOTFOUND));
 
         assertThat(accumulator.result(resultByLastDay, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 1, 0));
@@ -108,7 +108,7 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_tooLate_counted() {
-        List<AuditResultByNino> tooLateResult = singletonList(new AuditResultByNino("some nino", emptyList(), TO_DATE.plusDays(1), ERROR));
+        List<AuditResult> tooLateResult = singletonList(new AuditResult("any correlation id", TO_DATE.plusDays(1), "any nino", ERROR));
 
         assertThat(accumulator.result(tooLateResult, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 0, 0));
@@ -116,12 +116,12 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_allOutsideRange_emptyStatistics() {
-        List<AuditResultByNino> allOutsideRange = asList(
-            new AuditResultByNino("nino 1", emptyList(), FROM_DATE.minusDays(1), PASS),
-            new AuditResultByNino("nino 2", emptyList(), FROM_DATE.minusDays(1), FAIL),
-            new AuditResultByNino("nino 3", emptyList(), TO_DATE.plusDays(1), NOTFOUND),
-            new AuditResultByNino("nino 4", emptyList(), TO_DATE.plusDays(1), ERROR)
-        );
+        List<AuditResult> allOutsideRange = asList(
+            new AuditResult("any correlation id", FROM_DATE.minusDays(1), "nino 1", PASS),
+            new AuditResult("any correlation id", FROM_DATE.minusDays(1), "nino 2", FAIL),
+            new AuditResult("any correlation id", TO_DATE.plusDays(1), "nino 3", NOTFOUND),
+            new AuditResult("any correlation id", TO_DATE.plusDays(1), "nino 4", ERROR)
+                                                  );
 
         assertThat(accumulator.result(allOutsideRange, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(0, 0, 0, 0));
@@ -129,28 +129,28 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_multipleResultsInAndOutOfRange_onlyInRangeIncluded() {
-        AuditResultByNino tooEarly = new AuditResultByNino("nino 1", emptyList(), FROM_DATE.minusDays(1), PASS);
-        AuditResultByNino passInRange = new AuditResultByNino("nino 2", emptyList(), FROM_DATE, PASS);
+        AuditResult tooEarly = new AuditResult("any correlation id", FROM_DATE.minusDays(1), "nino 1", PASS);
+        AuditResult passInRange = new AuditResult("any correlation id", FROM_DATE, "nino 2", PASS);
 
-        AuditResultByNino errorInRange = new AuditResultByNino("nino 3", emptyList(), FROM_DATE, ERROR);
-        AuditResultByNino error2InRange = new AuditResultByNino("nino 4", emptyList(), TO_DATE, ERROR);
+        AuditResult errorInRange = new AuditResult("any correlation id", FROM_DATE, "nino 3", ERROR);
+        AuditResult error2InRange = new AuditResult("any correlation id", TO_DATE, "nino 4", ERROR);
 
-        AuditResultByNino notFoundInRange = new AuditResultByNino("nino 5", emptyList(), TO_DATE, NOTFOUND);
-        AuditResultByNino tooLate = new AuditResultByNino("nino 6", emptyList(), TO_DATE.plusDays(1), FAIL);
+        AuditResult notFoundInRange = new AuditResult("any correlation id", TO_DATE, "nino 5", NOTFOUND);
+        AuditResult tooLate = new AuditResult("any correlation id", TO_DATE.plusDays(1), "nino 6", FAIL);
 
-        List<AuditResultByNino> results = asList(tooEarly, passInRange, errorInRange, error2InRange, notFoundInRange, tooLate);
+        List<AuditResult> results = asList(tooEarly, passInRange, errorInRange, error2InRange, notFoundInRange, tooLate);
         assertThat(accumulator.result(results, emptyList(), FROM_DATE, TO_DATE))
             .isEqualTo(statisticsForCounts(1, 0, 1, 2));
     }
 
     @Test
     public void result_oneDayArchivedResults_addToTotal() {
-        List<AuditResultByNino> results = asList(
-            new AuditResultByNino("nino 1", ANY_CORRELATION_IDS, IN_RANGE, PASS),
-            new AuditResultByNino("nino 2", ANY_CORRELATION_IDS, IN_RANGE, FAIL),
-            new AuditResultByNino("nino 3", ANY_CORRELATION_IDS, IN_RANGE, NOTFOUND),
-            new AuditResultByNino("nino 4", ANY_CORRELATION_IDS, IN_RANGE, ERROR)
-        );
+        List<AuditResult> results = asList(
+            new AuditResult("any correlation id", IN_RANGE, "nino 1", PASS),
+            new AuditResult("any correlation id", IN_RANGE, "nino 2", FAIL),
+            new AuditResult("any correlation id", IN_RANGE, "nino 3", NOTFOUND),
+            new AuditResult("any correlation id", IN_RANGE, "nino 4", ERROR)
+                                          );
 
         List<ArchivedResult> archivedResults = singletonList(new ArchivedResult(ImmutableMap.<String, Integer>builder()
             .put(String.valueOf(PASS), 5)
@@ -165,12 +165,12 @@ public class PassStatisticsCalculatorTest {
 
     @Test
     public void result_multipleDaysOfArchivedResults_addToTotal() {
-        List<AuditResultByNino> results = asList(
-            new AuditResultByNino("nino 1", ANY_CORRELATION_IDS, IN_RANGE, PASS),
-            new AuditResultByNino("nino 2", ANY_CORRELATION_IDS, IN_RANGE, FAIL),
-            new AuditResultByNino("nino 3", ANY_CORRELATION_IDS, IN_RANGE, NOTFOUND),
-            new AuditResultByNino("nino 4", ANY_CORRELATION_IDS, IN_RANGE, ERROR)
-        );
+        List<AuditResult> results = asList(
+            new AuditResult("any correlation id", IN_RANGE, "nino 1", PASS),
+            new AuditResult("any correlation id", IN_RANGE, "nino 2", FAIL),
+            new AuditResult("any correlation id", IN_RANGE, "nino 3", NOTFOUND),
+            new AuditResult("any correlation id", IN_RANGE, "nino 4", ERROR)
+                                          );
 
         List<ArchivedResult> archivedResults = asList(new ArchivedResult(ImmutableMap.<String, Integer>builder()
                 .put(String.valueOf(PASS), 5)
