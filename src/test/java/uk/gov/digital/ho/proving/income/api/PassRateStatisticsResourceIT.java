@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.proving.income.api;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.http.protocol.HTTP;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
