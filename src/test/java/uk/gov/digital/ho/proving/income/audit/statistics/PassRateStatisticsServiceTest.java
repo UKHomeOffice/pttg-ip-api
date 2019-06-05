@@ -38,19 +38,14 @@ public class PassRateStatisticsServiceTest {
 
     private PassRateStatisticsService service;
 
-    // TODO OJR EE-19133 - ANY_X is more appropriate in most (maybe all) cases than SOME_X - try to clean up when done
     private static final long SOME_LONG = 3;
     private static final LocalDate SOME_DATE = LocalDate.now();
-    private static final LocalDate ANY_DATE = LocalDate.now();
     private static final LocalDateTime SOME_DATE_TIME = LocalDateTime.now();
-    private static final LocalDateTime ANY_DATE_TIME = LocalDateTime.now();
     private static final AuditEventType SOME_AUDIT_EVENT_TYPE = INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
-    private static final AuditEventType ANY_AUDIT_EVENT_TYPE = INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
     private static final JsonNode SOME_JSON = null;
-    private static final JsonNode ANY_JSON = null;
     private static final AuditResultType SOME_AUDIT_RESULT_TYPE = AuditResultType.PASS;
-    private static final AuditResultType ANY_AUDIT_RESULT_TYPE = AuditResultType.PASS;
-    private static final AuditResult ANY_AUDIT_RECORD = new AuditResult("any correlation id", LocalDate.now(), "any nino", ANY_AUDIT_RESULT_TYPE);
+
+    private static final AuditResult ANY_AUDIT_RECORD = new AuditResult("any correlation id", LocalDate.now(), "any nino", SOME_AUDIT_RESULT_TYPE);
 
     @Before
     public void setUp() {
@@ -69,7 +64,7 @@ public class PassRateStatisticsServiceTest {
             .thenReturn(asList("any correlationId", "any other correlation id"));
         when(mockConsolidator.getAuditResult(any())).thenReturn(ANY_AUDIT_RECORD);
 
-        service.generatePassRateStatistics(ANY_DATE, ANY_DATE);
+        service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
 
         assertThat(eventTypesCaptor.getValue())
             .contains(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
@@ -79,7 +74,7 @@ public class PassRateStatisticsServiceTest {
     public void generatePassStatistics_correlationIdsFromAuditService_callGetByCorrelationIdWithEachInTurn() {
         List<String> expectedCorrelationIds = stubGetAllCorrelationIds("some correlationId", "some other correlation id");
 
-        List<AuditRecord> anyAuditRecords = singletonList(new AuditRecord("any id", ANY_DATE_TIME, "any email", ANY_AUDIT_EVENT_TYPE, ANY_JSON, "any nino"));
+        List<AuditRecord> anyAuditRecords = singletonList(new AuditRecord("any id", SOME_DATE_TIME, "any email", SOME_AUDIT_EVENT_TYPE, SOME_JSON, "any nino"));
         when(mockConsolidator.getAuditResult(any())).thenReturn(ANY_AUDIT_RECORD);
 
         List<AuditEventType> expectedEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
@@ -122,9 +117,7 @@ public class PassRateStatisticsServiceTest {
     @Test
     public void generatePassStatistics_givenResultsFromAuditService_passedToConsolidator() {
 
-        List<String> correlationIds = asList("some correlationId", "some other correlation id");
-        when(mockAuditClient.getAllCorrelationIdsForEventType(any()))
-            .thenReturn(correlationIds);
+        List<String> correlationIds = stubGetAllCorrelationIds("some correlationId", "some other correlation id");
 
         List<AuditRecord> someAuditRecords = asList(
             new AuditRecord("some id", SOME_DATE_TIME, "some email", SOME_AUDIT_EVENT_TYPE, SOME_JSON, "some nino"),
@@ -132,9 +125,9 @@ public class PassRateStatisticsServiceTest {
         List<AuditRecord> someOtherAuditRecords = singletonList(
             new AuditRecord("yet some other id", SOME_DATE_TIME, "yet some email", SOME_AUDIT_EVENT_TYPE, SOME_JSON, "yet some other nino"));
 
-        when(mockAuditClient.getHistoryByCorrelationId(eq(correlationIds.get(0)), anyList()))
+        when(mockAuditClient.getHistoryByCorrelationId(eq("some correlationId"), anyList()))
             .thenReturn(someAuditRecords);
-        when(mockAuditClient.getHistoryByCorrelationId(eq(correlationIds.get(1)), anyList()))
+        when(mockAuditClient.getHistoryByCorrelationId(eq("some other correlation id"), anyList()))
             .thenReturn(someOtherAuditRecords);
         when(mockConsolidator.getAuditResult(any())).thenReturn(ANY_AUDIT_RECORD);
 
@@ -246,6 +239,7 @@ public class PassRateStatisticsServiceTest {
     /*****************************************
      * AuditResultTypeComparator collaborator
      *****************************************/
+
     @Test
     public void generatePassStatistics_multipleResultsPerNino_usesComparator() {
         stubGetAllCorrelationIds("some correlation id", "some other correlation id");
@@ -261,12 +255,8 @@ public class PassRateStatisticsServiceTest {
         verify(mockResultComparator).compare(passResult, failResult);
     }
 
-    private void stubGetAllCorrelationIds() {
-        stubGetAllCorrelationIds("some correlationId", "some other correlation id");
-    }
-
     private List<String> stubGetAllCorrelationIds(String... correlationIds) {
-        List<String> allCorrelationIds = (List<String>) asList(correlationIds);
+        List<String> allCorrelationIds = asList(correlationIds);
         when(mockAuditClient.getAllCorrelationIdsForEventType(any()))
             .thenReturn(allCorrelationIds);
         return allCorrelationIds;
