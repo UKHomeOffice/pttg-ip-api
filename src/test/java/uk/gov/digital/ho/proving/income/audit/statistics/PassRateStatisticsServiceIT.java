@@ -63,7 +63,7 @@ public class PassRateStatisticsServiceIT {
     }
 
     @Test
-    public void passRateStatistics_singleResponseWithData_populateStatistics() {
+    public void passRateStatistics_twoResultsTwoNinos_populateStatistics() {
         String nino1PassRequest = fileUtils.buildRequest("correlation-id-1", "2018-08-01 09:00:00.000", "nino 1");
         String nino1PassResponse = fileUtils.buildResponse("correlation-id-1", "2018-08-01 09:00:01.000", "nino 1", "true");
 

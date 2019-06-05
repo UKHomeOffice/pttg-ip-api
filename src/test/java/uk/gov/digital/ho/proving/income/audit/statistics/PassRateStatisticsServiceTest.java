@@ -49,7 +49,7 @@ public class PassRateStatisticsServiceTest {
 
     @Before
     public void setUp() {
-        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, new AuditResultComparator(new AuditResultTypeComparator()));
+        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, mockResultComparator);
     }
 
     /**************************************************************
@@ -187,6 +187,7 @@ public class PassRateStatisticsServiceTest {
         when(mockConsolidator.getAuditResult(anyList()))
             .thenReturn(passResult, failResult);
 
+        when(mockResultComparator.compare(passResult, failResult)).thenReturn(1);
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
 
         ArgumentCaptor<List<AuditResult>> auditResultsCaptor = ArgumentCaptor.forClass(List.class);
@@ -206,6 +207,8 @@ public class PassRateStatisticsServiceTest {
 
         when(mockConsolidator.getAuditResult(anyList()))
             .thenReturn(firstNotFound, firstFail, secondFail);
+        when(mockResultComparator.compare(firstNotFound, firstFail)).thenReturn(-1);
+        when(mockResultComparator.compare(firstFail, secondFail)).thenReturn(1);
 
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
 
@@ -249,7 +252,6 @@ public class PassRateStatisticsServiceTest {
 
         when(mockConsolidator.getAuditResult(anyList()))
             .thenReturn(passResult, failResult);
-        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, mockResultComparator);
         service.generatePassRateStatistics(SOME_DATE, SOME_DATE);
 
         verify(mockResultComparator).compare(passResult, failResult);
