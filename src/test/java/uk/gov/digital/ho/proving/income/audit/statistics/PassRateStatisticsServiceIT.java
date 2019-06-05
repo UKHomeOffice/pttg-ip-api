@@ -60,30 +60,6 @@ public class PassRateStatisticsServiceIT {
     }
 
     @Test
-    public void passRateStatistics_noData_statisticsAllZero() {
-        mockAuditService
-            .expect(requestTo(containsString("/correlationIds")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess("[ \"correlation-id-1\" ]", APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-1")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(EMPTY_RESPONSE, APPLICATION_JSON));
-
-        mockArchivedResultsResponse(EMPTY_RESPONSE);
-
-        PassRateStatistics actualStatistics = passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE);
-        PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 0, 0, 0, 0, 0);
-        assertThat(actualStatistics).isEqualTo(expectedStatistics);
-    }
-
-    @Test
     public void passRateStatistics_singleResponseWithData_populateStatistics() {
         String nino1PassRequest = fileUtils.buildRequest("correlation-id-1", "2018-08-01 09:00:00.000", "nino 1");
         String nino1PassResponse = fileUtils.buildResponse("correlation-id-1", "2018-08-01 09:00:01.000", "nino 1", "true");
@@ -235,33 +211,97 @@ public class PassRateStatisticsServiceIT {
 
     @Test
     public void passRateStatistics_requestsOutOfRange_notCounted() {
-        // Both request and response too early - should NOT be counted
+        // Pass too early - should NOT be counted
         String passRequestTooEarly = fileUtils.buildRequest("correlation-id-1", FROM_DATE.minusDays(1).atTime(9, 0), "nino1");
         String passResponseTooEarly = fileUtils.buildResponse("correlation-id-1", FROM_DATE.minusDays(1).atTime(9, 1), "nino1", "true");
+        String tooEarlyPassEvents = joinAuditRecordsAsJsonList(passRequestTooEarly, passResponseTooEarly);
 
-        // Both request and response too late - should NOT be counted
+        // Fail too late - should NOT be counted
         String failRequestTooLate = fileUtils.buildRequest("correlation-id-2", TO_DATE.plusDays(1).atTime(9, 0), "nino2");
-        String failResponseTooLate = fileUtils.buildResponse("correlation-id-2", TO_DATE.plusDays(1).atTime(9, 0), "nino2", "false");
+        String failResponseTooLate = fileUtils.buildResponse("correlation-id-2", TO_DATE.plusDays(1).atTime(9, 1), "nino2", "false");
+        String tooLateFailEvents = joinAuditRecordsAsJsonList(failRequestTooLate, failResponseTooLate);
 
-        // Request too early but response in range - should be counted
-        String passRequest2TooEarly = fileUtils.buildRequest("correlation-id-3", FROM_DATE.minusDays(1).atTime(9, 0), "nino3");
-        String passResponse2InRange = fileUtils.buildResponse("correlation-id-3", FROM_DATE.atTime(9, 0), "nino3", "true");
+        // Pass in range - should be counted
+        String passRequestInRange = fileUtils.buildRequest("correlation-id-3", FROM_DATE.atTime(9, 0), "nino3");
+        String passResponseInRange = fileUtils.buildResponse("correlation-id-3", FROM_DATE.atTime(9, 1), "nino3", "true");
+        String passEventsInRange = joinAuditRecordsAsJsonList(passRequestInRange, passResponseInRange);
 
-        // Request in range but response too late - should NOT be counted
-        String failRequest2InRange = fileUtils.buildRequest("correlation-id-4", TO_DATE.atTime(9, 0), "nino4");
-        String failResponse2InRange = fileUtils.buildResponse("correlation-id-4", TO_DATE.plusDays(1).atTime(9, 0), "nino4", "false");
+        // Fail in range - should be counted.
+        String failRequestInRange = fileUtils.buildRequest("correlation-id-4", TO_DATE.atTime(9, 0), "nino4");
+        String failResponseInRange = fileUtils.buildResponse("correlation-id-4", TO_DATE.atTime(9, 1), "nino4", "false");
+        String failEventsInRange = joinAuditRecordsAsJsonList(failRequestInRange, failResponseInRange);
 
-        // Request and response last day - counted
-        String notFoundRequestLastDay = fileUtils.buildRequest("correlation-id-5", TO_DATE.atTime(23, 58), "nino5");
-        String notFoundResponseLastDay = fileUtils.buildResponseNotFound("correlation-id-5", TO_DATE.atTime(23, 59));
+        // Not found out range last day - should NOT becounted
+        String notFoundRequestTooLate = fileUtils.buildRequest("correlation-id-5", TO_DATE.plusDays(1).atTime(23, 58), "nino5");
+        String notFoundResponseTooLate = fileUtils.buildResponseNotFound("correlation-id-5", TO_DATE.plusDays(1).atTime(23, 59));
+        String tooLateNotFoundEvents = joinAuditRecordsAsJsonList(notFoundRequestTooLate, notFoundResponseTooLate);
 
-        String auditHistoryResponse1 = joinAuditRecordsAsJsonList(passRequestTooEarly, failRequestTooLate, failResponseTooLate, notFoundRequestLastDay, notFoundResponseLastDay);
-        String auditHistoryResponse2 = joinAuditRecordsAsJsonList(passRequest2TooEarly, failResponse2InRange, failRequest2InRange, passResponse2InRange, passResponseTooEarly);
-        mockAuditServiceResponses(auditHistoryResponse1, auditHistoryResponse2, EMPTY_RESPONSE);
+        // Error in range - should be counted.
+        String errorRequestInRange = fileUtils.buildRequest("correlation-id-6", TO_DATE.atTime(9, 0), "nino6");
+        String errorEventInRange = joinAuditRecordsAsJsonList(errorRequestInRange);
+        // Not having a corresponding response for the errorRequestInRange is what makes it an ERROR.
+
+        mockAuditService
+            .expect(requestTo(containsString("/correlationIds")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(
+                "[ \"correlation-id-1\", \"correlation-id-2\", \"correlation-id-3\"," +
+                    " \"correlation-id-4\", \"correlation-id-5\", \"correlation-id-6\"]",
+                APPLICATION_JSON));
+
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=correlation-id-1")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(tooEarlyPassEvents, APPLICATION_JSON));
+
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=correlation-id-2")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(tooLateFailEvents, APPLICATION_JSON));
+
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=correlation-id-3")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(passEventsInRange, APPLICATION_JSON));
+
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=correlation-id-4")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(failEventsInRange, APPLICATION_JSON));
+
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=correlation-id-5")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(tooLateNotFoundEvents, APPLICATION_JSON));
+
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=correlation-id-6")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(errorEventInRange, APPLICATION_JSON));
 
         mockArchivedResultsResponse(EMPTY_RESPONSE);
 
-        PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 1, 0, 0, 1, 0);
+        PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 3, 1, 1, 0, 1);
         assertThat(passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE))
             .isEqualTo(expectedStatistics);
     }
@@ -270,11 +310,35 @@ public class PassRateStatisticsServiceIT {
     public void passRateStatistics_archivedResults_addedToCount() {
         String passRequest = fileUtils.buildRequest("correlation-id-1", "2018-08-01 09:02:00.000", "nino 1");
         String passResponse = fileUtils.buildResponse("correlation-id-1", "2018-08-01 09:03:00.000", "nino 1", "true");
+        String passEvents = joinAuditRecordsAsJsonList(passRequest, passResponse);
         String failRequest = fileUtils.buildRequest("correlation-id-2", "2018-08-01 09:02:00.000", "nino 2");
         String failResponse = fileUtils.buildResponse("correlation-id-2", "2018-08-01 09:03:00.000", "nino 2", "false");
+        String failEvents = joinAuditRecordsAsJsonList(failRequest, failResponse);
 
-        String auditHistoryResponse = joinAuditRecordsAsJsonList(passRequest, passResponse, failRequest, failResponse);
-        mockAuditServiceResponses(auditHistoryResponse);
+        mockAuditService
+            .expect(requestTo(containsString("/correlationIds")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(
+                "[ \"correlation-id-1\", \"correlation-id-2\" ]",
+                APPLICATION_JSON));
+
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=correlation-id-1")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(passEvents, APPLICATION_JSON));
+
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=correlation-id-2")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(failEvents, APPLICATION_JSON));
 
         String archivedResults = fileUtils.buildArchivedResults(0, 0, 1, 2);
         mockArchivedResultsResponse(archivedResults);
@@ -282,17 +346,6 @@ public class PassRateStatisticsServiceIT {
         PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 5, 1, 1, 1, 2);
         assertThat(passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE))
             .isEqualTo(expectedStatistics);
-    }
-
-    private void mockAuditServiceResponses(String... responses) {
-        for (int i = 0; i < responses.length; i++) {
-            String response = responses[i];
-            mockAuditService
-                .expect(requestTo(containsString("/history")))
-                .andExpect(requestTo(containsString("page=" + i)))
-                .andRespond(withSuccess(response, APPLICATION_JSON));
-
-        }
     }
 
     private String joinAuditRecordsAsJsonList(String... auditRecords) {

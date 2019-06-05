@@ -79,15 +79,4 @@ public class AuditResultComparatorTest {
 
         assertThat(max.correlationId()).isEqualTo("any_correlation_id_1");
     }
-
-    @Test
-    public void _(){
-        AuditResultComparator comparator = new AuditResultComparator(new AuditResultTypeComparator());
-
-        AuditResult result1 = new AuditResult("correlation id", LocalDate.of(2019, 1, 15), "some nino", AuditResultType.PASS);
-        AuditResult result2 = new AuditResult("correlation id", LocalDate.of(2019,1,14), "some nino", AuditResultType.FAIL);
-
-        System.out.println(comparator.compare(result1, result2));
-    }
-
 }

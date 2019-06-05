@@ -3,7 +3,6 @@ package uk.gov.digital.ho.proving.income.audit.statistics;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.ArchivedResult;
 import uk.gov.digital.ho.proving.income.audit.AuditResult;
-import uk.gov.digital.ho.proving.income.audit.AuditResult;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 
 import java.time.LocalDate;
