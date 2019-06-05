@@ -217,6 +217,34 @@ public class PassRateStatisticsServiceIT {
             .andRespond(withSuccess(joinAuditRecordsAsJsonList(auditRecords), APPLICATION_JSON));
     }
 
+    private String joinCorrelationIdsAsJsonList(String... correlationIds) {
+        List<String> quotedCorrelationIds = Arrays.stream(correlationIds)
+                                                  .map(correlationId -> String.format("\"%s\"", correlationId))
+                                                  .collect(Collectors.toList());
+
+        return String.format("[ %s ]", String.join(", ", quotedCorrelationIds));
+    }
+
+    private void mockGetCorrelationIds(String... correlationIds) {
+        mockAuditService
+            .expect(requestTo(containsString("/correlationIds")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(joinCorrelationIdsAsJsonList(correlationIds), APPLICATION_JSON));
+
+    }
+
+    private void mockGetHistoryByCorrelationId(String correlationId, String... auditRecords) {
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=" + correlationId)))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(joinAuditRecordsAsJsonList(auditRecords), APPLICATION_JSON));
+    }
+
     private void mockArchivedResultsResponse(String response) {
         mockAuditService
             .expect(requestTo(containsString("/archive")))
