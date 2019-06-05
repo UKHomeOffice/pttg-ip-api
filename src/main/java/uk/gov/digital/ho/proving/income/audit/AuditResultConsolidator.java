@@ -61,7 +61,7 @@ public class AuditResultConsolidator {
         return new AuditResultByNino(consolidatedResult.nino(), allCorrelationIds, consolidatedResult.date(), consolidatedResult.resultType());
     }
 
-    private AuditResult getAuditResult(List<AuditRecord> auditRecords) {
+    public AuditResult getAuditResult(List<AuditRecord> auditRecords) {
         String correlationId = auditRecords.get(0).getId();
         String nino = findingNino(auditRecords);
         LocalDate date = auditRecords.get(0).getDate().toLocalDate();

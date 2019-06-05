@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.Comparator;
 
 @Component
-class AuditResultComparator implements Comparator<AuditResult> {
+public class AuditResultComparator implements Comparator<AuditResult> {
 
     private AuditResultTypeComparator auditResultTypeComparator;
 
