@@ -99,14 +99,6 @@ public class AuditClient {
         return auditRecords;
     }
 
-    public List<AuditRecord> getAuditHistoryPaginated(List<AuditEventType> eventTypes, int page, int size) {
-        URI uri = generateUri(eventTypes, page, size);
-
-        HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
-        ResponseEntity<List<AuditRecord>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
-        return response.getBody();
-    }
-
     private List<AuditRecord> getAuditHistoryPaginated(List<AuditEventType> eventTypes, int page, int size, LocalDate toDate) {
         URI uri = generateUri(eventTypes, page, size, toDate);
 
