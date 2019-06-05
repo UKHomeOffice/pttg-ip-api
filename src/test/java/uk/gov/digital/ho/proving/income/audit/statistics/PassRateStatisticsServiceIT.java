@@ -66,30 +66,13 @@ public class PassRateStatisticsServiceIT {
     public void passRateStatistics_singleResponseWithData_populateStatistics() {
         String nino1PassRequest = fileUtils.buildRequest("correlation-id-1", "2018-08-01 09:00:00.000", "nino 1");
         String nino1PassResponse = fileUtils.buildResponse("correlation-id-1", "2018-08-01 09:00:01.000", "nino 1", "true");
-        String correlationId1Events = joinAuditRecordsAsJsonList(nino1PassRequest, nino1PassResponse);
 
         String nino2FailRequest = fileUtils.buildRequest("correlation-id-2", "2018-08-01 09:00:00.000", "nino 2");
         String nino2FailResponse = fileUtils.buildResponse("correlation-id-2", "2018-08-01 09:00:01.000", "nino 2", "false");
-        String correlationId2Events = joinAuditRecordsAsJsonList(nino2FailRequest, nino2FailResponse);
 
-        stubGetCorrelationIds("correlation-id-1", "correlation-id-2");
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-1")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(correlationId1Events, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-2")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(correlationId2Events, APPLICATION_JSON));
-
+        mockGetCorrelationIds("correlation-id-1", "correlation-id-2");
+        mockGetHistoryByCorrelationId("correlation-id-1", nino1PassRequest, nino1PassResponse);
+        mockGetHistoryByCorrelationId("correlation-id-2", nino2FailRequest, nino2FailResponse);
         mockArchivedResultsResponse(EMPTY_RESPONSE);
 
         PassRateStatistics actualStatistics = passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE);
@@ -105,17 +88,11 @@ public class PassRateStatisticsServiceIT {
         String nino1PassRequest = fileUtils.buildRequest("correlation-id-2", "2018-08-01 09:02:00.000", "nino 1");
         String nino1PassResponse = fileUtils.buildResponse("correlation-id-2", "2018-08-01 09:03:00.000", "nino 1", "true");
 
-        String correlationId1Events = joinAuditRecordsAsJsonList(nino1FailRequest, nino1FailResponse);
-        String correlationId2Events = joinAuditRecordsAsJsonList(nino1PassRequest, nino1PassResponse);
-
         // Nino2 has a best result of failed
         String nino2FailRequest = fileUtils.buildRequest("correlation-id-3", "2018-08-01 09:04:00.000", "nino2");
         String nino2FailResponse = fileUtils.buildResponse("correlation-id-3", "2018-08-01 09:05:00.000", "nino2", "false");
         String nino2NotFoundRequest = fileUtils.buildRequest("correlation-id-4", "2018-08-01 09:06:00.000", "nino2");
         String nino2NotFoundResponse = fileUtils.buildResponseNotFound("correlation-id-4", "2018-08-01 09:07:00.000");
-
-        String correlationId3Events = joinAuditRecordsAsJsonList(nino2FailRequest, nino2FailResponse);
-        String correlationId4Events = joinAuditRecordsAsJsonList(nino2NotFoundRequest, nino2NotFoundResponse);
 
         // Nino3 has a best result of not found
 
@@ -123,74 +100,22 @@ public class PassRateStatisticsServiceIT {
         String nino3ErrorRequest = fileUtils.buildRequest("correlation-id-5", "2018-08-01 09:08:00.000", "nino3");
         String nino3NotFoundRequest = fileUtils.buildRequest("correlation-id-6", "2018-08-01 09:09:00.000", "nino3");
         String nino3NotFoundResponse = fileUtils.buildResponseNotFound("correlation-id-6", "2018-08-01 09:10:00.000");
-        String correlationId5Events = joinAuditRecordsAsJsonList(nino3ErrorRequest);
-        String correlationId6Events = joinAuditRecordsAsJsonList(nino3NotFoundRequest, nino3NotFoundResponse);
-
 
         // Nino4 has a best result of error
 
         // no corresponding response so this is an error
         String nino4ErrorRequest = fileUtils.buildRequest("correlation-id-7", "2018-08-01 09:11:00.000", "nino 4");
-        String correlationId7Events = joinAuditRecordsAsJsonList(nino4ErrorRequest);
 
-        stubGetCorrelationIds("correlation-id-1", "correlation-id-2", "correlation-id-3", "correlation-id-4", "correlation-id-5",
+        mockGetCorrelationIds("correlation-id-1", "correlation-id-2", "correlation-id-3", "correlation-id-4", "correlation-id-5",
                               "correlation-id-6", "correlation-id-7");
 
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-1")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(correlationId1Events, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-2")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(correlationId2Events, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-3")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(correlationId3Events, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-4")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(correlationId4Events, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-5")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(correlationId5Events, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-6")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(correlationId6Events, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-7")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(correlationId7Events, APPLICATION_JSON));
+        mockGetHistoryByCorrelationId("correlation-id-1", nino1FailRequest, nino1FailResponse);
+        mockGetHistoryByCorrelationId("correlation-id-2", nino1PassRequest, nino1PassResponse);
+        mockGetHistoryByCorrelationId("correlation-id-3", nino2FailRequest, nino2FailResponse);
+        mockGetHistoryByCorrelationId("correlation-id-4", nino2NotFoundRequest, nino2NotFoundResponse);
+        mockGetHistoryByCorrelationId("correlation-id-5", nino3ErrorRequest);
+        mockGetHistoryByCorrelationId("correlation-id-6", nino3NotFoundRequest, nino3NotFoundResponse);
+        mockGetHistoryByCorrelationId("correlation-id-7", nino4ErrorRequest);
 
         mockArchivedResultsResponse(EMPTY_RESPONSE);
 
@@ -205,82 +130,34 @@ public class PassRateStatisticsServiceIT {
         // Pass too early - should NOT be counted
         String passRequestTooEarly = fileUtils.buildRequest("correlation-id-1", FROM_DATE.minusDays(1).atTime(9, 0), "nino1");
         String passResponseTooEarly = fileUtils.buildResponse("correlation-id-1", FROM_DATE.minusDays(1).atTime(9, 1), "nino1", "true");
-        String tooEarlyPassEvents = joinAuditRecordsAsJsonList(passRequestTooEarly, passResponseTooEarly);
 
         // Fail too late - should NOT be counted
         String failRequestTooLate = fileUtils.buildRequest("correlation-id-2", TO_DATE.plusDays(1).atTime(9, 0), "nino2");
         String failResponseTooLate = fileUtils.buildResponse("correlation-id-2", TO_DATE.plusDays(1).atTime(9, 1), "nino2", "false");
-        String tooLateFailEvents = joinAuditRecordsAsJsonList(failRequestTooLate, failResponseTooLate);
 
         // Pass in range - should be counted
         String passRequestInRange = fileUtils.buildRequest("correlation-id-3", FROM_DATE.atTime(9, 0), "nino3");
         String passResponseInRange = fileUtils.buildResponse("correlation-id-3", FROM_DATE.atTime(9, 1), "nino3", "true");
-        String passEventsInRange = joinAuditRecordsAsJsonList(passRequestInRange, passResponseInRange);
 
         // Fail in range - should be counted.
         String failRequestInRange = fileUtils.buildRequest("correlation-id-4", TO_DATE.atTime(9, 0), "nino4");
         String failResponseInRange = fileUtils.buildResponse("correlation-id-4", TO_DATE.atTime(9, 1), "nino4", "false");
-        String failEventsInRange = joinAuditRecordsAsJsonList(failRequestInRange, failResponseInRange);
 
         // Not found out range last day - should NOT becounted
         String notFoundRequestTooLate = fileUtils.buildRequest("correlation-id-5", TO_DATE.plusDays(1).atTime(23, 58), "nino5");
         String notFoundResponseTooLate = fileUtils.buildResponseNotFound("correlation-id-5", TO_DATE.plusDays(1).atTime(23, 59));
-        String tooLateNotFoundEvents = joinAuditRecordsAsJsonList(notFoundRequestTooLate, notFoundResponseTooLate);
 
         // Error in range - should be counted.
         String errorRequestInRange = fileUtils.buildRequest("correlation-id-6", TO_DATE.atTime(9, 0), "nino6");
-        String errorEventInRange = joinAuditRecordsAsJsonList(errorRequestInRange);
         // Not having a corresponding response for the errorRequestInRange is what makes it an ERROR.
 
-        stubGetCorrelationIds("correlation-id-1", "correlation-id-2", "correlation-id-3", "correlation-id-4", "correlation-id-5", "correlation-id-6");
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-1")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(tooEarlyPassEvents, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-2")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(tooLateFailEvents, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-3")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(passEventsInRange, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-4")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(failEventsInRange, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-5")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(tooLateNotFoundEvents, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-6")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(errorEventInRange, APPLICATION_JSON));
+        mockGetCorrelationIds("correlation-id-1", "correlation-id-2", "correlation-id-3", "correlation-id-4", "correlation-id-5", "correlation-id-6");
+        mockGetHistoryByCorrelationId("correlation-id-1", passRequestTooEarly, passResponseTooEarly);
+        mockGetHistoryByCorrelationId("correlation-id-2", failRequestTooLate, failResponseTooLate);
+        mockGetHistoryByCorrelationId("correlation-id-3", passRequestInRange, passResponseInRange);
+        mockGetHistoryByCorrelationId("correlation-id-4", failRequestInRange, failResponseInRange);
+        mockGetHistoryByCorrelationId("correlation-id-5", notFoundRequestTooLate, notFoundResponseTooLate);
+        mockGetHistoryByCorrelationId("correlation-id-6", errorRequestInRange);
 
         mockArchivedResultsResponse(EMPTY_RESPONSE);
 
@@ -293,28 +170,12 @@ public class PassRateStatisticsServiceIT {
     public void passRateStatistics_archivedResults_addedToCount() {
         String passRequest = fileUtils.buildRequest("correlation-id-1", "2018-08-01 09:02:00.000", "nino 1");
         String passResponse = fileUtils.buildResponse("correlation-id-1", "2018-08-01 09:03:00.000", "nino 1", "true");
-        String passEvents = joinAuditRecordsAsJsonList(passRequest, passResponse);
         String failRequest = fileUtils.buildRequest("correlation-id-2", "2018-08-01 09:02:00.000", "nino 2");
         String failResponse = fileUtils.buildResponse("correlation-id-2", "2018-08-01 09:03:00.000", "nino 2", "false");
-        String failEvents = joinAuditRecordsAsJsonList(failRequest, failResponse);
 
-        stubGetCorrelationIds("correlation-id-1", "correlation-id-2");
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-1")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(passEvents, APPLICATION_JSON));
-
-        mockAuditService
-            .expect(requestTo(containsString("/historyByCorrelationId")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(requestTo(containsString("correlationId=correlation-id-2")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(failEvents, APPLICATION_JSON));
+        mockGetCorrelationIds("correlation-id-1", "correlation-id-2");
+        mockGetHistoryByCorrelationId("correlation-id-1", passRequest, passResponse);
+        mockGetHistoryByCorrelationId("correlation-id-2", failRequest, failResponse);
 
         String archivedResults = fileUtils.buildArchivedResults(0, 0, 1, 2);
         mockArchivedResultsResponse(archivedResults);
@@ -336,7 +197,7 @@ public class PassRateStatisticsServiceIT {
         return String.format("[ %s ]", String.join(", ", quotedCorrelationIds));
     }
 
-    private void stubGetCorrelationIds(String... correlationIds) {
+    private void mockGetCorrelationIds(String... correlationIds) {
         mockAuditService
             .expect(requestTo(containsString("/correlationIds")))
             .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
@@ -344,6 +205,16 @@ public class PassRateStatisticsServiceIT {
             .andExpect(method(GET))
             .andRespond(withSuccess(joinCorrelationIdsAsJsonList(correlationIds), APPLICATION_JSON));
 
+    }
+
+    private void mockGetHistoryByCorrelationId(String correlationId, String... auditRecords) {
+        mockAuditService
+            .expect(requestTo(containsString("/historyByCorrelationId")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(requestTo(containsString("correlationId=" + correlationId)))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(joinAuditRecordsAsJsonList(auditRecords), APPLICATION_JSON));
     }
 
     private void mockArchivedResultsResponse(String response) {
