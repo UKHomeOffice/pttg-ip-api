@@ -24,7 +24,6 @@ public class PassStatisticsCalculatorTest {
 
     private static final List<AuditResult> ANY_AUDIT_RESULTS = emptyList();
     private static final List<ArchivedResult> ANY_ARCHIVED_RESULTS = emptyList();
-    private static final List<String> ANY_CORRELATION_IDS = emptyList();
 
     private PassStatisticsCalculator accumulator = new PassStatisticsCalculator();
 

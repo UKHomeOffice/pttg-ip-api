@@ -12,6 +12,9 @@ import uk.gov.digital.ho.proving.income.audit.FileUtils;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -69,12 +72,7 @@ public class PassRateStatisticsServiceIT {
         String nino2FailResponse = fileUtils.buildResponse("correlation-id-2", "2018-08-01 09:00:01.000", "nino 2", "false");
         String correlationId2Events = joinAuditRecordsAsJsonList(nino2FailRequest, nino2FailResponse);
 
-        mockAuditService
-            .expect(requestTo(containsString("/correlationIds")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess("[ \"correlation-id-1\", \"correlation-id-2\" ]", APPLICATION_JSON));
+        stubGetCorrelationIds("correlation-id-1", "correlation-id-2");
 
         mockAuditService
             .expect(requestTo(containsString("/historyByCorrelationId")))
@@ -135,15 +133,8 @@ public class PassRateStatisticsServiceIT {
         String nino4ErrorRequest = fileUtils.buildRequest("correlation-id-7", "2018-08-01 09:11:00.000", "nino 4");
         String correlationId7Events = joinAuditRecordsAsJsonList(nino4ErrorRequest);
 
-        mockAuditService
-            .expect(requestTo(containsString("/correlationIds")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(
-                "[ \"correlation-id-1\", \"correlation-id-2\", \"correlation-id-3\"," +
-                    " \"correlation-id-4\", \"correlation-id-5\", \"correlation-id-6\", \"correlation-id-7\"]",
-                APPLICATION_JSON));
+        stubGetCorrelationIds("correlation-id-1", "correlation-id-2", "correlation-id-3", "correlation-id-4", "correlation-id-5",
+                              "correlation-id-6", "correlation-id-7");
 
         mockAuditService
             .expect(requestTo(containsString("/historyByCorrelationId")))
@@ -241,15 +232,7 @@ public class PassRateStatisticsServiceIT {
         String errorEventInRange = joinAuditRecordsAsJsonList(errorRequestInRange);
         // Not having a corresponding response for the errorRequestInRange is what makes it an ERROR.
 
-        mockAuditService
-            .expect(requestTo(containsString("/correlationIds")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(
-                "[ \"correlation-id-1\", \"correlation-id-2\", \"correlation-id-3\"," +
-                    " \"correlation-id-4\", \"correlation-id-5\", \"correlation-id-6\"]",
-                APPLICATION_JSON));
+        stubGetCorrelationIds("correlation-id-1", "correlation-id-2", "correlation-id-3", "correlation-id-4", "correlation-id-5", "correlation-id-6");
 
         mockAuditService
             .expect(requestTo(containsString("/historyByCorrelationId")))
@@ -315,14 +298,7 @@ public class PassRateStatisticsServiceIT {
         String failResponse = fileUtils.buildResponse("correlation-id-2", "2018-08-01 09:03:00.000", "nino 2", "false");
         String failEvents = joinAuditRecordsAsJsonList(failRequest, failResponse);
 
-        mockAuditService
-            .expect(requestTo(containsString("/correlationIds")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
-            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(
-                "[ \"correlation-id-1\", \"correlation-id-2\" ]",
-                APPLICATION_JSON));
+        stubGetCorrelationIds("correlation-id-1", "correlation-id-2");
 
         mockAuditService
             .expect(requestTo(containsString("/historyByCorrelationId")))
@@ -350,6 +326,24 @@ public class PassRateStatisticsServiceIT {
 
     private String joinAuditRecordsAsJsonList(String... auditRecords) {
         return String.format("[%s]", String.join(", ", auditRecords));
+    }
+
+    private String joinCorrelationIdsAsJsonList(String... correlationIds) {
+        List<String> quotedCorrelationIds = Arrays.stream(correlationIds)
+                                                  .map(correlationId -> String.format("\"%s\"", correlationId))
+                                                  .collect(Collectors.toList());
+
+        return String.format("[ %s ]", String.join(", ", quotedCorrelationIds));
+    }
+
+    private void stubGetCorrelationIds(String... correlationIds) {
+        mockAuditService
+            .expect(requestTo(containsString("/correlationIds")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST")))
+            .andExpect(requestTo(containsString("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(joinCorrelationIdsAsJsonList(correlationIds), APPLICATION_JSON));
+
     }
 
     private void mockArchivedResultsResponse(String response) {
