@@ -49,20 +49,24 @@ public class PassRateStatisticsService {
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         List<String> allCorrelationIds = auditClient.getAllCorrelationIdsForEventType(AUDIT_EVENTS_TO_RETRIEVE);
 
-        List<AuditResult> results = getAuditResultByNinos(allCorrelationIds);
+        List<AuditResult> results = getAuditResults(allCorrelationIds);
 
         List<ArchivedResult> archivedResults = auditClient.getArchivedResults(fromDate, toDate);
         return calculator.result(results, archivedResults, fromDate, toDate);
     }
 
-    private List<AuditResult> getAuditResultByNinos(List<String> allCorrelationIds) {
+    private List<AuditResult> getAuditResults(List<String> allCorrelationIds) {
         Map<String, AuditResult> bestResultsByNino = new HashMap<>();
         for (String correlationId : allCorrelationIds) {
-            List<AuditRecord> auditRecordsForCorrelationId = auditClient.getHistoryByCorrelationId(correlationId, AUDIT_EVENTS_TO_RETRIEVE);
-            AuditResult auditResult = consolidator.getAuditResult(auditRecordsForCorrelationId);
+            AuditResult auditResult = getAuditResultForCorrelationId(correlationId);
             updateBestResults(bestResultsByNino, auditResult);
         }
         return new ArrayList<>(bestResultsByNino.values());
+    }
+
+    private AuditResult getAuditResultForCorrelationId(String correlationId) {
+        List<AuditRecord> auditRecordsForCorrelationId = auditClient.getHistoryByCorrelationId(correlationId, AUDIT_EVENTS_TO_RETRIEVE);
+        return consolidator.getAuditResult(auditRecordsForCorrelationId);
     }
 
     private void updateBestResults(Map<String, AuditResult> bestResultsByNino, AuditResult newResult) {
