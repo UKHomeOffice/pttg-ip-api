@@ -117,7 +117,7 @@ public class PassRateStatisticsServiceTest {
     @Test
     public void generatePassStatistics_givenResultsFromAuditService_passedToConsolidator() {
 
-        List<String> correlationIds = stubGetAllCorrelationIds("some correlationId", "some other correlation id");
+        stubGetAllCorrelationIds("some correlationId", "some other correlation id");
 
         List<AuditRecord> someAuditRecords = asList(
             new AuditRecord("some id", SOME_DATE_TIME, "some email", SOME_AUDIT_EVENT_TYPE, SOME_JSON, "some nino"),
@@ -264,4 +264,3 @@ public class PassRateStatisticsServiceTest {
         return allCorrelationIds;
     }
 }
-
