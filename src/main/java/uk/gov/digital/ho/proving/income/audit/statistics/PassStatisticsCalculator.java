@@ -2,7 +2,7 @@ package uk.gov.digital.ho.proving.income.audit.statistics;
 
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.ArchivedResult;
-import uk.gov.digital.ho.proving.income.audit.AuditResultByNino;
+import uk.gov.digital.ho.proving.income.audit.AuditResult;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 
 import java.time.LocalDate;
@@ -17,9 +17,9 @@ import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
 @Component
 class PassStatisticsCalculator {
 
-    PassRateStatistics result(List<AuditResultByNino> records, List<ArchivedResult> archivedResults, LocalDate fromDate, LocalDate toDate) {
+    PassRateStatistics result(List<AuditResult> records, List<ArchivedResult> archivedResults, LocalDate fromDate, LocalDate toDate) {
 
-        List<AuditResultByNino> resultsInRange = filterInDateRange(records, fromDate, toDate);
+        List<AuditResult> resultsInRange = filterInDateRange(records, fromDate, toDate);
         Map<AuditResultType, Long> countsByResult = countByResultType(resultsInRange);
 
         long passes = combineCounts(PASS, countsByResult, archivedResults);
@@ -39,19 +39,19 @@ class PassStatisticsCalculator {
             .build();
     }
 
-    private List<AuditResultByNino> filterInDateRange(List<AuditResultByNino> records, LocalDate fromDate, LocalDate toDate) {
+    private List<AuditResult> filterInDateRange(List<AuditResult> records, LocalDate fromDate, LocalDate toDate) {
         return records.stream()
             .filter(auditResult -> isInDateRange(auditResult, fromDate, toDate))
             .collect(toList());
     }
 
-    private boolean isInDateRange(AuditResultByNino auditResult, LocalDate fromDate, LocalDate toDate) {
+    private boolean isInDateRange(AuditResult auditResult, LocalDate fromDate, LocalDate toDate) {
         return !auditResult.date().isBefore(fromDate) && !auditResult.date().isAfter(toDate);
     }
 
-    private Map<AuditResultType, Long> countByResultType(List<AuditResultByNino> resultsInRange) {
+    private Map<AuditResultType, Long> countByResultType(List<AuditResult> resultsInRange) {
         return resultsInRange.stream()
-            .collect(groupingBy(AuditResultByNino::resultType, Collectors.counting()));
+            .collect(groupingBy(AuditResult::resultType, Collectors.counting()));
     }
 
     private long combineCounts(AuditResultType resultType, Map<AuditResultType, Long> countsByResult, List<ArchivedResult> archivedResults) {

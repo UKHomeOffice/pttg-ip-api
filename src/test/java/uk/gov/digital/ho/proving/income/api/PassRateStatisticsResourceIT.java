@@ -53,13 +53,19 @@ public class PassRateStatisticsResourceIT {
 
     @Test
     public void passRateStatistics_someArchivedData_returnExpectedContent() {
+        String correlationIdsResponse = String.format("[\"%s\"]", "3743b803-bd87-4518-8cae-d5b3e0566396");
+        mockAuditService.expect(requestTo(containsString("/correlationIds")))
+                        .andExpect(method(GET))
+                        .andRespond(withSuccess(correlationIdsResponse, MediaType.APPLICATION_JSON));
+
         String historyResponse = String.format("[%s,%s]", readResource(auditRecordRequest), readResource(auditRecordResponsePass));
-        mockAuditService.expect(requestTo(containsString("/history")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess(historyResponse, MediaType.APPLICATION_JSON));
+        mockAuditService.expect(requestTo(containsString("/historyByCorrelationId")))
+                        .andExpect(method(GET))
+                        .andRespond(withSuccess(historyResponse, MediaType.APPLICATION_JSON));
+
         mockAuditService.expect(requestTo(containsString("/archive")))
-            .andExpect(method(GET))
-            .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+                        .andExpect(method(GET))
+                        .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
 
         ResponseEntity<String> response = testRestTemplate.exchange("/statistics?month={month}", GET, null, String.class, ImmutableMap.of("month", "2019-02"));
 
@@ -70,7 +76,7 @@ public class PassRateStatisticsResourceIT {
 
     @Test
     public void passRateStatistics_requestByDate_returnSuccess() {
-        mockAuditService.expect(requestTo(containsString("/history")))
+        mockAuditService.expect(requestTo(containsString("/correlationIds")))
             .andExpect(method(GET))
             .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
         mockAuditService.expect(requestTo(containsString("/archive")))

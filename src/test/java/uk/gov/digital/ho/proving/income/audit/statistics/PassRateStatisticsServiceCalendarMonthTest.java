@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
+import uk.gov.digital.ho.proving.income.audit.AuditResultComparator;
 import uk.gov.digital.ho.proving.income.audit.AuditResultConsolidator;
 
 import java.time.LocalDate;
@@ -25,14 +26,14 @@ public class PassRateStatisticsServiceCalendarMonthTest {
     private AuditResultConsolidator mockConsolidator;
     @Mock
     private PassStatisticsCalculator mockPassStatisticsCalculator;
+    @Mock
+    private AuditResultComparator mockResultComparator;
 
     private PassRateStatisticsService service;
 
-    private static final int PAGE_SIZE = 2;
-
     @Before
     public void setUp() {
-        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, PAGE_SIZE);
+        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, mockResultComparator);
     }
 
     @Test

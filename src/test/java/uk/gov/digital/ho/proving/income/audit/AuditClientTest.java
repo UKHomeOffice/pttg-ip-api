@@ -378,40 +378,6 @@ public class AuditClientTest {
     }
 
     @Test
-    public void getAuditHistoryPaginated_givenParams_expectedUri() {
-        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
-            .thenReturn(ResponseEntity.ok(emptyList()));
-
-        List<AuditEventType> eventTypes = singletonList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST);
-        int page = 23;
-        int size = 8;
-        auditClient.getAuditHistoryPaginated(eventTypes, page, size);
-
-        URI uri = captorUri.getValue();
-        assertThat(uri).hasHost(SOME_HISTORY_ENDPOINT.replace("http://", ""));
-
-        String[] queryStringComponents = uri.getQuery().split("&");
-        assertThat(queryStringComponents).containsExactlyInAnyOrder(
-            "eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST",
-            "page=" + page,
-            "size=" + size
-        );
-    }
-
-    @Test
-    public void getAuditHistoryPaginated_givenResponse_returnRecords() {
-        List<AuditRecord> results = emptyList();
-        stubResponse(results);
-
-        List<AuditEventType> someEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        int somePage = 1;
-        int someSize = 1;
-
-        assertThat(auditClient.getAuditHistoryPaginated(someEventTypes, somePage, someSize))
-            .isEqualTo(results);
-    }
-
-    @Test
     public void getArchivedResults_givenDates_expectedUri() {
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<ArchivedResult>>() {})))
             .thenReturn(ResponseEntity.ok(emptyList()));
