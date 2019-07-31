@@ -78,6 +78,8 @@ public class AuditClientTest {
     private static final String SOME_HISTORY_BY_CORRELATION_ID_ENDPOINT = "http://some-history-by-correlation-id-endpoint";
     private static final int HISTORY_PAGE_SIZE = 2;
 
+    private static final List<AuditEventType> ANY_EVENT_TYPES = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+
     @BeforeClass
     public static void beforeAllTests() {
         defaultTimeZone = TimeZone.getDefault();
@@ -443,11 +445,9 @@ public class AuditClientTest {
 
     @Test
     public void getAllCorrelationIdsForEventType_anyRequest_expectedUrlCalled() {
-        List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        stubGetAllCorrelationIds();
 
-        stubGetAllCorrelationIds(asList("any correlation id", "any other correlation id"));
-
-        auditClient.getAllCorrelationIdsForEventType(anyEventTypes);
+        auditClient.getAllCorrelationIdsForEventType(ANY_EVENT_TYPES);
         assertThat(captorUri.getValue())
             .hasHost(SOME_CORRELATION_IDS_ENDPOINT.replace("http://", ""));
     }
@@ -456,7 +456,7 @@ public class AuditClientTest {
     public void getAllCorrelationIdsForEventType_givenEventTypes_queryParametersCorrect() {
         List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
 
-        stubGetAllCorrelationIds(asList("any correlation id", "any other correlation id"));
+        stubGetAllCorrelationIds();
 
         auditClient.getAllCorrelationIdsForEventType(eventTypes);
 
@@ -466,11 +466,10 @@ public class AuditClientTest {
 
     @Test
     public void getAllCorrelationIdsForEventType_anyRequest_shouldSetHeaders() {
-        List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
         stubRequestData();
-        stubGetAllCorrelationIds(asList("any correlation id", "any other correlation id"));
+        stubGetAllCorrelationIds();
 
-        auditClient.getAllCorrelationIdsForEventType(anyEventTypes);
+        auditClient.getAllCorrelationIdsForEventType(ANY_EVENT_TYPES);
 
         verify(mockRestTemplate).exchange(any(URI.class), eq(GET), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<String>>() {}));
 
@@ -483,8 +482,7 @@ public class AuditClientTest {
         List<String> expectedCorrelationIds = asList("some correlation id", "some other correlation id");
         stubGetAllCorrelationIds(expectedCorrelationIds);
 
-        List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        List<String> actualCorrelationIds = auditClient.getAllCorrelationIdsForEventType(anyEventTypes);
+        List<String> actualCorrelationIds = auditClient.getAllCorrelationIdsForEventType(ANY_EVENT_TYPES);
 
         assertThat(actualCorrelationIds).isEqualTo(expectedCorrelationIds);
     }
@@ -493,8 +491,7 @@ public class AuditClientTest {
     public void getHistoryByCorrelationId_anyRequest_expectedUriCalled() {
         stubGetHistoryForCorrelationId();
 
-        List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        auditClient.getHistoryByCorrelationId("any correlation id", anyEventTypes);
+        auditClient.getHistoryByCorrelationId("any correlation id", ANY_EVENT_TYPES);
 
         assertThat(captorUri.getValue())
             .hasHost(SOME_HISTORY_BY_CORRELATION_ID_ENDPOINT.replace("http://", ""));
@@ -519,8 +516,7 @@ public class AuditClientTest {
         stubRequestData();
         stubGetHistoryForCorrelationId();
 
-        List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-        auditClient.getHistoryByCorrelationId("any correlation ID", anyEventTypes);
+        auditClient.getHistoryByCorrelationId("any correlation ID", ANY_EVENT_TYPES);
 
         verify(mockRestTemplate).exchange(any(URI.class), eq(GET), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<AuditRecord>>() {}));
 
@@ -530,14 +526,12 @@ public class AuditClientTest {
 
     @Test
     public void getHistoryByCorrelationId_givenResponse_returnAuditRecords() {
-        List<AuditEventType> anyEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
-
         AuditRecord someAuditRecord = new AuditRecord("some id", LocalDateTime.now(), "some email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, null, "some nino");
         stubGetHistoryForCorrelationId(someAuditRecord);
 
         List<AuditRecord> expectedAuditRecords = singletonList(someAuditRecord);
 
-        List<AuditRecord> actualAuditRecords = auditClient.getHistoryByCorrelationId("any correlation ID", anyEventTypes);
+        List<AuditRecord> actualAuditRecords = auditClient.getHistoryByCorrelationId("any correlation ID", ANY_EVENT_TYPES);
         assertThat(actualAuditRecords).isEqualTo(expectedAuditRecords);
     }
 
@@ -552,12 +546,9 @@ public class AuditClientTest {
         when(mockRequestData.correlationId()).thenReturn("some correlation id");
     }
 
-    private void stubResponse(List<AuditRecord> results) {
-        ResponseEntity<List<AuditRecord>> response = ResponseEntity.ok(results);
-        when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
-            .thenReturn(response);
+    private void stubGetAllCorrelationIds() {
+        stubGetAllCorrelationIds(asList("any correlation id", "any other correlation id"));
     }
-
     private void stubGetAllCorrelationIds(List<String> correlationIds) {
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<String>>() {})))
             .thenReturn(ResponseEntity.ok(correlationIds));
