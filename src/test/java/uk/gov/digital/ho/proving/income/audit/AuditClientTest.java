@@ -79,6 +79,7 @@ public class AuditClientTest {
     private static final int HISTORY_PAGE_SIZE = 2;
 
     private static final List<AuditEventType> ANY_EVENT_TYPES = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+    private static final LocalDate ANY_DATE = LocalDate.now();
 
     @BeforeClass
     public static void beforeAllTests() {
@@ -488,6 +489,52 @@ public class AuditClientTest {
     }
 
     @Test
+    public void getAllCorrelationIdsForEventType_withDate_expectedUrlCalled() {
+        stubGetAllCorrelationIds(asList("any correlation id", "any other correlation id"));
+
+        auditClient.getAllCorrelationIdsForEventType(ANY_EVENT_TYPES, ANY_DATE);
+
+        assertThat(captorUri.getValue())
+            .hasHost(SOME_CORRELATION_IDS_ENDPOINT.replace("http://", ""));
+    }
+
+    @Test
+    public void getAllCorrelationIdsForEventType_withDate_queryParametersCorrect() {
+        List<AuditEventType> eventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+        LocalDate toDate = LocalDate.parse("2019-07-31");
+
+        stubGetAllCorrelationIds();
+
+        auditClient.getAllCorrelationIdsForEventType(eventTypes, toDate);
+        String[] queryStringComponents = captorUri.getValue().getQuery().split("&");
+        assertThat(queryStringComponents).containsExactlyInAnyOrder("eventTypes=INCOME_PROVING_FINANCIAL_STATUS_REQUEST",
+                                                                    "eventTypes=INCOME_PROVING_FINANCIAL_STATUS_RESPONSE",
+                                                                    "toDate=2019-07-31");
+    }
+
+    @Test
+    public void getAllCorrelationIdsForEventType_withDate_shouldSetHeaders() {
+        stubRequestData();
+        stubGetAllCorrelationIds();
+
+        auditClient.getAllCorrelationIdsForEventType(ANY_EVENT_TYPES, ANY_DATE);
+
+        verify(mockRestTemplate).exchange(any(URI.class), eq(GET), captorHttpEntity.capture(), eq(new ParameterizedTypeReference<List<String>>() {}));
+
+        HttpHeaders headers = captorHttpEntity.getValue().getHeaders();
+        assertHeaders(headers);
+    }
+
+    @Test
+    public void getAllCorrelationIdsForEventType_withDate_returnCorrelationIds() {
+        List<String> expectedCorrelationIds = asList("some correlation id", "some other correlation id");
+        stubGetAllCorrelationIds(expectedCorrelationIds);
+
+        List<String> actualCorrelationIds = auditClient.getAllCorrelationIdsForEventType(ANY_EVENT_TYPES, ANY_DATE);
+        assertThat(actualCorrelationIds).isEqualTo(expectedCorrelationIds);
+    }
+
+    @Test
     public void getHistoryByCorrelationId_anyRequest_expectedUriCalled() {
         stubGetHistoryForCorrelationId();
 
@@ -549,6 +596,7 @@ public class AuditClientTest {
     private void stubGetAllCorrelationIds() {
         stubGetAllCorrelationIds(asList("any correlation id", "any other correlation id"));
     }
+
     private void stubGetAllCorrelationIds(List<String> correlationIds) {
         when(mockRestTemplate.exchange(captorUri.capture(), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<String>>() {})))
             .thenReturn(ResponseEntity.ok(correlationIds));

@@ -124,6 +124,13 @@ public class AuditClient {
         return response.getBody();
     }
 
+    public List<String> getAllCorrelationIdsForEventType(List<AuditEventType> eventTypes, LocalDate toDate) {
+        HttpEntity<Void> requestEntity = new HttpEntity<>(generateRestHeaders());
+        URI uri = generateCorrelationIdsUri(eventTypes, toDate);
+        ResponseEntity<List<String>> response = restTemplate.exchange(uri, GET, requestEntity, new ParameterizedTypeReference<List<String>>() {});
+        return response.getBody();
+    }
+
     public List<AuditRecord> getHistoryByCorrelationId(String correlationId, List<AuditEventType> eventTypes) {
         HttpEntity<Void> requestEntity = new HttpEntity<>(generateRestHeaders());
         URI uri = generateHistoryByCorrelationIdUri(correlationId, eventTypes);
@@ -131,6 +138,14 @@ public class AuditClient {
         return response.getBody();
     }
 
+    private URI generateCorrelationIdsUri(List<AuditEventType> eventTypes, LocalDate toDate) {
+        return UriComponentsBuilder.fromHttpUrl(correlationIdsEndpoint)
+                                   .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
+                                   .queryParam("toDate", toDate)
+                                   .build()
+                                   .encode()
+                                   .toUri();
+    }
     private URI generateCorrelationIdsUri(List<AuditEventType> eventTypes) {
         return UriComponentsBuilder.fromHttpUrl(correlationIdsEndpoint)
                                    .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
