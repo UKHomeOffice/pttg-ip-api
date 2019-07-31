@@ -20,6 +20,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
@@ -46,10 +47,11 @@ public class PassRateStatisticsServiceTest {
     private static final AuditResultType SOME_AUDIT_RESULT_TYPE = AuditResultType.PASS;
 
     private static final AuditResult ANY_AUDIT_RECORD = new AuditResult("any correlation id", LocalDate.now(), "any nino", SOME_AUDIT_RESULT_TYPE);
+    private static final int CUT_OFF_DAYS = 10;
 
     @Before
     public void setUp() {
-        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, mockResultComparator);
+        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, mockResultComparator, CUT_OFF_DAYS);
     }
 
     /**************************************************************
@@ -60,7 +62,7 @@ public class PassRateStatisticsServiceTest {
     public void generatePassStatistics_anyParams_getAllCorrelationIdsForEventType() {
 
         ArgumentCaptor<List<AuditEventType>> eventTypesCaptor = ArgumentCaptor.forClass(List.class);
-        when(mockAuditClient.getAllCorrelationIdsForEventType(eventTypesCaptor.capture()))
+        when(mockAuditClient.getAllCorrelationIdsForEventType(eventTypesCaptor.capture(), any(LocalDate.class)))
             .thenReturn(asList("any correlationId", "any other correlation id"));
         when(mockConsolidator.getAuditResult(any())).thenReturn(ANY_AUDIT_RECORD);
 
@@ -68,6 +70,17 @@ public class PassRateStatisticsServiceTest {
 
         assertThat(eventTypesCaptor.getValue())
             .contains(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
+    }
+
+    @Test
+    public void generatePassStatistics_givenEndDate_getAllCorrelationIdsWithCutOffDate() {
+        LocalDate anyDate = LocalDate.parse("2019-07-01");
+        LocalDate someEndDate = LocalDate.parse("2019-07-31");
+
+        service.generatePassRateStatistics(anyDate, someEndDate);
+
+        LocalDate expectedEndDate = someEndDate.plusDays(CUT_OFF_DAYS);
+        then(mockAuditClient).should().getAllCorrelationIdsForEventType(anyList(), eq(expectedEndDate));
     }
 
     @Test
@@ -259,7 +272,7 @@ public class PassRateStatisticsServiceTest {
 
     private List<String> stubGetAllCorrelationIds(String... correlationIds) {
         List<String> allCorrelationIds = asList(correlationIds);
-        when(mockAuditClient.getAllCorrelationIdsForEventType(any()))
+        when(mockAuditClient.getAllCorrelationIdsForEventType(any(), any(LocalDate.class)))
             .thenReturn(allCorrelationIds);
         return allCorrelationIds;
     }

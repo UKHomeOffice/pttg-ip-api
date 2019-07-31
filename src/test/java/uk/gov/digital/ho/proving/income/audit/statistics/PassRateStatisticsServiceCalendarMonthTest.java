@@ -33,7 +33,8 @@ public class PassRateStatisticsServiceCalendarMonthTest {
 
     @Before
     public void setUp() {
-        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, mockResultComparator);
+        int anyInt = 5;
+        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, mockResultComparator, anyInt);
     }
 
     @Test
