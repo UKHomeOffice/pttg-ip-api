@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.api.domain.TaxYear;
 import uk.gov.digital.ho.proving.income.audit.*;
@@ -26,16 +27,18 @@ public class PassRateStatisticsService {
     private final PassStatisticsCalculator calculator;
     private final AuditResultConsolidator consolidator;
     private final AuditResultComparator resultComparator;
+    private final int cutoffDays;
 
     public PassRateStatisticsService(AuditClient auditClient,
                                      PassStatisticsCalculator calculator,
                                      AuditResultConsolidator consolidator,
-                                     AuditResultComparator resultComparator) {
-
+                                     AuditResultComparator resultComparator,
+                                     @Value("${audit.history.cutoff.days}") int cutoffDays) {
         this.auditClient = auditClient;
         this.calculator = calculator;
         this.consolidator = consolidator;
         this.resultComparator = resultComparator;
+        this.cutoffDays = cutoffDays;
     }
 
     public PassRateStatistics generatePassRateStatistics(YearMonth calendarMonth) {
@@ -47,7 +50,8 @@ public class PassRateStatisticsService {
     }
 
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
-        List<String> allCorrelationIds = auditClient.getAllCorrelationIdsForEventType(AUDIT_EVENTS_TO_RETRIEVE);
+        LocalDate cutOffDate = toDate.plusDays(cutoffDays);
+        List<String> allCorrelationIds = auditClient.getAllCorrelationIdsForEventType(AUDIT_EVENTS_TO_RETRIEVE, cutOffDate);
 
         List<AuditResult> results = getAuditResults(allCorrelationIds);
 
