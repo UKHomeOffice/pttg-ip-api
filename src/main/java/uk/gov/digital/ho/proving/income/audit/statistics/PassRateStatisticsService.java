@@ -66,6 +66,21 @@ public class PassRateStatisticsService {
             updateBestResults(bestResultsByNino, auditResult);
         }
         return new ArrayList<>(bestResultsByNino.values());
+
+        // Build up a map where each nino is the key and all the query results for that nino are stored in a list as the value
+        // Map<String, List<AuditResult>> resultsByNino = new HashMap<>();
+        // for (String correlationId : allCorrelationIds) {
+        // AuditResult auditResult = getAuditResultForCorrelationId(correlationId);
+        //     if(!resultsByNino.hasKey(auditResult.nino()) {
+        //         resultByNino.put(auditResult.nino(), new ArrayList<>(singletonList(auditResult)));
+        //     } else {
+        //         resultByNino.get(auditResult.nino()).add(auditResult)
+        //     }
+        // }
+        //
+        // Consolidate the results into a single list - for each nino, sort results by date, split list if any 10 day gaps,
+        // for each split list of results - calculate best earliest result and put into the final results list.
+        //
     }
 
     private AuditResult getAuditResultForCorrelationId(String correlationId) {
