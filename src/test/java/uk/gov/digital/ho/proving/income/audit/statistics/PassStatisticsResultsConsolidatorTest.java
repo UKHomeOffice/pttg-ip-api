@@ -42,18 +42,17 @@ public class PassStatisticsResultsConsolidatorTest {
     }
 
     @Test
-    public void consolidateResults_emptyMap_returnEmptyList() {
-        assertThat(statisticsResultsConsolidator.consolidateResults(Collections.emptyMap()))
+    public void consolidateResults_emptyList_returnEmptyList() {
+        assertThat(statisticsResultsConsolidator.consolidateResults(Collections.emptyList()))
             .isEmpty();
     }
 
     @Test
     public void consolidateResults_oneResult_returnResult() {
         AuditResult someAuditResult = new AuditResult("any correlation id", ANY_DATE, SOME_NINO, ANY_RESULT);
+        List<AuditResult> singleResult = singletonList(someAuditResult);
 
-        Map<String, List<AuditResult>> someResults = ImmutableMap.of(SOME_NINO, singletonList(someAuditResult));
-
-        List<AuditResult> consolidatedResult = statisticsResultsConsolidator.consolidateResults(someResults);
+        List<AuditResult> consolidatedResult = statisticsResultsConsolidator.consolidateResults(singletonList(singleResult));
 
         assertThat(consolidatedResult).containsExactlyInAnyOrder(someAuditResult);
     }
@@ -63,10 +62,10 @@ public class PassStatisticsResultsConsolidatorTest {
         AuditResult someAuditResult = new AuditResult("any correlation id", ANY_DATE, SOME_NINO, AuditResultType.PASS);
         AuditResult someOtherAuditResult = new AuditResult("any other correlation id", ANY_DATE, SOME_OTHER_NINO, AuditResultType.FAIL);
 
-        Map<String, List<AuditResult>> someResults = ImmutableMap.of(SOME_NINO, singletonList(someAuditResult),
-                                                                     SOME_OTHER_NINO, singletonList(someOtherAuditResult));
+        List<List<AuditResult>> someResultsGroupedByNino = Arrays.asList(singletonList(someAuditResult),
+                                                                         singletonList(someOtherAuditResult));
 
-        List<AuditResult> consolidatedResult = statisticsResultsConsolidator.consolidateResults(someResults);
+        List<AuditResult> consolidatedResult = statisticsResultsConsolidator.consolidateResults(someResultsGroupedByNino);
 
         assertThat(consolidatedResult).containsExactlyInAnyOrder(someAuditResult, someOtherAuditResult);
     }

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -39,7 +42,7 @@ public class PassStatisticsResultsConsolidatorIT {
         LocalDate withinCutoffDate = someDate.plusDays(CUTOFF_DAYS - 1);
         AuditResult worseResultWithinRange = new AuditResult("any other correlation id", withinCutoffDate, someNino, AuditResultType.FAIL);
 
-        Map<String, List<AuditResult>> someResults = ImmutableMap.of(someNino, Arrays.asList(betterResult, worseResultWithinRange));
+        List<List<AuditResult>> someResults = singletonList(asList(betterResult, worseResultWithinRange));
 
         List<AuditResult> consolidatedResult = consolidator.consolidateResults(someResults);
 
@@ -55,7 +58,7 @@ public class PassStatisticsResultsConsolidatorIT {
         LocalDate withinCutoffDate = someDate.plusDays(CUTOFF_DAYS - 1);
         AuditResult betterResultInRange = new AuditResult("any other correlation id", withinCutoffDate, someNino, AuditResultType.PASS);
 
-        Map<String, List<AuditResult>> someResults = ImmutableMap.of(someNino, Arrays.asList(worseResult, betterResultInRange));
+        List<List<AuditResult>> someResults = singletonList(asList(worseResult, betterResultInRange));
 
         List<AuditResult> consolidatedResult = consolidator.consolidateResults(someResults);
 
@@ -75,8 +78,8 @@ public class PassStatisticsResultsConsolidatorIT {
         AuditResult betterResult = new AuditResult("any correlation id", someDate, someOtherNino, AuditResultType.NOTFOUND);
         AuditResult worseResultInRange = new AuditResult("any correlation id", withinCutoffDate, someOtherNino, AuditResultType.ERROR);
 
-        Map<String, List<AuditResult>> someResults = ImmutableMap.of(someNino, Arrays.asList(worseResult, betterResultInRange),
-                                                                     someOtherNino, Arrays.asList(betterResult, worseResultInRange));
+        List<List<AuditResult>> someResults = asList(asList(worseResult, betterResultInRange),
+                                                     asList(betterResult, worseResult));
 
         List<AuditResult> consolidatedResult = consolidator.consolidateResults(someResults);
         assertThat(consolidatedResult).containsExactlyInAnyOrder(betterResult, betterResultInRange);
@@ -90,7 +93,7 @@ public class PassStatisticsResultsConsolidatorIT {
         AuditResult someResult = new AuditResult("any correlation id", SOME_DATE, someNino, AuditResultType.PASS);
         AuditResult resultAfterCutoffDate = new AuditResult("any correlation id", afterCutoffDate, someNino, AuditResultType.FAIL);
 
-        Map<String, List<AuditResult>> someResults = ImmutableMap.of(someNino, Arrays.asList(someResult, resultAfterCutoffDate));
+        List<List<AuditResult>> someResults = singletonList(asList(someResult, resultAfterCutoffDate));
 
         List<AuditResult> consolidatedResult = consolidator.consolidateResults(someResults);
         assertThat(consolidatedResult).containsExactlyInAnyOrder(someResult, resultAfterCutoffDate);
@@ -100,17 +103,13 @@ public class PassStatisticsResultsConsolidatorIT {
     public void consolidateResults_multipleNinosAndResults_splitWhenAfterCutoff() {
         List<AuditResult> shouldBePassAndFail = passAndAFail();
         List<AuditResult> shouldBeNotFoundAndError = notFoundAndAnError();
-        List<AuditResult> shouldBePass = Collections.singletonList(new AuditResult("any correlation id", SOME_DATE, "nino3", AuditResultType.PASS));
+        List<AuditResult> shouldBePass = singletonList(new AuditResult("any correlation id", SOME_DATE, "nino3", AuditResultType.PASS));
 
-        Map<String, List<AuditResult>> someResults = ImmutableMap.<String, List<AuditResult>>builder()
-            .put("nino1", shouldBePassAndFail)
-            .put("nino2", shouldBeNotFoundAndError)
-            .put("nino3", shouldBePass)
-            .build();
+        List<List<AuditResult>> someResults = asList(shouldBePassAndFail, shouldBeNotFoundAndError, shouldBePass);
 
-        List<AuditResult> expectedResults = Arrays.asList(shouldBePassAndFail.get(1), shouldBePassAndFail.get(2),
-                                                          shouldBeNotFoundAndError.get(0), shouldBeNotFoundAndError.get(1),
-                                                          shouldBePass.get(0));
+        List<AuditResult> expectedResults = asList(shouldBePassAndFail.get(1), shouldBePassAndFail.get(2),
+                                                   shouldBeNotFoundAndError.get(0), shouldBeNotFoundAndError.get(1),
+                                                   shouldBePass.get(0));
 
 
         List<AuditResult> actualResults = consolidator.consolidateResults(someResults);
@@ -122,7 +121,7 @@ public class PassStatisticsResultsConsolidatorIT {
         LocalDate date2 = withinCutoff(SOME_DATE);
         LocalDate date3 = afterCutoff(date2);
         LocalDate date4 = withinCutoff(date3);
-        return Arrays.asList(
+        return asList(
             new AuditResult("any correlation id", SOME_DATE, "nino1", AuditResultType.ERROR),
             new AuditResult("any correlation id", date2, "nino1", AuditResultType.PASS),
 
@@ -134,7 +133,7 @@ public class PassStatisticsResultsConsolidatorIT {
         LocalDate date2 = afterCutoff(SOME_DATE);
         LocalDate date3 = withinCutoff(date2);
 
-        return Arrays.asList(
+        return asList(
             new AuditResult("any correlation id", SOME_DATE, "nino2", AuditResultType.ERROR),
 
             new AuditResult("any correlation id", date2, "nino2", AuditResultType.NOTFOUND),

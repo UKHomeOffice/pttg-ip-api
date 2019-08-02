@@ -20,7 +20,15 @@ public class PassStatisticsResultsConsolidator {
         this.cutoffDays = cutoffDays;
     }
 
-    List<AuditResult> consolidateResults(Map<String, List<AuditResult>> resultsByNino) { // TODO OJR EE-21001 2019-08-01 This might be better as a list of lists
+    List<AuditResult> consolidateResults(List<List<AuditResult>> resultsGroupedByNino) {
+        Map<String, List<AuditResult>> resultsByNino = resultsGroupedByNino.stream()
+                                                                           .collect(Collectors.toMap(resultGroupedByNino -> resultGroupedByNino.get(0).nino(),
+                                                                                                     resultGroupedByNino -> resultGroupedByNino,
+                                                                                                     (a, b) -> b));
+        return consolidateResults(resultsByNino);
+    }
+
+    List<AuditResult> consolidateResults(Map<String, List<AuditResult>> resultsByNino) {
         List<AuditResult> consolidatedResults = new ArrayList<>();
         for (List<AuditResult> results : resultsByNino.values()) {
             List<List<AuditResult>> separateResults = separateResultsByCutoff(results);
