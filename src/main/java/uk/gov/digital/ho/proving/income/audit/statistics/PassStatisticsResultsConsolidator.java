@@ -21,16 +21,8 @@ public class PassStatisticsResultsConsolidator {
     }
 
     List<AuditResult> consolidateResults(List<List<AuditResult>> resultsGroupedByNino) {
-        Map<String, List<AuditResult>> resultsByNino = resultsGroupedByNino.stream()
-                                                                           .collect(Collectors.toMap(resultGroupedByNino -> resultGroupedByNino.get(0).nino(),
-                                                                                                     resultGroupedByNino -> resultGroupedByNino,
-                                                                                                     (a, b) -> b));
-        return consolidateResults(resultsByNino);
-    }
-
-    List<AuditResult> consolidateResults(Map<String, List<AuditResult>> resultsByNino) {
         List<AuditResult> consolidatedResults = new ArrayList<>();
-        for (List<AuditResult> results : resultsByNino.values()) {
+        for (List<AuditResult> results : resultsGroupedByNino) {
             List<List<AuditResult>> separateResults = separateResultsByCutoff(results);
             for (List<AuditResult> groupedResult : separateResults) {
                 AuditResult bestResult = groupedResult.stream()
