@@ -67,6 +67,7 @@ public class PassRateStatisticsService {
         }
         return new ArrayList<>(bestResultsByNino.values());
 
+        // TODO EE-21001 - probable new routine:
         // Build up a map where each nino is the key and all the query results for that nino are stored in a list as the value
         // Map<String, List<AuditResult>> resultsByNino = new HashMap<>();
         // for (String correlationId : allCorrelationIds) {
@@ -80,7 +81,7 @@ public class PassRateStatisticsService {
         //
         // Consolidate the results into a single list - for each nino, sort results by date, split list if any 10 day gaps,
         // for each split list of results - calculate best earliest result and put into the final results list.
-        //
+        // return PassRateStatisticsConsolidator.consolidateResults(resultByNino.values())
     }
 
     private AuditResult getAuditResultForCorrelationId(String correlationId) {
