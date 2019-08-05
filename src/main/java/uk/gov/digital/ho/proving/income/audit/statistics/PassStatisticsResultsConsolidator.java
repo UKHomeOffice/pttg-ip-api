@@ -43,7 +43,7 @@ public class PassStatisticsResultsConsolidator {
 
         for (AuditResult auditResult : sortedByDate) {
 
-            if (sameRequestResults.afterCutoff(cutoffDays, auditResult)) {
+            if (sameRequestResults.resultAfterCutoff(cutoffDays, auditResult)) {
                 sameRequestResults = startNewGroup(groupedByCutoff);
             }
             sameRequestResults.add(auditResult);

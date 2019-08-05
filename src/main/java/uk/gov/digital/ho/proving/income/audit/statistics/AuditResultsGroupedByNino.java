@@ -32,7 +32,7 @@ public class AuditResultsGroupedByNino extends ForwardingList<AuditResult> {
                        .orElse(null);
     }
 
-    public boolean afterCutoff(int cutoffDays, AuditResult auditResult) {
+    public boolean resultAfterCutoff(int cutoffDays, AuditResult auditResult) {
         if (latestDate() == null) {
             return false;
         }

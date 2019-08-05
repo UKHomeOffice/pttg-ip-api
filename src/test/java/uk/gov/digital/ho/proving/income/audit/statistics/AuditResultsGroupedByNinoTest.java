@@ -132,13 +132,13 @@ public class AuditResultsGroupedByNinoTest {
     }
 
     @Test
-    public void afterCutoff_empty_alwaysFalse() {
+    public void resultAfterCutoff_empty_alwaysFalse() {
         AuditResultsGroupedByNino emptyResults = new AuditResultsGroupedByNino();
-        assertThat(emptyResults.afterCutoff(ANY_INT, ANY_RESULT)).isFalse();
+        assertThat(emptyResults.resultAfterCutoff(ANY_INT, ANY_RESULT)).isFalse();
     }
 
     @Test
-    public void afterCutoff_oneDayBeforeCutoff_false() {
+    public void resultAfterCutoff_oneDayBeforeCutoff_false() {
         LocalDate someDate = LocalDate.now();
         int someCutoffDays = 5;
         LocalDate beforeCutoff = someDate.plusDays(someCutoffDays - 1);
@@ -146,11 +146,11 @@ public class AuditResultsGroupedByNinoTest {
         AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(someDate));
 
         AuditResult resultBeforeCutoff = resultFor(beforeCutoff);
-        assertThat(groupedResults.afterCutoff(someCutoffDays, resultBeforeCutoff)).isFalse();
+        assertThat(groupedResults.resultAfterCutoff(someCutoffDays, resultBeforeCutoff)).isFalse();
     }
 
     @Test
-    public void afterCutoff_cutOffDay_false() {
+    public void resultAfterCutoff_cutOffDay_false() {
         LocalDate someDate = LocalDate.now();
         int someCutoffDays = 5;
         LocalDate onCutoff = someDate.plusDays(someCutoffDays);
@@ -158,11 +158,11 @@ public class AuditResultsGroupedByNinoTest {
         AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(someDate));
 
         AuditResult resultOnCutoff = resultFor(onCutoff);
-        assertThat(groupedResults.afterCutoff(someCutoffDays, resultOnCutoff)).isFalse();
+        assertThat(groupedResults.resultAfterCutoff(someCutoffDays, resultOnCutoff)).isFalse();
     }
 
     @Test
-    public void afterCutoff_afterCutOffDay_true() {
+    public void resultAfterCutoff_afterCutOffDay_true() {
         LocalDate someDate = LocalDate.now();
         int someCutoffDays = 5;
         LocalDate afterCutoff = someDate.plusDays(someCutoffDays + 1);
@@ -170,7 +170,7 @@ public class AuditResultsGroupedByNinoTest {
         AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(someDate));
 
         AuditResult resultAfterCutoff = resultFor(afterCutoff);
-        assertThat(groupedResults.afterCutoff(someCutoffDays, resultAfterCutoff)).isTrue();
+        assertThat(groupedResults.resultAfterCutoff(someCutoffDays, resultAfterCutoff)).isTrue();
     }
 
     private AuditResult resultFor(LocalDate date) {
