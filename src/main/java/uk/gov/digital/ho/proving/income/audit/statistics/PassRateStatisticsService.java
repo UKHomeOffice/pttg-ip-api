@@ -69,11 +69,11 @@ public class PassRateStatisticsService {
 
         // TODO EE-21001 - probable new routine:
         // Build up a map where each nino is the key and all the query results for that nino are stored in a list as the value
-        // Map<String, List<AuditResult>> resultsByNino = new HashMap<>();
+        // Map<String, AuditResultsGroupedByNino> resultsByNino = new HashMap<>();
         // for (String correlationId : allCorrelationIds) {
         // AuditResult auditResult = getAuditResultForCorrelationId(correlationId);
         //     if(!resultsByNino.hasKey(auditResult.nino()) {
-        //         resultByNino.put(auditResult.nino(), new ArrayList<>(singletonList(auditResult)));
+        //         resultByNino.put(auditResult.nino(), AuditResultsGroupedByNino(auditResult)));
         //     } else {
         //         resultByNino.get(auditResult.nino()).add(auditResult)
         //     }
