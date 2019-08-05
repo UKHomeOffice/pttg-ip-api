@@ -23,21 +23,21 @@ public class PassStatisticsResultsConsolidator {
     }
 
     List<AuditResult> consolidateResults(List<AuditResultsGroupedByNino> resultsGroupedByNino) {
-        List<List<AuditResult>> separatedByCutoff = resultsGroupedByNino.stream()
-                                                                        .map(this::separateResultsByCutoff)
-                                                                        .flatMap(Collection::stream)
-                                                                        .collect(Collectors.toList());
+        List<AuditResultsGroupedByNino> separatedByCutoff = resultsGroupedByNino.stream()
+                                                                                .map(this::separateResultsByCutoff)
+                                                                                .flatMap(Collection::stream)
+                                                                                .collect(Collectors.toList());
 
         return separatedByCutoff.stream()
                                 .map(this::earliestBestResult)
                                 .collect(Collectors.toList());
     }
 
-    List<List<AuditResult>> separateResultsByCutoff(AuditResultsGroupedByNino results) {
+    List<AuditResultsGroupedByNino> separateResultsByCutoff(AuditResultsGroupedByNino results) {
         List<AuditResult> sortedByDate = sortByDate(results);
-        List<List<AuditResult>> groupedByCutoff = new ArrayList<>();
+        List<AuditResultsGroupedByNino> groupedByCutoff = new ArrayList<>();
 
-        List<AuditResult> sameRequestResults = startNewGroup(groupedByCutoff);
+        AuditResultsGroupedByNino sameRequestResults = startNewGroup(groupedByCutoff);
 
         for (AuditResult auditResult : sortedByDate) {
             long dayOfResult = auditResult.date().toEpochDay();
@@ -54,8 +54,9 @@ public class PassStatisticsResultsConsolidator {
         return filterEmpty(groupedByCutoff);
     }
 
-    private AuditResult earliestBestResult(List<AuditResult> auditResults) {
-        return auditResults.stream()
+    private AuditResult earliestBestResult(AuditResultsGroupedByNino auditResults) {
+        return auditResults.results()
+                           .stream()
                            .max(resultComparator)
                            .orElse(null);
     }
@@ -67,20 +68,20 @@ public class PassStatisticsResultsConsolidator {
                       .collect(Collectors.toList());
     }
 
-    private List<AuditResult> startNewGroup(List<List<AuditResult>> groupedByCutoff) {
-        List<AuditResult> newGroup = new ArrayList<>();
+    private AuditResultsGroupedByNino startNewGroup(List<AuditResultsGroupedByNino> groupedByCutoff) {
+        AuditResultsGroupedByNino newGroup = new AuditResultsGroupedByNino();
         groupedByCutoff.add(newGroup);
         return newGroup;
     }
 
-    private List<List<AuditResult>> filterEmpty(List<List<AuditResult>> groupedByCutoff) {
+    private List<AuditResultsGroupedByNino> filterEmpty(List<AuditResultsGroupedByNino> groupedByCutoff) {
         return groupedByCutoff.stream()
                               .filter(result -> !result.isEmpty())
                               .collect(Collectors.toList());
     }
 
-    private AuditResult getLast(List<AuditResult> auditResults) {
-        return auditResults.get(auditResults.size() - 1);
+    private AuditResult getLast(AuditResultsGroupedByNino auditResults) {
+        return auditResults.results().get(auditResults.results().size() - 1);
     }
 
     private boolean afterCutoff(long dayOfResult, long dayOfPreviousResult) {

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import uk.gov.digital.ho.proving.income.audit.AuditResult;
@@ -10,6 +11,7 @@ import static jersey.repackaged.com.google.common.collect.Lists.newArrayList;
 
 @Getter
 @Accessors(fluent = true)
+@EqualsAndHashCode
 public class AuditResultsGroupedByNino {
 
     private final List<AuditResult> results;
