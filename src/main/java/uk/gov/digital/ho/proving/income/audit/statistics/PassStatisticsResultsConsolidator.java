@@ -55,15 +55,13 @@ public class PassStatisticsResultsConsolidator {
     }
 
     private AuditResult earliestBestResult(AuditResultsGroupedByNino auditResults) {
-        return auditResults.results()
-                           .stream()
+        return auditResults.stream()
                            .max(resultComparator)
                            .orElse(null);
     }
 
     private List<AuditResult> sortByDate(AuditResultsGroupedByNino results) {
-        return results.results()
-                      .stream()
+        return results.stream()
                       .sorted(Comparator.comparing(AuditResult::date))
                       .collect(Collectors.toList());
     }
@@ -81,7 +79,7 @@ public class PassStatisticsResultsConsolidator {
     }
 
     private AuditResult getLast(AuditResultsGroupedByNino auditResults) {
-        return auditResults.results().get(auditResults.results().size() - 1);
+        return auditResults.get(auditResults.size() - 1);
     }
 
     private boolean afterCutoff(long dayOfResult, long dayOfPreviousResult) {

@@ -52,4 +52,53 @@ public class AuditResultsGroupedByNinoTest {
         AuditResultsGroupedByNino nonEmptyGroupedResults = new AuditResultsGroupedByNino(ANY_RESULT);
         assertThat(nonEmptyGroupedResults.isEmpty()).isFalse();
     }
+
+    @Test
+    public void stream_someResults_streamResults() {
+        AuditResult someResult = new AuditResult("some correlation ID", LocalDate.now(), "AA112233A", AuditResultType.PASS);
+        AuditResult someOtherResult = new AuditResult("some other correlation ID", LocalDate.now(), "AA112233A", AuditResultType.FAIL);
+
+        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(someResult);
+        groupedResults.add(someOtherResult);
+
+        assertThat(groupedResults.stream()).containsExactlyInAnyOrder(someResult, someOtherResult);
+    }
+
+    @Test
+    public void get_zero_returnFirstElement() {
+        AuditResult someResult = new AuditResult("some correlation ID", LocalDate.now(), "AA112233A", AuditResultType.PASS);
+        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(someResult);
+
+        assertThat(groupedResults.get(0)).isEqualTo(someResult);
+    }
+
+    @Test
+    public void get_one_returnSecondElement() {
+        AuditResult someResult = new AuditResult("some correlation ID", LocalDate.now(), "AA112233A", AuditResultType.PASS);
+        AuditResult someOtherResult = new AuditResult("some other correlation ID", LocalDate.now(), "AA112233A", AuditResultType.FAIL);
+
+        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(someResult);
+        groupedResults.add(someOtherResult);
+
+        assertThat(groupedResults.get(1)).isEqualTo(someOtherResult);
+    }
+
+    @Test
+    public void size_empty_returnZero() {
+        AuditResultsGroupedByNino emptyResults = new AuditResultsGroupedByNino();
+        assertThat(emptyResults.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void size_singleElement_returnOne() {
+        AuditResultsGroupedByNino emptyResults = new AuditResultsGroupedByNino(ANY_RESULT);
+        assertThat(emptyResults.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void size_twoElements_returnTwo() {
+        AuditResultsGroupedByNino emptyResults = new AuditResultsGroupedByNino(ANY_RESULT);
+        emptyResults.add(ANY_RESULT);
+        assertThat(emptyResults.size()).isEqualTo(2);
+    }
 }

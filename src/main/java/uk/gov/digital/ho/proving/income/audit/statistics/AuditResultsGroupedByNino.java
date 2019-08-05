@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import uk.gov.digital.ho.proving.income.audit.AuditResult;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static jersey.repackaged.com.google.common.collect.Lists.newArrayList;
 
@@ -30,5 +31,17 @@ public class AuditResultsGroupedByNino {
 
     public boolean isEmpty() {
         return results.isEmpty();
+    }
+
+    public Stream<AuditResult> stream() {
+        return results.stream();
+    }
+
+    public AuditResult get(int i) {
+        return results.get(i);
+    }
+
+    public int size() {
+        return results.size();
     }
 }
