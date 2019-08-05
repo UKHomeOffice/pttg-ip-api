@@ -48,7 +48,7 @@ public class PassStatisticsResultsConsolidatorTest {
     @Test
     public void consolidateResults_oneResult_returnResult() {
         AuditResult someAuditResult = new AuditResult("any correlation id", ANY_DATE, SOME_NINO, ANY_RESULT);
-        List<AuditResult> singleResult = singletonList(someAuditResult);
+        AuditResultsGroupedByNino singleResult = new AuditResultsGroupedByNino(someAuditResult);
 
         List<AuditResult> consolidatedResult = statisticsResultsConsolidator.consolidateResults(singletonList(singleResult));
 
@@ -60,8 +60,8 @@ public class PassStatisticsResultsConsolidatorTest {
         AuditResult someAuditResult = new AuditResult("any correlation id", ANY_DATE, SOME_NINO, AuditResultType.PASS);
         AuditResult someOtherAuditResult = new AuditResult("any other correlation id", ANY_DATE, SOME_OTHER_NINO, AuditResultType.FAIL);
 
-        List<List<AuditResult>> someResultsGroupedByNino = Arrays.asList(singletonList(someAuditResult),
-                                                                         singletonList(someOtherAuditResult));
+        List<AuditResultsGroupedByNino> someResultsGroupedByNino = Arrays.asList(new AuditResultsGroupedByNino(someAuditResult),
+                                                                                 new AuditResultsGroupedByNino(someOtherAuditResult));
 
         List<AuditResult> consolidatedResult = statisticsResultsConsolidator.consolidateResults(someResultsGroupedByNino);
 

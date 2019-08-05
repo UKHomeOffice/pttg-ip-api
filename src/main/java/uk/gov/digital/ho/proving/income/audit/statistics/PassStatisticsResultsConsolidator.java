@@ -22,8 +22,9 @@ public class PassStatisticsResultsConsolidator {
         this.cutoffDays = cutoffDays;
     }
 
-    List<AuditResult> consolidateResults(List<List<AuditResult>> resultsGroupedByNino) {
+    List<AuditResult> consolidateResults(List<AuditResultsGroupedByNino> resultsGroupedByNino) {
         List<List<AuditResult>> separatedByCutoff = resultsGroupedByNino.stream()
+                                                                        .map(AuditResultsGroupedByNino::results)
                                                                         .map(this::separateResultsByCutoff)
                                                                         .flatMap(Collection::stream)
                                                                         .collect(Collectors.toList());
