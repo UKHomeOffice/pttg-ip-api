@@ -11,6 +11,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toCollection;
+
 @Component
 public class PassStatisticsResultsConsolidator {
 
@@ -34,7 +36,7 @@ public class PassStatisticsResultsConsolidator {
     }
 
     List<AuditResultsGroupedByNino> separateResultsByCutoff(AuditResultsGroupedByNino results) {
-        List<AuditResult> sortedByDate = sortByDate(results);
+        AuditResultsGroupedByNino sortedByDate = sortByDate(results);
         List<AuditResultsGroupedByNino> groupedByCutoff = new ArrayList<>();
 
         AuditResultsGroupedByNino sameRequestResults = startNewGroup(groupedByCutoff);
@@ -60,10 +62,10 @@ public class PassStatisticsResultsConsolidator {
                            .orElse(null);
     }
 
-    private List<AuditResult> sortByDate(AuditResultsGroupedByNino results) {
+    private AuditResultsGroupedByNino sortByDate(AuditResultsGroupedByNino results) {
         return results.stream()
                       .sorted(Comparator.comparing(AuditResult::date))
-                      .collect(Collectors.toList());
+                      .collect(toCollection(AuditResultsGroupedByNino::new));
     }
 
     private AuditResultsGroupedByNino startNewGroup(List<AuditResultsGroupedByNino> groupedByCutoff) {
