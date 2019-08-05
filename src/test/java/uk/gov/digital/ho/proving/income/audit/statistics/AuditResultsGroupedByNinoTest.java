@@ -91,14 +91,46 @@ public class AuditResultsGroupedByNinoTest {
 
     @Test
     public void size_singleElement_returnOne() {
-        AuditResultsGroupedByNino emptyResults = new AuditResultsGroupedByNino(ANY_RESULT);
-        assertThat(emptyResults.size()).isEqualTo(1);
+        AuditResultsGroupedByNino oneResult = new AuditResultsGroupedByNino(ANY_RESULT);
+        assertThat(oneResult.size()).isEqualTo(1);
     }
 
     @Test
     public void size_twoElements_returnTwo() {
-        AuditResultsGroupedByNino emptyResults = new AuditResultsGroupedByNino(ANY_RESULT);
-        emptyResults.add(ANY_RESULT);
-        assertThat(emptyResults.size()).isEqualTo(2);
+        AuditResultsGroupedByNino twoResults = new AuditResultsGroupedByNino(ANY_RESULT);
+        twoResults.add(ANY_RESULT);
+        assertThat(twoResults.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void latestDate_noDates_returnNull() {
+        AuditResultsGroupedByNino emptyResult = new AuditResultsGroupedByNino();
+        assertThat(emptyResult.latestDate()).isNull();
+    }
+
+    @Test
+    public void latestDate_oneDate_returnDate() {
+        LocalDate someDate = LocalDate.now();
+        AuditResult someResult = new AuditResult("any correlation ID", someDate, ANY_NINO, ANY_RESULT_TYPE);
+
+        AuditResultsGroupedByNino singleResult = new AuditResultsGroupedByNino(someResult);
+        assertThat(singleResult.latestDate()).isEqualTo(someDate);
+    }
+
+    @Test
+    public void latestDate_multipleDates_returnLatest() {
+        LocalDate earlierDate = LocalDate.now();
+        LocalDate middleDate = earlierDate.plusDays(1);
+        LocalDate laterDate = middleDate.plusDays(1);
+
+        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(earlierDate));
+        groupedResults.add(resultFor(laterDate));
+        groupedResults.add(resultFor(middleDate));
+
+        assertThat(groupedResults.latestDate()).isEqualTo(laterDate);
+    }
+
+    private AuditResult resultFor(LocalDate date) {
+        return new AuditResult("any correlation ID", date, ANY_NINO, ANY_RESULT_TYPE);
     }
 }

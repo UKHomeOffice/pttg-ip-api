@@ -1,14 +1,14 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
 import jersey.repackaged.com.google.common.collect.ForwardingList;
-import lombok.Getter;
 import uk.gov.digital.ho.proving.income.audit.AuditResult;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import static java.util.Comparator.naturalOrder;
 import static jersey.repackaged.com.google.common.collect.Lists.newArrayList;
 
-@Getter
 public class AuditResultsGroupedByNino extends ForwardingList<AuditResult> {
 
     private final List<AuditResult> results;
@@ -24,5 +24,11 @@ public class AuditResultsGroupedByNino extends ForwardingList<AuditResult> {
     @Override
     protected List<AuditResult> delegate() {
         return results;
+    }
+
+    public LocalDate latestDate() {
+        return stream().map(AuditResult::date)
+                       .max(naturalOrder())
+                       .orElse(null);
     }
 }
