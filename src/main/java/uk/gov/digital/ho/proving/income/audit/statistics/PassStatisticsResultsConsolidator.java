@@ -24,7 +24,6 @@ public class PassStatisticsResultsConsolidator {
 
     List<AuditResult> consolidateResults(List<AuditResultsGroupedByNino> resultsGroupedByNino) {
         List<List<AuditResult>> separatedByCutoff = resultsGroupedByNino.stream()
-                                                                        .map(AuditResultsGroupedByNino::results)
                                                                         .map(this::separateResultsByCutoff)
                                                                         .flatMap(Collection::stream)
                                                                         .collect(Collectors.toList());
@@ -34,7 +33,7 @@ public class PassStatisticsResultsConsolidator {
                                 .collect(Collectors.toList());
     }
 
-    List<List<AuditResult>> separateResultsByCutoff(List<AuditResult> results) {
+    List<List<AuditResult>> separateResultsByCutoff(AuditResultsGroupedByNino results) {
         List<AuditResult> sortedByDate = sortByDate(results);
         List<List<AuditResult>> groupedByCutoff = new ArrayList<>();
 
@@ -61,8 +60,9 @@ public class PassStatisticsResultsConsolidator {
                            .orElse(null);
     }
 
-    private List<AuditResult> sortByDate(List<AuditResult> results) {
-        return results.stream()
+    private List<AuditResult> sortByDate(AuditResultsGroupedByNino results) {
+        return results.results()
+                      .stream()
                       .sorted(Comparator.comparing(AuditResult::date))
                       .collect(Collectors.toList());
     }
