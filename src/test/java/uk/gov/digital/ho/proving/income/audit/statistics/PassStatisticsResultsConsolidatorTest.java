@@ -14,8 +14,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -73,9 +73,7 @@ public class PassStatisticsResultsConsolidatorTest {
         AuditResultsGroupedByNino singleResult = new AuditResultsGroupedByNino(new AuditResult("any correlation id", ANY_DATE, SOME_NINO, ANY_RESULT));
 
         List<AuditResultsGroupedByNino> separatedResults = statisticsResultsConsolidator.separateResultsByCutoff(singleResult);
-        assertThat(separatedResults).hasSize(1);
-
-        assertThat(separatedResults.get(0)).isEqualTo(singleResult);
+        assertThat(separatedResults).containsExactly(singleResult);
     }
 
     @Test
@@ -87,8 +85,7 @@ public class PassStatisticsResultsConsolidatorTest {
         results.add(new AuditResult("any correlation id", date2, SOME_NINO, ANY_RESULT));
         results.add(new AuditResult("any correlation id", date3, SOME_NINO, ANY_RESULT));
 
-        AuditResultsGroupedByNino expectedResult1 = new AuditResultsGroupedByNino(results.get(0));
-        expectedResult1.add(results.get(1));
+        AuditResultsGroupedByNino expectedResult1 = groupedResults(results.get(0), results.get(1));
         AuditResultsGroupedByNino expectedResult2 = new AuditResultsGroupedByNino(results.get(2));
         assertThat(statisticsResultsConsolidator.separateResultsByCutoff(results))
             .containsExactlyInAnyOrder(expectedResult1, expectedResult2);
@@ -104,8 +101,7 @@ public class PassStatisticsResultsConsolidatorTest {
         results.add(new AuditResult("any correlation id", date3, SOME_NINO, ANY_RESULT));
 
         AuditResultsGroupedByNino expectedResult1 = new AuditResultsGroupedByNino(results.get(0));
-        AuditResultsGroupedByNino expectedResult2 = new AuditResultsGroupedByNino(results.get(1));
-        expectedResult2.add(results.get(2));
+        AuditResultsGroupedByNino expectedResult2 = groupedResults(results.get(1), results.get(2));
 
         assertThat(statisticsResultsConsolidator.separateResultsByCutoff(results))
             .containsExactlyInAnyOrder(expectedResult1, expectedResult2);
@@ -116,14 +112,14 @@ public class PassStatisticsResultsConsolidatorTest {
     public void separateResultsByCutoff_threeResults_gapBetweenEach_noGrouping() {
         LocalDate date2 = afterCutoff(SOME_DATE);
         LocalDate date3 = afterCutoff(date2);
-        AuditResultsGroupedByNino results = new AuditResultsGroupedByNino(new AuditResult("any correlation id", SOME_DATE, SOME_NINO, ANY_RESULT));
-        results.add(new AuditResult("any correlation id", date2, SOME_NINO, ANY_RESULT));
-        results.add(new AuditResult("any correlation id", date3, SOME_NINO, ANY_RESULT));
+        AuditResultsGroupedByNino expectedToBeSplitResult = groupedResults(new AuditResult("any correlation id", SOME_DATE, SOME_NINO, ANY_RESULT),
+                                                                           new AuditResult("any correlation id", date2, SOME_NINO, ANY_RESULT),
+                                                                           new AuditResult("any correlation id", date3, SOME_NINO, ANY_RESULT));
 
-        AuditResultsGroupedByNino expectedResult1 = new AuditResultsGroupedByNino(results.get(0));
-        AuditResultsGroupedByNino expectedResult2 = new AuditResultsGroupedByNino(results.get(1));
-        AuditResultsGroupedByNino expectedResult3 = new AuditResultsGroupedByNino(results.get(2));
-        assertThat(statisticsResultsConsolidator.separateResultsByCutoff(results))
+        AuditResultsGroupedByNino expectedResult1 = new AuditResultsGroupedByNino(expectedToBeSplitResult.get(0));
+        AuditResultsGroupedByNino expectedResult2 = new AuditResultsGroupedByNino(expectedToBeSplitResult.get(1));
+        AuditResultsGroupedByNino expectedResult3 = new AuditResultsGroupedByNino(expectedToBeSplitResult.get(2));
+        assertThat(statisticsResultsConsolidator.separateResultsByCutoff(expectedToBeSplitResult))
             .containsExactlyInAnyOrder(expectedResult1, expectedResult2, expectedResult3);
     }
 
@@ -131,12 +127,17 @@ public class PassStatisticsResultsConsolidatorTest {
     public void separateResultsByCutoff_threeResults_noGaps_groupAll() {
         LocalDate date2 = withinCutoff(SOME_DATE);
         LocalDate date3 = withinCutoff(date2);
-        AuditResultsGroupedByNino results = new AuditResultsGroupedByNino(new AuditResult("any correlation id", SOME_DATE, SOME_NINO, ANY_RESULT));
-        results.add(new AuditResult("any correlation id", date2, SOME_NINO, ANY_RESULT));
-        results.add(new AuditResult("any correlation id", date3, SOME_NINO, ANY_RESULT));
+        AuditResultsGroupedByNino expectedToBeGroupedResults = groupedResults(new AuditResult("any correlation id", SOME_DATE, SOME_NINO, ANY_RESULT),
+                                                                              new AuditResult("any correlation id", date2, SOME_NINO, ANY_RESULT),
+                                                                              new AuditResult("any correlation id", date3, SOME_NINO, ANY_RESULT));
 
-        List<AuditResultsGroupedByNino> separatedResults = statisticsResultsConsolidator.separateResultsByCutoff(results);
-        assertThat(separatedResults).containsExactly(results);
+        List<AuditResultsGroupedByNino> separatedResults = statisticsResultsConsolidator.separateResultsByCutoff(expectedToBeGroupedResults);
+        assertThat(separatedResults).containsExactly(expectedToBeGroupedResults);
+    }
+
+    private AuditResultsGroupedByNino groupedResults(AuditResult... auditResults) {
+        return Arrays.stream(auditResults)
+                     .collect(toCollection(AuditResultsGroupedByNino::new));
     }
 
     private LocalDate withinCutoff(LocalDate date) {

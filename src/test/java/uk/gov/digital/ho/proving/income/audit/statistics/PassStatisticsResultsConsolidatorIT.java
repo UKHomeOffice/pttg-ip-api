@@ -11,10 +11,12 @@ import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 import uk.gov.digital.ho.proving.income.audit.AuditResultTypeComparator;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -37,8 +39,7 @@ public class PassStatisticsResultsConsolidatorIT {
         AuditResult betterResult = new AuditResult("any correlation id", SOME_DATE, SOME_NINO, AuditResultType.PASS);
         AuditResult worseResultWithinRange = new AuditResult("any other correlation id", withinCutoff(SOME_DATE), SOME_NINO, AuditResultType.FAIL);
 
-        AuditResultsGroupedByNino results = new AuditResultsGroupedByNino(betterResult);
-        results.add(worseResultWithinRange);
+        AuditResultsGroupedByNino results = groupedResults(betterResult, worseResultWithinRange);
         List<AuditResultsGroupedByNino> someResults = singletonList(results);
 
         List<AuditResult> consolidatedResult = consolidator.consolidateResults(someResults);
@@ -50,8 +51,7 @@ public class PassStatisticsResultsConsolidatorIT {
         AuditResult worseResult = new AuditResult("any correlation id", SOME_DATE, SOME_NINO, AuditResultType.FAIL);
         AuditResult betterResultInRange = new AuditResult("any other correlation id", withinCutoff(SOME_DATE), SOME_NINO, AuditResultType.PASS);
 
-        AuditResultsGroupedByNino results = new AuditResultsGroupedByNino(worseResult);
-        results.add(betterResultInRange);
+        AuditResultsGroupedByNino results = groupedResults(worseResult, betterResultInRange);
         List<AuditResultsGroupedByNino> someResults = singletonList(results);
 
         List<AuditResult> consolidatedResult = consolidator.consolidateResults(someResults);
@@ -67,11 +67,8 @@ public class PassStatisticsResultsConsolidatorIT {
         AuditResult betterResult = new AuditResult("any correlation id", SOME_DATE, someOtherNino, AuditResultType.NOTFOUND);
         AuditResult worseResultInRange = new AuditResult("any correlation id", withinCutoff(SOME_DATE), someOtherNino, AuditResultType.ERROR);
 
-        AuditResultsGroupedByNino nino1Results = new AuditResultsGroupedByNino(worseResult);
-        nino1Results.add(betterResultInRange);
-
-        AuditResultsGroupedByNino nino2Results = new AuditResultsGroupedByNino(betterResult);
-        nino2Results.add(worseResultInRange);
+        AuditResultsGroupedByNino nino1Results = groupedResults(worseResult, betterResultInRange);
+        AuditResultsGroupedByNino nino2Results = groupedResults(betterResult, worseResultInRange);
         List<AuditResultsGroupedByNino> someResults = asList(nino1Results, nino2Results);
 
         List<AuditResult> consolidatedResult = consolidator.consolidateResults(someResults);
@@ -85,9 +82,8 @@ public class PassStatisticsResultsConsolidatorIT {
         AuditResult someResult = new AuditResult("any correlation id", SOME_DATE, SOME_NINO, AuditResultType.PASS);
         AuditResult resultAfterCutoffDate = new AuditResult("any correlation id", afterCutoffDate, SOME_NINO, AuditResultType.FAIL);
 
-        AuditResultsGroupedByNino groupedByNino = new AuditResultsGroupedByNino(someResult);
-        groupedByNino.add(resultAfterCutoffDate);
-        List<AuditResultsGroupedByNino> someResults = singletonList(groupedByNino);
+        AuditResultsGroupedByNino groupedByNino = groupedResults(someResult, resultAfterCutoffDate);
+        List<AuditResultsGroupedByNino> someResults = singletonList(groupedResults(someResult, resultAfterCutoffDate));
 
         List<AuditResult> consolidatedResult = consolidator.consolidateResults(someResults);
         assertThat(consolidatedResult).containsExactlyInAnyOrder(someResult, resultAfterCutoffDate);
@@ -97,7 +93,8 @@ public class PassStatisticsResultsConsolidatorIT {
     public void consolidateResults_multipleNinosAndResults_splitWhenAfterCutoff() {
         AuditResultsGroupedByNino shouldBePassAndFail = passAndAFail();
         AuditResultsGroupedByNino shouldBeNotFoundAndError = notFoundAndAnError();
-        AuditResultsGroupedByNino shouldBePass = new AuditResultsGroupedByNino(new AuditResult("any correlation id", SOME_DATE, "nino3", AuditResultType.PASS));
+        AuditResultsGroupedByNino shouldBePass = new AuditResultsGroupedByNino(
+            new AuditResult("any correlation id", SOME_DATE, "nino3", AuditResultType.PASS));
 
         List<AuditResultsGroupedByNino> someResults = asList(shouldBePassAndFail, shouldBeNotFoundAndError, shouldBePass);
 
@@ -116,21 +113,24 @@ public class PassStatisticsResultsConsolidatorIT {
         LocalDate date3 = afterCutoff(date2);
         LocalDate date4 = withinCutoff(date3);
 
-        AuditResultsGroupedByNino results = new AuditResultsGroupedByNino(new AuditResult("any correlation id", SOME_DATE, "nino1", AuditResultType.ERROR));
-        results.add(new AuditResult("any correlation id", date2, "nino1", AuditResultType.PASS));
-        results.add(new AuditResult("any correlation id", date3, "nino1", AuditResultType.FAIL));
-        results.add(new AuditResult("any correlation id", date4, "nino1", AuditResultType.NOTFOUND));
-        return results;
+        return groupedResults(new AuditResult("any correlation id", SOME_DATE, "nino1", AuditResultType.ERROR),
+                              new AuditResult("any correlation id", date2, "nino1", AuditResultType.PASS),
+                              new AuditResult("any correlation id", date3, "nino1", AuditResultType.FAIL),
+                              new AuditResult("any correlation id", date4, "nino1", AuditResultType.NOTFOUND));
     }
 
     private AuditResultsGroupedByNino notFoundAndAnError() {
         LocalDate date2 = afterCutoff(SOME_DATE);
         LocalDate date3 = withinCutoff(date2);
 
-        AuditResultsGroupedByNino results = new AuditResultsGroupedByNino(new AuditResult("any correlation id", SOME_DATE, "nino2", AuditResultType.ERROR));
-        results.add(new AuditResult("any correlation id", date2, "nino2", AuditResultType.NOTFOUND));
-        results.add(new AuditResult("any correlation id", date3, "nino2", AuditResultType.NOTFOUND));
-        return results;
+        return groupedResults(new AuditResult("any correlation id", SOME_DATE, "nino2", AuditResultType.ERROR),
+                              new AuditResult("any correlation id", date2, "nino2", AuditResultType.NOTFOUND),
+                              new AuditResult("any correlation id", date3, "nino2", AuditResultType.NOTFOUND));
+    }
+
+    private AuditResultsGroupedByNino groupedResults(AuditResult... auditResults) {
+        return Arrays.stream(auditResults)
+                     .collect(toCollection(AuditResultsGroupedByNino::new));
     }
 
     private LocalDate withinCutoff(LocalDate date) {

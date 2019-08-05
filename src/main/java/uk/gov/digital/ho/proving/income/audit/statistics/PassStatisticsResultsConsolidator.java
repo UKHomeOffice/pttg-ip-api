@@ -74,8 +74,4 @@ public class PassStatisticsResultsConsolidator {
                               .filter(result -> !result.isEmpty())
                               .collect(Collectors.toList());
     }
-
-    private boolean afterCutoff(long dayOfResult, long dayOfPreviousResult) {
-        return dayOfResult - dayOfPreviousResult >= cutoffDays;
-    }
 }
