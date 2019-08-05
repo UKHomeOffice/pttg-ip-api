@@ -16,13 +16,10 @@ public class AuditResultsGroupedByNinoTest {
     private static final String ANY_NINO = "BB112233A";
     private static final AuditResult ANY_RESULT = new AuditResult("any correlation ID", ANY_DATE, ANY_NINO, ANY_RESULT_TYPE);
 
-    @Test
-    public void constructor_someNino_hasNino() {
-        String someNino = "AA112233A";
-        AuditResult someResult = new AuditResult("any correlation ID", ANY_DATE, someNino, ANY_RESULT_TYPE);
 
-        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(someResult);
-        assertThat(groupedResults.nino()).isEqualTo(someNino);
+    @Test
+    public void constructor_noArgs_emptyResults() {
+        assertThat(new AuditResultsGroupedByNino().results()).isEmpty();
     }
 
     @Test
@@ -42,5 +39,17 @@ public class AuditResultsGroupedByNinoTest {
         assertThat(groupedResults.results())
             .hasSize(2)
             .contains(someResult);
+    }
+
+    @Test
+    public void isEmpty_empty_returnTrue() {
+        AuditResultsGroupedByNino emptyGroupedResults = new AuditResultsGroupedByNino();
+        assertThat(emptyGroupedResults.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void isEmpty_nonEmpty_returnFalse() {
+        AuditResultsGroupedByNino nonEmptyGroupedResults = new AuditResultsGroupedByNino(ANY_RESULT);
+        assertThat(nonEmptyGroupedResults.isEmpty()).isFalse();
     }
 }
