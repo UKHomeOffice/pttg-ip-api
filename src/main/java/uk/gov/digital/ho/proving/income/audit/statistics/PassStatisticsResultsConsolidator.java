@@ -45,7 +45,7 @@ public class PassStatisticsResultsConsolidator {
             long dayOfResult = auditResult.date().toEpochDay();
 
             if (!sameRequestResults.isEmpty()) {
-                long dayOfPreviousResult = getLast(sameRequestResults).date().toEpochDay();
+                long dayOfPreviousResult = sameRequestResults.latestDate().toEpochDay();
 
                 if (afterCutoff(dayOfResult, dayOfPreviousResult)) {
                     sameRequestResults = startNewGroup(groupedByCutoff);
@@ -78,10 +78,6 @@ public class PassStatisticsResultsConsolidator {
         return groupedByCutoff.stream()
                               .filter(result -> !result.isEmpty())
                               .collect(Collectors.toList());
-    }
-
-    private AuditResult getLast(AuditResultsGroupedByNino auditResults) {
-        return auditResults.get(auditResults.size() - 1);
     }
 
     private boolean afterCutoff(long dayOfResult, long dayOfPreviousResult) {
