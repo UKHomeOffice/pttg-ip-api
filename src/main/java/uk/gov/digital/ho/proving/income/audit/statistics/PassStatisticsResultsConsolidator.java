@@ -42,14 +42,9 @@ public class PassStatisticsResultsConsolidator {
         AuditResultsGroupedByNino sameRequestResults = startNewGroup(groupedByCutoff);
 
         for (AuditResult auditResult : sortedByDate) {
-            long dayOfResult = auditResult.date().toEpochDay();
 
-            if (!sameRequestResults.isEmpty()) {
-                long dayOfPreviousResult = sameRequestResults.latestDate().toEpochDay();
-
-                if (afterCutoff(dayOfResult, dayOfPreviousResult)) {
-                    sameRequestResults = startNewGroup(groupedByCutoff);
-                }
+            if (sameRequestResults.afterCutoff(cutoffDays, auditResult)) {
+                sameRequestResults = startNewGroup(groupedByCutoff);
             }
             sameRequestResults.add(auditResult);
         }

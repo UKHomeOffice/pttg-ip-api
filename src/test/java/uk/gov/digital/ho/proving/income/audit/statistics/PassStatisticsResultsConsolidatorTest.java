@@ -140,10 +140,10 @@ public class PassStatisticsResultsConsolidatorTest {
     }
 
     private LocalDate withinCutoff(LocalDate date) {
-        return date.plusDays(CUTOFF_DAYS - 1);
+        return date.plusDays(CUTOFF_DAYS);
     }
 
     private LocalDate afterCutoff(LocalDate date) {
-        return date.plusDays(CUTOFF_DAYS);
+        return date.plusDays(CUTOFF_DAYS + 1);
     }
 }

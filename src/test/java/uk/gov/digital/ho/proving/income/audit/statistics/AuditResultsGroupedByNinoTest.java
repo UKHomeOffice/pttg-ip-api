@@ -15,6 +15,7 @@ public class AuditResultsGroupedByNinoTest {
     private static final AuditResultType ANY_RESULT_TYPE = AuditResultType.PASS;
     private static final String ANY_NINO = "BB112233A";
     private static final AuditResult ANY_RESULT = new AuditResult("any correlation ID", ANY_DATE, ANY_NINO, ANY_RESULT_TYPE);
+    private static final int ANY_INT = 9;
 
 
     @Test
@@ -128,6 +129,48 @@ public class AuditResultsGroupedByNinoTest {
         groupedResults.add(resultFor(middleDate));
 
         assertThat(groupedResults.latestDate()).isEqualTo(laterDate);
+    }
+
+    @Test
+    public void afterCutoff_empty_alwaysFalse() {
+        AuditResultsGroupedByNino emptyResults = new AuditResultsGroupedByNino();
+        assertThat(emptyResults.afterCutoff(ANY_INT, ANY_RESULT)).isFalse();
+    }
+
+    @Test
+    public void afterCutoff_oneDayBeforeCutoff_false() {
+        LocalDate someDate = LocalDate.now();
+        int someCutoffDays = 5;
+        LocalDate beforeCutoff = someDate.plusDays(someCutoffDays - 1);
+
+        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(someDate));
+
+        AuditResult resultBeforeCutoff = resultFor(beforeCutoff);
+        assertThat(groupedResults.afterCutoff(someCutoffDays, resultBeforeCutoff)).isFalse();
+    }
+
+    @Test
+    public void afterCutoff_cutOffDay_false() {
+        LocalDate someDate = LocalDate.now();
+        int someCutoffDays = 5;
+        LocalDate onCutoff = someDate.plusDays(someCutoffDays);
+
+        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(someDate));
+
+        AuditResult resultOnCutoff = resultFor(onCutoff);
+        assertThat(groupedResults.afterCutoff(someCutoffDays, resultOnCutoff)).isFalse();
+    }
+
+    @Test
+    public void afterCutoff_afterCutOffDay_true() {
+        LocalDate someDate = LocalDate.now();
+        int someCutoffDays = 5;
+        LocalDate afterCutoff = someDate.plusDays(someCutoffDays + 1);
+
+        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(someDate));
+
+        AuditResult resultAfterCutoff = resultFor(afterCutoff);
+        assertThat(groupedResults.afterCutoff(someCutoffDays, resultAfterCutoff)).isTrue();
     }
 
     private AuditResult resultFor(LocalDate date) {

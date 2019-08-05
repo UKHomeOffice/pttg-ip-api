@@ -31,4 +31,11 @@ public class AuditResultsGroupedByNino extends ForwardingList<AuditResult> {
                        .max(naturalOrder())
                        .orElse(null);
     }
+
+    public boolean afterCutoff(int cutoffDays, AuditResult auditResult) {
+        if (latestDate() == null) {
+            return false;
+        }
+        return latestDate().plusDays(cutoffDays).isBefore(auditResult.date());
+    }
 }

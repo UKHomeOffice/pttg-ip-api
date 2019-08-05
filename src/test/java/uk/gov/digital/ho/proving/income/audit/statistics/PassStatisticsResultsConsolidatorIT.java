@@ -80,7 +80,7 @@ public class PassStatisticsResultsConsolidatorIT {
 
     @Test
     public void consolidateResults_oneNinoResultsAfterCutoff_returnTwoResults() {
-        LocalDate afterCutoffDate = SOME_DATE.plusDays(CUTOFF_DAYS);
+        LocalDate afterCutoffDate = SOME_DATE.plusDays(CUTOFF_DAYS + 1);
 
         AuditResult someResult = new AuditResult("any correlation id", SOME_DATE, SOME_NINO, AuditResultType.PASS);
         AuditResult resultAfterCutoffDate = new AuditResult("any correlation id", afterCutoffDate, SOME_NINO, AuditResultType.FAIL);
@@ -134,10 +134,10 @@ public class PassStatisticsResultsConsolidatorIT {
     }
 
     private LocalDate withinCutoff(LocalDate date) {
-        return date.plusDays(CUTOFF_DAYS - 1);
+        return date.plusDays(CUTOFF_DAYS);
     }
 
     private LocalDate afterCutoff(LocalDate date) {
-        return date.plusDays(CUTOFF_DAYS);
+        return date.plusDays(CUTOFF_DAYS + 1);
     }
 }
