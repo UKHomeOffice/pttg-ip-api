@@ -101,9 +101,9 @@ public class PassStatisticsResultsConsolidatorIT {
 
         List<AuditResultsGroupedByNino> someResults = asList(shouldBePassAndFail, shouldBeNotFoundAndError, shouldBePass);
 
-        List<AuditResult> expectedResults = asList(shouldBePassAndFail.results().get(1), shouldBePassAndFail.results().get(2),
-                                                   shouldBeNotFoundAndError.results().get(0), shouldBeNotFoundAndError.results().get(1),
-                                                   shouldBePass.results().get(0));
+        List<AuditResult> expectedResults = asList(shouldBePassAndFail.get(1), shouldBePassAndFail.get(2),
+                                                   shouldBeNotFoundAndError.get(0), shouldBeNotFoundAndError.get(1),
+                                                   shouldBePass.get(0));
 
 
         List<AuditResult> actualResults = consolidator.consolidateResults(someResults);

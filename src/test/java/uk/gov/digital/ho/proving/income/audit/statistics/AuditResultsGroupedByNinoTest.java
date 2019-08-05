@@ -18,8 +18,8 @@ public class AuditResultsGroupedByNinoTest {
 
 
     @Test
-    public void constructor_noArgs_emptyResults() {
-        assertThat(new AuditResultsGroupedByNino().results()).isEmpty();
+    public void constructor_noArgs_empty() {
+        assertThat(new AuditResultsGroupedByNino()).isEmpty();
     }
 
     @Test
@@ -27,7 +27,7 @@ public class AuditResultsGroupedByNinoTest {
         AuditResult someResult = new AuditResult("any correlation ID", ANY_DATE, ANY_NINO, ANY_RESULT_TYPE);
 
         AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(someResult);
-        assertThat(groupedResults.results()).containsExactly(someResult);
+        assertThat(groupedResults).containsExactly(someResult);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class AuditResultsGroupedByNinoTest {
 
         AuditResult someResult = new AuditResult("some correlation ID", LocalDate.now(), "AA112233A", AuditResultType.FAIL);
         groupedResults.add(someResult);
-        assertThat(groupedResults.results())
+        assertThat(groupedResults)
             .hasSize(2)
             .contains(someResult);
     }

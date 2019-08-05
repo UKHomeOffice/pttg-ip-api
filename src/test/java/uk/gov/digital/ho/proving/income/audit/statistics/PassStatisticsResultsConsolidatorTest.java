@@ -87,9 +87,9 @@ public class PassStatisticsResultsConsolidatorTest {
         results.add(new AuditResult("any correlation id", date2, SOME_NINO, ANY_RESULT));
         results.add(new AuditResult("any correlation id", date3, SOME_NINO, ANY_RESULT));
 
-        AuditResultsGroupedByNino expectedResult1 = new AuditResultsGroupedByNino(results.results().get(0));
-        expectedResult1.add(results.results().get(1));
-        AuditResultsGroupedByNino expectedResult2 = new AuditResultsGroupedByNino(results.results().get(2));
+        AuditResultsGroupedByNino expectedResult1 = new AuditResultsGroupedByNino(results.get(0));
+        expectedResult1.add(results.get(1));
+        AuditResultsGroupedByNino expectedResult2 = new AuditResultsGroupedByNino(results.get(2));
         assertThat(statisticsResultsConsolidator.separateResultsByCutoff(results))
             .containsExactlyInAnyOrder(expectedResult1, expectedResult2);
     }
@@ -103,9 +103,9 @@ public class PassStatisticsResultsConsolidatorTest {
         results.add(new AuditResult("any correlation id", date2, SOME_NINO, ANY_RESULT));
         results.add(new AuditResult("any correlation id", date3, SOME_NINO, ANY_RESULT));
 
-        AuditResultsGroupedByNino expectedResult1 = new AuditResultsGroupedByNino(results.results().get(0));
-        AuditResultsGroupedByNino expectedResult2 = new AuditResultsGroupedByNino(results.results().get(1));
-        expectedResult2.add(results.results().get(2));
+        AuditResultsGroupedByNino expectedResult1 = new AuditResultsGroupedByNino(results.get(0));
+        AuditResultsGroupedByNino expectedResult2 = new AuditResultsGroupedByNino(results.get(1));
+        expectedResult2.add(results.get(2));
 
         assertThat(statisticsResultsConsolidator.separateResultsByCutoff(results))
             .containsExactlyInAnyOrder(expectedResult1, expectedResult2);
@@ -120,9 +120,9 @@ public class PassStatisticsResultsConsolidatorTest {
         results.add(new AuditResult("any correlation id", date2, SOME_NINO, ANY_RESULT));
         results.add(new AuditResult("any correlation id", date3, SOME_NINO, ANY_RESULT));
 
-        AuditResultsGroupedByNino expectedResult1 = new AuditResultsGroupedByNino(results.results().get(0));
-        AuditResultsGroupedByNino expectedResult2 = new AuditResultsGroupedByNino(results.results().get(1));
-        AuditResultsGroupedByNino expectedResult3 = new AuditResultsGroupedByNino(results.results().get(2));
+        AuditResultsGroupedByNino expectedResult1 = new AuditResultsGroupedByNino(results.get(0));
+        AuditResultsGroupedByNino expectedResult2 = new AuditResultsGroupedByNino(results.get(1));
+        AuditResultsGroupedByNino expectedResult3 = new AuditResultsGroupedByNino(results.get(2));
         assertThat(statisticsResultsConsolidator.separateResultsByCutoff(results))
             .containsExactlyInAnyOrder(expectedResult1, expectedResult2, expectedResult3);
     }
