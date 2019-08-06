@@ -7,10 +7,7 @@ import uk.gov.digital.ho.proving.income.audit.*;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
@@ -25,19 +22,16 @@ public class PassRateStatisticsService {
     );
     private final AuditClient auditClient;
     private final PassStatisticsCalculator calculator;
-    private final AuditResultConsolidator consolidator;
-    private final AuditResultComparator resultComparator;
+    private final AuditResultFetcher auditResultFetcher;
     private final int cutoffDays;
 
     public PassRateStatisticsService(AuditClient auditClient,
                                      PassStatisticsCalculator calculator,
-                                     AuditResultConsolidator consolidator,
-                                     AuditResultComparator resultComparator,
+                                     AuditResultFetcher auditResultFetcher,
                                      @Value("${audit.history.cutoff.days}") int cutoffDays) {
         this.auditClient = auditClient;
         this.calculator = calculator;
-        this.consolidator = consolidator;
-        this.resultComparator = resultComparator;
+        this.auditResultFetcher = auditResultFetcher;
         this.cutoffDays = cutoffDays;
     }
 
@@ -49,44 +43,13 @@ public class PassRateStatisticsService {
         return generatePassRateStatistics(taxYear.startDate(), taxYear.endDate());
     }
 
-
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         LocalDate cutOffDate = toDate.plusDays(cutoffDays);
         List<String> allCorrelationIds = auditClient.getAllCorrelationIdsForEventType(AUDIT_EVENTS_TO_RETRIEVE, cutOffDate);
 
-        List<AuditResult> results = getAuditResults(allCorrelationIds);
+        List<AuditResult> results = auditResultFetcher.getAuditResults(allCorrelationIds);
 
         List<ArchivedResult> archivedResults = auditClient.getArchivedResults(fromDate, toDate);
         return calculator.result(results, archivedResults, fromDate, toDate);
     }
-
-    private List<AuditResult> getAuditResults(List<String> allCorrelationIds) {
-        // TODO EE-21001 - This is being migrated AuditResultFetcher
-        Map<String, AuditResult> bestResultsByNino = new HashMap<>();
-        for (String correlationId : allCorrelationIds) {
-            AuditResult auditResult = getAuditResultForCorrelationId(correlationId);
-            updateBestResults(bestResultsByNino, auditResult);
-        }
-        return new ArrayList<>(bestResultsByNino.values());
-    }
-
-    private AuditResult getAuditResultForCorrelationId(String correlationId) {
-        List<AuditRecord> auditRecordsForCorrelationId = auditClient.getHistoryByCorrelationId(correlationId, AUDIT_EVENTS_TO_RETRIEVE);
-        return consolidator.getAuditResult(auditRecordsForCorrelationId);
-    }
-
-    //CHECKSTYLE:OFF
-    // TODO EE-21001 Temporarily duplicated in AuditResultFetcher as part of refactor
-    private void updateBestResults(Map<String, AuditResult> bestResultsByNino, AuditResult newResult) {
-        String nino = newResult.nino();
-
-        if (!bestResultsByNino.containsKey(nino) || isBetterResult(bestResultsByNino.get(nino), newResult)) {
-            bestResultsByNino.put(nino, newResult);
-        }
-    }
-
-    private boolean isBetterResult(AuditResult currentResult, AuditResult newResult) {
-        return resultComparator.compare(currentResult, newResult) < 0;
-    }
-    //CHECKSTYLE:ON
 }
