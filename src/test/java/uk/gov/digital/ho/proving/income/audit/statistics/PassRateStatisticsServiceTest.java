@@ -85,6 +85,7 @@ public class PassRateStatisticsServiceTest {
 
     @Test
     public void generatePassStatistics_correlationIdsFromAuditService_callGetByCorrelationIdWithEachInTurn() {
+        // TODO EE-21001 Migrating to AuditResultFetcherTest.getAuditResults_someCorrelationIds_callGetByCorrelationIdWithEachInTurn
         List<String> expectedCorrelationIds = stubGetAllCorrelationIds("some correlationId", "some other correlation id");
 
         List<AuditRecord> anyAuditRecords = singletonList(new AuditRecord("any id", SOME_DATE_TIME, "any email", SOME_AUDIT_EVENT_TYPE, SOME_JSON, "any nino"));
@@ -129,7 +130,7 @@ public class PassRateStatisticsServiceTest {
 
     @Test
     public void generatePassStatistics_givenResultsFromAuditService_passedToConsolidator() {
-
+        // TODO EE-21001 Migrating to AuditResultFetcherTest.getAuditResults_givenResultsFromAuditService_passedToConsolidator
         stubGetAllCorrelationIds("some correlationId", "some other correlation id");
 
         List<AuditRecord> someAuditRecords = asList(
@@ -258,6 +259,7 @@ public class PassRateStatisticsServiceTest {
 
     @Test
     public void generatePassStatistics_multipleResultsPerNino_usesComparator() {
+        // TODO EE-21001 - Migrating to AuditResultFetcherTest.getAuditResults_multipleResultsPerNino_usesComparator
         stubGetAllCorrelationIds("some correlation id", "some other correlation id");
 
         AuditResult passResult = new AuditResult("some correlation id", SOME_DATE, "some nino", AuditResultType.PASS);
