@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.audit.*;
 
+import javax.lang.model.util.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -40,13 +41,13 @@ public class AuditResultFetcherTest {
     @Mock
     private AuditClient mockAuditClient;
     @Mock
-    private AuditResultComparator mockComparator;
+    private PassStatisticsResultsConsolidator mockStatisticsResultsConsolidator;
 
     private AuditResultFetcher auditResultFetcher;
 
     @Before
     public void setUp() {
-        auditResultFetcher = new AuditResultFetcher(mockAuditClient, mockConsolidator, mockComparator);
+        auditResultFetcher = new AuditResultFetcher(mockAuditClient, mockConsolidator, mockStatisticsResultsConsolidator);
     }
 
     @Test
@@ -88,61 +89,52 @@ public class AuditResultFetcherTest {
     }
 
     @Test
-    public void getAuditResults_multipleResultsPerNino_usesComparator() {
-        List<String> someCorrelationIds = Arrays.asList("some correlation id", "some other correlation id");
+    public void getAuditResults_oneResult_passedToStatisticsResultsConsolidator() {
+        AuditResult someAuditResult = new AuditResult("some correlation id", ANY_DATE, "some nino", ANY_AUDIT_RESULT_TYPE);
+        given(mockConsolidator.getAuditResult(any())).willReturn(someAuditResult);
 
-        AuditResult passResult = new AuditResult("some correlation id", ANY_DATE, "some nino", AuditResultType.PASS);
-        AuditResult failResult = new AuditResult("some other correlation id", ANY_DATE, "some nino", AuditResultType.FAIL);
-        stubConsolidator(passResult, failResult);
+        auditResultFetcher.getAuditResults(singletonList("some correlation id"));
 
-        auditResultFetcher.getAuditResults(someCorrelationIds);
-
-        then(mockComparator)
-            .should()
-            .compare(passResult, failResult);
+        List<AuditResultsGroupedByNino> expectedGroupedResults = singletonList(new AuditResultsGroupedByNino(someAuditResult));
+        then(mockStatisticsResultsConsolidator).should()
+                                               .consolidateResults(expectedGroupedResults);
     }
 
     @Test
-    public void getAuditResults_givenResultsFromConsolidator_returned() {
-        List<AuditResult> expectedResults = asList(
-            new AuditResult("some correlation id", ANY_DATE, "some nino", ANY_AUDIT_RESULT_TYPE),
-            new AuditResult("some other correlation id", ANY_DATE, "some other nino", ANY_AUDIT_RESULT_TYPE));
+    public void getAuditResults_multipleResultsForMultipleNinos_passedToStatisticsResultsConsolidator() {
+        AuditResult nino1Result = new AuditResult("some correlation id", ANY_DATE, "nino1", AuditResultType.PASS);
+        AuditResult nino2Result = new AuditResult("some correlation other id", ANY_DATE, "nino2", AuditResultType.PASS);
+        AuditResult nino2OtherResult = new AuditResult("yet some correlation other id", ANY_DATE, "nino2", AuditResultType.FAIL);
 
-        stubConsolidator(expectedResults);
+        given(mockConsolidator.getAuditResult(anyList())).willReturn(nino1Result, nino2Result, nino2OtherResult);
 
-        List<AuditResult> returnedResults = auditResultFetcher.getAuditResults(asList("some correlation id", "some other correlation id"));
+        auditResultFetcher.getAuditResults(Arrays.asList("some correlation id", "some correlation other id", "yet some correlation other id"));
 
-        assertThat(returnedResults).containsExactlyInAnyOrderElementsOf(expectedResults);
+        AuditResultsGroupedByNino nino2GroupedResults = new AuditResultsGroupedByNino(nino2Result);
+        nino2GroupedResults.add(nino2OtherResult);
+        List<AuditResultsGroupedByNino> expectedGroupedResults = Arrays.asList(new AuditResultsGroupedByNino(nino1Result),
+                                                                               nino2GroupedResults);
+
+        ArgumentCaptor<List> groupedResultsCaptor = ArgumentCaptor.forClass(List.class);
+        then(mockStatisticsResultsConsolidator).should()
+                                               .consolidateResults(groupedResultsCaptor.capture());
+        List<AuditResultsGroupedByNino> actualGroupedResults = groupedResultsCaptor.getValue();
+
+        assertThat(actualGroupedResults).containsExactlyInAnyOrderElementsOf(expectedGroupedResults);
     }
 
     @Test
-    public void getAuditResults_multipleResultsPerNino_returnOnlyBest() {
-        AuditResult passResult = new AuditResult("some correlation id", ANY_DATE, "some nino", AuditResultType.PASS);
-        AuditResult failResult = new AuditResult("some other correlation id", ANY_DATE, "some nino", AuditResultType.FAIL);
+    public void getAuditResults_resultFromStatisticsResultConsolidator_returned() {
+        AuditResult someAuditResult = new AuditResult("some correlation id", ANY_DATE, "some nino", AuditResultType.PASS);
+        AuditResult someOtherAuditResult = new AuditResult("some other correlation id", ANY_DATE, "some nino", AuditResultType.FAIL);
+        given(mockConsolidator.getAuditResult(any())).willReturn(someAuditResult, someOtherAuditResult);
 
-        given(mockConsolidator.getAuditResult(anyList())).willReturn(passResult, failResult);
-        given(mockComparator.compare(passResult, failResult)).willReturn(1);
+        List<AuditResult> expectedResults = singletonList(someAuditResult);
+        given(mockStatisticsResultsConsolidator.consolidateResults(anyList())).willReturn(expectedResults);
 
-        List<AuditResult> auditResults = auditResultFetcher.getAuditResults(asList("some correlation id", "some other correlation id"));
+        List<AuditResult> returnedResults = auditResultFetcher.getAuditResults(Arrays.asList("some correlation id", "some other correlation id"));
 
-        assertThat(auditResults).containsOnly(passResult);
-    }
-
-    @Test
-    public void getAuditResults_multipleResultsPerNino_returnOldestBest() {
-        List<String> correlationIds = Arrays.asList("some correlation id", "some other correlation id", "yet some other correlation id");
-
-        AuditResult firstNotFound = new AuditResult("some correlation id", ANY_DATE, "some nino", AuditResultType.NOTFOUND);
-        AuditResult firstFail = new AuditResult("some other correlation id", ANY_DATE.minusDays(2), "some nino", AuditResultType.FAIL);
-        AuditResult secondFail = new AuditResult("yet some other correlation id", ANY_DATE.minusDays(1), "some nino", AuditResultType.FAIL);
-
-        stubConsolidator(firstNotFound, firstFail, secondFail);
-        when(mockComparator.compare(firstNotFound, firstFail)).thenReturn(-1);
-        when(mockComparator.compare(firstFail, secondFail)).thenReturn(1);
-
-        List<AuditResult> returnedResults = auditResultFetcher.getAuditResults(correlationIds);
-
-        assertThat(returnedResults).containsOnly(firstFail);
+        assertThat(returnedResults).isEqualTo(expectedResults);
     }
 
     private void stubConsolidator() {

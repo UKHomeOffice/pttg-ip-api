@@ -185,6 +185,8 @@ public class PassRateStatisticsServiceIT {
             .isEqualTo(expectedStatistics);
     }
 
+    // TODO OJR EE-21001 2019-08-06 Add test to prove that cutoff is being respected.
+
     private String joinAuditRecordsAsJsonList(String... auditRecords) {
         return String.format("[%s]", String.join(", ", auditRecords));
     }
