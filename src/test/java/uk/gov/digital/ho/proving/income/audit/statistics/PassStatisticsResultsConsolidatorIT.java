@@ -93,8 +93,8 @@ public class PassStatisticsResultsConsolidatorIT {
     public void consolidateResults_multipleNinosAndResults_splitWhenAfterCutoff() {
         AuditResultsGroupedByNino shouldBePassAndFail = passAndAFail();
         AuditResultsGroupedByNino shouldBeNotFoundAndError = notFoundAndAnError();
-        AuditResultsGroupedByNino shouldBePass = new AuditResultsGroupedByNino(
-            new AuditResult("any correlation id", SOME_DATE, "nino3", AuditResultType.PASS));
+        AuditResultsGroupedByNino shouldBePass = new AuditResultsGroupedByNino();
+        shouldBePass.add(new AuditResult("any correlation id", SOME_DATE, "nino3", AuditResultType.PASS));
 
         List<AuditResultsGroupedByNino> someResults = asList(shouldBePassAndFail, shouldBeNotFoundAndError, shouldBePass);
 

@@ -16,6 +16,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -93,7 +94,7 @@ public class AuditResultFetcherTest {
 
         auditResultFetcher.getAuditResults(singletonList("some correlation id"));
 
-        List<AuditResultsGroupedByNino> expectedGroupedResults = singletonList(new AuditResultsGroupedByNino(someAuditResult));
+        List<AuditResultsGroupedByNino> expectedGroupedResults = singletonList(groupedResults(someAuditResult));
         then(mockStatisticsResultsConsolidator).should()
                                                .consolidateResults(expectedGroupedResults);
     }
@@ -108,9 +109,9 @@ public class AuditResultFetcherTest {
 
         auditResultFetcher.getAuditResults(Arrays.asList("some correlation id", "some correlation other id", "yet some correlation other id"));
 
-        AuditResultsGroupedByNino nino2GroupedResults = new AuditResultsGroupedByNino(nino2Result);
+        AuditResultsGroupedByNino nino2GroupedResults = groupedResults(nino2Result);
         nino2GroupedResults.add(nino2OtherResult);
-        List<AuditResultsGroupedByNino> expectedGroupedResults = Arrays.asList(new AuditResultsGroupedByNino(nino1Result),
+        List<AuditResultsGroupedByNino> expectedGroupedResults = Arrays.asList(groupedResults(nino1Result),
                                                                                nino2GroupedResults);
 
         ArgumentCaptor<List> groupedResultsCaptor = ArgumentCaptor.forClass(List.class);
@@ -138,5 +139,10 @@ public class AuditResultFetcherTest {
     private void stubConsolidator() {
         when(mockConsolidator.getAuditResult(any()))
             .thenReturn(ANY_AUDIT_RECORD);
+    }
+
+    private AuditResultsGroupedByNino groupedResults(AuditResult... auditResults) {
+        return Arrays.stream(auditResults)
+                     .collect(toCollection(AuditResultsGroupedByNino::new));
     }
 }
