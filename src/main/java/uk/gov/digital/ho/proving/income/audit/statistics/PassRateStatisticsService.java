@@ -17,6 +17,7 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
 @Component
+//Checksty
 public class PassRateStatisticsService {
 
     static final List<AuditEventType> AUDIT_EVENTS_TO_RETRIEVE = asList(
@@ -49,6 +50,7 @@ public class PassRateStatisticsService {
         return generatePassRateStatistics(taxYear.startDate(), taxYear.endDate());
     }
 
+
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         LocalDate cutOffDate = toDate.plusDays(cutoffDays);
         List<String> allCorrelationIds = auditClient.getAllCorrelationIdsForEventType(AUDIT_EVENTS_TO_RETRIEVE, cutOffDate);
@@ -74,6 +76,8 @@ public class PassRateStatisticsService {
         return consolidator.getAuditResult(auditRecordsForCorrelationId);
     }
 
+    //CHECKSTYLE:OFF
+    // TODO EE-21001 Temporarily duplicated in AuditResultFetcher as part of refactor
     private void updateBestResults(Map<String, AuditResult> bestResultsByNino, AuditResult newResult) {
         String nino = newResult.nino();
 
@@ -85,4 +89,5 @@ public class PassRateStatisticsService {
     private boolean isBetterResult(AuditResult currentResult, AuditResult newResult) {
         return resultComparator.compare(currentResult, newResult) < 0;
     }
+    //CHECKSTYLE:ON
 }

@@ -115,4 +115,5 @@
         <property name="max" value="1000"/>
     </module>
     <module name="StrictDuplicateCode"/>
+    <module name="SuppressionCommentFilter"/><!--TODO EE-21001 Temporarily duplicating code which requires the supression, remove when refactoring complete -->
 </module>
