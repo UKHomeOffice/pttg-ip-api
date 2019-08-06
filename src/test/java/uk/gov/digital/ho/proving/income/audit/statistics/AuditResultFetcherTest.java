@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.audit.*;
 
-import javax.lang.model.util.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -140,15 +138,5 @@ public class AuditResultFetcherTest {
     private void stubConsolidator() {
         when(mockConsolidator.getAuditResult(any()))
             .thenReturn(ANY_AUDIT_RECORD);
-    }
-
-    private void stubConsolidator(List<AuditResult> results) {
-        stubConsolidator(results.toArray(new AuditResult[0]));
-    }
-
-    private void stubConsolidator(AuditResult... results) {
-        AuditResult[] allResultsExceptFirst = ArrayUtils.subarray(results, 1, results.length);
-        when(mockConsolidator.getAuditResult(any()))
-            .thenReturn(results[0], allResultsExceptFirst);
     }
 }

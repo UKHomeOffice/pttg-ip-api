@@ -18,6 +18,7 @@ public class AuditResultsGroupedByNino extends ForwardingList<AuditResult> {
     }
 
     public AuditResultsGroupedByNino(AuditResult result) {
+        // TODO OJR EE-21001 Only used in tests - delete.
         results = newArrayList(result);
     }
 
