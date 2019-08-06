@@ -19,7 +19,7 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 @Component
 public class PassRateStatisticsService {
 
-    private static final List<AuditEventType> AUDIT_EVENTS_TO_RETRIEVE = asList(
+    static final List<AuditEventType> AUDIT_EVENTS_TO_RETRIEVE = asList(
         INCOME_PROVING_FINANCIAL_STATUS_REQUEST,
         INCOME_PROVING_FINANCIAL_STATUS_RESPONSE
     );
@@ -49,6 +49,7 @@ public class PassRateStatisticsService {
         return generatePassRateStatistics(taxYear.startDate(), taxYear.endDate());
     }
 
+
     public PassRateStatistics generatePassRateStatistics(LocalDate fromDate, LocalDate toDate) {
         LocalDate cutOffDate = toDate.plusDays(cutoffDays);
         List<String> allCorrelationIds = auditClient.getAllCorrelationIdsForEventType(AUDIT_EVENTS_TO_RETRIEVE, cutOffDate);
@@ -60,28 +61,13 @@ public class PassRateStatisticsService {
     }
 
     private List<AuditResult> getAuditResults(List<String> allCorrelationIds) {
+        // TODO EE-21001 - This is being migrated AuditResultFetcher
         Map<String, AuditResult> bestResultsByNino = new HashMap<>();
         for (String correlationId : allCorrelationIds) {
             AuditResult auditResult = getAuditResultForCorrelationId(correlationId);
             updateBestResults(bestResultsByNino, auditResult);
         }
         return new ArrayList<>(bestResultsByNino.values());
-
-        // TODO EE-21001 - probable new routine:
-        // Build up a map where each nino is the key and all the query results for that nino are stored in a list as the value
-        // Map<String, AuditResultsGroupedByNino> resultsByNino = new HashMap<>();
-        // for (String correlationId : allCorrelationIds) {
-        // AuditResult auditResult = getAuditResultForCorrelationId(correlationId);
-        //     if(!resultsByNino.hasKey(auditResult.nino()) {
-        //         resultByNino.put(auditResult.nino(), AuditResultsGroupedByNino(auditResult)));
-        //     } else {
-        //         resultByNino.get(auditResult.nino()).add(auditResult)
-        //     }
-        // }
-        //
-        // Consolidate the results into a single list - for each nino, sort results by date, split list if any 10 day gaps,
-        // for each split list of results - calculate best earliest result and put into the final results list.
-        // return PassRateStatisticsConsolidator.consolidateResults(resultByNino.values())
     }
 
     private AuditResult getAuditResultForCorrelationId(String correlationId) {
@@ -89,6 +75,8 @@ public class PassRateStatisticsService {
         return consolidator.getAuditResult(auditRecordsForCorrelationId);
     }
 
+    //CHECKSTYLE:OFF
+    // TODO EE-21001 Temporarily duplicated in AuditResultFetcher as part of refactor
     private void updateBestResults(Map<String, AuditResult> bestResultsByNino, AuditResult newResult) {
         String nino = newResult.nino();
 
@@ -100,4 +88,5 @@ public class PassRateStatisticsService {
     private boolean isBetterResult(AuditResult currentResult, AuditResult newResult) {
         return resultComparator.compare(currentResult, newResult) < 0;
     }
+    //CHECKSTYLE:ON
 }
