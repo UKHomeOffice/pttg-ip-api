@@ -17,7 +17,6 @@ import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVI
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
 @Component
-//Checksty
 public class PassRateStatisticsService {
 
     static final List<AuditEventType> AUDIT_EVENTS_TO_RETRIEVE = asList(
