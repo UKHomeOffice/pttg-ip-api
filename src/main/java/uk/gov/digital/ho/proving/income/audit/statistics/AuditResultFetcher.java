@@ -17,14 +17,14 @@ import static uk.gov.digital.ho.proving.income.audit.statistics.PassRateStatisti
 public class AuditResultFetcher {
 
     private final AuditClient auditClient;
-    private final AuditResultConsolidator resultConsolidator;
+    private final AuditResultConsolidator auditResultConsolidator;
     private final PassStatisticsResultsConsolidator statisticsResultsConsolidator;
 
     public AuditResultFetcher(AuditClient auditClient,
-                              AuditResultConsolidator resultConsolidator,
+                              AuditResultConsolidator auditResultConsolidator,
                               PassStatisticsResultsConsolidator statisticsResultsConsolidator) {
         this.auditClient = auditClient;
-        this.resultConsolidator = resultConsolidator;
+        this.auditResultConsolidator = auditResultConsolidator;
         this.statisticsResultsConsolidator = statisticsResultsConsolidator;
     }
 
@@ -46,7 +46,7 @@ public class AuditResultFetcher {
 
     private AuditResult getAuditResultForCorrelationId(String correlationId) {
         List<AuditRecord> auditRecordsForCorrelationId = auditClient.getHistoryByCorrelationId(correlationId, AUDIT_EVENTS_TO_RETRIEVE);
-        return resultConsolidator.getAuditResult(auditRecordsForCorrelationId);
+        return auditResultConsolidator.getAuditResult(auditRecordsForCorrelationId);
     }
 
     private void addResultForNino(Map<String, AuditResultsGroupedByNino> resultsByNino, AuditResult auditResult) {

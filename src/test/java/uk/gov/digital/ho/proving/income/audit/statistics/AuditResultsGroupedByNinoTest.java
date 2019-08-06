@@ -25,14 +25,6 @@ public class AuditResultsGroupedByNinoTest {
     }
 
     @Test
-    public void constructor_someResult_setAsResults() {
-        AuditResult someResult = new AuditResult("any correlation ID", ANY_DATE, ANY_NINO, ANY_RESULT_TYPE);
-
-        AuditResultsGroupedByNino groupedResults = groupedResults(someResult);
-        assertThat(groupedResults).containsExactly(someResult);
-    }
-
-    @Test
     public void latestDate_noDates_returnNull() {
         AuditResultsGroupedByNino emptyResult = new AuditResultsGroupedByNino();
         assertThat(emptyResult.latestDate()).isNull();
@@ -53,9 +45,9 @@ public class AuditResultsGroupedByNinoTest {
         LocalDate middleDate = earlierDate.plusDays(1);
         LocalDate laterDate = middleDate.plusDays(1);
 
-        AuditResultsGroupedByNino groupedResults = groupedResults(resultFor(earlierDate));
-        groupedResults.add(resultFor(laterDate));
-        groupedResults.add(resultFor(middleDate));
+        AuditResultsGroupedByNino groupedResults = groupedResults(resultFor(earlierDate),
+                                                                  resultFor(laterDate),
+                                                                  resultFor(middleDate));
 
         assertThat(groupedResults.latestDate()).isEqualTo(laterDate);
     }

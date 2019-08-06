@@ -36,7 +36,7 @@ public class AuditResultFetcherTest {
     private static final AuditResult ANY_AUDIT_RECORD = new AuditResult("any correlation id", ANY_DATE, "any nino", ANY_AUDIT_RESULT_TYPE);
 
     @Mock
-    private AuditResultConsolidator mockConsolidator;
+    private AuditResultConsolidator mockAuditResultsConsolidator;
     @Mock
     private AuditClient mockAuditClient;
     @Mock
@@ -46,18 +46,18 @@ public class AuditResultFetcherTest {
 
     @Before
     public void setUp() {
-        auditResultFetcher = new AuditResultFetcher(mockAuditClient, mockConsolidator, mockStatisticsResultsConsolidator);
+        auditResultFetcher = new AuditResultFetcher(mockAuditClient, mockAuditResultsConsolidator, mockStatisticsResultsConsolidator);
     }
 
     @Test
     public void getAuditResults_someCorrelationIds_callGetByCorrelationIdWithEachInTurn() {
 
-        given(mockConsolidator.getAuditResult(any())).willReturn(ANY_AUDIT_RECORD);
+        given(mockAuditResultsConsolidator.getAuditResult(any())).willReturn(ANY_AUDIT_RECORD);
 
         List<AuditEventType> expectedEventTypes = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
         ArgumentCaptor<String> correlationIdCaptor = ArgumentCaptor.forClass(String.class);
 
-        List<String> someCorrelationIds = Arrays.asList("some correlationId", "some other correlation id");
+        List<String> someCorrelationIds = asList("some correlationId", "some other correlation id");
         auditResultFetcher.getAuditResults(someCorrelationIds);
 
         then(mockAuditClient).should(atLeastOnce())
@@ -80,17 +80,17 @@ public class AuditResultFetcherTest {
         given(mockAuditClient.getHistoryByCorrelationId(eq("some other correlation id"), anyList()))
             .willReturn(someOtherAuditRecords);
 
-        List<String> someCorrelationIds = Arrays.asList("some correlationId", "some other correlation id");
+        List<String> someCorrelationIds = asList("some correlationId", "some other correlation id");
         auditResultFetcher.getAuditResults(someCorrelationIds);
 
-        then(mockConsolidator).should().getAuditResult(someAuditRecords);
-        then(mockConsolidator).should().getAuditResult(someOtherAuditRecords);
+        then(mockAuditResultsConsolidator).should().getAuditResult(someAuditRecords);
+        then(mockAuditResultsConsolidator).should().getAuditResult(someOtherAuditRecords);
     }
 
     @Test
     public void getAuditResults_oneResult_passedToStatisticsResultsConsolidator() {
         AuditResult someAuditResult = new AuditResult("some correlation id", ANY_DATE, "some nino", ANY_AUDIT_RESULT_TYPE);
-        given(mockConsolidator.getAuditResult(any())).willReturn(someAuditResult);
+        given(mockAuditResultsConsolidator.getAuditResult(any())).willReturn(someAuditResult);
 
         auditResultFetcher.getAuditResults(singletonList("some correlation id"));
 
@@ -105,14 +105,11 @@ public class AuditResultFetcherTest {
         AuditResult nino2Result = new AuditResult("some correlation other id", ANY_DATE, "nino2", AuditResultType.PASS);
         AuditResult nino2OtherResult = new AuditResult("yet some correlation other id", ANY_DATE, "nino2", AuditResultType.FAIL);
 
-        given(mockConsolidator.getAuditResult(anyList())).willReturn(nino1Result, nino2Result, nino2OtherResult);
+        given(mockAuditResultsConsolidator.getAuditResult(anyList())).willReturn(nino1Result, nino2Result, nino2OtherResult);
 
-        auditResultFetcher.getAuditResults(Arrays.asList("some correlation id", "some correlation other id", "yet some correlation other id"));
+        auditResultFetcher.getAuditResults(asList("some correlation id", "some correlation other id", "yet some correlation other id"));
 
-        AuditResultsGroupedByNino nino2GroupedResults = groupedResults(nino2Result);
-        nino2GroupedResults.add(nino2OtherResult);
-        List<AuditResultsGroupedByNino> expectedGroupedResults = Arrays.asList(groupedResults(nino1Result),
-                                                                               nino2GroupedResults);
+        List<AuditResultsGroupedByNino> expectedGroupedResults = asList(groupedResults(nino1Result), groupedResults(nino2Result, nino2OtherResult));
 
         ArgumentCaptor<List> groupedResultsCaptor = ArgumentCaptor.forClass(List.class);
         then(mockStatisticsResultsConsolidator).should()
@@ -126,18 +123,18 @@ public class AuditResultFetcherTest {
     public void getAuditResults_resultFromStatisticsResultConsolidator_returned() {
         AuditResult someAuditResult = new AuditResult("some correlation id", ANY_DATE, "some nino", AuditResultType.PASS);
         AuditResult someOtherAuditResult = new AuditResult("some other correlation id", ANY_DATE, "some nino", AuditResultType.FAIL);
-        given(mockConsolidator.getAuditResult(any())).willReturn(someAuditResult, someOtherAuditResult);
+        given(mockAuditResultsConsolidator.getAuditResult(any())).willReturn(someAuditResult, someOtherAuditResult);
 
         List<AuditResult> expectedResults = singletonList(someAuditResult);
         given(mockStatisticsResultsConsolidator.consolidateResults(anyList())).willReturn(expectedResults);
 
-        List<AuditResult> returnedResults = auditResultFetcher.getAuditResults(Arrays.asList("some correlation id", "some other correlation id"));
+        List<AuditResult> returnedResults = auditResultFetcher.getAuditResults(asList("some correlation id", "some other correlation id"));
 
         assertThat(returnedResults).isEqualTo(expectedResults);
     }
 
     private void stubConsolidator() {
-        when(mockConsolidator.getAuditResult(any()))
+        when(mockAuditResultsConsolidator.getAuditResult(any()))
             .thenReturn(ANY_AUDIT_RECORD);
     }
 
