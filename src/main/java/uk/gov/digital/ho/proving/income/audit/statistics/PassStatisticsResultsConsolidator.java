@@ -35,7 +35,7 @@ public class PassStatisticsResultsConsolidator {
                                 .collect(Collectors.toList());
     }
 
-    List<AuditResultsGroupedByNino> separateResultsByCutoff(AuditResultsGroupedByNino results) {
+    public List<AuditResultsGroupedByNino> separateResultsByCutoff(AuditResultsGroupedByNino results) {
         AuditResultsGroupedByNino sortedByDate = sortByDate(results);
         List<AuditResultsGroupedByNino> groupedByCutoff = new ArrayList<>();
 

@@ -1,11 +1,11 @@
 package uk.gov.digital.ho.proving.income.audit;
 
 import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.proving.income.audit.statistics.AuditResultsGroupedByNino;
+import uk.gov.digital.ho.proving.income.audit.statistics.PassStatisticsResultsConsolidator;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
@@ -18,15 +18,18 @@ public class AuditResultConsolidator {
     private AuditResultParser auditResultParser;
     private AuditResultTypeComparator auditResultTypeComparator;
     private AuditResultComparator auditResultComparator;
+    private PassStatisticsResultsConsolidator statisticsResultsConsolidator;
 
     public AuditResultConsolidator(
         AuditResultParser auditResultParser,
         AuditResultTypeComparator auditResultTypeComparator,
-        AuditResultComparator auditResultComparator
-    ) {
+        AuditResultComparator auditResultComparator,
+        PassStatisticsResultsConsolidator statisticsResultsConsolidator) {
+
         this.auditResultParser = auditResultParser;
         this.auditResultTypeComparator = auditResultTypeComparator;
         this.auditResultComparator = auditResultComparator;
+        this.statisticsResultsConsolidator = statisticsResultsConsolidator;
     }
 
     public List<AuditResult> auditResultsByCorrelationId(List<AuditRecord> auditRecords) {
@@ -40,12 +43,25 @@ public class AuditResultConsolidator {
 
     public List<AuditResultByNino> consolidatedAuditResultsByNino(List<AuditResult> results) {
         Map<String, List<AuditResult>> resultsByNino =
-            results.stream().collect(Collectors.groupingBy(AuditResult::nino));
+            results.stream().collect(Collectors.groupingBy(AuditResult::nino)); // TODO EE-21001 Can this be changed to use AuditResultsGroupedByNino?
 
-        return resultsByNino.values().stream()
-            .map(this::consolidateFirstBestResult)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+        // TODO EE-21001 Need to apply the cutoff logic here?
+        // TODO EE-21001 Can AuditResultByNino be ConsolidatedAuditResult? Rename method etc. accordingly.
+        // TODO EE-21001 PassStatisticsResultConsolidator probably needs a non-pass-rate name
+
+
+        List<AuditResultsGroupedByNino> separatedByCutoff = new ArrayList<>();
+        for (List<AuditResult> byNino : resultsByNino.values()) {
+            AuditResultsGroupedByNino groupedByNino = new AuditResultsGroupedByNino();
+            groupedByNino.addAll(byNino);
+            separatedByCutoff.add(groupedByNino);
+        }
+        return separatedByCutoff.stream()
+                                .map(someResult -> statisticsResultsConsolidator.separateResultsByCutoff(someResult))
+                                .flatMap(Collection::stream)
+                                .map(this::consolidateFirstBestResult)
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList());
     }
 
     private AuditResultByNino consolidateFirstBestResult(List<AuditResult> results) {
@@ -58,6 +74,7 @@ public class AuditResultConsolidator {
         List<String> allCorrelationIds = results.stream()
             .map(AuditResult::correlationId)
             .collect(Collectors.toList());
+
         return new AuditResultByNino(consolidatedResult.nino(), allCorrelationIds, consolidatedResult.date(), consolidatedResult.resultType());
     }
 
