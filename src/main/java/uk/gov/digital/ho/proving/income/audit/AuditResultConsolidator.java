@@ -71,9 +71,9 @@ public class AuditResultConsolidator {
         if (consolidatedResult == null) {
             return null;
         }
-        List<String> allCorrelationIds = results.stream()
-            .map(AuditResult::correlationId)
-            .collect(Collectors.toList());
+        Set<String> allCorrelationIds = results.stream()
+                                               .map(AuditResult::correlationId)
+                                               .collect(Collectors.toSet());
 
         return new AuditResultByNino(consolidatedResult.nino(), allCorrelationIds, consolidatedResult.date(), consolidatedResult.resultType());
     }

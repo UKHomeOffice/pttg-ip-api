@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,11 +48,11 @@ class AuditArchiveService {
 
     private ArchiveAuditRequest generateAuditHistoryRequest(AuditResultByNino auditResult, AuditArchiveConfig config) {
         return ArchiveAuditRequest.builder()
-            .nino(auditResult.nino())
-            .correlationIds(auditResult.correlationIds())
-            .lastArchiveDate(config.lastArchiveDate())
-            .result(auditResult.resultType().name())
-            .build();
+                                  .nino(auditResult.nino())
+                                  .correlationIds(new ArrayList<>(auditResult.correlationIds()))
+                                  .lastArchiveDate(config.lastArchiveDate())
+                                  .result(auditResult.resultType().name())
+                                  .build();
     }
 
 }
