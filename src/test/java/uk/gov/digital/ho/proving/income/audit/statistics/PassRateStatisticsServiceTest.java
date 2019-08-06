@@ -173,6 +173,7 @@ public class PassRateStatisticsServiceTest {
 
     @Test
     public void generatePassStatistics_givenAuditResultsFromConsolidator_expectedListPassedToCalculator() {
+        // TODO EE-21001 Migrating to AuditResultFetcherTest.getAuditResults_givenResultsFromConsolidator_returned
         stubGetAllCorrelationIds("some correlation id", "some other correlation id");
 
         List<AuditResult> expectedResults = asList(
@@ -193,6 +194,7 @@ public class PassRateStatisticsServiceTest {
 
     @Test
     public void generatePassStatistics_multipleResultsPerNino_passOnlyBestToCalculator() {
+        // TODO EE-21001 Migrating to AuditResultFetcherTest.getAuditResults_multipleResultsPerNino_returnOnlyBest
         stubGetAllCorrelationIds("some correlation id", "some other correlation id");
 
         AuditResult passResult = new AuditResult("some correlation id", SOME_DATE, "some nino", AuditResultType.PASS);
@@ -213,6 +215,7 @@ public class PassRateStatisticsServiceTest {
 
     @Test
     public void generatePassStatistics_multipleResultsPerNino_passOldestBestResultToCalculator() {
+        // TODO EE-21001 Migrating to AuditResultFetcherTest.getAuditResults_multipleResultsPerNino_returnOldestBest
         stubGetAllCorrelationIds("some correlation id", "some other correlation id", "yet some other correlation id");
 
         AuditResult firstNotFound = new AuditResult("some correlation id", SOME_DATE, "some nino", AuditResultType.NOTFOUND);
