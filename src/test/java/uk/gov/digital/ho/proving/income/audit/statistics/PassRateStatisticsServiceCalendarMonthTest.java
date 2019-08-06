@@ -23,18 +23,16 @@ public class PassRateStatisticsServiceCalendarMonthTest {
     @Mock
     private AuditClient mockAuditClient;
     @Mock
-    private AuditResultConsolidator mockConsolidator;
-    @Mock
     private PassStatisticsCalculator mockPassStatisticsCalculator;
     @Mock
-    private AuditResultComparator mockResultComparator;
+    private AuditResultFetcher mockAuditResultFetcher;
 
     private PassRateStatisticsService service;
 
     @Before
     public void setUp() {
         int anyInt = 5;
-        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockConsolidator, mockResultComparator, anyInt);
+        service = new PassRateStatisticsService(mockAuditClient, mockPassStatisticsCalculator, mockAuditResultFetcher, anyInt);
     }
 
     @Test
