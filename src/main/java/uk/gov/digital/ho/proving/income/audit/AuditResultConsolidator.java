@@ -38,7 +38,7 @@ public class AuditResultConsolidator {
             .collect(Collectors.toList());
     }
 
-    public List<ConsolidatedAuditResult> consolidatedAuditResultsByNino(List<AuditResult> results) {
+    public List<ConsolidatedAuditResult> consolidatedAuditResults(List<AuditResult> results) {
         Map<String, List<AuditResult>> resultsByNino =
             results.stream().collect(Collectors.groupingBy(AuditResult::nino));
 

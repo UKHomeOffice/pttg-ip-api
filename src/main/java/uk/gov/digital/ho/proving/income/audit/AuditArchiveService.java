@@ -34,7 +34,7 @@ class AuditArchiveService {
 
         List<AuditRecord> auditHistory = auditClient.getAuditHistory(getLastDayToBeArchived(), AUDIT_EVENTS_TO_ARCHIVE);
         List<AuditResult> byCorrelationId = auditResultConsolidator.auditResultsByCorrelationId(auditHistory);
-        List<ConsolidatedAuditResult> consolidatedByNino = auditResultConsolidator.consolidatedAuditResultsByNino(byCorrelationId);
+        List<ConsolidatedAuditResult> consolidatedByNino = auditResultConsolidator.consolidatedAuditResults(byCorrelationId);
 
         for (ConsolidatedAuditResult auditResult : consolidatedByNino) {
             auditClient.archiveAudit(generateAuditHistoryRequest(auditResult, config), auditResult.date());
