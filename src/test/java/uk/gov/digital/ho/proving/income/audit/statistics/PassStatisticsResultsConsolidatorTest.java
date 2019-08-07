@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.audit.AuditResult;
 import uk.gov.digital.ho.proving.income.audit.AuditResultComparator;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
+import uk.gov.digital.ho.proving.income.audit.ResultCutoffSeparator;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -31,12 +32,14 @@ public class PassStatisticsResultsConsolidatorTest {
 
     @Mock
     private AuditResultComparator mockResultsComparator;
+    @Mock
+    private ResultCutoffSeparator mockCutoffSeparator;
 
     private PassStatisticsResultsConsolidator statisticsResultsConsolidator;
 
     @Before
     public void setUp() {
-        statisticsResultsConsolidator = new PassStatisticsResultsConsolidator(mockResultsComparator, CUTOFF_DAYS);
+        statisticsResultsConsolidator = new PassStatisticsResultsConsolidator(mockResultsComparator, CUTOFF_DAYS, mockCutoffSeparator);
     }
 
     @Test

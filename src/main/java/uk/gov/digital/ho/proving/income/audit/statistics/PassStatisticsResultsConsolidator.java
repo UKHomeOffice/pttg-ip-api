@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.AuditResult;
 import uk.gov.digital.ho.proving.income.audit.AuditResultComparator;
+import uk.gov.digital.ho.proving.income.audit.ResultCutoffSeparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,10 +19,13 @@ public class PassStatisticsResultsConsolidator {
 
     private final AuditResultComparator resultComparator;
     private final int cutoffDays;
+    private final ResultCutoffSeparator resultCutoffSeparator;
 
-    PassStatisticsResultsConsolidator(AuditResultComparator resultComparator, @Value("${audit.history.cutoff.days}") int cutoffDays) {
+    PassStatisticsResultsConsolidator(AuditResultComparator resultComparator, @Value("${audit.history.cutoff.days}") int cutoffDays,
+                                      ResultCutoffSeparator resultCutoffSeparator) {
         this.resultComparator = resultComparator;
         this.cutoffDays = cutoffDays;
+        this.resultCutoffSeparator = resultCutoffSeparator;
     }
 
     List<AuditResult> consolidateResults(List<AuditResultsGroupedByNino> resultsGroupedByNino) {

@@ -5,10 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.digital.ho.proving.income.audit.AuditResult;
-import uk.gov.digital.ho.proving.income.audit.AuditResultComparator;
-import uk.gov.digital.ho.proving.income.audit.AuditResultType;
-import uk.gov.digital.ho.proving.income.audit.AuditResultTypeComparator;
+import uk.gov.digital.ho.proving.income.audit.*;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -23,7 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {
     PassStatisticsResultsConsolidator.class,
     AuditResultComparator.class,
-    AuditResultTypeComparator.class
+    AuditResultTypeComparator.class,
+    ResultCutoffSeparator.class
 })
 public class PassStatisticsResultsConsolidatorIT {
 
