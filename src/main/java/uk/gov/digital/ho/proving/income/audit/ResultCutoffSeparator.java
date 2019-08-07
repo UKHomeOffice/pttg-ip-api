@@ -14,7 +14,6 @@ import static java.util.stream.Collectors.toCollection;
 @Component
 public class ResultCutoffSeparator {
 
-
     private int cutoffDays;
 
     public ResultCutoffSeparator(@Value("${audit.history.cutoff.days}") int cutoffDays) {
