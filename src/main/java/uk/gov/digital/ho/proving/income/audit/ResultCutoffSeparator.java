@@ -5,13 +5,11 @@ import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.statistics.AuditResultsGroupedByNino;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toCollection;
-import static java.util.stream.Collectors.toList;
 
 @Component
 public class ResultCutoffSeparator {
