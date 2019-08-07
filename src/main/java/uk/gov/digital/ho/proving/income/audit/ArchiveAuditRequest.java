@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Builder
 @Getter
@@ -18,7 +18,7 @@ class ArchiveAuditRequest {
     @JsonProperty
     private LocalDate lastArchiveDate;
     @JsonProperty
-    private List<String> correlationIds;
+    private Set<String> correlationIds;
     @JsonProperty
     private String nino;
 }

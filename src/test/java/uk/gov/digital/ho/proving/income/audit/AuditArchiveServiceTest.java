@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +58,7 @@ public class AuditArchiveServiceTest {
     }
 
     private List<AuditResultByNino> getAuditResultsByNino() {
-        AuditResultByNino auditResult = new AuditResultByNino("any_nino", Arrays.asList("any_corr_id"), LocalDate.now().minusMonths(7), PASS);
+        AuditResultByNino auditResult = new AuditResultByNino("any_nino", ImmutableSet.of("any_corr_id"), LocalDate.now().minusMonths(7), PASS);
         return Arrays.asList(auditResult);
     }
 
