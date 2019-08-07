@@ -252,7 +252,7 @@ public class AuditResultConsolidatorIT {
         List<ConsolidatedAuditResult> expected = Arrays.asList(
                 new ConsolidatedAuditResult("any_nino", Arrays.asList("any_correlation_id"), LocalDate.now(), PASS),
                 new ConsolidatedAuditResult("any_nino_2", Arrays.asList("any_correlation_id_2"), LocalDate.now().plusDays(1), PASS)
-                                                              );
+            );
 
         List<ConsolidatedAuditResult> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
 
@@ -272,7 +272,7 @@ public class AuditResultConsolidatorIT {
         List<ConsolidatedAuditResult> expected = Arrays.asList(
                 new ConsolidatedAuditResult("any_nino", Arrays.asList("any_correlation_id_2", "any_correlation_id"), LocalDate.now(), PASS),
                 new ConsolidatedAuditResult("any_nino_2", Arrays.asList("any_correlation_id_3", "any_correlation_id_4"), LocalDate.now(), PASS)
-                                                              );
+            );
 
         List<ConsolidatedAuditResult> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
 
