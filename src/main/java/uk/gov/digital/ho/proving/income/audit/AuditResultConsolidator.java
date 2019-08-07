@@ -1,8 +1,10 @@
 package uk.gov.digital.ho.proving.income.audit;
 
 import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.proving.income.audit.statistics.AuditResultsGroupedByNino;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -18,15 +20,17 @@ public class AuditResultConsolidator {
     private AuditResultParser auditResultParser;
     private AuditResultTypeComparator auditResultTypeComparator;
     private AuditResultComparator auditResultComparator;
+    private ResultCutoffSeparator resultCutoffSeparator;
 
     public AuditResultConsolidator(
         AuditResultParser auditResultParser,
         AuditResultTypeComparator auditResultTypeComparator,
-        AuditResultComparator auditResultComparator
-    ) {
+        AuditResultComparator auditResultComparator,
+        ResultCutoffSeparator resultCutoffSeparator) {
         this.auditResultParser = auditResultParser;
         this.auditResultTypeComparator = auditResultTypeComparator;
         this.auditResultComparator = auditResultComparator;
+        this.resultCutoffSeparator = resultCutoffSeparator;
     }
 
     public List<AuditResult> auditResultsByCorrelationId(List<AuditRecord> auditRecords) {
@@ -43,12 +47,15 @@ public class AuditResultConsolidator {
             results.stream().collect(Collectors.groupingBy(AuditResult::nino));
 
         return resultsByNino.values().stream()
-            .map(this::consolidateFirstBestResult)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+                            .map(AuditResultsGroupedByNino::of)
+                            .map(resultCutoffSeparator::separateResultsByCutoff)
+                            .flatMap(Collection::stream)
+                            .map(this::consolidateFirstBestResult)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
     }
 
-    private ConsolidatedAuditResult consolidateFirstBestResult(List<AuditResult> results) {
+    private ConsolidatedAuditResult consolidateFirstBestResult(AuditResultsGroupedByNino results) {
         AuditResult consolidatedResult = results.stream()
             .max(auditResultComparator)
             .orElse(null);

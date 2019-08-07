@@ -38,4 +38,10 @@ public class AuditResultsGroupedByNino extends ForwardingList<AuditResult> {
         }
         return latestDate().plusDays(cutoffDays).isBefore(auditResult.date());
     }
+
+    public static AuditResultsGroupedByNino of(List<AuditResult> results){
+        AuditResultsGroupedByNino groupedByNino = new AuditResultsGroupedByNino();
+        groupedByNino.addAll(results);
+        return groupedByNino;
+    }
 }
