@@ -47,7 +47,6 @@ public class AuditResultConsolidator {
             results.stream().collect(Collectors.groupingBy(AuditResult::nino));
 
         return resultsByNino.values().stream()
-                            .map(AuditResultsGroupedByNino::of)
                             .map(resultCutoffSeparator::separateResultsByCutoff)
                             .flatMap(Collection::stream)
                             .map(this::consolidateFirstBestResult)
@@ -55,7 +54,7 @@ public class AuditResultConsolidator {
                             .collect(Collectors.toList());
     }
 
-    private ConsolidatedAuditResult consolidateFirstBestResult(AuditResultsGroupedByNino results) {
+    private ConsolidatedAuditResult consolidateFirstBestResult(List<AuditResult> results) {
         AuditResult consolidatedResult = results.stream()
             .max(auditResultComparator)
             .orElse(null);

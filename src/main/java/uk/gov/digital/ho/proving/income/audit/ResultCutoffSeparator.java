@@ -5,11 +5,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.statistics.AuditResultsGroupedByNino;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class ResultCutoffSeparator {
@@ -18,6 +20,10 @@ public class ResultCutoffSeparator {
 
     public ResultCutoffSeparator(@Value("${audit.history.cutoff.days}") int cutoffDays) {
         this.cutoffDays = cutoffDays;
+    }
+
+    public List<AuditResultsGroupedByNino> separateResultsByCutoff(List<AuditResult> results) {
+        return separateResultsByCutoff(AuditResultsGroupedByNino.of(results));
     }
 
     public List<AuditResultsGroupedByNino> separateResultsByCutoff(AuditResultsGroupedByNino results) {
