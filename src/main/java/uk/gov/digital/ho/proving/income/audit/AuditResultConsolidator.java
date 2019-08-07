@@ -4,10 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.statistics.AuditResultsGroupedByNino;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
@@ -56,11 +53,11 @@ public class AuditResultConsolidator {
 
     private List<AuditResultsGroupedByNino> groupByNino(Collection<List<AuditResult>> resultsByNino) {
         return resultsByNino.stream()
-                            .map(AuditResultsGroupedByNino::of)
+                            .map(AuditResultsGroupedByNino::new)
                             .collect(Collectors.toList());
     }
 
-    private List<List<AuditResult>> separateByCutoff(List<AuditResultsGroupedByNino> resultsByNino) {
+    private List<AuditResultsGroupedByNino> separateByCutoff(List<AuditResultsGroupedByNino> resultsByNino) {
         return resultsByNino.stream()
                             .map(resultCutoffSeparator::separateResultsByCutoff)
                             .flatMap(Collection::stream)

@@ -4,6 +4,7 @@ import jersey.repackaged.com.google.common.collect.ForwardingList;
 import uk.gov.digital.ho.proving.income.audit.AuditResult;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Comparator.naturalOrder;
@@ -19,6 +20,10 @@ public class AuditResultsGroupedByNino extends ForwardingList<AuditResult> {
 
     public AuditResultsGroupedByNino(AuditResult result) {
         results = newArrayList(result);
+    }
+
+    public AuditResultsGroupedByNino(List<AuditResult> results) {
+        this.results = new ArrayList<>(results);
     }
 
     @Override
@@ -37,11 +42,5 @@ public class AuditResultsGroupedByNino extends ForwardingList<AuditResult> {
             return false;
         }
         return latestDate().plusDays(cutoffDays).isBefore(auditResult.date());
-    }
-
-    public static AuditResultsGroupedByNino of(List<AuditResult> results){
-        AuditResultsGroupedByNino groupedByNino = new AuditResultsGroupedByNino();
-        groupedByNino.addAll(results);
-        return groupedByNino;
     }
 }
