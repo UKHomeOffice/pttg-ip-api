@@ -8,7 +8,6 @@ import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableSet;
 import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -304,7 +303,7 @@ public class AuditClientTest {
 
     @Test
     public void archiveAudit_shouldRequestAuditArchive() {
-        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), ImmutableSet.of("corr1", "corr2"), "PASS");
+        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), asList("corr1", "corr2"), "PASS");
         when(mockRestTemplate.exchange(eq(SOME_ARCHIVE_ENDPOINT + "/2019-06-30"), eq(POST), captorHttpEntity.capture(), eq(Void.class))).thenReturn(ResponseEntity.ok(null));
 
         auditClient.archiveAudit(request, LocalDate.of(2019, 6, 30));
@@ -316,7 +315,7 @@ public class AuditClientTest {
 
     @Test
     public void archiveAudit_shouldFormatResultDateOnUrl() {
-        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6),  ImmutableSet.of("corr1", "corr2"), "PASS");
+        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), asList("corr1", "corr2"), "PASS");
         when(mockRestTemplate.exchange(captorUrl.capture(), eq(POST), captorHttpEntity.capture(), eq(Void.class))).thenReturn(ResponseEntity.ok(null));
 
         auditClient.archiveAudit(request, LocalDate.of(2019, 6, 30));
@@ -327,7 +326,7 @@ public class AuditClientTest {
 
     @Test
     public void archiveAudit_shouldLogAuditArchiveErrors() {
-        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6),  ImmutableSet.of("corr1", "corr2"), "PASS");
+        ArchiveAuditRequest request = new ArchiveAuditRequest("any_nino", LocalDate.now().minusMonths(6), asList("corr1", "corr2"), "PASS");
         when(mockRestTemplate.exchange(eq(SOME_ARCHIVE_ENDPOINT + "/2019-06-30"), eq(POST), captorHttpEntity.capture(), eq(Void.class)))
             .thenThrow(new RestClientException("exception text"));
         LogCapturer<AuditClient> logCapturer = LogCapturer.forClass(AuditClient.class);

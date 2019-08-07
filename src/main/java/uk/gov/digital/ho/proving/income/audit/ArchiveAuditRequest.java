@@ -1,14 +1,11 @@
 package uk.gov.digital.ho.proving.income.audit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 @Builder
 @Getter
@@ -21,7 +18,7 @@ class ArchiveAuditRequest {
     @JsonProperty
     private LocalDate lastArchiveDate;
     @JsonProperty
-    private Set<String> correlationIds;
+    private List<String> correlationIds;
     @JsonProperty
     private String nino;
 }
