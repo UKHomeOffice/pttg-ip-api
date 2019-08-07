@@ -22,10 +22,6 @@ public class ResultCutoffSeparator {
         this.cutoffDays = cutoffDays;
     }
 
-    public List<AuditResultsGroupedByNino> separateResultsByCutoff(List<AuditResult> results) {
-        return separateResultsByCutoff(AuditResultsGroupedByNino.of(results));
-    }
-
     public List<AuditResultsGroupedByNino> separateResultsByCutoff(AuditResultsGroupedByNino results) {
         AuditResultsGroupedByNino sortedByDate = sortByDate(results);
         List<AuditResultsGroupedByNino> groupedByCutoff = new ArrayList<>();

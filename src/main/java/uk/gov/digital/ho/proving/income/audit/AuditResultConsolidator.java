@@ -46,11 +46,24 @@ public class AuditResultConsolidator {
         Map<String, List<AuditResult>> resultsByNino =
             results.stream().collect(Collectors.groupingBy(AuditResult::nino));
 
-        return resultsByNino.values().stream()
+        List<AuditResultsGroupedByNino> groupedByNino = groupByNino(resultsByNino.values());
+
+        return separateByCutoff(groupedByNino).stream()
+                                              .map(this::consolidateFirstBestResult)
+                                              .filter(Objects::nonNull)
+                                              .collect(Collectors.toList());
+    }
+
+    private List<AuditResultsGroupedByNino> groupByNino(Collection<List<AuditResult>> resultsByNino) {
+        return resultsByNino.stream()
+                            .map(AuditResultsGroupedByNino::of)
+                            .collect(Collectors.toList());
+    }
+
+    private List<List<AuditResult>> separateByCutoff(List<AuditResultsGroupedByNino> resultsByNino) {
+        return resultsByNino.stream()
                             .map(resultCutoffSeparator::separateResultsByCutoff)
                             .flatMap(Collection::stream)
-                            .map(this::consolidateFirstBestResult)
-                            .filter(Objects::nonNull)
                             .collect(Collectors.toList());
     }
 
