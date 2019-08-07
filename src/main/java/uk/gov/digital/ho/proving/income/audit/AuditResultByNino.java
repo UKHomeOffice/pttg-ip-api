@@ -7,7 +7,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -16,7 +16,7 @@ import java.util.Set;
 @ToString
 public class AuditResultByNino {
     private String nino;
-    private Set<String> correlationIds;
+    private List<String> correlationIds;
     private LocalDate date;
     private AuditResultType resultType;
 }

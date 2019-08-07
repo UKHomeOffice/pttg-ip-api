@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.proving.income.audit.statistics.PassStatisticsResultsConsolidator;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
@@ -190,7 +192,7 @@ public class AuditResultConsolidatorIT {
     @Test
     public void byNino_singleResult_resultUsed() {
         List<AuditResult> results = Arrays.asList(new AuditResult("any_correlation_id", LocalDate.now(), "any_nino", PASS));
-        AuditResultByNino expected = new AuditResultByNino("any_nino", ImmutableSet.of("any_correlation_id"), LocalDate.now(), PASS);
+        AuditResultByNino expected = new AuditResultByNino("any_nino", Arrays.asList("any_correlation_id"), LocalDate.now(), PASS);
 
         List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
 
@@ -207,11 +209,12 @@ public class AuditResultConsolidatorIT {
                 new AuditResult("any_correlation_id_3", LocalDate.now(), "any_nino", NOTFOUND),
                 new AuditResult("any_correlation_id_4", LocalDate.now(), "any_nino", ERROR)
             );
-        Set<String> expectedCorrelationIds = ImmutableSet.of(
+        List<String> expectedCorrelationIds = Arrays.asList(
             "any_correlation_id",
             "any_correlation_id_2",
             "any_correlation_id_3",
-            "any_correlation_id_4");
+            "any_correlation_id_4"
+        );
         AuditResultByNino expected = new AuditResultByNino("any_nino", expectedCorrelationIds, LocalDate.now(), PASS);
 
         List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
@@ -229,12 +232,12 @@ public class AuditResultConsolidatorIT {
                 new AuditResult("any_correlation_id_3", LocalDate.now().plusDays(2), "any_nino", PASS),
                 new AuditResult("any_correlation_id_4", LocalDate.now().plusDays(1), "any_nino", PASS)
             );
-        Set<String> expectedCorrelationIds = ImmutableSet.of(
+        List<String> expectedCorrelationIds = Arrays.asList(
             "any_correlation_id",
             "any_correlation_id_2",
             "any_correlation_id_3",
             "any_correlation_id_4"
-                                                          );
+        );
         AuditResultByNino expected = new AuditResultByNino("any_nino", expectedCorrelationIds, LocalDate.now(), PASS);
 
         List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
@@ -251,8 +254,8 @@ public class AuditResultConsolidatorIT {
                 new AuditResult("any_correlation_id_2", LocalDate.now().plusDays(1), "any_nino_2", PASS)
             );
         List<AuditResultByNino> expected = Arrays.asList(
-                new AuditResultByNino("any_nino", ImmutableSet.of("any_correlation_id"), LocalDate.now(), PASS),
-                new AuditResultByNino("any_nino_2", ImmutableSet.of("any_correlation_id_2"), LocalDate.now().plusDays(1), PASS)
+                new AuditResultByNino("any_nino", Arrays.asList("any_correlation_id"), LocalDate.now(), PASS),
+                new AuditResultByNino("any_nino_2", Arrays.asList("any_correlation_id_2"), LocalDate.now().plusDays(1), PASS)
             );
 
         List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
@@ -271,8 +274,8 @@ public class AuditResultConsolidatorIT {
                 new AuditResult("any_correlation_id_4", LocalDate.now().plusDays(1), "any_nino_2", PASS)
             );
         List<AuditResultByNino> expected = Arrays.asList(
-                new AuditResultByNino("any_nino", ImmutableSet.of("any_correlation_id_2", "any_correlation_id"), LocalDate.now(), PASS),
-                new AuditResultByNino("any_nino_2", ImmutableSet.of("any_correlation_id_3", "any_correlation_id_4"), LocalDate.now(), PASS)
+                new AuditResultByNino("any_nino", Arrays.asList("any_correlation_id_2", "any_correlation_id"), LocalDate.now(), PASS),
+                new AuditResultByNino("any_nino_2", Arrays.asList("any_correlation_id_3", "any_correlation_id_4"), LocalDate.now(), PASS)
             );
 
         List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
@@ -288,8 +291,8 @@ public class AuditResultConsolidatorIT {
         List<AuditResult> results = Arrays.asList(new AuditResult("any_correlation_id", firstRequestDate, "some_nino", PASS),
                                                   new AuditResult("any_correlation_id_2", afterCutoff, "some_nino", FAIL));
 
-        List<AuditResultByNino> expected = Arrays.asList(new AuditResultByNino("some_nino", ImmutableSet.of("any_correlation_id"), firstRequestDate, PASS),
-                                                         new AuditResultByNino("some_nino", ImmutableSet.of("any_correlation_id_2"), afterCutoff, FAIL));
+        List<AuditResultByNino> expected = Arrays.asList(new AuditResultByNino("some_nino", Collections.singletonList("any_correlation_id"), firstRequestDate, PASS),
+                                                         new AuditResultByNino("some_nino", Collections.singletonList("any_correlation_id_2"), afterCutoff, FAIL));
 
         assertThat(auditResultConsolidator.consolidatedAuditResultsByNino(results))
             .containsExactlyElementsOf(expected);
