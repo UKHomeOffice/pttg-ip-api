@@ -30,7 +30,7 @@ public class PassStatisticsResultsConsolidator {
 
     List<AuditResult> consolidateResults(List<AuditResultsGroupedByNino> resultsGroupedByNino) {
         List<AuditResultsGroupedByNino> separatedByCutoff = resultsGroupedByNino.stream()
-                                                                                .map(this::separateResultsByCutoff)
+                                                                                .map(resultCutoffSeparator::separateResultsByCutoff)
                                                                                 .flatMap(Collection::stream)
                                                                                 .collect(Collectors.toList());
 

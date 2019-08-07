@@ -18,6 +18,7 @@ import java.util.List;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PassStatisticsResultsConsolidatorTest {
@@ -49,25 +50,30 @@ public class PassStatisticsResultsConsolidatorTest {
     }
 
     @Test
-    public void consolidateResults_oneResult_returnResult() {
+    public void consolidateResults_oneResultFromSeparator_returnResult() {
         AuditResult someAuditResult = new AuditResult("any correlation id", ANY_DATE, SOME_NINO, ANY_RESULT);
         AuditResultsGroupedByNino singleResult = new AuditResultsGroupedByNino(someAuditResult);
 
-        List<AuditResult> consolidatedResult = statisticsResultsConsolidator.consolidateResults(singletonList(singleResult));
+        given(mockCutoffSeparator.separateResultsByCutoff(singleResult)).willReturn(singletonList(singleResult));
 
+        List<AuditResult> consolidatedResult = statisticsResultsConsolidator.consolidateResults(singletonList(singleResult));
         assertThat(consolidatedResult).containsExactlyInAnyOrder(someAuditResult);
     }
 
     @Test
-    public void consolidateResults_twoNinos_oneResultEach_returnResults() {
+    public void consolidateResults_twoNinos_oneResultEach_fromSeparator_returnResults() {
         AuditResult someAuditResult = new AuditResult("any correlation id", ANY_DATE, SOME_NINO, AuditResultType.PASS);
-        AuditResult someOtherAuditResult = new AuditResult("any other correlation id", ANY_DATE, SOME_OTHER_NINO, AuditResultType.FAIL);
+        AuditResultsGroupedByNino someGroupedResult = new AuditResultsGroupedByNino(someAuditResult);
 
-        List<AuditResultsGroupedByNino> someResultsGroupedByNino = Arrays.asList(new AuditResultsGroupedByNino(someAuditResult),
-                                                                                 new AuditResultsGroupedByNino(someOtherAuditResult));
+        AuditResult someOtherAuditResult = new AuditResult("any other correlation id", ANY_DATE, SOME_OTHER_NINO, AuditResultType.FAIL);
+        AuditResultsGroupedByNino someOtherGroupedResult = new AuditResultsGroupedByNino(someOtherAuditResult);
+
+        List<AuditResultsGroupedByNino> someResultsGroupedByNino = Arrays.asList(someGroupedResult, someOtherGroupedResult);
+
+        given(mockCutoffSeparator.separateResultsByCutoff(someGroupedResult)).willReturn(singletonList(someGroupedResult));
+        given(mockCutoffSeparator.separateResultsByCutoff(someOtherGroupedResult)).willReturn(singletonList(someOtherGroupedResult));
 
         List<AuditResult> consolidatedResult = statisticsResultsConsolidator.consolidateResults(someResultsGroupedByNino);
-
         assertThat(consolidatedResult).containsExactlyInAnyOrder(someAuditResult, someOtherAuditResult);
     }
 
