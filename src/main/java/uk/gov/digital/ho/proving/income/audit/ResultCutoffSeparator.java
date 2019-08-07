@@ -1,12 +1,10 @@
-package uk.gov.digital.ho.proving.income.audit.statistics;
+package uk.gov.digital.ho.proving.income.audit;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.proving.income.audit.AuditResult;
-import uk.gov.digital.ho.proving.income.audit.AuditResultComparator;
+import uk.gov.digital.ho.proving.income.audit.statistics.AuditResultsGroupedByNino;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,29 +12,16 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toCollection;
 
 @Component
-public class PassStatisticsResultsConsolidator {
+public class ResultCutoffSeparator {
 
-    private final AuditResultComparator resultComparator;
-    private final int cutoffDays;
 
-    PassStatisticsResultsConsolidator(AuditResultComparator resultComparator, @Value("${audit.history.cutoff.days}") int cutoffDays) {
-        this.resultComparator = resultComparator;
+    private int cutoffDays;
+
+    public ResultCutoffSeparator(@Value("${audit.history.cutoff.days}") int cutoffDays) {
         this.cutoffDays = cutoffDays;
     }
 
-    List<AuditResult> consolidateResults(List<AuditResultsGroupedByNino> resultsGroupedByNino) {
-        List<AuditResultsGroupedByNino> separatedByCutoff = resultsGroupedByNino.stream()
-                                                                                .map(this::separateResultsByCutoff)
-                                                                                .flatMap(Collection::stream)
-                                                                                .collect(Collectors.toList());
-
-        return separatedByCutoff.stream()
-                                .map(this::earliestBestResult)
-                                .collect(Collectors.toList());
-    }
-
     List<AuditResultsGroupedByNino> separateResultsByCutoff(AuditResultsGroupedByNino results) {
-        // TODO OJR EE-21001 Migrating to ResultCutoffSeparator
         AuditResultsGroupedByNino sortedByDate = sortByDate(results);
         List<AuditResultsGroupedByNino> groupedByCutoff = new ArrayList<>();
 
@@ -50,12 +35,6 @@ public class PassStatisticsResultsConsolidator {
             sameRequestResults.add(auditResult);
         }
         return filterEmpty(groupedByCutoff);
-    }
-
-    private AuditResult earliestBestResult(AuditResultsGroupedByNino auditResults) {
-        return auditResults.stream()
-                           .max(resultComparator)
-                           .orElse(null);
     }
 
     private AuditResultsGroupedByNino sortByDate(AuditResultsGroupedByNino results) {

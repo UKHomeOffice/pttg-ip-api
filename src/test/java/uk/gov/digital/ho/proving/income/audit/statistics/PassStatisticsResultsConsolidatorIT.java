@@ -82,7 +82,6 @@ public class PassStatisticsResultsConsolidatorIT {
         AuditResult someResult = new AuditResult("any correlation id", SOME_DATE, SOME_NINO, AuditResultType.PASS);
         AuditResult resultAfterCutoffDate = new AuditResult("any correlation id", afterCutoffDate, SOME_NINO, AuditResultType.FAIL);
 
-        AuditResultsGroupedByNino groupedByNino = groupedResults(someResult, resultAfterCutoffDate);
         List<AuditResultsGroupedByNino> someResults = singletonList(groupedResults(someResult, resultAfterCutoffDate));
 
         List<AuditResult> consolidatedResult = consolidator.consolidateResults(someResults);
