@@ -16,20 +16,16 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PassStatisticsResultsConsolidatorTest {
 
-    private static final int CUTOFF_DAYS = 10;
-
     private static final AuditResultType ANY_RESULT = AuditResultType.PASS;
     private static final LocalDate ANY_DATE = LocalDate.now();
     private static final String SOME_NINO = "AA112233A";
     private static final String SOME_OTHER_NINO = "BB112233A";
-    private static final LocalDate SOME_DATE = LocalDate.now();
 
     @Mock
     private AuditResultComparator mockResultsComparator;
@@ -40,7 +36,7 @@ public class PassStatisticsResultsConsolidatorTest {
 
     @Before
     public void setUp() {
-        statisticsResultsConsolidator = new PassStatisticsResultsConsolidator(mockResultsComparator, CUTOFF_DAYS, mockCutoffSeparator);
+        statisticsResultsConsolidator = new PassStatisticsResultsConsolidator(mockResultsComparator, mockCutoffSeparator);
     }
 
     @Test

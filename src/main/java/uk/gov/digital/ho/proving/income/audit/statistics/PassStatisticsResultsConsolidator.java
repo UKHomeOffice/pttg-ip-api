@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.proving.income.audit.AuditResult;
 import uk.gov.digital.ho.proving.income.audit.AuditResultComparator;
@@ -14,13 +13,10 @@ import java.util.stream.Collectors;
 public class PassStatisticsResultsConsolidator {
 
     private final AuditResultComparator resultComparator;
-    private final int cutoffDays;
     private final ResultCutoffSeparator resultCutoffSeparator;
 
-    PassStatisticsResultsConsolidator(AuditResultComparator resultComparator, @Value("${audit.history.cutoff.days}") int cutoffDays,
-                                      ResultCutoffSeparator resultCutoffSeparator) {
+    PassStatisticsResultsConsolidator(AuditResultComparator resultComparator, ResultCutoffSeparator resultCutoffSeparator) {
         this.resultComparator = resultComparator;
-        this.cutoffDays = cutoffDays;
         this.resultCutoffSeparator = resultCutoffSeparator;
     }
 
