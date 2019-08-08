@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
@@ -38,7 +39,7 @@ public class AuditResultConsolidator {
             .collect(Collectors.toList());
     }
 
-    public List<AuditResultByNino> consolidatedAuditResultsByNino(List<AuditResult> results) {
+    public List<ConsolidatedAuditResult> consolidatedAuditResults(List<AuditResult> results) {
         Map<String, List<AuditResult>> resultsByNino =
             results.stream().collect(Collectors.groupingBy(AuditResult::nino));
 
@@ -48,17 +49,17 @@ public class AuditResultConsolidator {
             .collect(Collectors.toList());
     }
 
-    private AuditResultByNino consolidateFirstBestResult(List<AuditResult> results) {
+    private ConsolidatedAuditResult consolidateFirstBestResult(List<AuditResult> results) {
         AuditResult consolidatedResult = results.stream()
             .max(auditResultComparator)
             .orElse(null);
         if (consolidatedResult == null) {
             return null;
         }
-        List<String> allCorrelationIds = results.stream()
-            .map(AuditResult::correlationId)
-            .collect(Collectors.toList());
-        return new AuditResultByNino(consolidatedResult.nino(), allCorrelationIds, consolidatedResult.date(), consolidatedResult.resultType());
+        Set<String> allCorrelationIds = results.stream()
+                                               .map(AuditResult::correlationId)
+                                               .collect(Collectors.toSet());
+        return new ConsolidatedAuditResult(consolidatedResult.nino(), allCorrelationIds, consolidatedResult.date(), consolidatedResult.resultType());
     }
 
     public AuditResult getAuditResult(List<AuditRecord> auditRecords) {

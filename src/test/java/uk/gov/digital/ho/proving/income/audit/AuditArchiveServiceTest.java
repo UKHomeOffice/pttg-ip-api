@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.audit;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,14 +41,14 @@ public class AuditArchiveServiceTest {
         when(mockAuditClient.getAuditHistory(auditEndDate, AUDIT_EVENTS_TO_ARCHIVE)).thenReturn(history);
         List<AuditResult> resultsByCorrelationId = getAuditResultsByCorrelationId();
         when(mockAuditResultConsolidator.auditResultsByCorrelationId(anyList())).thenReturn(resultsByCorrelationId);
-        List<AuditResultByNino> resultsByNino = getAuditResultsByNino();
-        when(mockAuditResultConsolidator.consolidatedAuditResultsByNino(anyList())).thenReturn(resultsByNino);
+        List<ConsolidatedAuditResult> resultsByNino = getAuditResultsByNino();
+        when(mockAuditResultConsolidator.consolidatedAuditResults(anyList())).thenReturn(resultsByNino);
 
         auditArchiveService.archiveAudit();
 
         verify(mockAuditClient).getAuditHistory(auditEndDate, AUDIT_EVENTS_TO_ARCHIVE);
         verify(mockAuditResultConsolidator).auditResultsByCorrelationId(history);
-        verify(mockAuditResultConsolidator).consolidatedAuditResultsByNino(resultsByCorrelationId);
+        verify(mockAuditResultConsolidator).consolidatedAuditResults(resultsByCorrelationId);
         verify(mockAuditClient).archiveAudit(any(ArchiveAuditRequest.class), any(LocalDate.class));
     }
 
@@ -56,8 +57,8 @@ public class AuditArchiveServiceTest {
         return Arrays.asList(auditResult);
     }
 
-    private List<AuditResultByNino> getAuditResultsByNino() {
-        AuditResultByNino auditResult = new AuditResultByNino("any_nino", Arrays.asList("any_corr_id"), LocalDate.now().minusMonths(7), PASS);
+    private List<ConsolidatedAuditResult> getAuditResultsByNino() {
+        ConsolidatedAuditResult auditResult = new ConsolidatedAuditResult("any_nino", ImmutableSet.of("any_corr_id"), LocalDate.now().minusMonths(7), PASS);
         return Arrays.asList(auditResult);
     }
 

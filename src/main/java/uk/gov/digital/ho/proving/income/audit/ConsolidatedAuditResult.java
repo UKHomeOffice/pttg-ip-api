@@ -7,16 +7,16 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @Getter
 @Accessors(fluent = true)
 @EqualsAndHashCode
 @ToString
-public class AuditResultByNino {
+public class ConsolidatedAuditResult {
     private String nino;
-    private List<String> correlationIds;
+    private Set<String> correlationIds;
     private LocalDate date;
     private AuditResultType resultType;
 }
