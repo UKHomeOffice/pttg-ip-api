@@ -5,7 +5,9 @@ import uk.gov.digital.ho.proving.income.audit.AuditResult;
 import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
+import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuditResultsGroupedByNinoTest {
@@ -23,14 +25,6 @@ public class AuditResultsGroupedByNinoTest {
     }
 
     @Test
-    public void constructor_someResult_setAsResults() {
-        AuditResult someResult = new AuditResult("any correlation ID", ANY_DATE, ANY_NINO, ANY_RESULT_TYPE);
-
-        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(someResult);
-        assertThat(groupedResults).containsExactly(someResult);
-    }
-
-    @Test
     public void latestDate_noDates_returnNull() {
         AuditResultsGroupedByNino emptyResult = new AuditResultsGroupedByNino();
         assertThat(emptyResult.latestDate()).isNull();
@@ -41,7 +35,7 @@ public class AuditResultsGroupedByNinoTest {
         LocalDate someDate = LocalDate.now();
         AuditResult someResult = resultFor(someDate);
 
-        AuditResultsGroupedByNino singleResult = new AuditResultsGroupedByNino(someResult);
+        AuditResultsGroupedByNino singleResult = groupedResults(someResult);
         assertThat(singleResult.latestDate()).isEqualTo(someDate);
     }
 
@@ -51,9 +45,9 @@ public class AuditResultsGroupedByNinoTest {
         LocalDate middleDate = earlierDate.plusDays(1);
         LocalDate laterDate = middleDate.plusDays(1);
 
-        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(earlierDate));
-        groupedResults.add(resultFor(laterDate));
-        groupedResults.add(resultFor(middleDate));
+        AuditResultsGroupedByNino groupedResults = groupedResults(resultFor(earlierDate),
+                                                                  resultFor(laterDate),
+                                                                  resultFor(middleDate));
 
         assertThat(groupedResults.latestDate()).isEqualTo(laterDate);
     }
@@ -70,7 +64,7 @@ public class AuditResultsGroupedByNinoTest {
         int someCutoffDays = 5;
         LocalDate beforeCutoff = someDate.plusDays(someCutoffDays - 1);
 
-        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(someDate));
+        AuditResultsGroupedByNino groupedResults = groupedResults(resultFor(someDate));
 
         AuditResult resultBeforeCutoff = resultFor(beforeCutoff);
         assertThat(groupedResults.resultAfterCutoff(someCutoffDays, resultBeforeCutoff)).isFalse();
@@ -82,7 +76,7 @@ public class AuditResultsGroupedByNinoTest {
         int someCutoffDays = 5;
         LocalDate onCutoff = someDate.plusDays(someCutoffDays);
 
-        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(someDate));
+        AuditResultsGroupedByNino groupedResults = groupedResults(resultFor(someDate));
 
         AuditResult resultOnCutoff = resultFor(onCutoff);
         assertThat(groupedResults.resultAfterCutoff(someCutoffDays, resultOnCutoff)).isFalse();
@@ -94,7 +88,7 @@ public class AuditResultsGroupedByNinoTest {
         int someCutoffDays = 5;
         LocalDate afterCutoff = someDate.plusDays(someCutoffDays + 1);
 
-        AuditResultsGroupedByNino groupedResults = new AuditResultsGroupedByNino(resultFor(someDate));
+        AuditResultsGroupedByNino groupedResults = groupedResults(resultFor(someDate));
 
         AuditResult resultAfterCutoff = resultFor(afterCutoff);
         assertThat(groupedResults.resultAfterCutoff(someCutoffDays, resultAfterCutoff)).isTrue();
@@ -102,5 +96,10 @@ public class AuditResultsGroupedByNinoTest {
 
     private AuditResult resultFor(LocalDate date) {
         return new AuditResult("any correlation ID", date, ANY_NINO, ANY_RESULT_TYPE);
+    }
+
+    private AuditResultsGroupedByNino groupedResults(AuditResult... auditResults) {
+        return Arrays.stream(auditResults)
+                     .collect(toCollection(AuditResultsGroupedByNino::new));
     }
 }
