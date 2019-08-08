@@ -282,7 +282,7 @@ public class AuditResultConsolidatorIT {
     }
 
     @Test
-    public void byNino_oneNinoTwoRequests_moreThanCutoffBetween_twoResults() {
+    public void consolidate_oneNinoTwoRequests_moreThanCutoffBetween_twoResults() {
         LocalDate firstRequestDate = LocalDate.now();
         LocalDate afterCutoff = firstRequestDate.plusDays(cutoffDays + 1);
         List<AuditResult> results = Arrays.asList(new AuditResult("any_correlation_id", firstRequestDate, "some_nino", PASS),
