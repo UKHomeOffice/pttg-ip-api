@@ -14,7 +14,7 @@ import java.util.Set;
 @Accessors(fluent = true)
 @EqualsAndHashCode
 @ToString
-public class AuditResultByNino {
+public class ConsolidatedAuditResult {
     private String nino;
     private Set<String> correlationIds;
     private LocalDate date;

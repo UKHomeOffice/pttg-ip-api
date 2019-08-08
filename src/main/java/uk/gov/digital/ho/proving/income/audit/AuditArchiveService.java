@@ -34,9 +34,9 @@ class AuditArchiveService {
 
         List<AuditRecord> auditHistory = auditClient.getAuditHistory(getLastDayToBeArchived(), AUDIT_EVENTS_TO_ARCHIVE);
         List<AuditResult> byCorrelationId = auditResultConsolidator.auditResultsByCorrelationId(auditHistory);
-        List<AuditResultByNino> consolidatedByNino = auditResultConsolidator.consolidatedAuditResultsByNino(byCorrelationId);
+        List<ConsolidatedAuditResult> consolidatedByNino = auditResultConsolidator.consolidatedAuditResultsByNino(byCorrelationId);
 
-        for (AuditResultByNino auditResult : consolidatedByNino) {
+        for (ConsolidatedAuditResult auditResult : consolidatedByNino) {
             auditClient.archiveAudit(generateAuditHistoryRequest(auditResult, config), auditResult.date());
         }
     }
@@ -45,7 +45,7 @@ class AuditArchiveService {
         return LocalDate.now().minusMonths(retainAuditHistoryMonths).minusDays(1);
     }
 
-    private ArchiveAuditRequest generateAuditHistoryRequest(AuditResultByNino auditResult, AuditArchiveConfig config) {
+    private ArchiveAuditRequest generateAuditHistoryRequest(ConsolidatedAuditResult auditResult, AuditArchiveConfig config) {
         return ArchiveAuditRequest.builder()
             .nino(auditResult.nino())
             .correlationIds(auditResult.correlationIds())
