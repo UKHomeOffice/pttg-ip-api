@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
@@ -48,7 +49,7 @@ public class PassStatisticsResultsConsolidatorTest {
     @Test
     public void consolidateResults_oneResultFromSeparator_returnResult() {
         AuditResult someAuditResult = new AuditResult("any correlation id", ANY_DATE, SOME_NINO, ANY_RESULT);
-        AuditResultsGroupedByNino singleResult = new AuditResultsGroupedByNino(someAuditResult);
+        AuditResultsGroupedByNino singleResult = groupedResults(someAuditResult);
 
         given(mockCutoffSeparator.separateResultsByCutoff(singleResult)).willReturn(singletonList(singleResult));
 
@@ -59,10 +60,10 @@ public class PassStatisticsResultsConsolidatorTest {
     @Test
     public void consolidateResults_twoNinos_oneResultEach_fromSeparator_returnResults() {
         AuditResult someAuditResult = new AuditResult("any correlation id", ANY_DATE, SOME_NINO, AuditResultType.PASS);
-        AuditResultsGroupedByNino someGroupedResult = new AuditResultsGroupedByNino(someAuditResult);
+        AuditResultsGroupedByNino someGroupedResult = groupedResults(someAuditResult);
 
         AuditResult someOtherAuditResult = new AuditResult("any other correlation id", ANY_DATE, SOME_OTHER_NINO, AuditResultType.FAIL);
-        AuditResultsGroupedByNino someOtherGroupedResult = new AuditResultsGroupedByNino(someOtherAuditResult);
+        AuditResultsGroupedByNino someOtherGroupedResult = groupedResults(someOtherAuditResult);
 
         List<AuditResultsGroupedByNino> someResultsGroupedByNino = Arrays.asList(someGroupedResult, someOtherGroupedResult);
 
@@ -72,4 +73,10 @@ public class PassStatisticsResultsConsolidatorTest {
         List<AuditResult> consolidatedResult = statisticsResultsConsolidator.consolidateResults(someResultsGroupedByNino);
         assertThat(consolidatedResult).containsExactlyInAnyOrder(someAuditResult, someOtherAuditResult);
     }
+
+    private AuditResultsGroupedByNino groupedResults(AuditResult... auditResults) {
+        return Arrays.stream(auditResults)
+                     .collect(toCollection(AuditResultsGroupedByNino::new));
+    }
+
 }
