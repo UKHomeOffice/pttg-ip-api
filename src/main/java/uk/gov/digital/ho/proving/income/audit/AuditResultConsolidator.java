@@ -5,6 +5,7 @@ import uk.gov.digital.ho.proving.income.audit.statistics.AuditResultsGroupedByNi
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
@@ -71,9 +72,9 @@ public class AuditResultConsolidator {
         if (consolidatedResult == null) {
             return null;
         }
-        List<String> allCorrelationIds = results.stream()
-            .map(AuditResult::correlationId)
-            .collect(Collectors.toList());
+        Set<String> allCorrelationIds = results.stream()
+                                               .map(AuditResult::correlationId)
+                                               .collect(Collectors.toSet());
         return new ConsolidatedAuditResult(consolidatedResult.nino(), allCorrelationIds, consolidatedResult.date(), consolidatedResult.resultType());
     }
 
