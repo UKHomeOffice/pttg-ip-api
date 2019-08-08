@@ -180,7 +180,7 @@ public class AuditResultConsolidatorIT {
     public void byNino_noResults_empty() {
         List<AuditResult> results = new ArrayList<>();
 
-        List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
+        List<ConsolidatedAuditResult> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(0);
     }
@@ -188,9 +188,9 @@ public class AuditResultConsolidatorIT {
     @Test
     public void byNino_singleResult_resultUsed() {
         List<AuditResult> results = Arrays.asList(new AuditResult("any_correlation_id", LocalDate.now(), "any_nino", PASS));
-        AuditResultByNino expected = new AuditResultByNino("any_nino", Arrays.asList("any_correlation_id"), LocalDate.now(), PASS);
+        ConsolidatedAuditResult expected = new ConsolidatedAuditResult("any_nino", Arrays.asList("any_correlation_id"), LocalDate.now(), PASS);
 
-        List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
+        List<ConsolidatedAuditResult> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(1);
         assertThat(resultsByNino.get(0)).isEqualTo(expected);
@@ -211,9 +211,9 @@ public class AuditResultConsolidatorIT {
             "any_correlation_id_3",
             "any_correlation_id_4"
         );
-        AuditResultByNino expected = new AuditResultByNino("any_nino", expectedCorrelationIds, LocalDate.now(), PASS);
+        ConsolidatedAuditResult expected = new ConsolidatedAuditResult("any_nino", expectedCorrelationIds, LocalDate.now(), PASS);
 
-        List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
+        List<ConsolidatedAuditResult> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(1);
         assertThat(resultsByNino.get(0)).isEqualTo(expected);
@@ -234,9 +234,9 @@ public class AuditResultConsolidatorIT {
             "any_correlation_id_3",
             "any_correlation_id_4"
         );
-        AuditResultByNino expected = new AuditResultByNino("any_nino", expectedCorrelationIds, LocalDate.now(), PASS);
+        ConsolidatedAuditResult expected = new ConsolidatedAuditResult("any_nino", expectedCorrelationIds, LocalDate.now(), PASS);
 
-        List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
+        List<ConsolidatedAuditResult> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(1);
         assertThat(resultsByNino.get(0)).isEqualTo(expected);
@@ -249,12 +249,12 @@ public class AuditResultConsolidatorIT {
                 new AuditResult("any_correlation_id", LocalDate.now(), "any_nino", PASS),
                 new AuditResult("any_correlation_id_2", LocalDate.now().plusDays(1), "any_nino_2", PASS)
             );
-        List<AuditResultByNino> expected = Arrays.asList(
-                new AuditResultByNino("any_nino", Arrays.asList("any_correlation_id"), LocalDate.now(), PASS),
-                new AuditResultByNino("any_nino_2", Arrays.asList("any_correlation_id_2"), LocalDate.now().plusDays(1), PASS)
+        List<ConsolidatedAuditResult> expected = Arrays.asList(
+                new ConsolidatedAuditResult("any_nino", Arrays.asList("any_correlation_id"), LocalDate.now(), PASS),
+                new ConsolidatedAuditResult("any_nino_2", Arrays.asList("any_correlation_id_2"), LocalDate.now().plusDays(1), PASS)
             );
 
-        List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
+        List<ConsolidatedAuditResult> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(2);
         assertThat(resultsByNino).contains(expected.get(0), expected.get(1));
@@ -269,12 +269,12 @@ public class AuditResultConsolidatorIT {
                 new AuditResult("any_correlation_id_3", LocalDate.now(), "any_nino_2", PASS),
                 new AuditResult("any_correlation_id_4", LocalDate.now().plusDays(1), "any_nino_2", PASS)
             );
-        List<AuditResultByNino> expected = Arrays.asList(
-                new AuditResultByNino("any_nino", Arrays.asList("any_correlation_id_2", "any_correlation_id"), LocalDate.now(), PASS),
-                new AuditResultByNino("any_nino_2", Arrays.asList("any_correlation_id_3", "any_correlation_id_4"), LocalDate.now(), PASS)
+        List<ConsolidatedAuditResult> expected = Arrays.asList(
+                new ConsolidatedAuditResult("any_nino", Arrays.asList("any_correlation_id_2", "any_correlation_id"), LocalDate.now(), PASS),
+                new ConsolidatedAuditResult("any_nino_2", Arrays.asList("any_correlation_id_3", "any_correlation_id_4"), LocalDate.now(), PASS)
             );
 
-        List<AuditResultByNino> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
+        List<ConsolidatedAuditResult> resultsByNino = auditResultConsolidator.consolidatedAuditResultsByNino(results);
 
         assertThat(resultsByNino.size()).isEqualTo(2);
         assertThat(resultsByNino).contains(expected.get(0), expected.get(1));
