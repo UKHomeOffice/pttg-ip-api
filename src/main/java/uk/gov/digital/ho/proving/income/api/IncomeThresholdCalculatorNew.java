@@ -30,9 +30,7 @@ public class IncomeThresholdCalculatorNew {
         if (dependants == 0) {
             return baseThreshold;
         }
-        else {
-            return oneDependantThreshold.add(remainingDependantsIncrement.multiply(BigDecimal.valueOf(dependants - 1)));
-        }
+       return oneDependantThreshold.add(remainingDependantsIncrement.multiply(BigDecimal.valueOf(dependants - 1)));
     }
 
     public BigDecimal monthlyThreshold(int dependants) {
