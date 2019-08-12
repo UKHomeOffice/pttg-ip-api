@@ -1,7 +1,7 @@
 Feature: Re-run various tests with different thresholds to prove that thresholds are configurable
 
     Background: Thresholds are configured to non-default values
-        Given The yearly threshold is configured to 9800:
+        Given The yearly threshold is configured to 9300:
         And The single dependant yearly threshold is configured to 11200:
         And The remaining dependant increment is configured to 1200:
 
@@ -94,7 +94,7 @@ Feature: Re-run various tests with different thresholds to prove that thresholds
             | 2017-08-25 | 1133.33 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-07-28 | 1133.33 |             | 04           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-06-30 | 1133.33 |             | 03           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-05-26 | 1133.33 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-05-26 | 1133.37 |             | 02           | FP/Ref1        | Flying Pizza Ltd |
 
         When the Income Proving v3 TM Family API is invoked with the following:
             | NINO - Applicant        | AA345678A  |
@@ -116,7 +116,7 @@ Feature: Re-run various tests with different thresholds to prove that thresholds
         Given HMRC has the following income records:
             | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer         |
             | 2018-03-30 | 775.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-04-30 | 774.99 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-04-30 | 774.98 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-04-29 | 00.01  |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
 
