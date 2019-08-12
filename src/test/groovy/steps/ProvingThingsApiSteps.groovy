@@ -24,6 +24,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.servlet.DispatcherServlet
 import uk.gov.digital.ho.proving.income.ServiceRunner
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator
 import uk.gov.digital.ho.proving.income.audit.AuditClient
 import uk.gov.digital.ho.proving.income.hmrc.HmrcClient
 import uk.gov.digital.ho.proving.income.hmrc.domain.*
@@ -50,6 +51,9 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
     @Autowired
     private HmrcClient hmrcClient
+
+    @Autowired
+    private IncomeThresholdCalculator incomeThresholdCalculatorNew;
 
     @Value('${local.server.port}')
     private int port
@@ -399,4 +403,20 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
             willSetStateTo("finished"))
 
     }
+
+    @Given("^The yearly threshold is configured to (.*?):\$")
+    void setYearlyThreshold(int threshold) {
+        ReflectionTestUtils.setField(incomeThresholdCalculatorNew, "baseThreshold", BigDecimal.valueOf(threshold))
+    }
+
+    @Given("^The single dependant yearly threshold is configured to (.*?):\$")
+    void setSingleDepedantThreshold(int threshold) {
+        ReflectionTestUtils.setField(incomeThresholdCalculatorNew, "oneDependantThreshold", BigDecimal.valueOf(threshold))
+    }
+
+    @Given("^The remaining dependant increment is configured to (.*?):\$")
+    void setRemainingDependantIncrement(int increment) {
+        ReflectionTestUtils.setField(incomeThresholdCalculatorNew, "remainingDependantsIncrement", BigDecimal.valueOf(increment))
+    }
+
 }

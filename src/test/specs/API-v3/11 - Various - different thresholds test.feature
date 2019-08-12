@@ -1,10 +1,9 @@
-@WIP
 Feature: Re-run various tests with different thresholds to prove that thresholds are configurable
 
     Background: Thresholds are configured to non-default values
-#        Given The yearly threshold is configured to 9800
-#        And The single dependant yearly threshold is configured to 11200
-#        And The remaining dependant increment is configured to 1200
+        Given The yearly threshold is configured to 9800:
+        And The single dependant yearly threshold is configured to 11200:
+        And The remaining dependant increment is configured to 1200:
 
 
     Scenario: Category A Single applicant with no dependants and 6 consecutive monthly payments over threshold
