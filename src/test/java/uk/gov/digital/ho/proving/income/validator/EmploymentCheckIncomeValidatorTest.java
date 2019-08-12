@@ -8,6 +8,7 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
@@ -18,7 +19,9 @@ import static uk.gov.digital.ho.proving.income.validator.EmploymentCheckTestData
 
 public class EmploymentCheckIncomeValidatorTest {
 
-    private EmploymentCheckIncomeValidator validator = new EmploymentCheckIncomeValidator();
+    private final static IncomeThresholdCalculator threSholdCalculator =
+        new IncomeThresholdCalculator(BigDecimal.valueOf(18600), BigDecimal.valueOf(22400), BigDecimal.valueOf(2400));
+    private EmploymentCheckIncomeValidator validator = new EmploymentCheckIncomeValidator(threSholdCalculator);
 
     @Test
     public void thatResultDetailsAreReturned() {
@@ -32,7 +35,7 @@ public class EmploymentCheckIncomeValidatorTest {
             .withFailMessage("The correct calculation type should be returned");
         assertThat(result.assessmentStartDate()).isEqualTo(raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS - 1))
             .withFailMessage("The assessment start date should be the correct number of days before the raised date (inclusive of ARD)");
-        assertThat(result.threshold()).isEqualTo(new IncomeThresholdCalculator(0).getMonthlyThreshold())
+        assertThat(result.threshold()).isEqualTo(threSholdCalculator.monthlyThreshold(0))
             .withFailMessage("The monthly threshold should be returned");
     }
 

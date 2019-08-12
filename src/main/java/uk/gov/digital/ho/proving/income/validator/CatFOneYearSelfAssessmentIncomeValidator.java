@@ -17,11 +17,17 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
     private static final String CATEGORY = "F";
     private static final String CALCULATION_TYPE = "Category F Self-Assessment Income";
 
+    private final IncomeThresholdCalculator incomeThresholdCalculator;
+
+    public CatFOneYearSelfAssessmentIncomeValidator(IncomeThresholdCalculator incomeThresholdCalculator) {
+        this.incomeThresholdCalculator = incomeThresholdCalculator;
+    }
+
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
         IncomeValidationStatus status = IncomeValidationStatus.SELF_ASSESSMENT_ONE_YEAR_FAILED;
 
-        BigDecimal threshold = getThreshold(incomeValidationRequest.dependants());
+        BigDecimal threshold = incomeThresholdCalculator.yearlyThreshold(incomeValidationRequest.dependants());
 
         List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns = getSelfAssessmentReturnsFromPreviousTaxYear(incomeValidationRequest);
         if (!previousYearsTaxReturns.isEmpty()) {
@@ -42,10 +48,6 @@ public class CatFOneYearSelfAssessmentIncomeValidator implements ActiveIncomeVal
             .category(CATEGORY)
             .calculationType(CALCULATION_TYPE)
             .build();
-    }
-
-    private BigDecimal getThreshold(Integer dependants) {
-        return new IncomeThresholdCalculator(dependants).yearlyThreshold();
     }
 
     private BigDecimal getTotalIncome(List<AnnualSelfAssessmentTaxReturn> previousYearsTaxReturns) {

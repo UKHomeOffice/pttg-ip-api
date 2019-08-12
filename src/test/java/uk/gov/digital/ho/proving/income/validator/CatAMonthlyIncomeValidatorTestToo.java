@@ -4,7 +4,10 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
 import uk.gov.digital.ho.proving.income.hmrc.domain.*;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
@@ -12,17 +15,22 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CatAMonthlyIncomeValidatorTestToo {
     private static final String ANY_EMPLOYER_PAYE_REF = "any employer PAYE ref";
     private static final LocalDate MIDDLE_OF_CURRENT_MONTH = LocalDate.now().withDayOfMonth(14);
 
+    @Mock
+    private IncomeThresholdCalculator incomeThresholdCalculator;
+    @InjectMocks
     private CatASalariedMonthlyIncomeValidator service;
 
     private List<Employments> employments;
@@ -34,8 +42,7 @@ public class CatAMonthlyIncomeValidatorTestToo {
 
     @Before
     public void setup() {
-
-        service = new CatASalariedMonthlyIncomeValidator();
+        when(incomeThresholdCalculator.monthlyThreshold(0)).thenReturn(BigDecimal.valueOf(18600).divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP));
 
         Income incomeA = incomeFromMonthsAgo(6);
         Income incomeB = incomeFromMonthsAgo(5);

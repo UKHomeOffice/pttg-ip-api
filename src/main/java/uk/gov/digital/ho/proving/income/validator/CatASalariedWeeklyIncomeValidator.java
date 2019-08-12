@@ -21,6 +21,12 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
     private static final String CALCULATION_TYPE = "Category A Weekly Salary";
     private static final String CATEGORY = "A";
 
+    private final IncomeThresholdCalculator incomeThresholdCalculator;
+
+    public CatASalariedWeeklyIncomeValidator(IncomeThresholdCalculator incomeThresholdCalculator) {
+        this.incomeThresholdCalculator = incomeThresholdCalculator;
+    }
+
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
 
@@ -30,8 +36,7 @@ public class CatASalariedWeeklyIncomeValidator implements IncomeValidator {
 
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
 
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(incomeValidationRequest.dependants());
-        BigDecimal weeklyThreshold = thresholdCalculator.getWeeklyThreshold();
+        BigDecimal weeklyThreshold = incomeThresholdCalculator.weeklyThreshold(incomeValidationRequest.dependants());
 
         LocalDate assessmentStartDate = getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate());
 

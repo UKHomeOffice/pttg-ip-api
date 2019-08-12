@@ -25,8 +25,14 @@ public class CatBNonSalariedIncomeValidator implements ActiveIncomeValidator {
 
     private final EmploymentCheckIncomeValidator employmentCheckIncomeValidator;
 
-    public CatBNonSalariedIncomeValidator(EmploymentCheckIncomeValidator employmentCheckIncomeValidator) {
+    private final IncomeThresholdCalculator incomeThresholdCalculator;
+
+    public CatBNonSalariedIncomeValidator(
+        EmploymentCheckIncomeValidator employmentCheckIncomeValidator,
+        IncomeThresholdCalculator incomeThresholdCalculator
+    ) {
         this.employmentCheckIncomeValidator = employmentCheckIncomeValidator;
+        this.incomeThresholdCalculator = incomeThresholdCalculator;
     }
 
     @Override
@@ -72,7 +78,7 @@ public class CatBNonSalariedIncomeValidator implements ActiveIncomeValidator {
 
         BigDecimal projectedAnnualIncome = getProjectedAnnualIncome(incomeValidationRequest);
 
-        BigDecimal yearlyThreshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
+        BigDecimal yearlyThreshold = incomeThresholdCalculator.yearlyThreshold(incomeValidationRequest.dependants());
 
         IncomeValidationStatus result = projectedAnnualIncome.compareTo(yearlyThreshold) >= 0 ? CATB_NON_SALARIED_PASSED : CATB_NON_SALARIED_BELOW_THRESHOLD;
 

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.validator;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,6 +13,7 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collections;
@@ -31,6 +33,9 @@ public class CatBNonSalariedIncomeValidatorTest {
 
     @Mock
     private EmploymentCheckIncomeValidator employmentCheckIncomeValidator;
+    @Mock
+    private IncomeThresholdCalculator incomeThresholdCalculator;
+
 
     @InjectMocks
     private CatBNonSalariedIncomeValidator validator;
@@ -49,32 +54,47 @@ public class CatBNonSalariedIncomeValidatorTest {
         when(employmentCheckIncomeValidator.validate(any())).thenReturn(incomeValidationResult);
     }
 
+    public void expectDependants(int dependants) {
+        BigDecimal yearlyThreshold = BigDecimal.valueOf(18600);
+        if (dependants == 1) {
+            yearlyThreshold = BigDecimal.valueOf(22400);
+        }
+        else if(dependants > 1) {
+            yearlyThreshold = BigDecimal.valueOf(22400 + (dependants - 1) * 2400);
+        }
+        when(incomeThresholdCalculator.yearlyThreshold(dependants)).thenReturn(yearlyThreshold);
+    }
+
     @Test
     public void thatResultDetailsAreReturned() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = singleMonthlyPaymentAboveNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.calculationType()).isEqualTo("Category B non salaried")
             .withFailMessage("The correct calculation should be returned");
         assertThat(result.assessmentStartDate()).isEqualTo(raisedDate.minusYears(1))
             .withFailMessage("The assessment start date should be 1 year before the raised date");
-        assertThat(result.threshold()).isEqualTo(new IncomeThresholdCalculator(0).yearlyThreshold())
+        assertThat(result.threshold()).isEqualTo(BigDecimal.valueOf(18600))
             .withFailMessage("The yearly threshold should be returned");
     }
 
     @Test
     public void thatSingleApplicantDetailsAreReturned() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = singleMonthlyPaymentAboveNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.individuals().size()).isEqualTo(1)
@@ -91,11 +111,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatSingleApplicantSingleMonthAboveThresholdPasses() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = singleMonthlyPaymentAboveNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_PASSED)
@@ -105,11 +127,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatSingleApplicantSingleMonthBelowThresholdFails() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = singleMonthlyPaymentBelowNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD)
@@ -119,11 +143,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatSingleApplicantSingleMonthEqualsThresholdPasses() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = singleMonthlyPaymentEqualsNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_PASSED)
@@ -133,11 +159,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatSingleApplicantMultipleMonthsBelowThresholdFails() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = multipleMonthlyPaymentsBelowNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD)
@@ -147,11 +175,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatSingleApplicantMultipleMonthsEqualsThresholdPasses() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = multipleMonthlyPaymentsEqualsNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_PASSED)
@@ -161,11 +191,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatSingleApplicantSingleDependantEqualsThresholdPasses() {
         employmentCheckPasses();
+        int dependants = 1;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = singleMonthlyPaymentEqualsSingleDependantThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 1);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_PASSED)
@@ -175,11 +207,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatSingleApplicantSingleDependantBelowThresholdFails() {
         employmentCheckPasses();
+        int dependants = 1;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = singleMonthlyPaymentBelowSingleDependantThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 1);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD)
@@ -189,11 +223,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatSingleApplicantThreeDependantsEqualsThresholdPasses() {
         employmentCheckPasses();
+        int dependants = 3;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = singleMonthlyPaymentEqualsThreeDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 3);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_PASSED)
@@ -203,11 +239,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatSingleApplicantThreeDependantsBelowThresholdFails() {
         employmentCheckPasses();
+        int dependants = 3;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = singleMonthlyPaymentBelowThreeDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 3);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD)
@@ -217,11 +255,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatSingleApplicantMultiplePaymentsSameMonthEqualsThresholdPasses() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = multipleMonthlyPaymentSameMonthEqualsNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_PASSED)
@@ -231,11 +271,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatTwoApplicantsDetailsAreReturned() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = multipleApplicantSingleMonthEqualsNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.individuals().size()).isEqualTo(2)
@@ -261,11 +303,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatTwoApplicantsCombinedEqualsThresholdPasses() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = multipleApplicantBothSingleMonthEqualsNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_PASSED)
@@ -275,11 +319,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatTwoApplicantsCombinedBelowThresholdFails() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = multipleApplicantBothSingleMonthBelowNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_BELOW_THRESHOLD)
@@ -289,11 +335,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatTwoApplicantsMultipleMonthsCombinedEqualsThresholdPasses() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = multipleApplicantMultipleMonthEqualsNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_PASSED)
@@ -303,11 +351,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatTwoApplicantsOnlyApplicantEqualsThresholdPasses() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = multipleApplicantsOnlyApplicantEqualsNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_PASSED)
@@ -321,11 +371,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatTwoApplicantsOnlyPartnerEqualsThresholdPasses() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = multipleApplicantsOnlyPartnerEqualsNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.status()).isEqualTo(IncomeValidationStatus.CATB_NON_SALARIED_PASSED)
@@ -339,11 +391,13 @@ public class CatBNonSalariedIncomeValidatorTest {
     @Test
     public void thatCalculationTypeIsOfRequiredFormatForStepAssertor() {
         employmentCheckPasses();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
         List<ApplicantIncome> incomes = singleMonthlyPaymentAboveNoDependantsThreshold(raisedDate);
 
-        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, dependants);
         IncomeValidationResult result = validator.validate(request);
 
         assertThat(result.calculationType()).startsWith("Category ");
@@ -353,9 +407,11 @@ public class CatBNonSalariedIncomeValidatorTest {
     public void shouldReturnFailedEmploymentCheckWhenEmploymentCheckFails() {
         // given
         employmentCheckFails();
+        int dependants = 0;
+        expectDependants(dependants);
 
         LocalDate raisedDate = LocalDate.now();
-        IncomeValidationRequest request = new IncomeValidationRequest(Collections.emptyList(), raisedDate, 0);
+        IncomeValidationRequest request = new IncomeValidationRequest(Collections.emptyList(), raisedDate, dependants);
 
         // when
         IncomeValidationResult validate = validator.validate(request);
