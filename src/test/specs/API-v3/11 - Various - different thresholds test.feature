@@ -116,7 +116,7 @@ Feature: Re-run various tests with different thresholds to prove that thresholds
         Given HMRC has the following income records:
             | Date       | Amount | Week Number | Month Number | PAYE Reference | Employer         |
             | 2018-03-30 | 775.00 |             | 12           | FP/Ref1        | Flying Pizza Ltd |
-            | 2017-04-30 | 774.98 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
+            | 2017-04-30 | 724.99 |             | 01           | FP/Ref1        | Flying Pizza Ltd |
             | 2017-04-29 | 00.01  |             | 01           | FP/Ref1        | Flying Pizza Ltd |
 
 
