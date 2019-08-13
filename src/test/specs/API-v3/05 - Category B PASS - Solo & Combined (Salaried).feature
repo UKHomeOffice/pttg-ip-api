@@ -9,6 +9,10 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Sal
     # BACKGROUND: Applications with one applicant will be required to meet a main threshold value of £18,600. Monthly threshold is set at £1550
     #             Applications with one dependant will be required to meet an amended threshold value of £22,400. Monthly threshold is set at £1866.70
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800. Monthly threshold is set at £2066.70
+    Background: Thresholds are configured to default values
+        Given The yearly threshold is configured to 18600:
+        And The single dependant yearly threshold is configured to 22400:
+        And The remaining dependant increment is configured to 2400:
 
     ##############
 

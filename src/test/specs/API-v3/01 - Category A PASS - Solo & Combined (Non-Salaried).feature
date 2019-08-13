@@ -5,11 +5,13 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
     # Annual threshold is £18,600 if no dependents are included. Addition of a first dependent child adds £3,800 then each thereafter a further £2,400.
     # Formula for calculating the income for comparison against the threshold is: Total all payments, divide by 6, multiply by 12
 
-
     # BACKGROUND: Applications with one applicant will be required to meet a main threshold value of £18,600.
     #             Applications with one dependant will be required to meet an amended threshold value of £22,400
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800
-
+    Background: Thresholds are configured to default values
+        Given The yearly threshold is configured to 18600:
+        And The single dependant yearly threshold is configured to 22400:
+        And The remaining dependant increment is configured to 2400:
 
     # 01 Lucy has no dependents. Her income history shows a payments in 6 months that meet the threshold. Assessment range 2018-04-30 to 2017-10-30
     Scenario: Single applicant with no dependants and 6 consecutive monthly payments over threshold

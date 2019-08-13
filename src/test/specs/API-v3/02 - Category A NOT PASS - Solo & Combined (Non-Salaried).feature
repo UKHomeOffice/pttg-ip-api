@@ -8,7 +8,10 @@ Feature: Category A Financial Requirement - Solo & Combined Applications
     # BACKGROUND: Applications with one applicant will be required to meet a main threshold value of £18,600.
     #             Applications with one dependant will be required to meet an amended threshold value of £22,400
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800
-
+    Background: Thresholds are configured to default values
+        Given The yearly threshold is configured to 18600:
+        And The single dependant yearly threshold is configured to 22400:
+        And The remaining dependant increment is configured to 2400:
 
     # 01 Cheryl has no dependents. Her income history shows payments in 6 months that do not meet the threshold. Assessment range 2018-04-30 to 2017-10-30
     Scenario: Applicant has no dependants and the income is below threshold
