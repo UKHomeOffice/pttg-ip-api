@@ -53,7 +53,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
     private HmrcClient hmrcClient
 
     @Autowired
-    private IncomeThresholdCalculator incomeThresholdCalculatorNew;
+    private IncomeThresholdCalculator incomeThresholdCalculator
 
     @Value('${local.server.port}')
     private int port
@@ -406,17 +406,17 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
 
     @Given("^The yearly threshold is configured to (.*?):\$")
     void setYearlyThreshold(int threshold) {
-        ReflectionTestUtils.setField(incomeThresholdCalculatorNew, "baseThreshold", BigDecimal.valueOf(threshold))
+        ReflectionTestUtils.setField(incomeThresholdCalculator, "baseThreshold", BigDecimal.valueOf(threshold))
     }
 
     @Given("^The single dependant yearly threshold is configured to (.*?):\$")
     void setSingleDepedantThreshold(int threshold) {
-        ReflectionTestUtils.setField(incomeThresholdCalculatorNew, "oneDependantThreshold", BigDecimal.valueOf(threshold))
+        ReflectionTestUtils.setField(incomeThresholdCalculator, "oneDependantThreshold", BigDecimal.valueOf(threshold))
     }
 
     @Given("^The remaining dependants increment is configured to (.*?):\$")
     void setRemainingDependantIncrement(int increment) {
-        ReflectionTestUtils.setField(incomeThresholdCalculatorNew, "remainingDependantsIncrement", BigDecimal.valueOf(increment))
+        ReflectionTestUtils.setField(incomeThresholdCalculator, "remainingDependantsIncrement", BigDecimal.valueOf(increment))
     }
 
 }

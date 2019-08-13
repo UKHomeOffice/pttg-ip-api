@@ -15,7 +15,6 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
