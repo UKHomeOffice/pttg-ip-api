@@ -3,7 +3,6 @@ package uk.gov.digital.ho.proving.income.validator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
@@ -29,13 +28,14 @@ public class EmploymentCheckIncomeValidatorTest {
 
     @Mock
     IncomeThresholdCalculator incomeThresholdCalculator;
-    @InjectMocks
+
     private EmploymentCheckIncomeValidator validator;
 
     private static final BigDecimal EXPECTED_ZERO_DEPENDANT_MONTHLY_THRESHOLD = BASE_THRESHOLD.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
 
     @Before
     public void setUp() {
+        validator = new EmploymentCheckIncomeValidator(incomeThresholdCalculator);
         when(incomeThresholdCalculator.monthlyThreshold(0)).thenReturn(EXPECTED_ZERO_DEPENDANT_MONTHLY_THRESHOLD);
     }
 

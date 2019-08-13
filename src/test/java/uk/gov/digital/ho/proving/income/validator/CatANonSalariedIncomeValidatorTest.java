@@ -3,7 +3,6 @@ package uk.gov.digital.ho.proving.income.validator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
@@ -46,11 +45,12 @@ public class CatANonSalariedIncomeValidatorTest {
 
     @Mock
     private IncomeThresholdCalculator incomeThresholdCalculator;
-    @InjectMocks
+
     private CatANonSalariedIncomeValidator validator;
 
     @Before
     public void setUp() {
+        validator = new CatANonSalariedIncomeValidator(incomeThresholdCalculator);
         when(incomeThresholdCalculator.yearlyThreshold(0)).thenReturn(BigDecimal.valueOf(18600));
     }
 
