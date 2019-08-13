@@ -414,7 +414,7 @@ class ProvingThingsApiSteps implements ApplicationContextAware {
         ReflectionTestUtils.setField(incomeThresholdCalculatorNew, "oneDependantThreshold", BigDecimal.valueOf(threshold))
     }
 
-    @Given("^The remaining dependant increment is configured to (.*?):\$")
+    @Given("^The remaining dependants increment is configured to (.*?):\$")
     void setRemainingDependantIncrement(int increment) {
         ReflectionTestUtils.setField(incomeThresholdCalculatorNew, "remainingDependantsIncrement", BigDecimal.valueOf(increment))
     }

@@ -1,6 +1,11 @@
 package uk.gov.digital.ho.proving.income.validator;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
@@ -9,24 +14,35 @@ import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.getDate;
 import static uk.gov.digital.ho.proving.income.validator.EmploymentCheckTestData.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class EmploymentCheckIncomeValidatorTest {
 
-    private final static IncomeThresholdCalculator threSholdCalculator =
-        new IncomeThresholdCalculator(BigDecimal.valueOf(18600), BigDecimal.valueOf(22400), BigDecimal.valueOf(2400));
-    private EmploymentCheckIncomeValidator validator = new EmploymentCheckIncomeValidator(threSholdCalculator);
+    @Mock
+    IncomeThresholdCalculator incomeThresholdCalculator;
+    @InjectMocks
+    private EmploymentCheckIncomeValidator validator;
+
+    private static final BigDecimal EXPECTED_ZERO_DEPENDANT_MONTHLY_THRESHOLD = BASE_THRESHOLD.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
+
+    @Before
+    public void setUp() {
+        when(incomeThresholdCalculator.monthlyThreshold(0)).thenReturn(EXPECTED_ZERO_DEPENDANT_MONTHLY_THRESHOLD);
+    }
 
     @Test
     public void thatResultDetailsAreReturned() {
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
-        List<ApplicantIncome> incomes = noIncome(raisedDate);
+        List<ApplicantIncome> incomes = noIncome();
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult result = validator.validate(request);
@@ -35,7 +51,7 @@ public class EmploymentCheckIncomeValidatorTest {
             .withFailMessage("The correct calculation type should be returned");
         assertThat(result.assessmentStartDate()).isEqualTo(raisedDate.minusDays(EmploymentCheckIncomeValidator.ASSESSMENT_START_DAYS_PREVIOUS - 1))
             .withFailMessage("The assessment start date should be the correct number of days before the raised date (inclusive of ARD)");
-        assertThat(result.threshold()).isEqualTo(threSholdCalculator.monthlyThreshold(0))
+        assertThat(result.threshold()).isEqualTo(EXPECTED_ZERO_DEPENDANT_MONTHLY_THRESHOLD)
             .withFailMessage("The monthly threshold should be returned");
     }
 
@@ -43,7 +59,7 @@ public class EmploymentCheckIncomeValidatorTest {
     @Test
     public void thatSingleApplicantDetailsAreReturned() {
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
-        List<ApplicantIncome> incomes = noIncome(raisedDate);
+        List<ApplicantIncome> incomes = noIncome();
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult result = validator.validate(request);
@@ -62,7 +78,7 @@ public class EmploymentCheckIncomeValidatorTest {
     @Test
     public void thatTwoApplicantsDetailsAreReturned() {
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
-        List<ApplicantIncome> incomes = noIncomeTwoApplicants(raisedDate);
+        List<ApplicantIncome> incomes = noIncomeTwoApplicants();
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult result = validator.validate(request);
@@ -90,7 +106,7 @@ public class EmploymentCheckIncomeValidatorTest {
     @Test
     public void thatNoIncomeFails() {
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
-        List<ApplicantIncome> incomes = noIncome(raisedDate);
+        List<ApplicantIncome> incomes = noIncome();
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult result = validator.validate(request);
@@ -313,7 +329,7 @@ public class EmploymentCheckIncomeValidatorTest {
     @Test
     public void thatCalculationTypeIsOfRequiredFormatForStepAssertor() {
         LocalDate raisedDate = getDate(2018, Month.SEPTEMBER, 23);
-        List<ApplicantIncome> incomes = noIncome(raisedDate);
+        List<ApplicantIncome> incomes = noIncome();
 
         IncomeValidationRequest request = new IncomeValidationRequest(incomes, raisedDate, 0);
         IncomeValidationResult result = validator.validate(request);

@@ -20,7 +20,7 @@ class CatBSalariedTestData {
     private final static BigDecimal BASE_THRESHOLD = BigDecimal.valueOf(18600);
     private final static BigDecimal ONE_DEPENDANT_THRESHOLD = BigDecimal.valueOf(22400);
     private final static BigDecimal REMAINING_DEPENDANT_INCREMENT = BigDecimal.valueOf(2400);
-    private final static IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(BASE_THRESHOLD, ONE_DEPENDANT_THRESHOLD, REMAINING_DEPENDANT_INCREMENT);
+    private final static IncomeThresholdCalculator INCOME_THRESHOLD_CALCULATOR = new IncomeThresholdCalculator(BASE_THRESHOLD, ONE_DEPENDANT_THRESHOLD, REMAINING_DEPENDANT_INCREMENT);
 
     static List<ApplicantIncome> twelveMonthsOverThreshold(final LocalDate applicationRaisedDate) {
         return twelveMonthsOverThreshold(applicationRaisedDate, 0);
@@ -276,19 +276,19 @@ class CatBSalariedTestData {
     }
 
     private static BigDecimal incomeOverMonthlyThreshold(int dependants) {
-        return thresholdCalculator.monthlyThreshold(dependants).add(amount("0.01"));
+        return INCOME_THRESHOLD_CALCULATOR.monthlyThreshold(dependants).add(amount("0.01"));
     }
 
     private static BigDecimal incomeUnderMonthlyThreshold(int dependants) {
-        return thresholdCalculator.monthlyThreshold(dependants).subtract(amount("0.01"));
+        return INCOME_THRESHOLD_CALCULATOR.monthlyThreshold(dependants).subtract(amount("0.01"));
     }
 
     private static BigDecimal incomeOverThresholdJointApplication(int dependants) {
-        return thresholdCalculator.monthlyThreshold(dependants).divide(amount("2"), RoundingMode.FLOOR).add(amount("0.01"));
+        return INCOME_THRESHOLD_CALCULATOR.monthlyThreshold(dependants).divide(amount("2"), RoundingMode.FLOOR).add(amount("0.01"));
     }
 
     private static BigDecimal incomeBelowThresholdJointApplication(int dependants) {
-        return thresholdCalculator.monthlyThreshold(dependants).divide(amount("2"), RoundingMode.FLOOR).subtract(amount("0.01"));
+        return INCOME_THRESHOLD_CALCULATOR.monthlyThreshold(dependants).divide(amount("2"), RoundingMode.FLOOR).subtract(amount("0.01"));
     }
 
     private static boolean isEven(int i) {

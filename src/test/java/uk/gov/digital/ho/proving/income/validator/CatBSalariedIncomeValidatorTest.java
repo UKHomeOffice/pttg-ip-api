@@ -146,7 +146,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkPassesFor1DependantIfOverThresholdSoloApplication() {
         employmentCheckPasses();
         final int dependants = 1;
-        expectDependants(1);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsOverThreshold(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
     }
@@ -155,7 +155,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsFor1DependantIfUnderThresholdSoloApplication() {
         employmentCheckPasses();
         final int dependants = 1;
-        expectDependants(1);
+        expectDependants(dependants);
 
         assertStatus(monthBelowThreshold(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
     }
@@ -164,7 +164,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkPassesFor1DependantIfOverThresholdJointApplication() {
         employmentCheckPasses();
         final int dependants = 1;
-        expectDependants(1);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsOverThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
     }
@@ -173,7 +173,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsFor1DependantIfUnderThresholdJointApplication() {
         employmentCheckPasses();
         final int dependants = 1;
-        expectDependants(1);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsUnderThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
     }
@@ -182,7 +182,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkPassesFor2DependantsIfOverThresholdSoloApplication() {
         employmentCheckPasses();
         final int dependants = 2;
-        expectDependants(2);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsOverThreshold(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
     }
@@ -191,7 +191,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsFor2DependantsIfUnderThresholdSoloApplication() {
         employmentCheckPasses();
         final int dependants = 2;
-        expectDependants(2);
+        expectDependants(dependants);
 
         assertStatus(monthBelowThreshold(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
     }
@@ -200,7 +200,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkPassesFor2DependantsIfOverThresholdJointApplication() {
         employmentCheckPasses();
         final int dependants = 2;
-        expectDependants(2);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsOverThresholdApplicantOnlyInJoint(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
     }
@@ -209,7 +209,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsFor2DependantsIfUnderThresholdJointApplication() {
         employmentCheckPasses();
         final int dependants = 2;
-        expectDependants(2);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsUnderThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
     }
@@ -218,7 +218,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkPassesFor3DependantsIfOverThresholdSoloApplication() {
         employmentCheckPasses();
         final int dependants = 3;
-        expectDependants(3);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsOverThreshold(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
     }
@@ -227,7 +227,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsFor3DependantsIfUnderThresholdSoloApplication() {
         employmentCheckPasses();
         final int dependants = 3;
-        expectDependants(3);
+        expectDependants(dependants);
 
         assertStatus(monthBelowThreshold(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
     }
@@ -236,7 +236,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkPassesFor3DependantsIfOverThresholdJointApplication() {
         employmentCheckPasses();
         final int dependants = 3;
-        expectDependants(3);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsOverThresholdApplicantOnlyInJoint(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
     }
@@ -245,7 +245,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsFor3DependantsIfUnderThresholdJointApplication() {
         employmentCheckPasses();
         final int dependants = 3;
-        expectDependants(3);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsUnderThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
     }
@@ -254,7 +254,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkPassesFor4DependantsIfOverThresholdSoloApplication() {
         employmentCheckPasses();
         final int dependants = 4;
-        expectDependants(4);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsOverThreshold(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
     }
@@ -263,7 +263,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsFor4DependantsIfUnderThresholdSoloApplication() {
         employmentCheckPasses();
         final int dependants = 4;
-        expectDependants(4);
+        expectDependants(dependants);
 
         assertStatus(monthBelowThreshold(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
     }
@@ -272,7 +272,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkPassesFor4DependantsIfOverThresholdJointApplication() {
         employmentCheckPasses();
         final int dependants = 4;
-        expectDependants(4);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsOverThresholdApplicantOnlyInJoint(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
     }
@@ -281,7 +281,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsFor4DependantsIfUnderThresholdJointApplication() {
         employmentCheckPasses();
         final int dependants = 4;
-        expectDependants(4);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsUnderThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
     }
@@ -291,7 +291,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkPassesFor5DependantsIfOverThresholdSoloApplication() {
         employmentCheckPasses();
         final int dependants = 5;
-        expectDependants(5);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsOverThreshold(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
     }
@@ -300,7 +300,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsFor5DependantsIfUnderThresholdSoloApplication() {
         employmentCheckPasses();
         final int dependants = 5;
-        expectDependants(5);
+        expectDependants(dependants);
 
         assertStatus(monthBelowThreshold(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
     }
@@ -309,7 +309,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkPassesFor5DependantsIfOverThresholdJointApplication() {
         employmentCheckPasses();
         final int dependants = 5;
-        expectDependants(5);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsOverThresholdApplicantOnlyInJoint(applicationDate, dependants), CATB_SALARIED_PASSED, dependants);
     }
@@ -318,7 +318,7 @@ public class CatBSalariedIncomeValidatorTest {
     public void checkFailsFor5DependantsIfUnderThresholdJointApplication() {
         employmentCheckPasses();
         final int dependants = 5;
-        expectDependants(5);
+        expectDependants(dependants);
 
         assertStatus(twelveMonthsUnderThresholdJointApplication(applicationDate, dependants), CATB_SALARIED_BELOW_THRESHOLD, dependants);
     }

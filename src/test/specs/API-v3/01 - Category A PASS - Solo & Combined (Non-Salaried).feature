@@ -11,7 +11,7 @@ Feature: Category A Financial Requirement - Solo & Combined Applications for Non
     Background: Thresholds are configured to default values
         Given The yearly threshold is configured to 18600:
         And The single dependant yearly threshold is configured to 22400:
-        And The remaining dependant increment is configured to 2400:
+        And The remaining dependants increment is configured to 2400:
 
     # 01 Lucy has no dependents. Her income history shows a payments in 6 months that meet the threshold. Assessment range 2018-04-30 to 2017-10-30
     Scenario: Single applicant with no dependants and 6 consecutive monthly payments over threshold

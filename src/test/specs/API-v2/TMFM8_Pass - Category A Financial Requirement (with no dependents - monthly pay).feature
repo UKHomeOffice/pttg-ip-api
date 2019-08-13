@@ -9,7 +9,7 @@ Feature: Pass - Category A Financial Requirement - with no dependents - monthly 
     Background: Thresholds are configured to default values
         Given The yearly threshold is configured to 18600:
         And The single dependant yearly threshold is configured to 22400:
-        And The remaining dependant increment is configured to 2400:
+        And The remaining dependants increment is configured to 2400:
 
 #New Scenario -
     Scenario: Jon meets the Category A Financial Requirement (1)

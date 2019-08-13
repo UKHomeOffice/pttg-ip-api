@@ -21,7 +21,7 @@ Feature: Failure - Category A Financial Requirement  - with Dependants - weekly 
     Background: Thresholds are configured to default values
         Given The yearly threshold is configured to 18600:
         And The single dependant yearly threshold is configured to 22400:
-        And The remaining dependant increment is configured to 2400:
+        And The remaining dependants increment is configured to 2400:
 
 #New scenario - Added in
     Scenario: Donald Sweet does not meet the Category A Financial Requirement (He has earned < the Cat A financial threshold)

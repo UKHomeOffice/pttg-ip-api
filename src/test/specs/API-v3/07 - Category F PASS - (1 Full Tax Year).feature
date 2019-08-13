@@ -11,7 +11,7 @@ Feature: Category F Financial Requirement - Self-Assessment - Solo & Combined Ap
     Background: Thresholds are configured to default values
         Given The yearly threshold is configured to 18600:
         And The single dependant yearly threshold is configured to 22400:
-        And The remaining dependant increment is configured to 2400:
+        And The remaining dependants increment is configured to 2400:
 
     Scenario: No dependents. Self-Assessment payment in the last full tax year that meets the threshold
         Given HMRC has the following Self Assessment Returns for nino TK047457B:
