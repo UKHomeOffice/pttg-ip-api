@@ -14,7 +14,7 @@ pipeline:
     commands:
       - docker build -t pttg-ip-api .
     when:
-      branch: [master, refs/tags/*, EE-19133-calculate-stats-efficiently]
+      branch: [master, refs/tags/*, EE-12559-unused-envs]
       event: [push, tag]
 
   install-docker-image:
@@ -28,7 +28,7 @@ pipeline:
       - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
     when:
-      branch: [master, EE-19133-calculate-stats-efficiently]
+      branch: [master, EE-12559-unused-envs]
       event: push
 
   tag-docker-image-with-git-tag:
@@ -48,6 +48,9 @@ pipeline:
     image: plugins/git
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+      - cd kube-pttg-api
+      - git checkout EE-12559-unused-envs
+      - cd ..
     when:
       event: [push, tag, deployment]
 
@@ -64,7 +67,24 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-      branch: [master, EE-19133-calculate-stats-efficiently]
+      branch: [master]
+      event: [push, tag]
+
+  # TODO remove this after testing (and branch EE-12559-unused-envs)
+  deploy-to-test-from-build-number:
+    image: quay.io/ukhomeofficedigital/kd:v0.8.0
+    environment:
+      - KUBE_NAMESPACE=pttg-ip-dev
+      - ENVIRONMENT=dev
+      - VERSION=build-${DRONE_BUILD_NUMBER}
+      - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    secrets:
+      - pttg_ip_test
+    commands:
+      - cd kube-pttg-ip-api
+      - ./deploy.sh
+    when:
+      branch: [EE-12559-unused-envs]
       event: [push, tag]
 
   deployment:
