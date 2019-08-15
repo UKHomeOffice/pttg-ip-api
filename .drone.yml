@@ -74,8 +74,8 @@ pipeline:
   deploy-to-test-from-build-number:
     image: quay.io/ukhomeofficedigital/kd:v0.8.0
     environment:
-      - KUBE_NAMESPACE=pttg-ip-dev
-      - ENVIRONMENT=dev
+      - KUBE_NAMESPACE=pttg-ip-test
+      - ENVIRONMENT=test
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
