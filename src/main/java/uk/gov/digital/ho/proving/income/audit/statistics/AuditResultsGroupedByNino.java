@@ -17,6 +17,10 @@ public class AuditResultsGroupedByNino extends ForwardingList<AuditResult> {
         results = new ArrayList<>();
     }
 
+    public AuditResultsGroupedByNino(List<AuditResult> results) {
+        this.results = new ArrayList<>(results);
+    }
+
     @Override
     protected List<AuditResult> delegate() {
         return results;
