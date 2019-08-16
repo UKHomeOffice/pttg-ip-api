@@ -48,9 +48,6 @@ pipeline:
     image: plugins/git
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
-      - cd kube-pttg-ip-api
-      - git checkout EE-14940-use-configurable-thresholds
-      - cd ..
     when:
       event: [push, tag, deployment]
 
@@ -63,23 +60,6 @@ pipeline:
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
       - pttg_ip_dev
-    commands:
-      - cd kube-pttg-ip-api
-      - ./deploy.sh
-    when:
-      branch: [master]
-      event: [push, tag]
-
-  # TODO Remove this when finished testing EE-14940
-  deploy-to-test-from-build-number:
-    image: quay.io/ukhomeofficedigital/kd:v0.8.0
-    environment:
-      - KUBE_NAMESPACE=pttg-ip-test
-      - ENVIRONMENT=test
-      - VERSION=build-${DRONE_BUILD_NUMBER}
-      - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-    secrets:
-      - pttg_ip_test
     commands:
       - cd kube-pttg-ip-api
       - ./deploy.sh
