@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -31,6 +32,7 @@ public class PassRateStatisticsServiceIT {
     private static final LocalDate FROM_DATE = LocalDate.of(2018, Month.AUGUST, 1);
     private static final LocalDate TO_DATE = LocalDate.of(2018, Month.AUGUST, 31);
     private static final String EMPTY_RESPONSE = "[ ]";
+    @Value("${audit.history.cutoff.days}") private int cutoffDays;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -181,6 +183,27 @@ public class PassRateStatisticsServiceIT {
         mockArchivedResultsResponse(archivedResults);
 
         PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 5, 1, 1, 1, 2);
+        assertThat(passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE))
+            .isEqualTo(expectedStatistics);
+    }
+
+    @Test
+    public void passRateStatistics_sameNinoRequestsAfterCutoff_countAsSeparate() {
+        String sameNino = "nino 1";
+        String firstRequestDate = "2018-08-01";
+        String secondRequestDate = LocalDate.parse(firstRequestDate).plusDays(cutoffDays + 1).toString();
+
+        String passRequest = fileUtils.buildRequest("correlation-id-1", firstRequestDate + " 09:02:00.000", sameNino);
+        String passResponse = fileUtils.buildResponse("correlation-id-1", firstRequestDate + " 09:03:00.000", sameNino, "true");
+        String failRequestAfterCutoff = fileUtils.buildRequest("correlation-id-2", secondRequestDate + " 09:02:00.000", sameNino);
+        String failResponseAfterCutoff = fileUtils.buildResponse("correlation-id-2", secondRequestDate+ " 09:03:00.000", sameNino, "false");
+
+        mockGetCorrelationIds("correlation-id-1", "correlation-id-2");
+        mockGetHistoryByCorrelationId("correlation-id-1", passRequest, passResponse);
+        mockGetHistoryByCorrelationId("correlation-id-2", failRequestAfterCutoff, failResponseAfterCutoff);
+        mockArchivedResultsResponse(EMPTY_RESPONSE);
+
+        PassRateStatistics expectedStatistics = new PassRateStatistics(FROM_DATE, TO_DATE, 2, 1, 1, 0, 0);
         assertThat(passRateStatisticsService.generatePassRateStatistics(FROM_DATE, TO_DATE))
             .isEqualTo(expectedStatistics);
     }

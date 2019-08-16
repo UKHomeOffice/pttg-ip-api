@@ -1,9 +1,12 @@
 package uk.gov.digital.ho.proving.income.audit.statistics;
 
+import jersey.repackaged.com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.proving.income.audit.*;
+import uk.gov.digital.ho.proving.income.audit.AuditClient;
+import uk.gov.digital.ho.proving.income.audit.AuditRecord;
+import uk.gov.digital.ho.proving.income.audit.AuditResult;
+import uk.gov.digital.ho.proving.income.audit.AuditResultConsolidator;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,39 +18,30 @@ public class AuditResultFetcher {
 
     private final AuditClient auditClient;
     private final AuditResultConsolidator auditResultConsolidator;
-    private final AuditResultComparator resultComparator;
+    private final PassStatisticsResultsConsolidator statisticsResultsConsolidator;
 
     public AuditResultFetcher(AuditClient auditClient,
                               AuditResultConsolidator auditResultConsolidator,
-                              AuditResultComparator resultComparator) {
+                              PassStatisticsResultsConsolidator statisticsResultsConsolidator) {
         this.auditClient = auditClient;
         this.auditResultConsolidator = auditResultConsolidator;
-        this.resultComparator = resultComparator;
+        this.statisticsResultsConsolidator = statisticsResultsConsolidator;
     }
 
     public List<AuditResult> getAuditResults(List<String> correlationIds) {
-        Map<String, AuditResult> bestResultsByNino = new HashMap<>();
+        List<AuditResultsGroupedByNino> resultsGroupedByNino = getResultsByNino(correlationIds);
+        return statisticsResultsConsolidator.consolidateResults(resultsGroupedByNino);
+    }
+
+    private List<AuditResultsGroupedByNino> getResultsByNino(List<String> correlationIds) {
+        Map<String, AuditResultsGroupedByNino> resultsByNino = new HashMap<>();
+
         for (String correlationId : correlationIds) {
             AuditResult auditResult = getAuditResultForCorrelationId(correlationId);
-            updateBestResults(bestResultsByNino, auditResult);
+            addResultForNino(resultsByNino, auditResult);
         }
-        return new ArrayList<>(bestResultsByNino.values());
-//
-//        // TODO EE-21001 - probable new routine:
-//        // Build up a map where each nino is the key and all the query results for that nino are stored in a list as the value
-//        // Map<String, AuditResultsGroupedByNino> resultsByNino = new HashMap<>();
-//        // for (String correlationId : allCorrelationIds) {
-//        // AuditResult auditResult = getAuditResultForCorrelationId(correlationId);
-//        //     if(!resultsByNino.hasKey(auditResult.nino()) {
-//        //         resultByNino.put(auditResult.nino(), AuditResultsGroupedByNino(auditResult)));
-//        //     } else {
-//        //         resultByNino.get(auditResult.nino()).add(auditResult)
-//        //     }
-//        // }
-//        //
-//        // Consolidate the results into a single list - for each nino, sort results by date, split list if any 10 day gaps,
-//        // for each split list of results - calculate best earliest result and put into the final results list.
-//        // return PassRateStatisticsConsolidator.consolidateResults(resultByNino.values())
+
+        return asGroupedResultsList(resultsByNino);
     }
 
     private AuditResult getAuditResultForCorrelationId(String correlationId) {
@@ -55,15 +49,19 @@ public class AuditResultFetcher {
         return auditResultConsolidator.getAuditResult(auditRecordsForCorrelationId);
     }
 
-    private void updateBestResults(Map<String, AuditResult> bestResultsByNino, AuditResult newResult) {
-        String nino = newResult.nino();
-
-        if (!bestResultsByNino.containsKey(nino) || isBetterResult(bestResultsByNino.get(nino), newResult)) {
-            bestResultsByNino.put(nino, newResult);
-        }
+    private void addResultForNino(Map<String, AuditResultsGroupedByNino> resultsByNino, AuditResult auditResult) {
+        AuditResultsGroupedByNino resultsForNino = groupedResultsFor(resultsByNino, auditResult.nino());
+        resultsForNino.add(auditResult);
     }
 
-    private boolean isBetterResult(AuditResult currentResult, AuditResult newResult) {
-        return resultComparator.compare(currentResult, newResult) < 0;
+    private AuditResultsGroupedByNino groupedResultsFor(Map<String, AuditResultsGroupedByNino> resultsByNino, String nino) {
+        if (!resultsByNino.containsKey(nino)) {
+            resultsByNino.put(nino, new AuditResultsGroupedByNino());
+        }
+        return resultsByNino.get(nino);
+    }
+
+    private List<AuditResultsGroupedByNino> asGroupedResultsList(Map<String, AuditResultsGroupedByNino> resultsByNino) {
+        return ImmutableList.copyOf(resultsByNino.values());
     }
 }

@@ -6,6 +6,8 @@ import uk.gov.digital.ho.proving.income.audit.AuditResultType;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +24,12 @@ public class AuditResultsGroupedByNinoTest {
     @Test
     public void constructor_noArgs_empty() {
         assertThat(new AuditResultsGroupedByNino()).isEmpty();
+    }
+
+    @Test
+    public void constructor_withResults_containsResults() {
+        List<AuditResult> results = Collections.singletonList(ANY_RESULT);
+        assertThat(new AuditResultsGroupedByNino(results)).containsExactlyElementsOf(results);
     }
 
     @Test
