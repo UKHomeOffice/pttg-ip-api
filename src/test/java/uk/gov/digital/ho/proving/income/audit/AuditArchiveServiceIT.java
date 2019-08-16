@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -38,6 +39,7 @@ public class AuditArchiveServiceIT {
     private FileUtils fileUtils;
 
     private MockRestServiceServer mockAuditService;
+    @Value("${audit.history.cutoff.days}") private int cutoffDays;
 
     @Before
     public void setUp() {
@@ -206,6 +208,41 @@ public class AuditArchiveServiceIT {
             .andExpect(jsonPath("$.correlationIds.*", containsInAnyOrder("corr-id-7", "corr-id-8")))
             .andExpect(jsonPath("$.result", is("NOTFOUND")))
             .andRespond(withSuccess());
+
+        auditArchiveService.archiveAudit();
+    }
+
+    @Test
+    public void archiveAudit_resultsSplitByCutoff_multipleArchiveRequests() {
+        String firstRequestDate = "2019-01-01";
+        String afterCutoffDate = LocalDate.parse(firstRequestDate).plusDays(cutoffDays + 1).toString();
+
+        String requestPass = fileUtils.buildRequest("corr-id-1", firstRequestDate + " 12:00:00.000", "nino_1");
+        String responsePass = fileUtils.buildResponse("corr-id-1", firstRequestDate + " 13:00:00.000", "nino_1", "true");
+        String requestFailAfterCutoff = fileUtils.buildRequest("corr-id-2", afterCutoffDate + " 12:00:00.000", "nino_1");
+        String responseFailAfterCutoff = fileUtils.buildResponse("corr-id-2", afterCutoffDate + " 13:00:00.000", "nino_1", "false");
+
+        String auditHistory = String.format("[%s,%s,%s,%s]", requestPass, responsePass, requestFailAfterCutoff, responseFailAfterCutoff);
+        mockAuditService
+            .expect(requestTo(containsString("/history")))
+            .andExpect(method(GET))
+            .andRespond(withSuccess(auditHistory, APPLICATION_JSON));
+
+        // should have archived request for pass request only
+        mockAuditService.expect(requestTo(containsString("archive/" + firstRequestDate)))
+                        .andExpect(method(POST))
+                        .andExpect(jsonPath("$.nino", is("nino_1")))
+                        .andExpect(jsonPath("$.correlationIds.*", contains("corr-id-1")))
+                        .andExpect(jsonPath("$.result", is("PASS")))
+                        .andRespond(withSuccess());
+
+        // should have another archived request for the failed request after the cutoff date
+        mockAuditService.expect(requestTo(containsString("archive/" + afterCutoffDate)))
+                        .andExpect(method(POST))
+                        .andExpect(jsonPath("$.nino", is("nino_1")))
+                        .andExpect(jsonPath("$.correlationIds.*", contains("corr-id-2")))
+                        .andExpect(jsonPath("$.result", is("FAIL")))
+                        .andRespond(withSuccess());
 
         auditArchiveService.archiveAudit();
     }

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -21,7 +22,8 @@ import static uk.gov.digital.ho.proving.income.audit.AuditResultType.*;
     AuditResultParser.class,
     AuditResultComparator.class,
     AuditResultTypeComparator.class,
-    AuditResultConsolidator.class
+    AuditResultConsolidator.class,
+    ResultCutoffSeparator.class
 })
 @ContextConfiguration(classes = FileUtils.class)
 public class AuditResultConsolidatorIT {
@@ -32,6 +34,7 @@ public class AuditResultConsolidatorIT {
     ObjectMapper objectMapper;
     @Autowired
     FileUtils fileUtils;
+    @Value("${audit.history.cutoff.days}") int cutoffDays;
 
     /*
      * auditResultsByCorrelationId
@@ -276,6 +279,20 @@ public class AuditResultConsolidatorIT {
 
         assertThat(resultsByNino.size()).isEqualTo(2);
         assertThat(resultsByNino).contains(expected.get(0), expected.get(1));
+    }
+
+    @Test
+    public void consolidate_oneNinoTwoRequests_moreThanCutoffBetween_twoResults() {
+        LocalDate firstRequestDate = LocalDate.now();
+        LocalDate afterCutoff = firstRequestDate.plusDays(cutoffDays + 1);
+        List<AuditResult> results = Arrays.asList(new AuditResult("any_correlation_id", firstRequestDate, "some_nino", PASS),
+                                                  new AuditResult("any_correlation_id_2", afterCutoff, "some_nino", FAIL));
+
+        List<ConsolidatedAuditResult> expected = Arrays.asList(new ConsolidatedAuditResult("some_nino", ImmutableSet.of("any_correlation_id"), firstRequestDate, PASS),
+                                                               new ConsolidatedAuditResult("some_nino", ImmutableSet.of("any_correlation_id_2"), afterCutoff, FAIL));
+
+        assertThat(auditResultConsolidator.consolidatedAuditResults(results))
+            .containsExactlyElementsOf(expected);
     }
 
     /*
