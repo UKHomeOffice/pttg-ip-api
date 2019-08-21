@@ -1,70 +1,70 @@
 pipeline:
 
-  build-project:
-    image: quay.io/ukhomeofficedigital/openjdk8:v1.1.0
-    commands:
-      - ./gradlew build
-    when:
-      event: [push, pull_request, tag]
+#  build-project:
+#    image: quay.io/ukhomeofficedigital/openjdk8:v1.1.0
+#    commands:
+#      - ./gradlew build
+#    when:
+#      event: [push, pull_request, tag]
 
-  docker-build:
-    image: docker:17.09.1
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker build -t pttg-ip-api .
-    when:
-      branch: [master, refs/tags/*]
-      event: [push, tag]
+#  docker-build:
+#    image: docker:17.09.1
+#    environment:
+#      - DOCKER_HOST=tcp://172.17.0.1:2375
+#    commands:
+#      - docker build -t pttg-ip-api .
+#    when:
+#      branch: [master, refs/tags/*]
+#      event: [push, tag]
 
-  install-docker-image:
-    image: docker:17.09.1
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    secrets:
-      - docker_password
-    commands:
-      - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}-ojr
-      - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}-ojr
-    when:
-      event: push
+#  install-docker-image:
+#    image: docker:17.09.1
+#    environment:
+#      - DOCKER_HOST=tcp://172.17.0.1:2375
+#    secrets:
+#      - docker_password
+#    commands:
+#      - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
+#      - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}-ojr
+#      - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}-ojr
+#    when:
+#      event: push
 
-  tag-docker-image-with-git-tag:
-    image: docker:17.09.1
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    secrets:
-      - docker_password
-    commands:
-      - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}-ojr
-      - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}-ojr
-    when:
-      event: tag
-
-  clone-kube-project:
-    image: plugins/git
-    commands:
-      - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
-    when:
-      event: [push, tag, deployment]
-
-  deploy-to-dev-from-build-number:
-    image: quay.io/ukhomeofficedigital/kd:v0.8.0
-    environment:
-      - KUBE_NAMESPACE=pttg-ip-dev
-      - ENVIRONMENT=dev
-      - VERSION=build-${DRONE_BUILD_NUMBER}-ojr
-      - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-    secrets:
-      - pttg_ip_dev
-    commands:
-      - cd kube-pttg-ip-api
-      - ./deploy.sh
-    when:
-#      branch: master TODO OJR EE-6825 Temporarily doing for branch to test
-      event: [push, tag]
+#  tag-docker-image-with-git-tag:
+#    image: docker:17.09.1
+#    environment:
+#      - DOCKER_HOST=tcp://172.17.0.1:2375
+#    secrets:
+#      - docker_password
+#    commands:
+#      - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
+#      - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}-ojr
+#      - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}-ojr
+#    when:
+#      event: tag
+#
+#  clone-kube-project:
+#    image: plugins/git
+#    commands:
+#      - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+#    when:
+#      event: [push, tag, deployment]
+#
+#  deploy-to-dev-from-build-number:
+#    image: quay.io/ukhomeofficedigital/kd:v0.8.0
+#    environment:
+#      - KUBE_NAMESPACE=pttg-ip-dev
+#      - ENVIRONMENT=dev
+#      - VERSION=build-${DRONE_BUILD_NUMBER}-ojr
+#      - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+#    secrets:
+#      - pttg_ip_dev
+#    commands:
+#      - cd kube-pttg-ip-api
+#      - ./deploy.sh
+#    when:
+##      branch: master TODO OJR EE-6825 Temporarily doing for branch to test
+#      event: [push, tag]
 
   deployment:
     image: quay.io/ukhomeofficedigital/kd:v0.8.0
