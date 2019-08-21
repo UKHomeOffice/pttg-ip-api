@@ -25,10 +25,9 @@ pipeline:
       - docker_password
     commands:
       - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
-      - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
+      - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}-ojr
+      - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}-ojr
     when:
-      branch: master
       event: push
 
   tag-docker-image-with-git-tag:
@@ -39,8 +38,8 @@ pipeline:
       - docker_password
     commands:
       - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}
-      - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}
+      - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}-ojr
+      - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}-ojr
     when:
       event: tag
 
@@ -56,7 +55,7 @@ pipeline:
     environment:
       - KUBE_NAMESPACE=pttg-ip-dev
       - ENVIRONMENT=dev
-      - VERSION=build-${DRONE_BUILD_NUMBER}
+      - VERSION=build-${DRONE_BUILD_NUMBER}-ojr
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
       - pttg_ip_dev
@@ -64,7 +63,7 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-      branch: master
+#      branch: master TODO OJR EE-6825 Temporarily doing for branch to test
       event: [push, tag]
 
   deployment:
@@ -98,3 +97,16 @@ pipeline:
     when:
       event: deployment
       environment: pr
+
+
+  run-smoke-tests-dev:
+    image: quay.io/ukhomeofficedigital/kd:v1.14.0
+    secrets:
+      - pttg_ip_dev
+    commands:
+      - SMOKE_TEST_POD=$(kubectl --insecure-skip-tls-verify=true --token="$${PTTG_IP_DEV}" --server=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk get pods --namespace=pttg-ip-dev | grep pttg-ip-smoke-tests | head -n 1 | cut -d ' ' -f 1)
+      - echo SMOKE_TEST_POD = $SMOKE_TEST_POD
+      - kubectl --insecure-skip-tls-verify=true --token="$${PTTG_IP_DEV}" --server=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk --namespace=pttg-ip-dev exec "$${SMOKE_TEST_POD}" -- curl --fail -X POST 'http://localhost:8080/smoketests'
+      - if [ $? -ne 0 ] ; then kubectl --insecure-skip-tls-verify=true --token="$${PTTG_IP_DEV}" --server=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk --namespace=pttg-ip-dev rollout undo deployment/pttg-ip-api ; exit 1 ; fi
+    when:
+      event: push # TODO OJR EE-6825 - set for testing, should be deployment
