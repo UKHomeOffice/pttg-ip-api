@@ -48,9 +48,6 @@ pipeline:
     image: plugins/git
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
-      - cd kube-pttg-ip-api
-      - git checkout EE-14940-use-configurable-thresholds
-      - cd ..
     when:
       event: [push, tag, deployment]
 
