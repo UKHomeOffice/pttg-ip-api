@@ -23,9 +23,15 @@ public class CatANonSalariedIncomeValidator implements ActiveIncomeValidator {
     private static final String CALCULATION_TYPE = "Category A Non Salaried";
     private static final String CATEGORY = "A";
 
+    private final IncomeThresholdCalculator incomeThresholdCalculator;
+
+    public CatANonSalariedIncomeValidator(IncomeThresholdCalculator incomeThresholdCalculator) {
+        this.incomeThresholdCalculator = incomeThresholdCalculator;
+    }
+
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
-        BigDecimal threshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold();
+        BigDecimal threshold = incomeThresholdCalculator.yearlyThreshold(incomeValidationRequest.dependants());
         LocalDate assessmentStartDate = getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate());
 
         IncomeValidationRequest applicantOnlyRequest = incomeValidationRequest.toApplicantOnly();

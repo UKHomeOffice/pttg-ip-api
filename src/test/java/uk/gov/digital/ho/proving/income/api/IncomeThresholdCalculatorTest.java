@@ -7,7 +7,7 @@ import java.math.RoundingMode;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class IncomeThresholdCalculatorNewTest {
+public class IncomeThresholdCalculatorTest {
 
     private static final BigDecimal SOME_BASE_THRESHOLD = BigDecimal.valueOf(18_600);
     private static final BigDecimal SOME_ONE_DEPENDANT_THRESHOLD = BigDecimal.valueOf(22_400);
@@ -18,8 +18,8 @@ public class IncomeThresholdCalculatorNewTest {
     private static final BigDecimal EXPECTED_YEARLY_TWO_DEPENDANTS = BigDecimal.valueOf(24_800);
     private static final BigDecimal EXPECTED_YEARLY_FIVE_DEPENDANTS = BigDecimal.valueOf(32_000);
 
-    private final IncomeThresholdCalculatorNew incomeThresholdCalculator =
-        new IncomeThresholdCalculatorNew(SOME_BASE_THRESHOLD, SOME_ONE_DEPENDANT_THRESHOLD, SOME_REMAINING_DEPENDANT_INCREMENT);
+    private final IncomeThresholdCalculator incomeThresholdCalculator =
+        new IncomeThresholdCalculator(SOME_BASE_THRESHOLD, SOME_ONE_DEPENDANT_THRESHOLD, SOME_REMAINING_DEPENDANT_INCREMENT);
 
     @Test
     public void yearlyThreshold_noDependants_baseThreshold() {

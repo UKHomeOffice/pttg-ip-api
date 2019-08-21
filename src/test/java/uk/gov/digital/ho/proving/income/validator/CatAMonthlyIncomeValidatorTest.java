@@ -1,21 +1,38 @@
 package uk.gov.digital.ho.proving.income.validator;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.validator.domain.ApplicantIncome;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationRequest;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationResult;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class CatAMonthlyIncomeValidatorTest {
 
-    private CatASalariedMonthlyIncomeValidator validator = new CatASalariedMonthlyIncomeValidator();
+    @Mock
+    private IncomeThresholdCalculator incomeThresholdCalculator;
+
+    private CatASalariedMonthlyIncomeValidator validator;
+
+    @Before
+    public void setUp() {
+        validator = new CatASalariedMonthlyIncomeValidator(incomeThresholdCalculator);
+        when(incomeThresholdCalculator.monthlyThreshold(0)).thenReturn(BigDecimal.valueOf(18600).divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP));
+    }
 
     @Test
     public void thatNonContiguousPaymentsInsufficientMonthsFails() {

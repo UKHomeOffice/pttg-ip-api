@@ -1,60 +1,43 @@
 package uk.gov.digital.ho.proving.income.api;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
-@Slf4j
+@Component
 public class IncomeThresholdCalculator {
-    private static final BigDecimal TWELVE = new BigDecimal(12);
-    private static final BigDecimal FIFTY_TWO = new BigDecimal(52);
 
-    private static final BigDecimal BASE_THRESHOLD = BigDecimal.valueOf(18_600);
-    private static final BigDecimal ONE_DEPENDANT_THRESHOLD = BigDecimal.valueOf(22_400);
-    private static final BigDecimal REMAINING_DEPENDANT_INCREMENT = BigDecimal.valueOf(2_400);
+    private static final BigDecimal MONTHS_PER_YEAR = BigDecimal.valueOf(12);
+    private static final BigDecimal WEEKS_PER_YEAR = BigDecimal.valueOf(52);
 
-    private BigDecimal monthlyThreshold;
-    private BigDecimal weeklyThreshold;
-    private BigDecimal yearlyThreshold;
+    private final BigDecimal baseThreshold;
+    private final BigDecimal oneDependantThreshold;
+    private final BigDecimal remainingDependantsIncrement;
 
-    public IncomeThresholdCalculator(Integer dependants) {
-        if (dependants < 0) {
-            throw new IllegalArgumentException(String.format("Number of dependants cannot be less than zero, [%d] given", dependants));
+    public IncomeThresholdCalculator(
+        @Value("${threshold.yearly.base}") BigDecimal baseThreshold,
+        @Value("${threshold.yearly.oneDependant}") BigDecimal oneDependantThreshold,
+        @Value("${threshold.yearly.remainingDependantsIncrement}") BigDecimal remainingDependantsIncrement
+    ) {
+        this.baseThreshold = baseThreshold;
+        this.oneDependantThreshold = oneDependantThreshold;
+        this.remainingDependantsIncrement = remainingDependantsIncrement;
+    }
+
+    public BigDecimal yearlyThreshold(int dependants) {
+        if (dependants == 0) {
+            return baseThreshold;
         }
-
-        this.yearlyThreshold = calculateYearlyThreshold(dependants);
-        this.monthlyThreshold = yearlyThreshold.divide(TWELVE, 2, BigDecimal.ROUND_HALF_UP);
-        this.weeklyThreshold = yearlyThreshold.divide(FIFTY_TWO, 2, BigDecimal.ROUND_HALF_UP);
-
-        log.debug("yearlyThreshold: {}", yearlyThreshold);
-        log.debug("monthlyThreshold: {}", monthlyThreshold);
-        log.debug("weeklyThreshold: {}", weeklyThreshold);
+       return oneDependantThreshold.add(remainingDependantsIncrement.multiply(BigDecimal.valueOf(dependants - 1)));
     }
 
-    private BigDecimal calculateYearlyThreshold(Integer dependants) {
-        if (dependants == null || dependants == 0) {
-            return BASE_THRESHOLD;
-        }
-
-        if (dependants == 1) {
-            return ONE_DEPENDANT_THRESHOLD;
-        }
-
-        BigDecimal remainingDependants = BigDecimal.valueOf(dependants - 1);
-        BigDecimal thresholdIncrement = REMAINING_DEPENDANT_INCREMENT.multiply(remainingDependants);
-
-        return ONE_DEPENDANT_THRESHOLD.add(thresholdIncrement);
+    public BigDecimal monthlyThreshold(int dependants) {
+        return yearlyThreshold(dependants).divide(MONTHS_PER_YEAR, 2, RoundingMode.HALF_UP);
     }
 
-    public BigDecimal getMonthlyThreshold() {
-        return monthlyThreshold;
-    }
-
-    public BigDecimal getWeeklyThreshold() {
-        return weeklyThreshold;
-    }
-
-    public BigDecimal yearlyThreshold() {
-        return yearlyThreshold;
+    public BigDecimal weeklyThreshold(int dependants) {
+        return yearlyThreshold(dependants).divide(WEEKS_PER_YEAR, 2, RoundingMode.HALF_UP);
     }
 }

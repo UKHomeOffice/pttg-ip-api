@@ -14,7 +14,7 @@ pipeline:
     commands:
       - docker build -t pttg-ip-api .
     when:
-      branch: [master, refs/tags/*]
+      branch: [master, refs/tags/*, EE-14940-use-confugrable-thresholds]
       event: [push, tag]
 
   install-docker-image:
@@ -28,7 +28,7 @@ pipeline:
       - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
     when:
-      branch: master
+      branch: [master, EE-14940-use-confugrable-thresholds]
       event: push
 
   tag-docker-image-with-git-tag:
@@ -48,6 +48,9 @@ pipeline:
     image: plugins/git
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+      - cd kube-pttg-ip-api
+      - git checkout EE-14940-use-configurable-thresholds
+      - cd ..
     when:
       event: [push, tag, deployment]
 
@@ -64,7 +67,7 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-      branch: master
+      branch: [master, EE-14940-use-confugrable-thresholds]
       event: [push, tag]
 
   deployment:

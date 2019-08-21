@@ -24,6 +24,12 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
     public static final Integer ASSESSMENT_START_DAYS_PREVIOUS = 32;
     private static final String CATEGORY = "B";
 
+    private final IncomeThresholdCalculator incomeThresholdCalculator;
+
+    public EmploymentCheckIncomeValidator(IncomeThresholdCalculator incomeThresholdCalculator) {
+        this.incomeThresholdCalculator = incomeThresholdCalculator;
+    }
+
     @Override
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
         if (!incomeValidationRequest.isJointRequest()) {
@@ -53,7 +59,7 @@ public class EmploymentCheckIncomeValidator implements IncomeValidator {
 
         LocalDate assessmentStartDate = incomeValidationRequest.applicationRaisedDate().minusDays(ASSESSMENT_START_DAYS_PREVIOUS - 1);
 
-        BigDecimal monthlyThreshold = new IncomeThresholdCalculator(incomeValidationRequest.dependants()).getMonthlyThreshold();
+        BigDecimal monthlyThreshold = incomeThresholdCalculator.monthlyThreshold(incomeValidationRequest.dependants());
 
         BigDecimal earningsSinceAssessmentStart =
             incomeValidationRequest.allIncome().stream()
