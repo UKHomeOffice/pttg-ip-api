@@ -108,8 +108,6 @@ pipeline:
       - kubectl config set-context ips-dev --cluster=nonprod --namespace=pttg-ip-dev
       - kubectl config use-context ips-dev
       - SMOKE_TEST_POD=$(kubectl --token="$${PTTG_IP_DEV}" get pods | grep pttg-ip-smoke-tests | head -n 1 | cut -d ' ' -f 1)
-      - echo SMOKE_TEST_POD = $SMOKE_TEST_POD
-      - if ! kubectl --token="$${PTTG_IP_DEV}" exec "$${SMOKE_TEST_POD}" -- curl --fail -X POST 'http://localhost:8080/smoketests' ; then echo rollback ; fi
-#      - if [ $? -ne 0 ] ; then kubectl --token="$${PTTG_IP_DEV}" rollout undo deployment/pttg-ip-api ; exit 1 ; fi
+      - kubectl --token="$${PTTG_IP_DEV}" exec "$${SMOKE_TEST_POD}" -- curl --fail -X POST 'http://localhost:8080/smoketests'
     when:
       event: push # TODO OJR EE-6825 - set for testing, should be deployment
