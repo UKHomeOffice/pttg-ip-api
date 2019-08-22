@@ -14,7 +14,6 @@ pipeline:
     commands:
       - docker build -t pttg-ip-api .
     when:
-#      branch: [master, refs/tags/*]
       event: [push, tag]
 
   install-docker-image:
@@ -28,7 +27,6 @@ pipeline:
       - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}-ojr
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}-ojr
     when:
-#      branch: [master]
       event: push
 
   tag-docker-image-with-git-tag:
@@ -64,7 +62,6 @@ pipeline:
       - cd kube-pttg-ip-api
       - ./deploy.sh
     when:
-#      branch: master TODO OJR EE-6825 Temporarily doing for branch to test
       event: [push, tag]
 
   deployment:
