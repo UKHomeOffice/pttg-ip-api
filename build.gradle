@@ -31,15 +31,16 @@ buildscript {
         classpath "org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.11"
         classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
         classpath 'org.owasp:dependency-check-gradle:1.4.3'
-
     }
 }
 
 
 plugins {
+    id "java"
     id "com.gorylenko.gradle-git-properties" version "1.4.17"
-}
+    id 'net.researchgate.release' version '2.6.0'
 
+}
 
 apply plugin: 'java'
 apply plugin: 'groovy'
