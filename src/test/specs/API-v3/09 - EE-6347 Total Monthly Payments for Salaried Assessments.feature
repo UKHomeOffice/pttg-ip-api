@@ -14,6 +14,11 @@ Feature: Category A & B Financial Requirement - Solo & Combined Applications for
     #   - 4-Weekly payments alone– Achieved by meeting a minimum consistent value of £1430 per 4-weekly
     #   - Mixture of any of the above
 
+    Background: Thresholds are configured to default values
+        Given The yearly threshold is configured to 18600:
+        And The single dependant yearly threshold is configured to 22400:
+        And The remaining dependants increment is configured to 2400:
+
     Scenario: Category A. No dependents. Annual Check Met. Multiple payments in the month at the start of the assessment range.
 
         Given HMRC has the following income records:

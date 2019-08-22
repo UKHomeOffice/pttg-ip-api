@@ -25,8 +25,14 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
 
     private final EmploymentCheckIncomeValidator employmentCheckIncomeValidator;
 
-    public CatBSalariedIncomeValidator(EmploymentCheckIncomeValidator employmentCheckIncomeValidator) {
+    private final IncomeThresholdCalculator incomeThresholdCalculator;
+
+    public CatBSalariedIncomeValidator(
+        EmploymentCheckIncomeValidator employmentCheckIncomeValidator,
+        IncomeThresholdCalculator incomeThresholdCalculator
+    ) {
         this.employmentCheckIncomeValidator = employmentCheckIncomeValidator;
+        this.incomeThresholdCalculator = incomeThresholdCalculator;
     }
 
     @Override
@@ -67,7 +73,7 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
     private IncomeValidationResult validationResult(IncomeValidationRequest incomeValidationRequest, IncomeValidationStatus validationStatus) {
         return IncomeValidationResult.builder()
             .status(validationStatus)
-            .threshold(new IncomeThresholdCalculator(incomeValidationRequest.dependants()).yearlyThreshold())
+            .threshold(incomeThresholdCalculator.yearlyThreshold(incomeValidationRequest.dependants()))
             .assessmentStartDate(getApplicationStartDate(incomeValidationRequest))
             .individuals(incomeValidationRequest.getCheckedIndividuals())
             .category(CATEGORY)
@@ -99,6 +105,6 @@ public class CatBSalariedIncomeValidator implements ActiveIncomeValidator {
     }
 
     private BigDecimal getMonthlyThreshold(IncomeValidationRequest incomeValidationRequest) {
-        return new IncomeThresholdCalculator(incomeValidationRequest.dependants()).getMonthlyThreshold();
+        return incomeThresholdCalculator.monthlyThreshold(incomeValidationRequest.dependants());
     }
 }

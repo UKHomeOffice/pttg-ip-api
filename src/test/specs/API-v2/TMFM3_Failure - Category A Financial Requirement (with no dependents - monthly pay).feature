@@ -6,6 +6,10 @@ Feature: Failure - Category A Financial Requirement - with no dependents - month
     Financial employment income regulation to pass this Feature File
     Gross Monthly Income is < £1550.00 in any one of the 6 payments in the 6 months days prior to the Application Raised Date
 
+    Background: Thresholds are configured to default values
+        Given The yearly threshold is configured to 18600:
+        And The single dependant yearly threshold is configured to 22400:
+        And The remaining dependants increment is configured to 2400:
 
 #New Scenario -
     Scenario: Jill does not meet the Category A Financial Requirement (She has earned < the Cat A financial threshold)

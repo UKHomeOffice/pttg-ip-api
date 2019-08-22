@@ -28,6 +28,7 @@ pipeline:
       - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}-ojr
       - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}-ojr
     when:
+      branch: [master]
       event: push
 
   tag-docker-image-with-git-tag:

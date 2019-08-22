@@ -24,6 +24,12 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
     private static final String CALCULATION_TYPE = "Category A Monthly Salary";
     private static final String CATEGORY = "A";
 
+    private final IncomeThresholdCalculator incomeThresholdCalculator;
+
+    public CatASalariedMonthlyIncomeValidator(IncomeThresholdCalculator incomeThresholdCalculator) {
+        this.incomeThresholdCalculator = incomeThresholdCalculator;
+    }
+
     @Override
     @SuppressWarnings("StrictDuplicateCode") // Looks very like CatASalariedWeeklyIncomeValidator but there's no obvious way of consolidating them.
     public IncomeValidationResult validate(IncomeValidationRequest incomeValidationRequest) {
@@ -34,8 +40,7 @@ public class CatASalariedMonthlyIncomeValidator implements IncomeValidator {
 
         CheckedIndividual checkedIndividual = new CheckedIndividual(applicantIncome.applicant().nino(), employments);
 
-        IncomeThresholdCalculator thresholdCalculator = new IncomeThresholdCalculator(incomeValidationRequest.dependants());
-        BigDecimal monthlyThreshold = thresholdCalculator.getMonthlyThreshold();
+        BigDecimal monthlyThreshold = incomeThresholdCalculator.monthlyThreshold(incomeValidationRequest.dependants());
 
         LocalDate assessmentStartDate = getAssessmentStartDate(incomeValidationRequest.applicationRaisedDate());
 
