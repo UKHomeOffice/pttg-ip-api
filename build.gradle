@@ -55,7 +55,6 @@ apply plugin: 'project-report'
 apply plugin: 'checkstyle'
 
 group 'pttg-ip-api'
-version = '0.1.0'
 
 mainClassName = "uk.gov.digital.ho.proving.income.ServiceRunner"
 
