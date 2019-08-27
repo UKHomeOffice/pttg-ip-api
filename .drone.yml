@@ -40,7 +40,8 @@ pipeline:
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:latest
-            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:lastest
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:latest
+        when:
             branch: [master]
             event: push
 
