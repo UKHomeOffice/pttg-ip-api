@@ -7,6 +7,7 @@ import spock.lang.Specification
 import uk.gov.digital.ho.proving.income.api.FinancialStatusResource
 import uk.gov.digital.ho.proving.income.api.FinancialStatusService
 import uk.gov.digital.ho.proving.income.api.NinoUtils
+import uk.gov.digital.ho.proving.income.api.RequestData
 import uk.gov.digital.ho.proving.income.api.domain.CategoryCheck
 import uk.gov.digital.ho.proving.income.api.domain.CheckedIndividual
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions
@@ -38,9 +39,10 @@ class FinancialServiceSpec extends Specification {
     def mockAuditClient = Mock(AuditClient)
     def mockNinoUtils = Mock(NinoUtils)
     def mockIncomeValidationService = Mock(IncomeValidationService)
+    def mockRequestData = Mock(RequestData)
 
     def financialStatusServiceHelper = new FinancialStatusService(mockIncomeRecordService, mockIncomeValidationService)
-    def financialStatusController = new FinancialStatusResource(financialStatusServiceHelper, mockAuditClient, mockNinoUtils)
+    def financialStatusController = new FinancialStatusResource(financialStatusServiceHelper, mockAuditClient, mockNinoUtils, mockRequestData)
 
     MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient, mockNinoUtils)).build()
 

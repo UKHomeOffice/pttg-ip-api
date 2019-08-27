@@ -29,16 +29,19 @@ public class FinancialStatusResource {
     private FinancialStatusService financialStatusService;
     private final AuditClient auditClient;
     private final NinoUtils ninoUtils;
+    private final RequestData requestData;
 
     private static final int MINIMUM_DEPENDANTS = 0;
     private static final int MAXIMUM_DEPENDANTS = 99;
 
     private static final int NUMBER_OF_DAYS_INCOME = 365;
 
-    public FinancialStatusResource(FinancialStatusService financialStatusService, AuditClient auditClient, NinoUtils ninoUtils) {
+    public FinancialStatusResource(FinancialStatusService financialStatusService, AuditClient auditClient, NinoUtils ninoUtils,
+                                   RequestData requestData) {
         this.financialStatusService = financialStatusService;
         this.auditClient = auditClient;
         this.ninoUtils = ninoUtils;
+        this.requestData = requestData;
     }
 
     @PostMapping(value = "/incomeproving/v3/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
@@ -81,6 +84,11 @@ public class FinancialStatusResource {
 
         if (applicants.size() > 2) {
             throw new IllegalArgumentException("Error: more than 2 applicants");
+        }
+
+        if (requestData.isASmokeTest()) {
+            // Smoke Tests intentionally use an invalid Nino but we want the request to pass through regardless, so skip Nino validation.
+            return;
         }
 
         for(Applicant applicant : applicants) {

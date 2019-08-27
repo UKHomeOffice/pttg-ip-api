@@ -1,7 +1,10 @@
 package uk.gov.digital.ho.proving.income.api;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.api.RequestData.*;
 
@@ -26,12 +28,18 @@ public class RequestDataTest {
 
     @Autowired
     private RequestData requestData;
+    @Mock
+    private HttpServletRequest mockRequest;
+    @Mock
+    private HttpServletResponse mockResponse;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
-    public void shouldConfigureMDC_preHandle() throws Exception {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-        HttpServletResponse mockResponse = mock(HttpServletResponse.class);
-
+    public void shouldConfigureMDC_preHandle() {
         requestData.preHandle(mockRequest, mockResponse, null);
 
         assertThat(MDC.get(SESSION_ID_HEADER)).isEqualTo("unknown");
@@ -39,11 +47,8 @@ public class RequestDataTest {
     }
 
     @Test
-    public void shouldResetMDC_postHandle() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-
-        requestData.preHandle(request, response, null);
+    public void shouldResetMDC_postHandle() {
+        requestData.preHandle(mockRequest, mockResponse, null);
         requestData.postHandle(null, null, null, null);
 
         assertThat(MDC.get(SESSION_ID_HEADER)).isNull();
@@ -71,20 +76,14 @@ public class RequestDataTest {
     }
 
     @Test
-    public void shouldExposeSessionId() throws Exception {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-        HttpServletResponse mockResponse = mock(HttpServletResponse.class);
-
+    public void shouldExposeSessionId() {
         requestData.preHandle(mockRequest, mockResponse, null);
 
         assertThat(requestData.sessionId()).isEqualTo("unknown");
     }
 
     @Test
-    public void shouldExposeCorrelationId() throws Exception {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-        HttpServletResponse mockResponse = mock(HttpServletResponse.class);
-
+    public void shouldExposeCorrelationId() {
         when(mockRequest.getHeader(CORRELATION_ID_HEADER)).thenReturn("some correlation id");
 
         requestData.preHandle(mockRequest, mockResponse, null);
@@ -93,14 +92,30 @@ public class RequestDataTest {
     }
 
     @Test
-    public void shouldExposeUserId() throws Exception {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-        HttpServletResponse mockResponse = mock(HttpServletResponse.class);
-
+    public void shouldExposeUserId() {
         when(mockRequest.getHeader(USER_ID_HEADER)).thenReturn("some user id");
 
         requestData.preHandle(mockRequest, mockResponse, null);
 
         assertThat(requestData.userId()).isEqualTo("some user id");
+    }
+
+    @Test
+    public void isASmokeTest_smokeTestUser_returnTrue() {
+        when(mockRequest.getHeader(USER_ID_HEADER)).thenReturn("smoke-tests");
+
+        requestData.preHandle(mockRequest, mockResponse, null);
+
+        assertThat(requestData.isASmokeTest()).isTrue();
+    }
+
+    @Test
+    public void isASmokeTest_notSmokeTestUser_returnFalse() {
+        when(mockRequest.getHeader(USER_ID_HEADER)).thenReturn("some not a smoke test user");
+
+        requestData.preHandle(mockRequest, mockResponse, null);
+
+        assertThat(requestData.isASmokeTest()).isFalse();
+
     }
 }
