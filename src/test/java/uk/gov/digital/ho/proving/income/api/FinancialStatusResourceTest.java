@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.OngoingStubbing;
 import org.slf4j.LoggerFactory;
 import uk.gov.digital.ho.proving.income.api.domain.*;
 import uk.gov.digital.ho.proving.income.application.LogEvent;
@@ -29,6 +30,8 @@ import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_REQUEST_RECEIVED;
 import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_RESPONSE_SUCCESS;
@@ -44,6 +47,8 @@ public class FinancialStatusResourceTest {
     private AuditClient mockAuditClient;
     @Mock
     private NinoUtils mockNinoUtils;
+    @Mock
+    private RequestData mockRequestData;
     @Mock
     private Appender<ILoggingEvent> mockAppender;
 
@@ -77,7 +82,7 @@ public class FinancialStatusResourceTest {
         LocalDate fiveDaysAgo = LocalDate.now().minusDays(5);
         when(mockFinancialStatusRequest.applicationRaisedDate()).thenReturn(fiveDaysAgo);
         when(mockHelper.getIncomeRecords(any(), any(), any())).thenReturn(getIncomeRecords());
-        when(mockHelper.calculateResponse(any(), any(), any())).thenReturn(getResponse());
+        stubResponseCalculation();
 
         LogCapturer<FinancialStatusResource> logCapturer = LogCapturer.forClass(FinancialStatusResource.class);
         logCapturer.start();
@@ -140,9 +145,8 @@ public class FinancialStatusResourceTest {
         rootLogger.setLevel(INFO);
         rootLogger.addAppender(mockAppender);
 
-        when(mockNinoUtils.sanitise(realNino)).thenReturn(sanitisedNino);
-        when(mockNinoUtils.redact(sanitisedNino)).thenReturn(redactedNino);
-        when(mockHelper.calculateResponse(any(), any(), any())).thenReturn(getResponse());
+        stubNinoUtils();
+        stubResponseCalculation();
 
         service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ));
 
@@ -157,14 +161,44 @@ public class FinancialStatusResourceTest {
         rootLogger.setLevel(INFO);
         rootLogger.addAppender(mockAppender);
 
-        when(mockNinoUtils.sanitise(realNino)).thenReturn(sanitisedNino);
-        when(mockNinoUtils.redact(sanitisedNino)).thenReturn(redactedNino);
-        when(mockHelper.calculateResponse(any(), any(), any())).thenReturn(getResponse());
+        stubNinoUtils();
+        stubResponseCalculation();
 
         service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ));
 
         verifyLogMessage("Financial status check passed for RedactedNino is: false", INCOME_PROVING_SERVICE_RESPONSE_SUCCESS);
 
+    }
+
+    @Test
+    public void getFinancialStatus_notASmokeTest_validateNino() {
+        given(mockRequestData.isASmokeTest()).willReturn(false);
+
+        stubNinoUtils();
+        stubResponseCalculation();
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019, 01, 01), 0));
+
+        then(mockNinoUtils).should().validate(anyString());
+    }
+
+    @Test
+    public void getFinancialStatus_smokeTest_doNotValidateNino() {
+        given(mockRequestData.isASmokeTest()).willReturn(true);
+
+        stubNinoUtils();
+        stubResponseCalculation();
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019, 01, 01), 0));
+
+        then(mockNinoUtils).should(never()).validate(anyString());
+    }
+
+    private void stubResponseCalculation() {
+        when(mockHelper.calculateResponse(any(), any(), any())).thenReturn(getResponse());
+    }
+
+    private void stubNinoUtils() {
+        when(mockNinoUtils.sanitise(realNino)).thenReturn(sanitisedNino);
+        when(mockNinoUtils.redact(sanitisedNino)).thenReturn(redactedNino);
     }
 
     private void verifyLogMessage(final String message, LogEvent event) {

@@ -22,7 +22,7 @@ public class RequestData implements HandlerInterceptor {
     public static final String USER_ID_HEADER = "x-auth-userid";
     private static final String REQUEST_START_TIMESTAMP = "request-timestamp";
     public static final String REQUEST_DURATION_MS = "request_duration_ms";
-    private static final String SMOKE_TESTS_USER_ID = "smoke-tests";
+    public static final String SMOKE_TESTS_USER_ID = "smoke-tests";
 
     @Value("${auditing.deployment.name}") private String deploymentName;
     @Value("${auditing.deployment.namespace}") private String deploymentNamespace;
