@@ -39,7 +39,6 @@ plugins {
     id "java"
     id "com.gorylenko.gradle-git-properties" version "1.4.17"
     id 'net.researchgate.release' version '2.6.0'
-
 }
 
 apply plugin: 'java'
