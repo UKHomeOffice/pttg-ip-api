@@ -3,7 +3,7 @@ pipeline:
   build-project:
     image: quay.io/ukhomeofficedigital/openjdk8:v1.1.0
     commands:
-      - ./gradlew assemble # TODO OJR EE-6825 Skipping tests to deploy intentionally broken version to Dev
+      - ./gradlew build
     when:
       event: [push, pull_request, tag]
 
