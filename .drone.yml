@@ -36,10 +36,11 @@ pipeline:
         commands:
             - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
-            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
-            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:latest
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
-        when:
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:latest
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:lastest
             branch: [master]
             event: push
 
