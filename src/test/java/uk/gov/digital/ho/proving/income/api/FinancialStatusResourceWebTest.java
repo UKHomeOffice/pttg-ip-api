@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
 import uk.gov.digital.ho.proving.income.api.domain.FinancialStatusCheckResponse;
@@ -49,10 +50,7 @@ public class FinancialStatusResourceWebTest {
         when(mockFinancialStatusService.calculateResponse(any(LocalDate.class), anyInt(), eq(emptyMap())))
             .thenReturn(new FinancialStatusCheckResponse(new ResponseStatus("any", "any"), emptyList(), emptyList()));
 
-        mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(requestWithTestNino())
-                            .header(RequestData.USER_ID_HEADER, RequestData.SMOKE_TESTS_USER_ID))
+        mockMvc.perform(financialStatusRequest(RequestData.SMOKE_TESTS_USER_ID))
                .andExpect(status().isOk());
     }
 
@@ -63,12 +61,16 @@ public class FinancialStatusResourceWebTest {
         when(mockFinancialStatusService.calculateResponse(any(LocalDate.class), anyInt(), eq(emptyMap())))
             .thenReturn(new FinancialStatusCheckResponse(new ResponseStatus("any", "any"), emptyList(), emptyList()));
 
-        mockMvc.perform(post("/incomeproving/v3/individual/financialstatus")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(requestWithTestNino())
-                            .header(RequestData.USER_ID_HEADER, "not a smoke test user"))
+        mockMvc.perform(financialStatusRequest("not a smoke test user"))
                .andExpect(status().isBadRequest())
                .andExpect(jsonPath("$.status.code").value("0004"));
+    }
+
+    private MockHttpServletRequestBuilder financialStatusRequest(String userId) throws JsonProcessingException {
+        return post("/incomeproving/v3/individual/financialstatus")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(requestWithTestNino())
+            .header(RequestData.USER_ID_HEADER, userId);
     }
 
     private String requestWithTestNino() throws JsonProcessingException {

@@ -12,7 +12,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
 import org.slf4j.LoggerFactory;
 import uk.gov.digital.ho.proving.income.api.domain.*;
 import uk.gov.digital.ho.proving.income.application.LogEvent;
