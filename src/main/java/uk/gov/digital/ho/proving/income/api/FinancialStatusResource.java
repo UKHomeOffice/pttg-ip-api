@@ -8,6 +8,7 @@ import uk.gov.digital.ho.proving.income.api.domain.*;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -45,7 +46,7 @@ public class FinancialStatusResource {
     }
 
     @PostMapping(value = "/incomeproving/v3/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
-    FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
+    FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request, HttpServletResponse httpResponse) {
 
         List<Applicant> applicants = sanitiseApplicants(request.applicants());
 
@@ -69,6 +70,7 @@ public class FinancialStatusResource {
             value("nino", redactedNino), response.categoryChecks().stream().anyMatch(CategoryCheck::passed), value(EVENT, INCOME_PROVING_SERVICE_RESPONSE_SUCCESS));
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
 
+        httpResponse.addHeader(RequestData.COMPONENT_TRACE_HEADER, requestData.componentTrace());
         return response;
     }
 

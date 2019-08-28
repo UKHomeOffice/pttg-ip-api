@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.RequestMatcher;
 import org.springframework.web.client.RestTemplate;
@@ -95,11 +96,11 @@ public class FinancialStatusResourceIT {
         ResponseEntity<String> response = testRestTemplate.exchange("/incomeproving/v3/individual/financialstatus", POST, request, String.class);
 
         mockUpstreamServices.verify();
-        assertThat(response.getHeaders().get("x-component-trace")).isEqualTo(expectedComponentTrace);
+        assertThat(response.getHeaders().get("x-component-trace")).containsOnly(expectedComponentTrace);
     }
 
     private void stubAuditService() {
-        mockUpstreamServices.expect(requestTo(containsString("/audit"))).andRespond(withSuccess());
+        mockUpstreamServices.expect(ExpectedCount.manyTimes(), requestTo(containsString("/audit"))).andRespond(withSuccess());
     }
 
     private void stubHmrcService(String componentTrace) throws JsonProcessingException {

@@ -21,6 +21,7 @@ import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 import utils.LogCapturer;
 
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -48,6 +49,8 @@ public class FinancialStatusResourceTest {
     private NinoUtils mockNinoUtils;
     @Mock
     private RequestData mockRequestData;
+    @Mock
+    private HttpServletResponse mockServletResponse;
     @Mock
     private Appender<ILoggingEvent> mockAppender;
 
@@ -87,7 +90,7 @@ public class FinancialStatusResourceTest {
         logCapturer.start();
 
         // when
-        service.getFinancialStatus(mockFinancialStatusRequest);
+        service.getFinancialStatus(mockFinancialStatusRequest, mockServletResponse);
 
         // then
         verify(mockNinoUtils, atLeastOnce()).redact(sanitisedNino);
@@ -147,7 +150,7 @@ public class FinancialStatusResourceTest {
         stubNinoUtils();
         stubResponseCalculation();
 
-        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ));
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ), mockServletResponse);
 
         verifyLogMessage("Financial status check request received for RedactedNino - applicationRaisedDate = 2019-01-01, dependents = 0",
             INCOME_PROVING_SERVICE_REQUEST_RECEIVED);
@@ -163,7 +166,7 @@ public class FinancialStatusResourceTest {
         stubNinoUtils();
         stubResponseCalculation();
 
-        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ));
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ), mockServletResponse);
 
         verifyLogMessage("Financial status check passed for RedactedNino is: false", INCOME_PROVING_SERVICE_RESPONSE_SUCCESS);
 
@@ -175,7 +178,7 @@ public class FinancialStatusResourceTest {
 
         stubNinoUtils();
         stubResponseCalculation();
-        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019, 01, 01), 0));
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019, 01, 01), 0), mockServletResponse);
 
         then(mockNinoUtils).should().validate(anyString());
     }
@@ -186,7 +189,7 @@ public class FinancialStatusResourceTest {
 
         stubNinoUtils();
         stubResponseCalculation();
-        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019, 01, 01), 0));
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019, 01, 01), 0), mockServletResponse);
 
         then(mockNinoUtils).should(never()).validate(anyString());
     }

@@ -66,7 +66,7 @@ public class RequestData implements HandlerInterceptor {
     }
 
     private String initialiseComponentTrace(HttpServletRequest request) {
-        String componentTrace = request.getHeader("x-component-trace");
+        String componentTrace = request.getHeader(COMPONENT_TRACE_HEADER);
         if (componentTrace == null) {
             return "pttg-ip-api";
         }
