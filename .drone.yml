@@ -42,9 +42,8 @@ pipeline:
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
-            - newRevisionCommit=$(git rev-parse HEAD^)
-            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${newRevisionCommit:0:8}
-            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${newRevisionCommit:0:8}
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(git rev-parse HEAD^)
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(git rev-parse HEAD^)
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(cat gradle.properties | sed 's/version=//g')
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(cat gradle.properties | sed 's/version=//g')
         when:
