@@ -116,6 +116,32 @@ public class RequestDataTest {
         requestData.preHandle(mockRequest, mockResponse, null);
 
         assertThat(requestData.isASmokeTest()).isFalse();
+    }
 
+    @Test
+    public void preHandle_noComponentTraceHeader_create() {
+        when(mockRequest.getHeader("x-component-trace")).thenReturn(null);
+
+        requestData.preHandle(mockRequest, mockResponse, null);
+
+        assertThat(requestData.componentTrace()).isEqualTo("pttg-ip-api");
+    }
+
+    @Test
+    public void preHandle_componentTraceHeader_append() {
+        when(mockRequest.getHeader("x-component-trace")).thenReturn("some-component");
+
+        requestData.preHandle(mockRequest, mockResponse, null);
+
+        assertThat(requestData.componentTrace()).isEqualTo("some-component,pttg-ip-api");
+    }
+
+    @Test
+    public void preHandle_componentTraceHeaderMultipleComponents_append() {
+        when(mockRequest.getHeader("x-component-trace")).thenReturn("some-component,some-other-component");
+
+        requestData.preHandle(mockRequest, mockResponse, null);
+
+        assertThat(requestData.componentTrace()).isEqualTo("some-component,some-other-component,pttg-ip-api");
     }
 }

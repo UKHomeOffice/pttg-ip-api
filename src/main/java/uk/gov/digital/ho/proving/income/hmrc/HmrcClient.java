@@ -100,6 +100,7 @@ public class HmrcClient {
         headers.add(CORRELATION_ID_HEADER, requestData.correlationId());
         headers.add(USER_ID_HEADER, requestData.userId());
         headers.add(AUTHORIZATION, requestData.hmrcBasicAuth());
+        headers.add(COMPONENT_TRACE_HEADER, requestData.componentTrace());
 
         return headers;
     }

@@ -63,6 +63,7 @@ public class HmrcClientTest {
     private static final LocalDate SOME_DOB = LocalDate.of(1965, Month.JULY, 19);
     private static final LocalDate SOME_FROM_DATE = LocalDate.of(2017, Month.JANUARY, 1);
     private static final LocalDate SOME_TO_DATE = LocalDate.of(2017, Month.JULY, 1);
+    private static final String SOME_COMPONENT_TRACE = "smoke-tests,pttg-ip-api";
 
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
@@ -84,6 +85,7 @@ public class HmrcClientTest {
         when(mockRequestData.correlationId()).thenReturn(SOME_CORRELATION_ID);
         when(mockRequestData.userId()).thenReturn(SOME_USER_ID);
         when(mockRequestData.hmrcBasicAuth()).thenReturn(SOME_BASIC_AUTH);
+        when(mockRequestData.componentTrace()).thenReturn(SOME_COMPONENT_TRACE);
 
         service = new HmrcClient(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger);
 
@@ -141,6 +143,7 @@ public class HmrcClientTest {
         assertThat(captorEntity.getValue().getHeaders()).containsEntry(CORRELATION_ID_HEADER, singletonList("some correlation id"));
         assertThat(captorEntity.getValue().getHeaders()).containsEntry(USER_ID_HEADER, singletonList("some user id"));
         assertThat(captorEntity.getValue().getHeaders()).containsEntry(AUTHORIZATION, singletonList("some basic auth"));
+        assertThat(captorEntity.getValue().getHeaders()).containsEntry(COMPONENT_TRACE_HEADER, singletonList(SOME_COMPONENT_TRACE));
     }
 
     @Test
