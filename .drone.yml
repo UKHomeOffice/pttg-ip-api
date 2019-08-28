@@ -28,7 +28,7 @@ pipeline:
             event: [push, tag]
 
     install-docker-image:
-        image: docker:17.09.1
+        image: quay.io/ukhomeofficedigital/docker-openjdk8-git:v1.5.0
         environment:
             - DOCKER_HOST=tcp://172.17.0.1:2375
         secrets:
@@ -39,8 +39,8 @@ pipeline:
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
-            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(cat gradle.properties | sed 's/version=//g')
-            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(cat gradle.properties | sed 's/version=//g')
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(git describe --abbrev=0 --tags)
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(git describe --abbrev=0 --tags)
         when:
             branch: [master]
             event: push
