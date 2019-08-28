@@ -116,6 +116,12 @@ public class RequestData implements HandlerInterceptor {
     }
 
     public String componentTrace() {
-        return MDC.get("x-component-trace");
+        return MDC.get(COMPONENT_TRACE_HEADER);
+    }
+
+    public void componentTrace(String componentTrace) {
+        if (StringUtils.isNotEmpty(componentTrace)) {
+            MDC.put(COMPONENT_TRACE_HEADER, componentTrace);
+        }
     }
 }

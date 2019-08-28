@@ -144,4 +144,39 @@ public class RequestDataTest {
 
         assertThat(requestData.componentTrace()).isEqualTo("some-component,some-other-component,pttg-ip-api");
     }
+
+    @Test
+    public void componentTrace_someComponentTrace_update() {
+        String expectedComponentTrace = "some-component,some-other-component";
+        requestData.componentTrace(expectedComponentTrace);
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void componentTrace_multipleCalls_lastWins() {
+        String otherComponentTrace = "some-unexpected-component";
+        String expectedComponentTrace = "some-component,some-other-component";
+        requestData.componentTrace(otherComponentTrace);
+        requestData.componentTrace(expectedComponentTrace);
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void componentTrace_null_doNotUpdate() {
+        String expectedComponentTrace = "some-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        requestData.componentTrace(null);
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+    @Test
+    public void componentTrace_emptyString_doNotUpdate() {
+        String expectedComponentTrace = "some-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        requestData.componentTrace("");
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
 }

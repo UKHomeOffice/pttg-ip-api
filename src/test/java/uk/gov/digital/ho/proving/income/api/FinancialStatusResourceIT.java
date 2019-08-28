@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.RequestMatcher;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.ServiceRunner;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
@@ -33,8 +34,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT,
-    classes = ServiceRunner.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 public class FinancialStatusResourceIT {
 
     @Autowired
@@ -62,11 +62,8 @@ public class FinancialStatusResourceIT {
     public void getFinancialStatus_noComponentTrace_sendTraceUpstream() throws JsonProcessingException {
         HttpEntity<FinancialStatusRequest> request = new HttpEntity<>(ANY_FINANCIAL_STATUS_REQUEST);
 
-        mockUpstreamServices.expect(requestTo(containsString("/audit"))).andRespond(withSuccess());
-        mockUpstreamServices.expect(requestTo(containsString("/income")))
-                            .andExpect(method(POST))
-                            .andExpect(header("x-component-trace", containsString("pttg-ip-api")))
-                            .andRespond(withSuccess(objectMapper.writeValueAsString(ANY_INCOME_RECORD), APPLICATION_JSON));
+        stubAuditService();
+        stubHmrcServiceExpecting(header("x-component-trace", containsString("pttg-ip-api")));
 
         testRestTemplate.exchange("/incomeproving/v3/individual/financialstatus", POST, request, String.class);
         mockUpstreamServices.verify();
@@ -78,15 +75,21 @@ public class FinancialStatusResourceIT {
         headers.add("x-component-trace", "some-component");
         HttpEntity<FinancialStatusRequest> request = new HttpEntity<>(ANY_FINANCIAL_STATUS_REQUEST, headers);
 
-        mockUpstreamServices.expect(requestTo(containsString("/audit"))).andRespond(withSuccess());
-        mockUpstreamServices.expect(requestTo(containsString("/income")))
-                            .andExpect(method(POST))
-                            .andExpect(header("x-component-trace",
-                                              allOf(containsString("pttg-ip-api"), containsString("some-component"))))
-                            .andRespond(withSuccess(objectMapper.writeValueAsString(ANY_INCOME_RECORD), APPLICATION_JSON));
-        ;
+        stubAuditService();
+        stubHmrcServiceExpecting(header("x-component-trace", allOf(containsString("pttg-ip-api"), containsString("some-component"))));
 
         testRestTemplate.exchange("/incomeproving/v3/individual/financialstatus", POST, request, String.class);
         mockUpstreamServices.verify();
+    }
+
+    private void stubAuditService() {
+        mockUpstreamServices.expect(requestTo(containsString("/audit"))).andRespond(withSuccess());
+    }
+
+    private void stubHmrcServiceExpecting(RequestMatcher requestMatcher) throws JsonProcessingException {
+        mockUpstreamServices.expect(requestTo(containsString("/income")))
+                            .andExpect(method(POST))
+                            .andExpect(requestMatcher)
+                            .andRespond(withSuccess(objectMapper.writeValueAsString(ANY_INCOME_RECORD), APPLICATION_JSON));
     }
 }
