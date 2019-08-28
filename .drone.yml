@@ -15,8 +15,8 @@ pipeline:
             - sh /root/git-utilities/set-up-github-user.sh "$${GITHUB_SSH_KEY}"
             - ./gradlew release -Prelease.useAutomaticVersion=true -x runBuildTasks -s -i
             - echo "original DRONE_COMMIT_SHA is ${DRONE_COMMIT_SHA}"
-            - git pull
-            - echo "after release plugin and git pull, DRONE_COMMIT_SHA is ${DRONE_COMMIT_SHA}"
+            - newRevisionCommit=$(git rev-parse HEAD^)
+            - echo "new revision DRONE_COMMIT_SHA is ${newRevisionCommit}"
         when:
             branch: [master]
             event: [push]
@@ -42,6 +42,8 @@ pipeline:
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(git rev-parse HEAD^)
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(git rev-parse HEAD^)
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(cat gradle.properties | sed 's/version=//g')
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(cat gradle.properties | sed 's/version=//g')
         when:
