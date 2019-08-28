@@ -42,10 +42,8 @@ pipeline:
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
-            - semver=$(cat gradle.properties | sed 's/version=//g')
-            - echo "semver=${semver}"
-            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${semver}
-            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${semver}
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(cat gradle.properties | sed 's/version=//g')
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(cat gradle.properties | sed 's/version=//g')
         when:
             branch: [master]
             event: push
