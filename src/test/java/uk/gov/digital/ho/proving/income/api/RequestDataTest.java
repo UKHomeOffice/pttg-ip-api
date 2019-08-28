@@ -14,6 +14,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.api.RequestData.*;
@@ -148,17 +153,19 @@ public class RequestDataTest {
     @Test
     public void componentTrace_someComponentTrace_update() {
         String expectedComponentTrace = "some-component,some-other-component";
-        requestData.componentTrace(expectedComponentTrace);
+        requestData.componentTrace(asList("some-component", "some-other-component"));
 
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
     }
 
     @Test
     public void componentTrace_multipleCalls_lastWins() {
-        String otherComponentTrace = "some-unexpected-component";
+        List<String> otherComponentTrace = singletonList("some-unexpected-component");
+        List<String> winningComponentTrace = asList("some-component", "some-other-component");
         String expectedComponentTrace = "some-component,some-other-component";
+
         requestData.componentTrace(otherComponentTrace);
-        requestData.componentTrace(expectedComponentTrace);
+        requestData.componentTrace(winningComponentTrace);
 
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
     }
@@ -172,11 +179,11 @@ public class RequestDataTest {
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
     }
     @Test
-    public void componentTrace_emptyString_doNotUpdate() {
+    public void componentTrace_emptyList_doNotUpdate() {
         String expectedComponentTrace = "some-component";
         MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
 
-        requestData.componentTrace("");
+        requestData.componentTrace(emptyList());
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
     }
 }

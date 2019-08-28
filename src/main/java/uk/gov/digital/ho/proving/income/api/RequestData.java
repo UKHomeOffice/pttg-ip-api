@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.List;
 
 @Component
 public class RequestData implements HandlerInterceptor {
@@ -119,9 +120,9 @@ public class RequestData implements HandlerInterceptor {
         return MDC.get(COMPONENT_TRACE_HEADER);
     }
 
-    public void componentTrace(String componentTrace) {
-        if (StringUtils.isNotEmpty(componentTrace)) {
-            MDC.put(COMPONENT_TRACE_HEADER, componentTrace);
+    public void componentTrace(List<String> componentTraceValues) {
+        if (componentTraceValues != null && !componentTraceValues.isEmpty()) {
+            MDC.put(COMPONENT_TRACE_HEADER, String.join(",", componentTraceValues));
         }
     }
 }

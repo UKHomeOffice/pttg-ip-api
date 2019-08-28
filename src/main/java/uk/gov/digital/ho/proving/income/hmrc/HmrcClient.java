@@ -64,6 +64,7 @@ public class HmrcClient {
                 createEntity(identity, fromDate, toDate),
                 IncomeRecord.class);
 
+            requestData.componentTrace(responseEntity.getHeaders().get(COMPONENT_TRACE_HEADER));
             serviceResponseLogger.record(identity, responseEntity.getBody());
 
             log.info("Received {} incomes and {} employments", responseEntity.getBody().paye().size(),

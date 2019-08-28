@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.RequestMatcher;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -82,8 +84,32 @@ public class FinancialStatusResourceIT {
         mockUpstreamServices.verify();
     }
 
+    @Test
+    public void getFinancialStatus_hmrcServiceReturnsComponentTrace_returnHeader() throws JsonProcessingException {
+        String expectedComponentTrace = "hmrc-service";
+        stubAuditService();
+        stubHmrcService(expectedComponentTrace);
+
+
+        HttpEntity<FinancialStatusRequest> request = new HttpEntity<>(ANY_FINANCIAL_STATUS_REQUEST);
+        ResponseEntity<String> response = testRestTemplate.exchange("/incomeproving/v3/individual/financialstatus", POST, request, String.class);
+
+        mockUpstreamServices.verify();
+        assertThat(response.getHeaders().get("x-component-trace")).isEqualTo(expectedComponentTrace);
+    }
+
     private void stubAuditService() {
         mockUpstreamServices.expect(requestTo(containsString("/audit"))).andRespond(withSuccess());
+    }
+
+    private void stubHmrcService(String componentTrace) throws JsonProcessingException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("x-component-trace", componentTrace);
+
+        mockUpstreamServices.expect(requestTo(containsString("/income")))
+                            .andExpect(method(POST))
+                            .andRespond(withSuccess(objectMapper.writeValueAsString(ANY_INCOME_RECORD), APPLICATION_JSON)
+                                            .headers(headers));
     }
 
     private void stubHmrcServiceExpecting(RequestMatcher requestMatcher) throws JsonProcessingException {
