@@ -90,7 +90,7 @@ public class FinancialStatusResourceTest {
         logCapturer.start();
 
         // when
-        service.getFinancialStatus(mockFinancialStatusRequest, mockServletResponse);
+        service.getFinancialStatus(mockFinancialStatusRequest);
 
         // then
         verify(mockNinoUtils, atLeastOnce()).redact(sanitisedNino);
@@ -150,7 +150,7 @@ public class FinancialStatusResourceTest {
         stubNinoUtils();
         stubResponseCalculation();
 
-        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ), mockServletResponse);
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ));
 
         verifyLogMessage("Financial status check request received for RedactedNino - applicationRaisedDate = 2019-01-01, dependents = 0",
             INCOME_PROVING_SERVICE_REQUEST_RECEIVED);
@@ -166,7 +166,7 @@ public class FinancialStatusResourceTest {
         stubNinoUtils();
         stubResponseCalculation();
 
-        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ), mockServletResponse);
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019,01,01), 0 ));
 
         verifyLogMessage("Financial status check passed for RedactedNino is: false", INCOME_PROVING_SERVICE_RESPONSE_SUCCESS);
 
@@ -178,7 +178,7 @@ public class FinancialStatusResourceTest {
 
         stubNinoUtils();
         stubResponseCalculation();
-        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019, 01, 01), 0), mockServletResponse);
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019, 01, 01), 0));
 
         then(mockNinoUtils).should().validate(anyString());
     }
@@ -189,7 +189,7 @@ public class FinancialStatusResourceTest {
 
         stubNinoUtils();
         stubResponseCalculation();
-        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019, 01, 01), 0), mockServletResponse);
+        service.getFinancialStatus(new FinancialStatusRequest(applicants, LocalDate.of(2019, 01, 01), 0));
 
         then(mockNinoUtils).should(never()).validate(anyString());
     }
