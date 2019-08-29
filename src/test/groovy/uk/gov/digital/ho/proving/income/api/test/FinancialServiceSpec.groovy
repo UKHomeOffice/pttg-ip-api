@@ -39,15 +39,15 @@ class FinancialServiceSpec extends Specification {
     def mockAuditClient = Mock(AuditClient)
     def mockNinoUtils = Mock(NinoUtils)
     def mockIncomeValidationService = Mock(IncomeValidationService)
-    def mockRequestData = Stub(RequestData)
+    def requestDataStub = Stub(RequestData)
 
     def financialStatusServiceHelper = new FinancialStatusService(mockIncomeRecordService, mockIncomeValidationService)
-    def financialStatusController = new FinancialStatusResource(financialStatusServiceHelper, mockAuditClient, mockNinoUtils, mockRequestData)
+    def financialStatusController = new FinancialStatusResource(financialStatusServiceHelper, mockAuditClient, mockNinoUtils, requestDataStub)
 
     MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient, mockNinoUtils)).build()
 
     def setup() {
-        mockRequestData.componentTrace() >> "any-component"
+        requestDataStub.componentTrace() >> "any-component"
     }
 
     def "valid NINO is looked up on the earnings service 2"() {
