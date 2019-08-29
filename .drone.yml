@@ -4,10 +4,11 @@ pipeline:
         image: quay.io/ukhomeofficedigital/openjdk8:v1.1.0
         commands:
             - ./gradlew build
+            - git rev-parse --abbrev-ref HEAD | xargs echo -n > ./branchName
         when:
             event: [push, pull_request, tag]
 
-    update-version:
+    update-semver:
         image: quay.io/ukhomeofficedigital/docker-openjdk8-git:v1.5.0
         secrets:
             - github_ssh_key
@@ -28,7 +29,7 @@ pipeline:
         when:
             event: [push, tag]
 
-    install-docker-image:
+    install-docker-image-with-githash-tag:
         image: docker:17.09.1
         environment:
             - DOCKER_HOST=tcp://172.17.0.1:2375
@@ -36,10 +37,37 @@ pipeline:
             - docker_password
         commands:
             - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
-            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
-            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
+        when:
+            event: push
+
+    install-docker-image-from-feature-branch-build:
+        image: docker:17.09.1
+        environment:
+            - DOCKER_HOST=tcp://172.17.0.1:2375
+        secrets:
+            - docker_password
+        commands:
+            - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./branchName)
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./branchName)
+        when:
+            branch: EE*
+            event: push
+
+    install-docker-image-from-master-branch-build:
+        image: docker:17.09.1
+        environment:
+            - DOCKER_HOST=tcp://172.17.0.1:2375
+        secrets:
+            - docker_password
+        commands:
+            - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:latest
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:latest
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./tagSemver)
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./tagSemver)
         when:
@@ -56,6 +84,10 @@ pipeline:
             - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$${DRONE_TAG}
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_COMMIT_SHA:0:8}
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./tagSemver)
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./tagSemver)
         when:
             event: tag
 
