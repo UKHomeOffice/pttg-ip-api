@@ -3,10 +3,13 @@ pipeline:
     build-project:
         image: quay.io/ukhomeofficedigital/openjdk8:v1.1.0
         commands:
-            - ./gradlew build
+            - echo 'determine branch name'
+            - git rev-parse --abbrev-ref HEAD
             - git rev-parse --abbrev-ref HEAD | xargs echo -n > ./branchName
             - ls -l ./branchName
             - cat ./branchName
+            - echo 'now build'
+            - ./gradlew build
         when:
             event: [push, pull_request, tag]
 
