@@ -16,6 +16,7 @@ import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class RequestData implements HandlerInterceptor {
@@ -122,19 +123,34 @@ public class RequestData implements HandlerInterceptor {
         return MDC.get(COMPONENT_TRACE_HEADER);
     }
 
-    public void componentTrace(List<String> components) {
-        if (components != null && !components.isEmpty()) {
-            MDC.put(COMPONENT_TRACE_HEADER, String.join(",", components));
-        }
-    }
-
     public void updateComponentTrace(ResponseEntity responseEntity) {
-        componentTrace(responseEntity.getHeaders().get(COMPONENT_TRACE_HEADER));
+        List<String> components = responseEntity.getHeaders().get(COMPONENT_TRACE_HEADER);
+        setComponentTrace(components);
     }
 
     public void updateComponentTrace(HttpStatusCodeException e) {
-        if (e.getResponseHeaders() != null) {
-            componentTrace(e.getResponseHeaders().get(COMPONENT_TRACE_HEADER));
+        if (e.getResponseHeaders() == null) {
+            return;
+        }
+
+        List<String> components = e.getResponseHeaders().get(COMPONENT_TRACE_HEADER);
+        setComponentTrace(components);
+    }
+
+    private List<String> removeEmptyEntries(List<String> components) {
+        return components.stream()
+                         .filter(StringUtils::isNotEmpty)
+                         .collect(Collectors.toList());
+    }
+
+    private void setComponentTrace(List<String> components) {
+        if (components == null) {
+            return;
+        }
+
+        components = removeEmptyEntries(components);
+        if (!components.isEmpty()) {
+            MDC.put(COMPONENT_TRACE_HEADER, String.join(",", components));
         }
     }
 }
