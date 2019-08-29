@@ -59,7 +59,6 @@ See also the list of [contributors] who participated in this project.
 This project is licensed under the MIT License - see the [LICENCE.md]
 file for details.
 
-
 [contributors]:                     https://github.com/UKHomeOffice/pttg-ip-api/graphs/contributors
 [pttg-ip-hmrc]:                     https://github.com/UKHomeOffice/pttg-ip-hmrc
 [pttg-ip-fm-ui]:                    https://github.com/UKHomeOffice/pttg-ip-fm-ui
