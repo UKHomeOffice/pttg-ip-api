@@ -5,6 +5,8 @@ pipeline:
         commands:
             - ./gradlew build
             - git rev-parse --abbrev-ref HEAD | xargs echo -n > ./branchName
+            - ls -l ./branchName
+            - cat ./branchName
         when:
             event: [push, pull_request, tag]
 
@@ -53,7 +55,8 @@ pipeline:
             - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./branchName)
             - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./branchName)
         when:
-            branch: EE*
+            branch:
+                exclude: master
             event: push
 
     install-docker-image-from-master-branch-build:
