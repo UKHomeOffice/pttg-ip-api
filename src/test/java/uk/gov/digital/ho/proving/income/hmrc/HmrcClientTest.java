@@ -305,9 +305,7 @@ public class HmrcClientTest {
         LocalDate anyDate = LocalDate.now();
         service.getIncomeRecord(anyIdentity, anyDate, anyDate);
 
-        ArgumentCaptor<ResponseEntity> argumentCaptor = ArgumentCaptor.forClass(ResponseEntity.class);
-        then(mockRequestData).should().updateComponentTrace(argumentCaptor.capture());
-        assertThat(argumentCaptor.getValue()).isEqualTo(responseEntity);
+        then(mockRequestData).should().updateComponentTrace(responseEntity);
     }
 
     @Test
@@ -329,9 +327,7 @@ public class HmrcClientTest {
             // Exception not of interest to this test.
         }
 
-        ArgumentCaptor<HttpStatusCodeException> argumentCaptor = ArgumentCaptor.forClass(HttpStatusCodeException.class);
-        then(mockRequestData).should().updateComponentTrace(argumentCaptor.capture());
-        assertThat(argumentCaptor.getValue()).isEqualTo(notFoundException);
+        then(mockRequestData).should().updateComponentTrace(notFoundException);
     }
 
     @Test
