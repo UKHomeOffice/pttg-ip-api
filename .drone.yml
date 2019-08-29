@@ -3,12 +3,6 @@ pipeline:
     build-project:
         image: quay.io/ukhomeofficedigital/docker-openjdk8-git:v1.5.0
         commands:
-            - echo 'determine branch name'
-            - git rev-parse --abbrev-ref HEAD
-            - git rev-parse --abbrev-ref HEAD | xargs echo -n > ./branchName
-            - ls -l ./branchName
-            - cat ./branchName
-            - echo 'now build'
             - ./gradlew build
         when:
             event: [push, pull_request, tag]
@@ -55,8 +49,8 @@ pipeline:
             - docker_password
         commands:
             - docker login -u="ukhomeofficedigital+pttg" -p=$${DOCKER_PASSWORD} quay.io
-            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./branchName)
-            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./branchName)
+            - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_BRANCH}
+            - docker push quay.io/ukhomeofficedigital/pttg-ip-api:${DRONE_BRANCH}
         when:
             branch:
                 exclude: master
