@@ -73,9 +73,9 @@ public class HmrcClient {
             return responseEntity.getBody();
 
         } catch (HttpStatusCodeException e) {
+            requestData.updateComponentTrace(e);
             if (isNotFound(e)) {
                 log.error("HMRC Service found no match", value(EVENT, HMRC_NOT_FOUND_RESPONSE));
-                requestData.updateComponentTrace(e);
                 throw new EarningsServiceNoUniqueMatchException(identity.nino());
             }
             log.error("HMRC Service failed", e, value(EVENT, HMRC_ERROR_REPSONSE));
@@ -85,6 +85,7 @@ public class HmrcClient {
 
     @Recover
     IncomeRecord getIncomeRecordFailureRecovery(HttpServerErrorException e) {
+        requestData.updateComponentTrace(e);
         log.error("Failed to retrieve HMRC data after retries - {}", e.getMessage(), value(EVENT, HMRC_ERROR_REPSONSE));
         throw(e);
     }

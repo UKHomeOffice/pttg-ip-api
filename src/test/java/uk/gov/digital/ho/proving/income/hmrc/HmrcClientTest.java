@@ -310,7 +310,6 @@ public class HmrcClientTest {
         assertThat(argumentCaptor.getValue()).isEqualTo(responseEntity);
     }
 
-
     @Test
     public void getIncomeRecord_notFound_updateComponentTrace() {
         reset(mockRequestData);
@@ -333,6 +332,43 @@ public class HmrcClientTest {
         ArgumentCaptor<HttpStatusCodeException> argumentCaptor = ArgumentCaptor.forClass(HttpStatusCodeException.class);
         then(mockRequestData).should().updateComponentTrace(argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(notFoundException);
+    }
+
+    @Test
+    public void getIncomeRecord_otherClientErrorException_updateComponentTrace() {
+        reset(mockRequestData);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(COMPONENT_TRACE_HEADER, "some-component");
+        headers.add(COMPONENT_TRACE_HEADER, "some-other-component");
+
+        HttpStatusCodeException httpException = new HttpClientErrorException(BAD_REQUEST, "any status text", headers, null, null);
+        given(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
+            .willThrow(httpException);
+
+        Identity anyIdentity = new Identity(SOME_FIRST_NAME, SOME_LAST_NAME, SOME_DOB, SOME_NINO);
+        LocalDate anyDate = LocalDate.now();
+        try {
+            service.getIncomeRecord(anyIdentity, anyDate, anyDate);
+        } catch (HttpClientErrorException ignored) {
+            // Exception not of interest to this test.
+        }
+
+        ArgumentCaptor<HttpStatusCodeException> argumentCaptor = ArgumentCaptor.forClass(HttpStatusCodeException.class);
+        then(mockRequestData).should().updateComponentTrace(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue()).isEqualTo(httpException);
+    }
+
+    @Test
+    public void getIncomeRecordFailureRecovery_someException_updateComponentTrace() {
+        HttpServerErrorException someException = new HttpServerErrorException(INTERNAL_SERVER_ERROR);
+
+        try {
+            service.getIncomeRecordFailureRecovery(someException);
+        } catch (HttpServerErrorException ignored) {
+            // Exception not of interest to this test.
+        }
+
+        then(mockRequestData).should().updateComponentTrace(someException);
     }
 
     private IncomeRecord anyIncomeRecord() {
