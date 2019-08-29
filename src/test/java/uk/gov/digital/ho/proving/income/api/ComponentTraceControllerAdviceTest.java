@@ -7,6 +7,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -24,9 +25,7 @@ public class ComponentTraceControllerAdviceTest {
 
     @Mock
     private ServerHttpRequest mockRequest;
-    // ResponseBodyAdvice interface restricts means we can't inject the headers so we need to mock the response.getHeaders()
-    // in this manner.
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock
     private ServerHttpResponse mockResponse;
     @Mock
     private RequestData mockRequestData;
@@ -53,11 +52,12 @@ public class ComponentTraceControllerAdviceTest {
 
     @Test
     public void beforeBodyWrite_anyResponse_addHeader() {
-        String expectedComponentTrace = "some-component,some-other-component";
-        given(mockRequestData.componentTrace()).willReturn(expectedComponentTrace);
+        HttpHeaders someHeaders = new HttpHeaders();
+        someHeaders.add("any key", "any value");
+        given(mockResponse.getHeaders()).willReturn(someHeaders);
 
         controllerAdvice.beforeBodyWrite("any body", ANY_RETURN_TYPE, ANY_MEDIA_TYPE, ANY_CONVERTER_TYPE, mockRequest, mockResponse);
 
-        then(mockResponse.getHeaders()).should().add(RequestData.COMPONENT_TRACE_HEADER, expectedComponentTrace);
+        then(mockRequestData).should().addComponentTraceHeader(someHeaders);
     }
 }

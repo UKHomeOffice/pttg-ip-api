@@ -21,7 +21,7 @@ public class ComponentTraceControllerAdvice implements ResponseBodyAdvice {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        response.getHeaders().add(RequestData.COMPONENT_TRACE_HEADER, requestData.componentTrace());
+        requestData.addComponentTraceHeader(response.getHeaders());
         return body;
     }
 }

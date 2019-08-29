@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -19,6 +20,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.api.RequestData.*;
 
@@ -36,6 +38,8 @@ public class RequestDataTest {
     private HttpServletRequest mockRequest;
     @Mock
     private HttpServletResponse mockResponse;
+    @Mock
+    private HttpHeaders mockHeaders;
 
     @Before
     public void setUp() {
@@ -177,6 +181,7 @@ public class RequestDataTest {
         requestData.componentTrace(null);
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
     }
+
     @Test
     public void componentTrace_emptyList_doNotUpdate() {
         String expectedComponentTrace = "some-component";
@@ -184,5 +189,15 @@ public class RequestDataTest {
 
         requestData.componentTrace(emptyList());
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void addComponentTraceHeader_anyResponse_addsHeader() {
+        String expectedComponentTrace = "some-component,some-other-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        requestData.addComponentTraceHeader(mockHeaders);
+
+        then(mockHeaders).should().add(COMPONENT_TRACE_HEADER, expectedComponentTrace);
     }
 }
