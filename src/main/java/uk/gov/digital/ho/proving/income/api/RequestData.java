@@ -120,9 +120,9 @@ public class RequestData implements HandlerInterceptor {
         return MDC.get(COMPONENT_TRACE_HEADER);
     }
 
-    public void componentTrace(List<String> componentTraceValues) {
-        if (componentTraceValues != null && !componentTraceValues.isEmpty()) {
-            MDC.put(COMPONENT_TRACE_HEADER, String.join(",", componentTraceValues));
+    public void componentTrace(List<String> components) {
+        if (components != null && !components.isEmpty()) {
+            MDC.put(COMPONENT_TRACE_HEADER, String.join(",", components));
         }
     }
 }
