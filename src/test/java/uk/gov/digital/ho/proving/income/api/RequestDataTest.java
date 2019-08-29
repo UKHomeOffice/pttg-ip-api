@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.api;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,8 +9,13 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +46,11 @@ public class RequestDataTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @After
+    public void tearDown() {
+        MDC.clear();
     }
 
     @Test
@@ -177,12 +188,59 @@ public class RequestDataTest {
         requestData.componentTrace(null);
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
     }
+
     @Test
     public void componentTrace_emptyList_doNotUpdate() {
         String expectedComponentTrace = "some-component";
         MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
 
         requestData.componentTrace(emptyList());
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_responseEntityWithHeaders_setComponentTrace() {
+        String expectedComponentTrace = "some-component,some-other-component";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        ResponseEntity responseWithTraceHeader = new ResponseEntity(headers, HttpStatus.OK);
+        requestData.updateComponentTrace(responseWithTraceHeader);
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_responseEntityNoHeaders_doNotSetComponentTrace() {
+        String expectedComponentTrace = "some-component";
+        requestData.componentTrace(singletonList(expectedComponentTrace));
+
+        ResponseEntity responseWithoutTraceHeader = new ResponseEntity(HttpStatus.OK);
+        requestData.updateComponentTrace(responseWithoutTraceHeader);
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_httpExceptionWithHeaders_setComponentTrace() {
+        String expectedComponentTrace = "some-component,some-other-component";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        HttpStatusCodeException exceptionWithTraceHeader = new HttpClientErrorException(HttpStatus.NOT_FOUND, "any status text", headers, null, null);
+        requestData.updateComponentTrace(exceptionWithTraceHeader);
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_httpExceptionNoHeaders_doNotSetComponentTrace() {
+        String expectedComponentTrace = "some-component";
+        requestData.componentTrace(singletonList(expectedComponentTrace));
+
+        HttpStatusCodeException exceptionWithoutTraceHeader = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        requestData.updateComponentTrace(exceptionWithoutTraceHeader);
+
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
     }
 }

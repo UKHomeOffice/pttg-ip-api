@@ -64,7 +64,7 @@ public class HmrcClient {
                 createEntity(identity, fromDate, toDate),
                 IncomeRecord.class);
 
-            updateComponentTrace(responseEntity);
+            requestData.updateComponentTrace(responseEntity);
             serviceResponseLogger.record(identity, responseEntity.getBody());
 
             log.info("Received {} incomes and {} employments", responseEntity.getBody().paye().size(),
@@ -75,6 +75,7 @@ public class HmrcClient {
         } catch (HttpStatusCodeException e) {
             if (isNotFound(e)) {
                 log.error("HMRC Service found no match", value(EVENT, HMRC_NOT_FOUND_RESPONSE));
+                requestData.updateComponentTrace(e);
                 throw new EarningsServiceNoUniqueMatchException(identity.nino());
             }
             log.error("HMRC Service failed", e, value(EVENT, HMRC_ERROR_REPSONSE));
@@ -117,9 +118,4 @@ public class HmrcClient {
                 toDate),
             generateRestHeaders());
     }
-
-    private void updateComponentTrace(ResponseEntity<IncomeRecord> responseEntity) {
-        requestData.componentTrace(responseEntity.getHeaders().get(COMPONENT_TRACE_HEADER));
-    }
-
 }
