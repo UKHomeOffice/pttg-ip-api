@@ -123,11 +123,6 @@ pipeline:
             - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
         secrets:
             - pttg_ip_dev
-            - pttg_ip_test
-            - pttg_ip_feat1
-            - pttg_ip_feat2
-            - pttg_ip_feat3
-            - pttg_ip_preprod
         commands:
             - cd kube-pttg-ip-api
             - ./deploy.sh
