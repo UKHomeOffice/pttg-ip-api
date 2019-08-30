@@ -127,12 +127,13 @@ pipeline:
             - pttg_ip_feat1
             - pttg_ip_feat2
             - pttg_ip_feat3
+            - pttg_ip_preprod
         commands:
             - cd kube-pttg-ip-api
             - ./deploy.sh
         when:
             event: deployment
-            environment: [dev, test, feat1, feat2, feat3]
+            environment: [dev, test, feat1, feat2, feat3, preprod]
 
     deploy-to-prod:
         image: quay.io/ukhomeofficedigital/kd:v1.14.0
@@ -142,11 +143,10 @@ pipeline:
             - VERSION=${IMAGE_VERSION}
             - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
         secrets:
-            - pttg_ip_preprod
             - pttg_ip_pr
         commands:
             - cd kube-pttg-ip-api
             - ./deploy.sh
         when:
             event: deployment
-            environment: [preprod, pr]
+            environment: [pr]
