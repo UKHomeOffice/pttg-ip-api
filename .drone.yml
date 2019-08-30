@@ -144,4 +144,4 @@ pipeline:
             - ./deploy.sh
         when:
             event: deployment
-            environment: [pr]
+            environment: pr
