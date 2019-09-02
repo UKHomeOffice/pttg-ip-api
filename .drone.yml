@@ -139,7 +139,7 @@ pipeline:
         environment:
             - KUBE_NAMESPACE=pttg-ip-test
             - ENVIRONMENT=test
-            - VERSION=build-${DRONE_BRANCH}
+            - VERSION=${DRONE_BRANCH}
             - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
         secrets:
             - pttg_ip_test
