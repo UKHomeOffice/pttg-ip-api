@@ -6,6 +6,11 @@ Feature: Failure - Category A Financial Requirement with no dependents - weekly 
     Financial employment income regulation to pass this Feature File
     Applicant or Sponsor has received 26 weekly Gross Income payments of < £357.69 in the 6 month period prior to the Application Raised Date
 
+    Background: Thresholds are configured to default values
+        Given The yearly threshold is configured to 18600:
+        And The single dependant yearly threshold is configured to 22400:
+        And The remaining dependants increment is configured to 2400:
+
 #New Scenario -
     Scenario: Davina Love does not meet the Category A Financial Requirement (She has earned < the Cat A financial threshold)
 

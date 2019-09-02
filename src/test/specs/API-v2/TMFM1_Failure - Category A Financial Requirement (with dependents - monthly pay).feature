@@ -19,6 +19,11 @@ Feature: Failure - Category A Financial Requirement - with dependents - monthly 
     7 Dependent Children - £18600+£3800+(£2400*6)/12 = £3066.67
     ETC
 
+    Background: Thresholds are configured to default values
+        Given The yearly threshold is configured to 18600:
+        And The single dependant yearly threshold is configured to 22400:
+        And The remaining dependants increment is configured to 2400:
+
 #New scenario - Added in
     Scenario: Shelly does not meet the Category A Financial Requirement (She has earned < the Cat A financial threshold)
 

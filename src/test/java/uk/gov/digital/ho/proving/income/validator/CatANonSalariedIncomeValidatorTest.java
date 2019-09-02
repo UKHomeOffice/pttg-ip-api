@@ -1,6 +1,11 @@
 package uk.gov.digital.ho.proving.income.validator;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.proving.income.api.IncomeThresholdCalculator;
 import uk.gov.digital.ho.proving.income.api.domain.Applicant;
 import uk.gov.digital.ho.proving.income.hmrc.domain.AnnualSelfAssessmentTaxReturn;
 import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
@@ -22,9 +27,12 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.validator.CatASalariedTestData.amount;
 import static uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class CatANonSalariedIncomeValidatorTest {
 
     private static final LocalDate APPLICATION_RAISED_DATE = LocalDate.now();
@@ -35,7 +43,16 @@ public class CatANonSalariedIncomeValidatorTest {
     private static final HmrcIndividual ANY_HMRC_INDIVIDUAL_PARTNER = new HmrcIndividual("any other forename", "any other surname", "any other nino", ANY_DOB);
     private static final List<ApplicantIncome> ANY_APPLICANT_INCOME = singletonList(new ApplicantIncome(ANY_APPLICANT, new IncomeRecord(emptyList(), emptyList(), emptyList(), ANY_HMRC_INDIVIDUAL)));
 
-    private CatANonSalariedIncomeValidator validator = new CatANonSalariedIncomeValidator();
+    @Mock
+    private IncomeThresholdCalculator incomeThresholdCalculator;
+
+    private CatANonSalariedIncomeValidator validator;
+
+    @Before
+    public void setUp() {
+        validator = new CatANonSalariedIncomeValidator(incomeThresholdCalculator);
+        when(incomeThresholdCalculator.yearlyThreshold(0)).thenReturn(BigDecimal.valueOf(18600));
+    }
 
     @Test
     public void shouldReturnNotEnoughRecordsWhenNoIncomeRecords() {
@@ -105,10 +122,12 @@ public class CatANonSalariedIncomeValidatorTest {
         dependantsAndExpectedThreshold.put(5, 32_000);
 
         for (int dependants = 0; dependants <= 5; dependants++) {
+            expectDependants(dependants);
             IncomeValidationResult result = validator.validate(new IncomeValidationRequest(ANY_APPLICANT_INCOME, APPLICATION_RAISED_DATE, dependants));
 
             Integer expectedThreshold = dependantsAndExpectedThreshold.get(dependants);
             assertThat(result.threshold()).isEqualTo(BigDecimal.valueOf(expectedThreshold));
+            reset(incomeThresholdCalculator);
         }
     }
 
@@ -371,5 +390,16 @@ public class CatANonSalariedIncomeValidatorTest {
     private void assertExpectedResult(IncomeValidationRequest request, IncomeValidationStatus expectedStatus) {
         IncomeValidationResult result = validator.validate(request);
         assertThat(result.status()).isEqualTo(expectedStatus);
+    }
+
+    private void expectDependants(int dependants) {
+        BigDecimal yearlyThreshold = BigDecimal.valueOf(18600);
+        if (dependants == 1) {
+            yearlyThreshold = BigDecimal.valueOf(22400);
+        }
+        else if(dependants > 1) {
+            yearlyThreshold = BigDecimal.valueOf(22400 + (dependants - 1) * 2400);
+        }
+        when(incomeThresholdCalculator.yearlyThreshold(dependants)).thenReturn(yearlyThreshold);
     }
 }

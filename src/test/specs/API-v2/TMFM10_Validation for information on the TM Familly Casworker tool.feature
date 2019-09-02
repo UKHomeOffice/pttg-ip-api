@@ -3,6 +3,11 @@ Feature: Validation of the API fields and data
     National Insurance Numbers (NINO) - Format and Security: A NINO is made up of two letters, six numbers and a final letter (which is always A, B, C, or D)
     Date formats: Format should be yyyy-MM-dd
 
+    Background: Thresholds are configured to default values
+        Given The yearly threshold is configured to 18600:
+        And The single dependant yearly threshold is configured to 22400:
+        And The remaining dependants increment is configured to 2400:
+
 ###################################### Section - Validation on the NINO ######################################
 
     Scenario: The API is not provided with an NINO (National Insurance Number)

@@ -9,6 +9,10 @@ Feature: Category B Financial Requirement - Solo & Combined Applications for Non
     # BACKGROUND: Applications with one applicant will be required to meet a main threshold value of £18,600.
     #             Applications with one dependant will be required to meet an amended threshold value of £22,400
     #             Applications with two dependants will be required to meet a further amended threshold value of £24,800
+    Background: Thresholds are configured to default values
+        Given The yearly threshold is configured to 18600:
+        And The single dependant yearly threshold is configured to 22400:
+        And The remaining dependants increment is configured to 2400:
 
     Scenario: No dependents. Employment check Met. Annual Check Met.
 

@@ -31,15 +31,16 @@ buildscript {
         classpath "org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.11"
         classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
         classpath 'org.owasp:dependency-check-gradle:1.4.3'
-
     }
 }
 
 
 plugins {
+    id "java"
     id "com.gorylenko.gradle-git-properties" version "1.4.17"
-}
+    id 'net.researchgate.release' version '2.6.0'
 
+}
 
 apply plugin: 'java'
 apply plugin: 'groovy'
@@ -54,7 +55,6 @@ apply plugin: 'project-report'
 apply plugin: 'checkstyle'
 
 group 'pttg-ip-api'
-version = '0.1.0'
 
 mainClassName = "uk.gov.digital.ho.proving.income.ServiceRunner"
 
@@ -64,6 +64,9 @@ springBoot {
 }
 
 dependencies {
+
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.16.12'
+    compileOnly 'org.projectlombok:lombok:1.16.12'
 
     compile "org.codehaus.groovy:groovy-all:2.4.3"
     compile "org.json:json:20160212"
@@ -100,7 +103,6 @@ dependencies {
 
     compile 'net.sf.supercsv:super-csv:2.4.0'
 
-    compileOnly 'org.projectlombok:lombok:1.16.12'
 
     testCompile 'org.hamcrest:hamcrest-core:1.3'
     testCompile "junit:junit:4.12"
@@ -246,4 +248,10 @@ checkstyleTest.enabled = false
 checkstyle {
     toolVersion = "5.9"
     ignoreFailures = false
+}
+
+release {
+    preTagCommitMessage = '[Gradle Release Plugin] (EE-21422) [CI SKIP] - pre tag commit: '
+    tagCommitMessage = '[Gradle Release Plugin] (EE-21422) - creating tag: '
+    newVersionCommitMessage = '[Gradle Release Plugin] (EE-21422) [CI SKIP] - new version commit: '
 }
