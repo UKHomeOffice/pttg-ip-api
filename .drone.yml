@@ -19,6 +19,16 @@ pipeline:
       branch: [master]
       event: [push]
 
+  ee-21427-noop-step:
+    image: quay.io/ukhomeofficedigital/docker-openjdk8-git:v1.5.0
+    commands:
+      - echo 'ee-21427-noop-step for first commit'
+      - echo 'DRONE_COMMIT_SHA is ' ${DRONE_COMMIT_SHA:0:8}
+      - echo 'DRONE_BRANCH is ' ${DRONE_BRANCH}
+      - echo 'DRONE_BUILD_NUMBER is ' $${DRONE_BUILD_NUMBER}
+    when:
+      event: [push, deployment]
+
   docker-build:
     image: docker:17.09.1
     environment:
