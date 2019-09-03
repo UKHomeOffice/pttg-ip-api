@@ -1,5 +1,12 @@
 pipeline:
 
+  ee-21427-noop-step:
+    image: docker:17.09.1
+    commands:
+      - echo 'ee-21427-noop-step'
+    when:
+      event: push
+
   build-project:
     image: quay.io/ukhomeofficedigital/docker-openjdk8-git:v1.5.0
     commands:
