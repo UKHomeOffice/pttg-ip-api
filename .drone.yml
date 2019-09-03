@@ -19,6 +19,17 @@ pipeline:
       branch: [master]
       event: [push]
 
+  ee-21427-noop-step:
+    image: docker:17.09.1
+    commands:
+      - echo 'ee-21427-noop-step'
+      - echo 'DRONE_COMMIT_SHA is ' ${DRONE_COMMIT_SHA:0:8}
+      - echo 'DRONE_BRANCH is ' ${DRONE_BRANCH}
+      - echo 'DRONE_BUILD_NUMBER is ' $${DRONE_BUILD_NUMBER}
+      - echo 'semver is ' $(cat ./tagSemver)
+    when:
+      event: push
+
   docker-build:
     image: docker:17.09.1
     environment:
