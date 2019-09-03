@@ -20,7 +20,7 @@ pipeline:
       event: [push]
 
   ee-21427-noop-step:
-    image: docker:17.09.1
+    image: quay.io/ukhomeofficedigital/docker-openjdk8-git:v1.5.0
     commands:
       - echo 'ee-21427-noop-step'
       - echo 'DRONE_COMMIT_SHA is ' ${DRONE_COMMIT_SHA:0:8}
