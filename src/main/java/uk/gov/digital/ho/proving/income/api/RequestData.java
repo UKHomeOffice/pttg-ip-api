@@ -4,7 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
@@ -15,6 +17,7 @@ import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class RequestData implements HandlerInterceptor {
@@ -123,13 +126,38 @@ public class RequestData implements HandlerInterceptor {
         return MDC.get(COMPONENT_TRACE_HEADER);
     }
 
-    public void componentTrace(List<String> components) {
-        if (components != null && !components.isEmpty()) {
+    public void addComponentTraceHeader(HttpHeaders headers) {
+        headers.add(COMPONENT_TRACE_HEADER, componentTrace());
+    }
+
+    public void updateComponentTrace(ResponseEntity responseEntity) {
+        List<String> components = responseEntity.getHeaders().get(COMPONENT_TRACE_HEADER);
+        setComponentTrace(components);
+    }
+
+    public void updateComponentTrace(HttpStatusCodeException e) {
+        if (e.getResponseHeaders() == null) {
+            return;
+        }
+
+        List<String> components = e.getResponseHeaders().get(COMPONENT_TRACE_HEADER);
+        setComponentTrace(components);
+    }
+
+    private void setComponentTrace(List<String> components) {
+        if (components == null) {
+            return;
+        }
+
+        components = removeEmptyEntries(components);
+        if (!components.isEmpty()) {
             MDC.put(COMPONENT_TRACE_HEADER, String.join(",", components));
         }
     }
 
-    public void addComponentTraceHeader(HttpHeaders headers) {
-        headers.add(COMPONENT_TRACE_HEADER, componentTrace());
+    private List<String> removeEmptyEntries(List<String> components) {
+        return components.stream()
+                         .filter(StringUtils::isNotEmpty)
+                         .collect(Collectors.toList());
     }
 }
