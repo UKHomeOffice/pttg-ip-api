@@ -32,6 +32,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static uk.gov.digital.ho.proving.income.api.RequestData.COMPONENT_TRACE_HEADER;
 import static uk.gov.digital.ho.proving.income.application.LogEvent.*;
 
 @Component
@@ -72,8 +73,9 @@ public class AuditClient {
 
         try {
             AuditableData auditableData = generateAuditableData(eventType, eventId, auditDetail);
-            dispatchAuditableData(auditableData);
+            ResponseEntity<Void> auditResponse = dispatchAuditableData(auditableData);
             log.info("data POSTed to audit service", value(EVENT, INCOME_PROVING_AUDIT_SUCCESS));
+            updateComponentTrace(auditResponse);
         } catch (JsonProcessingException e) {
             log.error("Failed to create json representation of audit data", value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
         }
@@ -83,8 +85,8 @@ public class AuditClient {
             value = { RestClientException.class },
             maxAttemptsExpression = "#{${audit.service.retry.attempts}}",
             backoff = @Backoff(delayExpression = "#{${audit.service.retry.delay}}"))
-    private void dispatchAuditableData(AuditableData auditableData) {
-        restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
+    private ResponseEntity<Void> dispatchAuditableData(AuditableData auditableData) {
+        return restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
     }
 
     List<AuditRecord> getAuditHistory(LocalDate toDate, List<AuditEventType> eventTypes) {
@@ -146,6 +148,7 @@ public class AuditClient {
                                    .encode()
                                    .toUri();
     }
+
     private URI generateCorrelationIdsUri(List<AuditEventType> eventTypes) {
         return UriComponentsBuilder.fromHttpUrl(correlationIdsEndpoint)
                                    .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
@@ -153,7 +156,6 @@ public class AuditClient {
                                    .encode()
                                    .toUri();
     }
-
     private URI generateHistoryByCorrelationIdUri(String correlationId, List<AuditEventType> eventTypes) {
         return UriComponentsBuilder.fromHttpUrl(historyByCorrelationIdEndpoint)
                                    .queryParam("correlationId", correlationId)
@@ -227,5 +229,9 @@ public class AuditClient {
         headers.add(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
 
         return headers;
+    }
+
+    private void updateComponentTrace(ResponseEntity<Void> auditResponse) {
+        requestData.componentTrace(auditResponse.getHeaders().get(COMPONENT_TRACE_HEADER));
     }
 }
