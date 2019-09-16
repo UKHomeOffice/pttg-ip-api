@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.api;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -27,7 +28,9 @@ public class RequestData implements HandlerInterceptor {
     private static final String REQUEST_START_TIMESTAMP = "request-timestamp";
     public static final String REQUEST_DURATION_MS = "request_duration_ms";
     public static final String SMOKE_TESTS_USER_ID = "smoke-tests";
+
     public static final String COMPONENT_TRACE_HEADER = "x-component-trace";
+    private static final String COMPONENT_NAME = "pttg-ip-api";
 
     @Value("${auditing.deployment.name}") private String deploymentName;
     @Value("${auditing.deployment.namespace}") private String deploymentNamespace;
@@ -71,9 +74,9 @@ public class RequestData implements HandlerInterceptor {
     private String initialiseComponentTrace(HttpServletRequest request) {
         String componentTrace = request.getHeader(COMPONENT_TRACE_HEADER);
         if (componentTrace == null) {
-            return "pttg-ip-api";
+            return COMPONENT_NAME;
         }
-        return componentTrace + ",pttg-ip-api";
+        return componentTrace + "," + COMPONENT_NAME;
     }
 
     @Override
@@ -152,5 +155,9 @@ public class RequestData implements HandlerInterceptor {
         if (!components.isEmpty()) {
             MDC.put(COMPONENT_TRACE_HEADER, String.join(",", components));
         }
+    }
+
+    public void addComponentTraceHeader(HttpHeaders headers) {
+        headers.add(COMPONENT_TRACE_HEADER, componentTrace());
     }
 }

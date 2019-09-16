@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.api.RequestData.*;
 
@@ -38,6 +39,8 @@ public class RequestDataTest {
     private HttpServletRequest mockRequest;
     @Mock
     private HttpServletResponse mockResponse;
+    @Mock
+    private HttpHeaders mockHeaders;
 
     @Before
     public void setUp() {
@@ -287,5 +290,15 @@ public class RequestDataTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add(COMPONENT_TRACE_HEADER, components);
         return headers;
+    }
+
+    @Test
+    public void addComponentTraceHeader_anyResponse_addsHeader() {
+        String expectedComponentTrace = "some-component,some-other-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        requestData.addComponentTraceHeader(mockHeaders);
+
+        then(mockHeaders).should().add(COMPONENT_TRACE_HEADER, expectedComponentTrace);
     }
 }
