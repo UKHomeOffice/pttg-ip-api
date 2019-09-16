@@ -11,6 +11,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -32,7 +33,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static uk.gov.digital.ho.proving.income.api.RequestData.COMPONENT_TRACE_HEADER;
 import static uk.gov.digital.ho.proving.income.application.LogEvent.*;
 
 @Component
@@ -78,7 +78,11 @@ public class AuditClient {
             requestData.updateComponentTrace(auditResponse);
         } catch (JsonProcessingException e) {
             log.error("Failed to create json representation of audit data", value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
+        } catch (HttpStatusCodeException e) {
+            requestData.updateComponentTrace(e);
+            throw e;
         }
+
     }
 
     @Retryable(
@@ -105,7 +109,15 @@ public class AuditClient {
         URI uri = generateUri(eventTypes, page, size, toDate);
 
         HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
-        ResponseEntity<List<AuditRecord>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
+
+        ResponseEntity<List<AuditRecord>> response;
+        try {
+            response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
+            requestData.updateComponentTrace(response);
+        } catch (HttpStatusCodeException e) {
+            requestData.updateComponentTrace(e);
+            throw e;
+        }
         return response.getBody();
     }
 

@@ -23,7 +23,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
@@ -43,6 +46,7 @@ import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
@@ -592,7 +596,7 @@ public class AuditClientTest {
     }
 
     @Test
-    public void add_successfulResponse_addComponentTrace() {
+    public void add_successfulResponse_updateComponentTrace() {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.put("x-component-trace", singletonList("pttg-ip-api"));
 
@@ -602,6 +606,63 @@ public class AuditClientTest {
         auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, null);
 
         then(mockRequestData).should().updateComponentTrace(someResponse);
+    }
+
+    @Test
+    public void add_errorResponse_updateComponentTrace() {
+        HttpStatusCodeException someHttpException = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+        given(mockRestTemplate.exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class))).willThrow(someHttpException);
+
+        try {
+            auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, null);
+        } catch (HttpStatusCodeException ignored) {
+            // Exception not of interest to this test.
+        }
+
+        then(mockRequestData).should().updateComponentTrace(someHttpException);
+    }
+
+    @Test
+    public void add_errorResponse_thrown() {
+        HttpStatusCodeException someHttpException = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+        given(mockRestTemplate.exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class))).willThrow(someHttpException);
+
+        assertThatThrownBy(() -> auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, null)).isEqualTo(someHttpException);
+    }
+
+    @Test
+    public void getAuditHistory_success_updateComponentTrace() {
+        ResponseEntity<List<AuditRecord>> someSuccessResponse = ResponseEntity.ok(emptyList());
+        given(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .willReturn(someSuccessResponse);
+
+        auditClient.getAuditHistory(ANY_DATE, ANY_EVENT_TYPES);
+
+        then(mockRequestData).should().updateComponentTrace(someSuccessResponse);
+    }
+
+    @Test
+    public void getAuditHistory_errorResponse_updateComponentTrace() {
+        HttpStatusCodeException someHttpException = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+        given(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .willThrow(someHttpException);
+
+        try{
+            auditClient.getAuditHistory(ANY_DATE, ANY_EVENT_TYPES);
+        } catch( HttpStatusCodeException ignored){
+            // Exception not of interet to this test.
+        }
+
+        then(mockRequestData).should().updateComponentTrace(someHttpException);
+    }
+
+    @Test
+    public void getAuditHistory_errorResponse_thrown() {
+        HttpStatusCodeException someHttpException = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+        given(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
+            .willThrow(someHttpException);
+
+        assertThatThrownBy(() -> auditClient.getAuditHistory(ANY_DATE, ANY_EVENT_TYPES)).isEqualTo(someHttpException);
     }
 
     private void assertHeaders(HttpHeaders headers) {
