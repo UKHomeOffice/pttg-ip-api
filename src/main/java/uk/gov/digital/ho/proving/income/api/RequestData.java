@@ -126,6 +126,10 @@ public class RequestData implements HandlerInterceptor {
         return MDC.get(COMPONENT_TRACE_HEADER);
     }
 
+    public void addComponentTraceHeader(HttpHeaders headers) {
+        headers.add(COMPONENT_TRACE_HEADER, componentTrace());
+    }
+
     public void updateComponentTrace(ResponseEntity responseEntity) {
         List<String> components = responseEntity.getHeaders().get(COMPONENT_TRACE_HEADER);
         setComponentTrace(components);
@@ -140,12 +144,6 @@ public class RequestData implements HandlerInterceptor {
         setComponentTrace(components);
     }
 
-    private List<String> removeEmptyEntries(List<String> components) {
-        return components.stream()
-                         .filter(StringUtils::isNotEmpty)
-                         .collect(Collectors.toList());
-    }
-
     private void setComponentTrace(List<String> components) {
         if (components == null) {
             return;
@@ -157,7 +155,9 @@ public class RequestData implements HandlerInterceptor {
         }
     }
 
-    public void addComponentTraceHeader(HttpHeaders headers) {
-        headers.add(COMPONENT_TRACE_HEADER, componentTrace());
+    private List<String> removeEmptyEntries(List<String> components) {
+        return components.stream()
+                         .filter(StringUtils::isNotEmpty)
+                         .collect(Collectors.toList());
     }
 }
