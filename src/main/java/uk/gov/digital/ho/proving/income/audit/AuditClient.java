@@ -75,7 +75,7 @@ public class AuditClient {
             AuditableData auditableData = generateAuditableData(eventType, eventId, auditDetail);
             ResponseEntity<Void> auditResponse = dispatchAuditableData(auditableData);
             log.info("data POSTed to audit service", value(EVENT, INCOME_PROVING_AUDIT_SUCCESS));
-            updateComponentTrace(auditResponse);
+            requestData.updateComponentTrace(auditResponse);
         } catch (JsonProcessingException e) {
             log.error("Failed to create json representation of audit data", value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
         }
@@ -229,9 +229,5 @@ public class AuditClient {
         headers.add(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
 
         return headers;
-    }
-
-    private void updateComponentTrace(ResponseEntity<Void> auditResponse) {
-        requestData.componentTrace(auditResponse.getHeaders().get(COMPONENT_TRACE_HEADER));
     }
 }

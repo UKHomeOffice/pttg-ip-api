@@ -594,14 +594,14 @@ public class AuditClientTest {
     @Test
     public void add_successfulResponse_addComponentTrace() {
         HttpHeaders httpHeaders = new HttpHeaders();
-        List<String> someComponentTrace = singletonList("pttg-ip-api");
-        httpHeaders.put("x-component-trace", someComponentTrace);
+        httpHeaders.put("x-component-trace", singletonList("pttg-ip-api"));
+
         ResponseEntity<Void> someResponse = ResponseEntity.ok().headers(httpHeaders).build();
         given(mockRestTemplate.exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class))).willReturn(someResponse);
 
         auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, null);
 
-        then(mockRequestData).should().componentTrace(someComponentTrace);
+        then(mockRequestData).should().updateComponentTrace(someResponse);
     }
 
     private void assertHeaders(HttpHeaders headers) {
