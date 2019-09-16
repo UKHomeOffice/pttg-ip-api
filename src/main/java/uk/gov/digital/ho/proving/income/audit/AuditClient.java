@@ -109,15 +109,7 @@ public class AuditClient {
         URI uri = generateUri(eventTypes, page, size, toDate);
 
         HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
-
-        ResponseEntity<List<AuditRecord>> response;
-        try {
-            response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
-            requestData.updateComponentTrace(response);
-        } catch (HttpStatusCodeException e) {
-            requestData.updateComponentTrace(e);
-            throw e;
-        }
+        ResponseEntity<List<AuditRecord>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<AuditRecord>>() {});
         return response.getBody();
     }
 

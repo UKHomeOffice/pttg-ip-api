@@ -630,41 +630,6 @@ public class AuditClientTest {
         assertThatThrownBy(() -> auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, null)).isEqualTo(someHttpException);
     }
 
-    @Test
-    public void getAuditHistory_success_updateComponentTrace() {
-        ResponseEntity<List<AuditRecord>> someSuccessResponse = ResponseEntity.ok(emptyList());
-        given(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
-            .willReturn(someSuccessResponse);
-
-        auditClient.getAuditHistory(ANY_DATE, ANY_EVENT_TYPES);
-
-        then(mockRequestData).should().updateComponentTrace(someSuccessResponse);
-    }
-
-    @Test
-    public void getAuditHistory_errorResponse_updateComponentTrace() {
-        HttpStatusCodeException someHttpException = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
-        given(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
-            .willThrow(someHttpException);
-
-        try{
-            auditClient.getAuditHistory(ANY_DATE, ANY_EVENT_TYPES);
-        } catch( HttpStatusCodeException ignored){
-            // Exception not of interet to this test.
-        }
-
-        then(mockRequestData).should().updateComponentTrace(someHttpException);
-    }
-
-    @Test
-    public void getAuditHistory_errorResponse_thrown() {
-        HttpStatusCodeException someHttpException = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
-        given(mockRestTemplate.exchange(any(URI.class), eq(GET), any(HttpEntity.class), eq(new ParameterizedTypeReference<List<AuditRecord>>() {})))
-            .willThrow(someHttpException);
-
-        assertThatThrownBy(() -> auditClient.getAuditHistory(ANY_DATE, ANY_EVENT_TYPES)).isEqualTo(someHttpException);
-    }
-
     private void assertHeaders(HttpHeaders headers) {
         assertThat(headers.get("Authorization").get(0)).isEqualTo("some basic auth header value");
         assertThat(headers.get("Content-Type").get(0)).isEqualTo(APPLICATION_JSON_VALUE);
