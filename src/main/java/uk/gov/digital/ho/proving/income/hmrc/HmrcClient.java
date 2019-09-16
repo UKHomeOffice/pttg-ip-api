@@ -85,7 +85,6 @@ public class HmrcClient {
 
     @Recover
     IncomeRecord getIncomeRecordFailureRecovery(HttpServerErrorException e) {
-        requestData.updateComponentTrace(e);
         log.error("Failed to retrieve HMRC data after retries - {}", e.getMessage(), value(EVENT, HMRC_ERROR_REPSONSE));
         throw(e);
     }

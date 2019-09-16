@@ -354,19 +354,6 @@ public class HmrcClientTest {
         assertThat(argumentCaptor.getValue()).isEqualTo(httpException);
     }
 
-    @Test
-    public void getIncomeRecordFailureRecovery_someException_updateComponentTrace() {
-        HttpServerErrorException someException = new HttpServerErrorException(INTERNAL_SERVER_ERROR);
-
-        try {
-            service.getIncomeRecordFailureRecovery(someException);
-        } catch (HttpServerErrorException ignored) {
-            // Exception not of interest to this test.
-        }
-
-        then(mockRequestData).should().updateComponentTrace(someException);
-    }
-
     private IncomeRecord anyIncomeRecord() {
         return new IncomeRecord(emptyList(), emptyList(), emptyList(), aIndividual());
     }
