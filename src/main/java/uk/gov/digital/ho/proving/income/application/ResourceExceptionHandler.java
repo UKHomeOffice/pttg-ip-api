@@ -86,6 +86,11 @@ public class ResourceExceptionHandler {
         return buildErrorResponse(httpHeaders(), "0009", errorMessage, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(Exception.class)
+    ResponseEntity handle(Exception e) {
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private Map<String, Object> auditData(BaseResponse response) {
         return ImmutableMap.of("method", "get-financial-status", "response", response);
     }
