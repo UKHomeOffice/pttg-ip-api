@@ -13,9 +13,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import uk.gov.digital.ho.proving.income.api.NinoUtils;
+import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.audit.AuditClient;
 import utils.LogCapturer;
 
@@ -26,6 +28,7 @@ import static ch.qos.logback.classic.Level.ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_AUDIT_FAILURE;
 import static uk.gov.digital.ho.proving.income.application.LogEvent.INCOME_PROVING_SERVICE_RESPONSE_ERROR;
@@ -40,6 +43,8 @@ public class ResourceExceptionHandlerTest {
     private NinoUtils ninoUtils;
     @Mock
     private AuditClient auditClient;
+    @Mock
+    private RequestData requestData;
     @Mock
     private Appender<ILoggingEvent> mockAppender;
 
@@ -89,6 +94,41 @@ public class ResourceExceptionHandlerTest {
 
         verifyLogMessage("No handler found for POST some url", INCOME_PROVING_SERVICE_RESPONSE_NOT_FOUND);
     }
+
+    @Test
+    public void handle_generalException_serverError() {
+        Exception mockException = mock(Exception.class);
+        when(mockException.getMessage()).thenReturn("any message");
+
+        ResponseEntity responseEntity = resourceExceptionHandler.handle(mockException);
+
+        assertThat(responseEntity.getBody()).isEqualTo("any message");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void handle_generalException_logError() {
+        Exception mockException = mock(Exception.class);
+        when(mockException.getMessage()).thenReturn("any message");
+
+        resourceExceptionHandler.handle(mockException);
+
+        verifyLogMessage("Fault Detected: any message", INCOME_PROVING_SERVICE_RESPONSE_ERROR);
+    }
+
+    @Test
+    public void handle_generalException_logRequestTIme(){
+        Exception mockException = mock(Exception.class);
+
+        resourceExceptionHandler.handle(mockException);
+
+        verify(mockAppender).doAppend(argThat(argument -> {
+            LoggingEvent loggingEvent = (LoggingEvent) argument;
+
+            return ((ObjectAppendingMarker) loggingEvent.getArgumentArray()[2]).getFieldName().equals("request_duration_ms");
+        }));
+    }
+
 
     private void verifyLogMessage(final String message, LogEvent event) {
         verify(mockAppender).doAppend(argThat(argument -> {

@@ -44,7 +44,7 @@ class FinancialServiceSpec extends Specification {
     def financialStatusServiceHelper = new FinancialStatusService(mockIncomeRecordService, mockIncomeValidationService)
     def financialStatusController = new FinancialStatusResource(financialStatusServiceHelper, mockAuditClient, mockNinoUtils, requestDataStub)
 
-    MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient, mockNinoUtils)).build()
+    MockMvc mockMvc = standaloneSetup(financialStatusController).setControllerAdvice(new ResourceExceptionHandler(mockAuditClient, mockNinoUtils, requestDataStub)).build()
 
     def setup() {
         requestDataStub.componentTrace() >> "any-component"

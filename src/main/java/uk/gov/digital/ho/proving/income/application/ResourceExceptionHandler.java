@@ -14,6 +14,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import uk.gov.digital.ho.proving.income.api.NinoUtils;
+import uk.gov.digital.ho.proving.income.api.RequestData;
 import uk.gov.digital.ho.proving.income.api.domain.BaseResponse;
 import uk.gov.digital.ho.proving.income.api.domain.ResponseStatus;
 import uk.gov.digital.ho.proving.income.application.ApplicationExceptions.AuditDataException;
@@ -25,7 +26,9 @@ import java.util.UUID;
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static net.logstash.logback.marker.Markers.append;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.digital.ho.proving.income.api.RequestData.REQUEST_DURATION_MS;
 import static uk.gov.digital.ho.proving.income.application.LogEvent.*;
 import static uk.gov.digital.ho.proving.income.audit.AuditEventType.INCOME_PROVING_FINANCIAL_STATUS_RESPONSE;
 
@@ -35,10 +38,12 @@ public class ResourceExceptionHandler {
 
     private final AuditClient auditClient;
     private final NinoUtils ninoUtils;
+    private final RequestData requestData;
 
-    public ResourceExceptionHandler(AuditClient auditClient, NinoUtils ninoUtils) {
+    public ResourceExceptionHandler(AuditClient auditClient, NinoUtils ninoUtils, RequestData requestData) {
         this.auditClient = auditClient;
         this.ninoUtils = ninoUtils;
+        this.requestData = requestData;
     }
 
     @ExceptionHandler(AuditDataException.class)
@@ -84,6 +89,14 @@ public class ResourceExceptionHandler {
         String errorMessage = String.format("Resource not found: %s", ninoUtils.redact(e.nino()));
         auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, UUID.randomUUID(), auditData(new BaseResponse(new ResponseStatus("0009", errorMessage))));
         return buildErrorResponse(httpHeaders(), "0009", errorMessage, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Exception.class)
+    ResponseEntity handle(Exception e) {
+        log.error("Fault Detected: {}", e.getMessage(),
+                  value(EVENT, INCOME_PROVING_SERVICE_RESPONSE_ERROR),
+                  value(REQUEST_DURATION_MS, requestData.calculateRequestDuration()));
+        return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
     private Map<String, Object> auditData(BaseResponse response) {
