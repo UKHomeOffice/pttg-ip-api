@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.ServiceRunner;
 import uk.gov.digital.ho.proving.income.hmrc.domain.HmrcIndividual;
@@ -20,7 +21,9 @@ import java.time.LocalDate;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
@@ -62,6 +65,16 @@ public class HmrcClientRetryTest {
 
         IncomeRecord actualIncomeRecord = hmrcClient.getIncomeRecord(ANY_IDENTITY, ANY_DATE, ANY_DATE);
         assertThat(actualIncomeRecord).isEqualTo(EXPECTED_INCOME_RECORD);
+    }
+
+    @Test
+    public void getIncomeRecord_clientError_shouldNotRetry() {
+        hmrcMockService.expect(requestTo(containsString("/income")))
+                       .andRespond(withStatus(BAD_REQUEST));
+
+        assertThatThrownBy(() -> hmrcClient.getIncomeRecord(ANY_IDENTITY, ANY_DATE, ANY_DATE))
+            .hasCauseExactlyInstanceOf(HttpClientErrorException.class);
+
     }
 
     private String hmrcSuccessResponse() throws JsonProcessingException {
