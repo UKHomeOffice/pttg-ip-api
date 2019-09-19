@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FinancialStatusRequestDeserializeTest {
 
-    private ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0).createObjectMapper();
+    private ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0, 0, 0).createObjectMapper();
 
     @Test
     public void thatJsonIsDeserialized() throws IOException {
