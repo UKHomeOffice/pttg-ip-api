@@ -66,6 +66,10 @@ public class AuditClient {
         this.mapper = mapper;
     }
 
+    @Retryable(
+        value = {RestClientException.class},
+        maxAttemptsExpression = "#{${audit.service.retry.attempts}}",
+        backoff = @Backoff(delayExpression = "#{${audit.service.retry.delay}}"))
     public void add(AuditEventType eventType, UUID eventId, Map<String, Object> auditDetail) {
 
         log.info("POST data for {} to audit service", eventId, value(EVENT, INCOME_PROVING_AUDIT_REQUEST));
@@ -79,10 +83,6 @@ public class AuditClient {
         }
     }
 
-    @Retryable(
-            value = { RestClientException.class },
-            maxAttemptsExpression = "#{${audit.service.retry.attempts}}",
-            backoff = @Backoff(delayExpression = "#{${audit.service.retry.delay}}"))
     private void dispatchAuditableData(AuditableData auditableData) {
         restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
     }
