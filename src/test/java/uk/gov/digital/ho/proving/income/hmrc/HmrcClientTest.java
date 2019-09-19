@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -42,6 +43,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -65,10 +68,15 @@ public class HmrcClientTest {
     private static final LocalDate SOME_FROM_DATE = LocalDate.of(2017, Month.JANUARY, 1);
     private static final LocalDate SOME_TO_DATE = LocalDate.of(2017, Month.JULY, 1);
 
+    private static final Identity ANY_IDENTITY = new Identity(
+        "John",
+        "Smith",
+        LocalDate.of(1965, Month.JULY, 19), "NE121212A");
+    private static final LocalDate ANY_DATE = LocalDate.now();
+
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
     @Mock private ServiceResponseLogger mockServiceResponseLogger;
-    @Mock private RetryTemplate mockRetryTemplate;
     @Mock private Appender<ILoggingEvent> mockAppender;
 
     @Captor private ArgumentCaptor<IncomeRecord> captorResponseBody;
@@ -87,7 +95,7 @@ public class HmrcClientTest {
         when(mockRequestData.userId()).thenReturn(SOME_USER_ID);
         when(mockRequestData.hmrcBasicAuth()).thenReturn(SOME_BASIC_AUTH);
 
-        service = new HmrcClient(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger, mockRetryTemplate);
+        service = new HmrcClient(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger, simpleRetryTemplate());
 
         when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
             .thenReturn(new ResponseEntity<>(new IncomeRecord(
@@ -110,6 +118,12 @@ public class HmrcClientTest {
         Logger rootLogger = (Logger) LoggerFactory.getLogger(HmrcClient.class);
         rootLogger.setLevel(INFO);
         rootLogger.addAppender(mockAppender);
+    }
+
+    private RetryTemplate simpleRetryTemplate() {
+        RetryTemplate retryTemplate = new RetryTemplate();
+        retryTemplate.setRetryPolicy(new SimpleRetryPolicy(1));
+        return retryTemplate;
     }
 
     @Test
@@ -166,10 +180,7 @@ public class HmrcClientTest {
             .thenThrow(new HttpClientErrorException(FORBIDDEN));
 
         service.getIncomeRecord(
-            new Identity(
-                "John",
-                "Smith",
-                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+            ANY_IDENTITY,
             LocalDate.of(2017, Month.JANUARY, 1),
             LocalDate.of(2017, Month.JULY, 1)
         );
@@ -181,10 +192,7 @@ public class HmrcClientTest {
             .thenThrow(new HttpClientErrorException(NOT_FOUND));
 
         service.getIncomeRecord(
-            new Identity(
-                "John",
-                "Smith",
-                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+            ANY_IDENTITY,
             LocalDate.of(2017, Month.JANUARY, 1),
             LocalDate.of(2017, Month.JULY, 1)
         );
@@ -199,18 +207,17 @@ public class HmrcClientTest {
     public void shouldRethrowHttpServerErrorException() {
         thrown.expect(HttpServerErrorException.class);
 
-        HttpServerErrorException exception = new HttpServerErrorException(BAD_GATEWAY);
+        HttpServerErrorException serverErrorException = new HttpServerErrorException(BAD_GATEWAY);
+        given(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
+            .willThrow(serverErrorException);
 
-        service.getIncomeRecordFailureRecovery(exception);
+        service.getIncomeRecord(ANY_IDENTITY, ANY_DATE, ANY_DATE);
     }
 
     @Test
     public void shouldLogWhenHmrcRequestSent() {
         service.getIncomeRecord(
-            new Identity(
-                "John",
-                "Smith",
-                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+            ANY_IDENTITY,
             LocalDate.of(2017, Month.JANUARY, 1),
             LocalDate.of(2017, Month.JULY, 1)
         );
@@ -221,10 +228,7 @@ public class HmrcClientTest {
     @Test
     public void shouldLogWhenHmrcResponseReceived() {
         service.getIncomeRecord(
-            new Identity(
-                "John",
-                "Smith",
-                LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+            ANY_IDENTITY,
             LocalDate.of(2017, Month.JANUARY, 1),
             LocalDate.of(2017, Month.JULY, 1)
         );
@@ -239,10 +243,7 @@ public class HmrcClientTest {
 
         try {
             service.getIncomeRecord(
-                new Identity(
-                    "John",
-                    "Smith",
-                    LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+                ANY_IDENTITY,
                 LocalDate.of(2017, Month.JANUARY, 1),
                 LocalDate.of(2017, Month.JULY, 1)
             );
@@ -261,10 +262,7 @@ public class HmrcClientTest {
 
         try {
             service.getIncomeRecord(
-                new Identity(
-                    "John",
-                    "Smith",
-                    LocalDate.of(1965, Month.JULY, 19), "NE121212A"),
+                ANY_IDENTITY,
                 LocalDate.of(2017, Month.JANUARY, 1),
                 LocalDate.of(2017, Month.JULY, 1)
             );
@@ -277,17 +275,12 @@ public class HmrcClientTest {
     }
 
     @Test
-    public void shouldLogOnIncomeRecordFailureRecovery() {
-        HttpServerErrorException exception = new HttpServerErrorException(BAD_GATEWAY);
+    public void getIncomeRecord_anyInput_shouldUseRetryTemplate() throws Exception {
+        RetryTemplate mockRetryTemplate = mock(RetryTemplate.class);
+        HmrcClient client = new HmrcClient(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger, mockRetryTemplate);
 
-        try {
-            service.getIncomeRecordFailureRecovery(exception);
-        }
-        catch(HttpServerErrorException e) {
-            //not used for the purpose of this test
-        }
-
-        verifyLogMessage("Failed to retrieve HMRC data after retries - 502 BAD_GATEWAY", HMRC_ERROR_REPSONSE, ERROR);
+        client.getIncomeRecord(ANY_IDENTITY, ANY_DATE, ANY_DATE);
+        then(mockRetryTemplate).should().execute(any(), any(), any());
     }
 
     public void verifyLogMessage(String message, LogEvent event, Level logLevel) {
