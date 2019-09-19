@@ -58,12 +58,6 @@ public class ServiceConfigurationTest {
     }
 
     @Test
-    public void hmrcRetryTemplate_always_returnRetryTemplate() {
-        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, ANY_INT, ANY_INT);
-        assertThat(springConfig.hmrcRetryTemplate()).isInstanceOf(RetryTemplate.class);
-    }
-
-    @Test
     public void hmrcRetryTemplate_givenBackOffDelay_setOnTemplate() {
         int expectedBackOffDelay = 9;
         ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, ANY_INT, expectedBackOffDelay);
