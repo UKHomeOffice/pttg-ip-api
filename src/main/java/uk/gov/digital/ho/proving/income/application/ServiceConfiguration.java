@@ -16,6 +16,7 @@ import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
@@ -154,6 +155,19 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
         SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(hmrcRetryAttempts, singletonMap(HttpServerErrorException.class, true));
         retryTemplate.setRetryPolicy(retryPolicy);
 
+        return retryTemplate;
+    }
+
+    @Bean
+    public RetryTemplate auditRetryTemplate() {
+        RetryTemplate retryTemplate = new RetryTemplate();
+
+        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+        backOffPolicy.setBackOffPeriod(auditRetryDelay);
+        retryTemplate.setBackOffPolicy(backOffPolicy);
+
+        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy(auditRetryAttempts, singletonMap(RestClientException.class, true));
+        retryTemplate.setRetryPolicy(retryPolicy);
         return retryTemplate;
     }
 }
