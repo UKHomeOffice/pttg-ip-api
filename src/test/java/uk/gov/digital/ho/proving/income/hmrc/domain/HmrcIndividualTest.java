@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class HmrcIndividualTest {
-    private ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0, 0, 0).createObjectMapper();
+    private ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0, 0, 0, 0, 0).createObjectMapper();
 
     @Test
     public void thatJsonIsDeserialized() throws IOException {

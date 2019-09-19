@@ -43,17 +43,23 @@ public class ServiceConfiguration extends WebMvcConfigurerAdapter {
     private final int restTemplateConnectTimeoutInMillis;
     private final int hmrcRetryAttempts;
     private final int hmrcRetryDelay;
+    private final int auditRetryAttempts;
+    private final int auditRetryDelay;
 
     public ServiceConfiguration(@Value("${apidocs.dir}") String apiDocsDir,
                                 @Value("${resttemplate.timeout.read:30000}") int restTemplateReadTimeoutInMillis,
                                 @Value("${resttemplate.timeout.connect:30000}") int restTemplateConnectTimeoutInMillis,
                                 @Value("#{${hmrc.service.retry.attempts}}") int hmrcRetryAttempts,
-                                @Value("#{${hmrc.service.retry.delay}}") int hmrcRetryDelay) {
+                                @Value("#{${hmrc.service.retry.delay}}") int hmrcRetryDelay,
+                                @Value("#{${audit.service.retry.attempts}}") int auditRetryAttempts,
+                                @Value("#{${audit.service.retry.delay}}") int auditRetryDelay) {
         this.apiDocsDir = apiDocsDir;
         this.restTemplateReadTimeoutInMillis = restTemplateReadTimeoutInMillis;
         this.restTemplateConnectTimeoutInMillis = restTemplateConnectTimeoutInMillis;
         this.hmrcRetryAttempts = hmrcRetryAttempts;
         this.hmrcRetryDelay = hmrcRetryDelay;
+        this.auditRetryAttempts = auditRetryAttempts;
+        this.auditRetryDelay = auditRetryDelay;
     }
 
     @Bean

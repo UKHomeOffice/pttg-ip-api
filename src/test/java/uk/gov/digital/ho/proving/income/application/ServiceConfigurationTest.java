@@ -45,7 +45,7 @@ public class ServiceConfigurationTest {
         // given
         int readTimeout = 1234;
         int connectTimeout = 4321;
-        ServiceConfiguration springConfig = new ServiceConfiguration(null, readTimeout, connectTimeout, ANY_INT, ANY_INT);
+        ServiceConfiguration springConfig = new ServiceConfiguration(null, readTimeout, connectTimeout, ANY_INT, ANY_INT, ANY_INT, ANY_INT);
 
         // when
         RestTemplate restTemplate = springConfig.createRestTemplate(mockRestTemplateBuilder);
@@ -60,7 +60,7 @@ public class ServiceConfigurationTest {
     @Test
     public void hmrcRetryTemplate_givenBackOffDelay_setOnTemplate() {
         int expectedBackOffDelay = 9;
-        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, ANY_INT, expectedBackOffDelay);
+        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, ANY_INT, expectedBackOffDelay, ANY_INT, ANY_INT);
 
         FixedBackOffPolicy backOffPolicy = (FixedBackOffPolicy) ReflectionTestUtils.getField(springConfig.hmrcRetryTemplate(), "backOffPolicy");
 
@@ -70,7 +70,7 @@ public class ServiceConfigurationTest {
     @Test
     public void hmrcRetryTemplate_givenMaxAttempts_setOnTemplate() {
         int expectedRetryAttempts = 23;
-        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, expectedRetryAttempts, ANY_INT);
+        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, expectedRetryAttempts, ANY_INT, ANY_INT, ANY_INT);
 
         SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) ReflectionTestUtils.getField(springConfig.hmrcRetryTemplate(), "retryPolicy");
 
@@ -80,7 +80,7 @@ public class ServiceConfigurationTest {
     @Test
     public void hmrcRetryTemplate_httpServerException_shouldRetry() {
         int manyRetries = 5;
-        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, manyRetries, ANY_INT);
+        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, manyRetries, ANY_INT, ANY_INT, ANY_INT);
 
         SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) ReflectionTestUtils.getField(springConfig.hmrcRetryTemplate(), "retryPolicy");
         assertThat(shouldRetryException(retryPolicy, new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR))).isTrue();
@@ -89,7 +89,7 @@ public class ServiceConfigurationTest {
     @Test
     public void hmrcRetryTemplate_httpClientException_shouldNotRetry() {
         int manyRetries = 5;
-        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, manyRetries, ANY_INT);
+        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, manyRetries, ANY_INT, ANY_INT, ANY_INT);
 
         SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) ReflectionTestUtils.getField(springConfig.hmrcRetryTemplate(), "retryPolicy");
         assertThat(shouldRetryException(retryPolicy, new HttpClientErrorException(HttpStatus.NOT_FOUND))).isFalse();
@@ -98,7 +98,7 @@ public class ServiceConfigurationTest {
     @Test
     public void hmrcRetryTemplate_earningsServiceNoUniqueMatchException_shouldNotRetry() {
         int manyRetries = 5;
-        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, manyRetries, ANY_INT);
+        ServiceConfiguration springConfig = new ServiceConfiguration(ANY_STRING, ANY_INT, ANY_INT, manyRetries, ANY_INT, ANY_INT, ANY_INT);
 
         SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) ReflectionTestUtils.getField(springConfig.hmrcRetryTemplate(), "retryPolicy");
         assertThat(shouldRetryException(retryPolicy, new ApplicationExceptions.EarningsServiceNoUniqueMatchException("any nino"))).isFalse();
