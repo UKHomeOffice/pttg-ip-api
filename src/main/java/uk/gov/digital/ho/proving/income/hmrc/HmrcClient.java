@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.proving.income.hmrc;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -36,15 +38,18 @@ public class HmrcClient {
     private final String hmrcServiceEndpoint;
     private final RequestData requestData;
     private final ServiceResponseLogger serviceResponseLogger;
+    private final RetryTemplate retryTemplate;
 
     HmrcClient(RestTemplate restTemplate,
                @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
                RequestData requestData,
-               ServiceResponseLogger serviceResponseLogger) {
+               ServiceResponseLogger serviceResponseLogger,
+               @Qualifier("hmrcRetryTemplate") RetryTemplate retryTemplate) {
         this.restTemplate = restTemplate;
         this.hmrcServiceEndpoint = hmrcServiceEndpoint;
         this.requestData = requestData;
         this.serviceResponseLogger = serviceResponseLogger;
+        this.retryTemplate = retryTemplate;
     }
 
     @Retryable(

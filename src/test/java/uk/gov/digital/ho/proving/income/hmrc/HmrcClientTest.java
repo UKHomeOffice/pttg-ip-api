@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -67,6 +68,7 @@ public class HmrcClientTest {
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
     @Mock private ServiceResponseLogger mockServiceResponseLogger;
+    @Mock private RetryTemplate mockRetryTemplate;
     @Mock private Appender<ILoggingEvent> mockAppender;
 
     @Captor private ArgumentCaptor<IncomeRecord> captorResponseBody;
@@ -85,7 +87,7 @@ public class HmrcClientTest {
         when(mockRequestData.userId()).thenReturn(SOME_USER_ID);
         when(mockRequestData.hmrcBasicAuth()).thenReturn(SOME_BASIC_AUTH);
 
-        service = new HmrcClient(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger);
+        service = new HmrcClient(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger, mockRetryTemplate);
 
         when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
             .thenReturn(new ResponseEntity<>(new IncomeRecord(
