@@ -63,7 +63,7 @@ public class IncomeRecordTest {
 
     @Test
     public void shouldDeserializeJson() throws IOException {
-        ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0).createObjectMapper();
+        ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0, 0, 0, 0, 0).createObjectMapper();
 
         String json = "{\"paye\":[],\"selfAssessment\":[],\"employments\":[],\"individual\":{\"firstName\": \"firstname\", \"lastName\": \"lastname\", \"dateOfBirth\": \"1970-01-01\", \"nino\": \"QQ123456C\"}}";
 

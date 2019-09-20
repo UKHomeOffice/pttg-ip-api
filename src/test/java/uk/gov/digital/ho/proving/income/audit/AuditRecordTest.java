@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 public class AuditRecordTest {
 
-    private ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0).createObjectMapper();
+    private ObjectMapper objectMapper = new ServiceConfiguration("", 0, 0, 0, 0, 0, 0).createObjectMapper();
 
     @Value("classpath:json/AuditRecordRequest.json")
     private Resource auditRecordRequest;
