@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
@@ -34,6 +35,7 @@ import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.List;
 
 import static ch.qos.logback.classic.Level.ERROR;
 import static ch.qos.logback.classic.Level.INFO;
@@ -41,6 +43,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -63,6 +67,7 @@ public class HmrcClientTest {
     private static final LocalDate SOME_DOB = LocalDate.of(1965, Month.JULY, 19);
     private static final LocalDate SOME_FROM_DATE = LocalDate.of(2017, Month.JANUARY, 1);
     private static final LocalDate SOME_TO_DATE = LocalDate.of(2017, Month.JULY, 1);
+    private static final String SOME_COMPONENT_TRACE = "smoke-tests,pttg-ip-api";
 
     @Mock private RestTemplate mockRestTemplate;
     @Mock private RequestData mockRequestData;
@@ -84,16 +89,12 @@ public class HmrcClientTest {
         when(mockRequestData.correlationId()).thenReturn(SOME_CORRELATION_ID);
         when(mockRequestData.userId()).thenReturn(SOME_USER_ID);
         when(mockRequestData.hmrcBasicAuth()).thenReturn(SOME_BASIC_AUTH);
+        when(mockRequestData.componentTrace()).thenReturn(SOME_COMPONENT_TRACE);
 
         service = new HmrcClient(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger);
 
         when(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
-            .thenReturn(new ResponseEntity<>(new IncomeRecord(
-                emptyList(),
-                emptyList(),
-                emptyList(),
-                aIndividual()
-            ), OK));
+            .thenReturn(new ResponseEntity<>(anyIncomeRecord(), OK));
 
         service.getIncomeRecord(
             new Identity(
@@ -141,6 +142,7 @@ public class HmrcClientTest {
         assertThat(captorEntity.getValue().getHeaders()).containsEntry(CORRELATION_ID_HEADER, singletonList("some correlation id"));
         assertThat(captorEntity.getValue().getHeaders()).containsEntry(USER_ID_HEADER, singletonList("some user id"));
         assertThat(captorEntity.getValue().getHeaders()).containsEntry(AUTHORIZATION, singletonList("some basic auth"));
+        assertThat(captorEntity.getValue().getHeaders()).containsEntry(COMPONENT_TRACE_HEADER, singletonList(SOME_COMPONENT_TRACE));
     }
 
     @Test
@@ -286,6 +288,29 @@ public class HmrcClientTest {
         }
 
         verifyLogMessage("Failed to retrieve HMRC data after retries - 502 BAD_GATEWAY", HMRC_ERROR_REPSONSE, ERROR);
+    }
+
+    @Test
+    public void getIncomeRecord_responseSuccess_updateComponentTrace() {
+        reset(mockRequestData);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(COMPONENT_TRACE_HEADER, "some-component");
+        headers.add(COMPONENT_TRACE_HEADER, "some-other-component");
+
+        given(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
+            .willReturn(new ResponseEntity<>(anyIncomeRecord(), headers, OK));
+
+        Identity anyIdentity = new Identity(SOME_FIRST_NAME, SOME_LAST_NAME, SOME_DOB, SOME_NINO);
+        LocalDate anyDate = LocalDate.now();
+        service.getIncomeRecord(anyIdentity, anyDate, anyDate);
+
+        ArgumentCaptor<List<String>> argumentCaptor = ArgumentCaptor.forClass(List.class);
+        then(mockRequestData).should().componentTrace(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue()).containsExactlyInAnyOrder("some-component", "some-other-component");
+    }
+
+    private IncomeRecord anyIncomeRecord() {
+        return new IncomeRecord(emptyList(), emptyList(), emptyList(), aIndividual());
     }
 
     public void verifyLogMessage(String message, LogEvent event, Level logLevel) {

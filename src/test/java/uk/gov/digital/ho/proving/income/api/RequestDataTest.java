@@ -8,13 +8,19 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.proving.income.api.RequestData.*;
 
@@ -32,6 +38,8 @@ public class RequestDataTest {
     private HttpServletRequest mockRequest;
     @Mock
     private HttpServletResponse mockResponse;
+    @Mock
+    private HttpHeaders mockHeaders;
 
     @Before
     public void setUp() {
@@ -116,6 +124,80 @@ public class RequestDataTest {
         requestData.preHandle(mockRequest, mockResponse, null);
 
         assertThat(requestData.isASmokeTest()).isFalse();
+    }
 
+    @Test
+    public void preHandle_noComponentTraceHeader_create() {
+        when(mockRequest.getHeader("x-component-trace")).thenReturn(null);
+
+        requestData.preHandle(mockRequest, mockResponse, null);
+
+        assertThat(requestData.componentTrace()).isEqualTo("pttg-ip-api");
+    }
+
+    @Test
+    public void preHandle_componentTraceHeader_append() {
+        when(mockRequest.getHeader("x-component-trace")).thenReturn("some-component");
+
+        requestData.preHandle(mockRequest, mockResponse, null);
+
+        assertThat(requestData.componentTrace()).isEqualTo("some-component,pttg-ip-api");
+    }
+
+    @Test
+    public void preHandle_componentTraceHeaderMultipleComponents_append() {
+        when(mockRequest.getHeader("x-component-trace")).thenReturn("some-component,some-other-component");
+
+        requestData.preHandle(mockRequest, mockResponse, null);
+
+        assertThat(requestData.componentTrace()).isEqualTo("some-component,some-other-component,pttg-ip-api");
+    }
+
+    @Test
+    public void componentTrace_someComponents_update() {
+        String expectedComponentTrace = "some-component,some-other-component";
+        requestData.componentTrace(asList("some-component", "some-other-component"));
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void componentTrace_multipleCalls_lastWins() {
+        List<String> otherComponentTrace = singletonList("some-unexpected-component");
+        List<String> winningComponentTrace = asList("some-component", "some-other-component");
+        String expectedComponentTrace = "some-component,some-other-component";
+
+        requestData.componentTrace(otherComponentTrace);
+        requestData.componentTrace(winningComponentTrace);
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void componentTrace_null_doNotUpdate() {
+        String expectedComponentTrace = "some-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        requestData.componentTrace(null);
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void componentTrace_emptyList_doNotUpdate() {
+        String expectedComponentTrace = "some-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        requestData.componentTrace(emptyList());
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void addComponentTraceHeader_anyResponse_addsHeader() {
+        String expectedComponentTrace = "some-component,some-other-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        requestData.addComponentTraceHeader(mockHeaders);
+
+        then(mockHeaders).should().add(COMPONENT_TRACE_HEADER, expectedComponentTrace);
     }
 }
