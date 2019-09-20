@@ -21,6 +21,7 @@ import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import uk.gov.digital.ho.proving.income.validator.domain.IncomeValidationStatus;
 import utils.LogCapturer;
 
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -48,6 +49,8 @@ public class FinancialStatusResourceTest {
     private NinoUtils mockNinoUtils;
     @Mock
     private RequestData mockRequestData;
+    @Mock
+    private HttpServletResponse mockServletResponse;
     @Mock
     private Appender<ILoggingEvent> mockAppender;
 

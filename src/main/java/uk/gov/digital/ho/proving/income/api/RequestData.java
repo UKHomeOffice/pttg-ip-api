@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.api;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.List;
 
 @Component
 public class RequestData implements HandlerInterceptor {
@@ -23,6 +25,9 @@ public class RequestData implements HandlerInterceptor {
     private static final String REQUEST_START_TIMESTAMP = "request-timestamp";
     public static final String REQUEST_DURATION_MS = "request_duration_ms";
     public static final String SMOKE_TESTS_USER_ID = "smoke-tests";
+
+    public static final String COMPONENT_TRACE_HEADER = "x-component-trace";
+    private static final String COMPONENT_NAME = "pttg-ip-api";
 
     @Value("${auditing.deployment.name}") private String deploymentName;
     @Value("${auditing.deployment.namespace}") private String deploymentNamespace;
@@ -38,6 +43,7 @@ public class RequestData implements HandlerInterceptor {
         MDC.put(USER_ID_HEADER, initialiseUserName(request));
         MDC.put("userHost", request.getRemoteHost());
         MDC.put(REQUEST_START_TIMESTAMP, initialiseRequestStart());
+        MDC.put(COMPONENT_TRACE_HEADER, initialiseComponentTrace(request));
 
         return true;
     }
@@ -60,6 +66,14 @@ public class RequestData implements HandlerInterceptor {
     private String initialiseRequestStart() {
         long requestStart = Instant.now().toEpochMilli();
         return Long.toString(requestStart);
+    }
+
+    private String initialiseComponentTrace(HttpServletRequest request) {
+        String componentTrace = request.getHeader(COMPONENT_TRACE_HEADER);
+        if (componentTrace == null) {
+            return COMPONENT_NAME;
+        }
+        return componentTrace + "," + COMPONENT_NAME;
     }
 
     @Override
@@ -103,5 +117,19 @@ public class RequestData implements HandlerInterceptor {
 
     public boolean isASmokeTest() {
         return userId().equals(SMOKE_TESTS_USER_ID);
+    }
+
+    public String componentTrace() {
+        return MDC.get(COMPONENT_TRACE_HEADER);
+    }
+
+    public void componentTrace(List<String> components) {
+        if (components != null && !components.isEmpty()) {
+            MDC.put(COMPONENT_TRACE_HEADER, String.join(",", components));
+        }
+    }
+
+    public void addComponentTraceHeader(HttpHeaders headers) {
+        headers.add(COMPONENT_TRACE_HEADER, componentTrace());
     }
 }

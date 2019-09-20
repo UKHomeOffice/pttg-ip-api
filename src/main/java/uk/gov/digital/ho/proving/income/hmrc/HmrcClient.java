@@ -61,6 +61,7 @@ public class HmrcClient {
                 createEntity(identity, fromDate, toDate),
                 IncomeRecord.class);
 
+            updateComponentTrace(responseEntity);
             serviceResponseLogger.record(identity, responseEntity.getBody());
 
             log.info("Received {} incomes and {} employments", responseEntity.getBody().paye().size(),
@@ -92,6 +93,7 @@ public class HmrcClient {
         headers.add(CORRELATION_ID_HEADER, requestData.correlationId());
         headers.add(USER_ID_HEADER, requestData.userId());
         headers.add(AUTHORIZATION, requestData.hmrcBasicAuth());
+        headers.add(COMPONENT_TRACE_HEADER, requestData.componentTrace());
 
         return headers;
     }
@@ -106,6 +108,10 @@ public class HmrcClient {
                 fromDate,
                 toDate),
             generateRestHeaders());
+    }
+
+    private void updateComponentTrace(ResponseEntity<IncomeRecord> responseEntity) {
+        requestData.componentTrace(responseEntity.getHeaders().get(COMPONENT_TRACE_HEADER));
     }
 
 }
