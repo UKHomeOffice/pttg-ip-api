@@ -214,15 +214,6 @@ public class HmrcClientTest {
     }
 
     @Test
-    public void shouldRethrowEarningsServiceNoUniqueMatchException() {
-        thrown.expect(EarningsServiceNoUniqueMatchException.class);
-
-        EarningsServiceNoUniqueMatchException exception = new EarningsServiceNoUniqueMatchException("any nino");
-
-        service.getIncomeRecordFailureRecovery(exception);
-    }
-
-    @Test
     public void shouldLogWhenHmrcRequestSent() {
         service.getIncomeRecord(
             ANY_IDENTITY,
