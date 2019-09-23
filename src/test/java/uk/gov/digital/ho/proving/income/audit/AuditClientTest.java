@@ -634,6 +634,7 @@ public class AuditClientTest {
         assertThat(headers.get("Authorization").get(0)).isEqualTo("some basic auth header value");
         assertThat(headers.get("Content-Type").get(0)).isEqualTo(APPLICATION_JSON_VALUE);
         assertThat(headers.get("x-correlation-id").get(0)).isEqualTo("some correlation id");
+        assertThat(headers.get("x-component-trace").get(0)).isEqualTo("pttg-ip-api");
     }
 
     private void stubAuditSuccess() {
@@ -644,6 +645,7 @@ public class AuditClientTest {
     private void stubRequestData() {
         when(mockRequestData.auditBasicAuth()).thenReturn("some basic auth header value");
         when(mockRequestData.correlationId()).thenReturn("some correlation id");
+        when(mockRequestData.componentTrace()).thenReturn("pttg-ip-api");
     }
 
     private void stubGetAllCorrelationIds() {

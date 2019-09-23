@@ -231,6 +231,7 @@ public class AuditClient {
         headers.add(AUTHORIZATION, requestData.auditBasicAuth());
         headers.setContentType(APPLICATION_JSON);
         headers.add(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
+        headers.add(RequestData.COMPONENT_TRACE_HEADER, requestData.componentTrace());
 
         return headers;
     }
