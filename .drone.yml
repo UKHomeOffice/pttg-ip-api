@@ -74,6 +74,15 @@ pipeline:
       branch: [master]
       event: push
 
+  trigger_e2e_tests:
+    image: quay.io/ukhomeofficedigital/drone-trigger:latest
+    drone_server: https://drone.acp.homeoffice.gov.uk
+    repo: UKHomeOffice/pttg-ip-e2e-tests
+    branch: <EE-21428-trigger-e2e>
+    when:
+      branch: [master]
+      event: push
+
   tag-docker-image-with-git-tag:
     image: docker:17.09.1
     environment:
