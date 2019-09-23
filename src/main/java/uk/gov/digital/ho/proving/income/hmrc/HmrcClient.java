@@ -1,16 +1,14 @@
 package uk.gov.digital.ho.proving.income.hmrc;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
@@ -36,25 +34,23 @@ public class HmrcClient {
     private final String hmrcServiceEndpoint;
     private final RequestData requestData;
     private final ServiceResponseLogger serviceResponseLogger;
+    private final RetryTemplate retryTemplate;
 
     HmrcClient(RestTemplate restTemplate,
                @Value("${hmrc.service.endpoint}") String hmrcServiceEndpoint,
                RequestData requestData,
-               ServiceResponseLogger serviceResponseLogger) {
+               ServiceResponseLogger serviceResponseLogger,
+               @Qualifier("hmrcRetryTemplate") RetryTemplate retryTemplate) {
         this.restTemplate = restTemplate;
         this.hmrcServiceEndpoint = hmrcServiceEndpoint;
         this.requestData = requestData;
         this.serviceResponseLogger = serviceResponseLogger;
+        this.retryTemplate = retryTemplate;
     }
 
-    @Retryable(
-        include = { HttpServerErrorException.class },
-        exclude = {EarningsServiceNoUniqueMatchException.class},
-        maxAttemptsExpression = "#{${hmrc.service.retry.attempts}}",
-        backoff = @Backoff(delayExpression = "#{${hmrc.service.retry.delay}}"))
     public IncomeRecord getIncomeRecord(Identity identity, LocalDate fromDate, LocalDate toDate) {
-
-        try {
+        return retryTemplate.execute(context -> {
+            try {
 
             log.info("About to call HMRC Service at {}", hmrcServiceEndpoint,
                 value(EVENT, HMRC_REQUEST_SENT));
@@ -81,18 +77,8 @@ public class HmrcClient {
             }
             log.error("HMRC Service failed", e, value(EVENT, HMRC_ERROR_REPSONSE));
             throw e;
-        }
-    }
-
-    @Recover
-    IncomeRecord getIncomeRecordFailureRecovery(HttpServerErrorException e) {
-        log.error("Failed to retrieve HMRC data after retries - {}", e.getMessage(), value(EVENT, HMRC_ERROR_REPSONSE));
-        throw(e);
-    }
-
-    @Recover
-    IncomeRecord getIncomeRecordFailureRecovery(EarningsServiceNoUniqueMatchException e) {
-        throw(e);
+            }
+        });
     }
 
     private boolean isNotFound(HttpStatusCodeException e) {
