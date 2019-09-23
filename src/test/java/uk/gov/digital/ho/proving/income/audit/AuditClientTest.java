@@ -23,7 +23,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
@@ -43,6 +46,9 @@ import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -81,6 +87,7 @@ public class AuditClientTest {
 
     private static final List<AuditEventType> ANY_EVENT_TYPES = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
     private static final LocalDate ANY_DATE = LocalDate.now();
+    private static final AuditEventType ANY_AUDIT_EVENT_TYPE = INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
 
     @BeforeClass
     public static void beforeAllTests() {
@@ -116,15 +123,17 @@ public class AuditClientTest {
 
     @Test
     public void shouldUseCollaborators() {
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, null);
+        stubAuditSuccess();
+        auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, null);
 
         verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class));
     }
 
     @Test
     public void shouldSetHeaders() {
+        stubAuditSuccess();
         stubRequestData();
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, null);
+        auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, null);
 
         verify(mockRestTemplate).exchange(eq(SOME_ENDPOINT), eq(POST), captorHttpEntity.capture(), eq(Void.class));
 
@@ -134,6 +143,7 @@ public class AuditClientTest {
 
     @Test
     public void shouldSetAuditableData() throws JsonProcessingException {
+        stubAuditSuccess();
 
         when(mockRequestData.sessionId()).thenReturn("some session id");
         when(mockRequestData.correlationId()).thenReturn("some correlation id");
@@ -351,14 +361,16 @@ public class AuditClientTest {
 
     @Test
     public void shouldLogWhenAddToAuditServiceEvent() {
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
+        stubAuditSuccess();
+        auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, Collections.emptyMap());
 
         verifyLogMessage("POST data for 00000000-0000-0001-0000-000000000001 to audit service", INCOME_PROVING_AUDIT_REQUEST, INFO);
     }
 
     @Test
     public void shouldLogAfterSuccessfulAuditServiceCall() {
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
+        stubAuditSuccess();
+        auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, Collections.emptyMap());
 
         verifyLogMessage("data POSTed to audit service", INCOME_PROVING_AUDIT_SUCCESS, INFO);
     }
@@ -367,7 +379,7 @@ public class AuditClientTest {
     public void shouldLogAfterFailureToAudit() throws JsonProcessingException {
         when(mockObjectMapper.writeValueAsString(any(Object.class))).thenThrow(JsonProcessingException.class);
 
-        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, UUID, Collections.emptyMap());
+        auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, Collections.emptyMap());
 
         verifyLogMessage("Failed to create json representation of audit data", INCOME_PROVING_AUDIT_FAILURE, ERROR);
     }
@@ -583,10 +595,50 @@ public class AuditClientTest {
         assertThat(actualAuditRecords).isEqualTo(expectedAuditRecords);
     }
 
+    @Test
+    public void add_successfulResponse_updateComponentTrace() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.put("x-component-trace", singletonList("pttg-ip-api"));
+
+        ResponseEntity<Void> someResponse = ResponseEntity.ok().headers(httpHeaders).build();
+        given(mockRestTemplate.exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class))).willReturn(someResponse);
+
+        auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, null);
+
+        then(mockRequestData).should().updateComponentTrace(someResponse);
+    }
+
+    @Test
+    public void add_errorResponse_updateComponentTrace() {
+        HttpStatusCodeException someHttpException = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+        given(mockRestTemplate.exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class))).willThrow(someHttpException);
+
+        try {
+            auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, null);
+        } catch (HttpStatusCodeException ignored) {
+            // Exception not of interest to this test.
+        }
+
+        then(mockRequestData).should().updateComponentTrace(someHttpException);
+    }
+
+    @Test
+    public void add_errorResponse_thrown() {
+        HttpStatusCodeException someHttpException = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+        given(mockRestTemplate.exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class))).willThrow(someHttpException);
+
+        assertThatThrownBy(() -> auditClient.add(ANY_AUDIT_EVENT_TYPE, UUID, null)).isEqualTo(someHttpException);
+    }
+
     private void assertHeaders(HttpHeaders headers) {
         assertThat(headers.get("Authorization").get(0)).isEqualTo("some basic auth header value");
         assertThat(headers.get("Content-Type").get(0)).isEqualTo(APPLICATION_JSON_VALUE);
         assertThat(headers.get("x-correlation-id").get(0)).isEqualTo("some correlation id");
+    }
+
+    private void stubAuditSuccess() {
+        when(mockRestTemplate.exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class)))
+            .thenReturn(ResponseEntity.ok().build());
     }
 
     private void stubRequestData() {

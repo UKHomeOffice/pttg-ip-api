@@ -11,6 +11,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -72,19 +73,24 @@ public class AuditClient {
 
         try {
             AuditableData auditableData = generateAuditableData(eventType, eventId, auditDetail);
-            dispatchAuditableData(auditableData);
+            ResponseEntity<Void> auditResponse = dispatchAuditableData(auditableData);
             log.info("data POSTed to audit service", value(EVENT, INCOME_PROVING_AUDIT_SUCCESS));
+            requestData.updateComponentTrace(auditResponse);
         } catch (JsonProcessingException e) {
             log.error("Failed to create json representation of audit data", value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
+        } catch (HttpStatusCodeException e) {
+            requestData.updateComponentTrace(e);
+            throw e;
         }
+
     }
 
     @Retryable(
             value = { RestClientException.class },
             maxAttemptsExpression = "#{${audit.service.retry.attempts}}",
             backoff = @Backoff(delayExpression = "#{${audit.service.retry.delay}}"))
-    private void dispatchAuditableData(AuditableData auditableData) {
-        restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
+    private ResponseEntity<Void> dispatchAuditableData(AuditableData auditableData) {
+        return restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
     }
 
     List<AuditRecord> getAuditHistory(LocalDate toDate, List<AuditEventType> eventTypes) {
@@ -146,6 +152,7 @@ public class AuditClient {
                                    .encode()
                                    .toUri();
     }
+
     private URI generateCorrelationIdsUri(List<AuditEventType> eventTypes) {
         return UriComponentsBuilder.fromHttpUrl(correlationIdsEndpoint)
                                    .queryParam("eventTypes", eventTypes.toArray(new AuditEventType[0]))
@@ -153,7 +160,6 @@ public class AuditClient {
                                    .encode()
                                    .toUri();
     }
-
     private URI generateHistoryByCorrelationIdUri(String correlationId, List<AuditEventType> eventTypes) {
         return UriComponentsBuilder.fromHttpUrl(historyByCorrelationIdEndpoint)
                                    .queryParam("correlationId", correlationId)

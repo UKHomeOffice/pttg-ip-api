@@ -194,12 +194,20 @@ public class HmrcClientTest {
         return new HmrcIndividual("Joe", "Bloggs", "NE121212C", LocalDate.now());
     }
 
-
     @Test
     public void shouldRethrowHttpServerErrorException() {
         thrown.expect(HttpServerErrorException.class);
 
         HttpServerErrorException exception = new HttpServerErrorException(BAD_GATEWAY);
+
+        service.getIncomeRecordFailureRecovery(exception);
+    }
+
+    @Test
+    public void shouldRethrowEarningsServiceNoUniqueMatchException() {
+        thrown.expect(EarningsServiceNoUniqueMatchException.class);
+
+        EarningsServiceNoUniqueMatchException exception = new EarningsServiceNoUniqueMatchException("any nino");
 
         service.getIncomeRecordFailureRecovery(exception);
     }
