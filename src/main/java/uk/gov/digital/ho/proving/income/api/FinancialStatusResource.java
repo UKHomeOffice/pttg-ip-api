@@ -46,30 +46,29 @@ public class FinancialStatusResource {
 
     @PostMapping(value = "/incomeproving/v3/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
     FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
-        throw new NullPointerException();
-//        List<Applicant> applicants = sanitiseApplicants(request.applicants());
-//
-//        UUID eventId = UUID.randomUUID();
-//        String redactedNino = ninoUtils.redact(applicants.get(0).nino());
-//        log.info("Financial status check request received for {} - applicationRaisedDate = {}, dependents = {}",
-//            redactedNino, request.applicationRaisedDate(), request.dependants(), value(EVENT, INCOME_PROVING_SERVICE_REQUEST_RECEIVED));
-//        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, eventId, auditData(applicants.get(0), request.applicationRaisedDate(), request.dependants()));
-//
-//        validateApplicants(applicants);
-//        validateDependents(request.dependants());
-//        validateApplicationRaisedDate(request.applicationRaisedDate());
-//
-//        LocalDate startSearchDate = request.applicationRaisedDate().minusDays(NUMBER_OF_DAYS_INCOME);
-//        Map<Individual, IncomeRecord> incomeRecords = financialStatusService.getIncomeRecords(applicants, startSearchDate, request.applicationRaisedDate());
-//
-//
-//        FinancialStatusCheckResponse response = financialStatusService.calculateResponse(request.applicationRaisedDate(), request.dependants(), incomeRecords);
-//
-//        log.info("Financial status check passed for {} is: {}",
-//            value("nino", redactedNino), response.categoryChecks().stream().anyMatch(CategoryCheck::passed), value(EVENT, INCOME_PROVING_SERVICE_RESPONSE_SUCCESS));
-//        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
-//
-//        return response;
+        List<Applicant> applicants = sanitiseApplicants(request.applicants());
+
+        UUID eventId = UUID.randomUUID();
+        String redactedNino = ninoUtils.redact(applicants.get(0).nino());
+        log.info("Financial status check request received for {} - applicationRaisedDate = {}, dependents = {}",
+            redactedNino, request.applicationRaisedDate(), request.dependants(), value(EVENT, INCOME_PROVING_SERVICE_REQUEST_RECEIVED));
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, eventId, auditData(applicants.get(0), request.applicationRaisedDate(), request.dependants()));
+
+        validateApplicants(applicants);
+        validateDependents(request.dependants());
+        validateApplicationRaisedDate(request.applicationRaisedDate());
+
+        LocalDate startSearchDate = request.applicationRaisedDate().minusDays(NUMBER_OF_DAYS_INCOME);
+        Map<Individual, IncomeRecord> incomeRecords = financialStatusService.getIncomeRecords(applicants, startSearchDate, request.applicationRaisedDate());
+
+
+        FinancialStatusCheckResponse response = financialStatusService.calculateResponse(request.applicationRaisedDate(), request.dependants(), incomeRecords);
+
+        log.info("Financial status check passed for {} is: {}",
+            value("nino", redactedNino), response.categoryChecks().stream().anyMatch(CategoryCheck::passed), value(EVENT, INCOME_PROVING_SERVICE_RESPONSE_SUCCESS));
+        auditClient.add(INCOME_PROVING_FINANCIAL_STATUS_RESPONSE, eventId, auditData(response));
+
+        return response;
     }
 
     private void validateApplicants(List<Applicant> applicants) {
