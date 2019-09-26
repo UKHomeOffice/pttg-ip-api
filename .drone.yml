@@ -3,7 +3,7 @@ pipeline:
   build-project:
     image: quay.io/ukhomeofficedigital/docker-openjdk8-git:v1.5.0
     commands:
-      - ./gradlew build
+      - ./gradlew assemble # EE-6825 OJR Temporarily chanegd to allow deployment of broken image
     when:
       event: [push, pull_request, tag]
 
