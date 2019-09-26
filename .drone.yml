@@ -106,8 +106,6 @@ pipeline:
     image: plugins/git
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
-      - cd kube-pttg-ip-api # TODO OJR EE-6825 Remove once the proxy change is on master
-      - git checkout EE-6825-remove-nginx-error # TODO OJR EE-6825 Remove once the proxy change is on master
     when:
       event: [push, tag, deployment]
 
