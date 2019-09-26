@@ -171,5 +171,5 @@ pipeline:
           - SMOKE_TEST_POD=$(kubectl --token="$${PTTG_IP_DEV}" get pods | grep pttg-ip-smoke-tests | head -n 1 | cut -d ' ' -f 1)
           - kubectl --token="$${PTTG_IP_DEV}" exec "$${SMOKE_TEST_POD}" -- curl --fail -X POST 'http://localhost:8080/smoketests'
       when:
-          event: deployment # TODO OJR EE-6825 - set for testing, should be deployment
+          event: deployment
           environment: [dev, test, feat1, feat2, feat3, preprod]
