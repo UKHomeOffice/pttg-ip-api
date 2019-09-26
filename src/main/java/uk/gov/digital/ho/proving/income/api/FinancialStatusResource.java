@@ -46,6 +46,7 @@ public class FinancialStatusResource {
 
     @PostMapping(value = "/incomeproving/v3/individual/financialstatus", produces = APPLICATION_JSON_VALUE)
     FinancialStatusCheckResponse getFinancialStatus(@Valid @RequestBody FinancialStatusRequest request) {
+
         List<Applicant> applicants = sanitiseApplicants(request.applicants());
 
         UUID eventId = UUID.randomUUID();
