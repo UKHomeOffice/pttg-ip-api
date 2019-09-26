@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.proving.income.api;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,16 +10,16 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.when;
@@ -44,6 +45,11 @@ public class RequestDataTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @After
+    public void tearDown() {
+        MDC.clear();
     }
 
     @Test
@@ -154,41 +160,136 @@ public class RequestDataTest {
     }
 
     @Test
-    public void componentTrace_someComponents_update() {
+    public void updateComponentTrace_responseEntityWithHeaders_setComponentTrace() {
         String expectedComponentTrace = "some-component,some-other-component";
-        requestData.componentTrace(asList("some-component", "some-other-component"));
+
+        ResponseEntity responseWithTraceHeader = new ResponseEntity(componentTraceHeader(expectedComponentTrace), HttpStatus.OK);
+        requestData.updateComponentTrace(responseWithTraceHeader);
 
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
     }
 
     @Test
-    public void componentTrace_multipleCalls_lastWins() {
-        List<String> otherComponentTrace = singletonList("some-unexpected-component");
-        List<String> winningComponentTrace = asList("some-component", "some-other-component");
-        String expectedComponentTrace = "some-component,some-other-component";
-
-        requestData.componentTrace(otherComponentTrace);
-        requestData.componentTrace(winningComponentTrace);
-
-        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
-    }
-
-    @Test
-    public void componentTrace_null_doNotUpdate() {
+    public void updateComponentTrace_responseEntityNoHeaders_doNotSetComponentTrace() {
         String expectedComponentTrace = "some-component";
         MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
 
-        requestData.componentTrace(null);
+        ResponseEntity responseWithoutTraceHeader = new ResponseEntity(HttpStatus.OK);
+        requestData.updateComponentTrace(responseWithoutTraceHeader);
+
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
     }
 
     @Test
-    public void componentTrace_emptyList_doNotUpdate() {
+    public void updateComponentTrace_multipleResponseEntityHeaders_lastWins() {
+        String otherComponentTrace = "some-unexpected-component";
+        String winningComponentTrace = "some-component,some-other-component";
+
+        ResponseEntity firstResponse = new ResponseEntity(componentTraceHeader(otherComponentTrace), HttpStatus.OK);
+        ResponseEntity secondResponse = new ResponseEntity(componentTraceHeader(winningComponentTrace), HttpStatus.OK);
+
+        requestData.updateComponentTrace(firstResponse);
+        requestData.updateComponentTrace(secondResponse);
+
+        assertThat(requestData.componentTrace()).isEqualTo(winningComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_nullComponentEntityHeader_doNotUpdate() {
         String expectedComponentTrace = "some-component";
         MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
 
-        requestData.componentTrace(emptyList());
+        requestData.updateComponentTrace(new ResponseEntity(componentTraceHeader(null), HttpStatus.OK));
+
         assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_emptyComponentEntityHeader_doNotUpdate() {
+        String expectedComponentTrace = "some-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        requestData.updateComponentTrace(new ResponseEntity(componentTraceHeader(""), HttpStatus.OK));
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_httpExceptionWithTraceHeader_setComponentTrace() {
+        String expectedComponentTrace = "some-component,some-other-component";
+
+        HttpStatusCodeException exceptionWithTraceHeader = new HttpClientErrorException(HttpStatus.NOT_FOUND, "any status text",
+                                                                                        componentTraceHeader(expectedComponentTrace), null, null);
+        requestData.updateComponentTrace(exceptionWithTraceHeader);
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_httpExceptionWithOtherHeaders_doNotSetComponentTrace() {
+        String expectedComponentTrace = "some-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        HttpHeaders unrelatedHeaders = new HttpHeaders();
+        unrelatedHeaders.add("any other header key", "any other header value");
+        HttpStatusCodeException exceptionWithTraceHeader = new HttpClientErrorException(HttpStatus.NOT_FOUND, "any status text",
+                                                                                        unrelatedHeaders, null, null);
+        requestData.updateComponentTrace(exceptionWithTraceHeader);
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_httpExceptionNoHeaders_doNotSetComponentTrace() {
+        String expectedComponentTrace = "some-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        HttpStatusCodeException exceptionWithoutTraceHeader = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        requestData.updateComponentTrace(exceptionWithoutTraceHeader);
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_multipleExceptionHeaders_lastWins() {
+        String otherComponentTrace = "some-unexpected-component";
+        String winningComponentTrace = "some-component,some-other-component";
+
+        HttpStatusCodeException firstException = new HttpClientErrorException(HttpStatus.NOT_FOUND, "any status text",
+                                                                              componentTraceHeader(otherComponentTrace), null, null);
+        HttpStatusCodeException secondException = new HttpClientErrorException(HttpStatus.NOT_FOUND, "any status text",
+                                                                               componentTraceHeader(winningComponentTrace), null, null);
+
+        requestData.updateComponentTrace(firstException);
+        requestData.updateComponentTrace(secondException);
+
+        assertThat(requestData.componentTrace()).isEqualTo(winningComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_nullExceptionHeaders_doNotUpdate() {
+        String expectedComponentTrace = "some-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        requestData.updateComponentTrace(new HttpClientErrorException(HttpStatus.NOT_FOUND, "any status text", componentTraceHeader(null), null, null));
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    @Test
+    public void updateComponentTrace_emptyComponentExceptionHeader_doNotUpdate() {
+        String expectedComponentTrace = "some-component";
+        MDC.put(COMPONENT_TRACE_HEADER, expectedComponentTrace);
+
+        requestData.updateComponentTrace(new HttpClientErrorException(HttpStatus.NOT_FOUND, "any status text", componentTraceHeader(""), null, null));
+
+        assertThat(requestData.componentTrace()).isEqualTo(expectedComponentTrace);
+    }
+
+    private HttpHeaders componentTraceHeader(String components) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(COMPONENT_TRACE_HEADER, components);
+        return headers;
     }
 
     @Test

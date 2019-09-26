@@ -297,16 +297,61 @@ public class HmrcClientTest {
         headers.add(COMPONENT_TRACE_HEADER, "some-component");
         headers.add(COMPONENT_TRACE_HEADER, "some-other-component");
 
+        ResponseEntity<IncomeRecord> responseEntity = new ResponseEntity<>(anyIncomeRecord(), headers, OK);
         given(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
-            .willReturn(new ResponseEntity<>(anyIncomeRecord(), headers, OK));
+            .willReturn(responseEntity);
 
         Identity anyIdentity = new Identity(SOME_FIRST_NAME, SOME_LAST_NAME, SOME_DOB, SOME_NINO);
         LocalDate anyDate = LocalDate.now();
         service.getIncomeRecord(anyIdentity, anyDate, anyDate);
 
-        ArgumentCaptor<List<String>> argumentCaptor = ArgumentCaptor.forClass(List.class);
-        then(mockRequestData).should().componentTrace(argumentCaptor.capture());
-        assertThat(argumentCaptor.getValue()).containsExactlyInAnyOrder("some-component", "some-other-component");
+        then(mockRequestData).should().updateComponentTrace(responseEntity);
+    }
+
+    @Test
+    public void getIncomeRecord_notFound_updateComponentTrace() {
+        reset(mockRequestData);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(COMPONENT_TRACE_HEADER, "some-component");
+        headers.add(COMPONENT_TRACE_HEADER, "some-other-component");
+
+        HttpStatusCodeException notFoundException = new HttpClientErrorException(NOT_FOUND, "any status text", headers, null, null);
+        given(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
+            .willThrow(notFoundException);
+
+        Identity anyIdentity = new Identity(SOME_FIRST_NAME, SOME_LAST_NAME, SOME_DOB, SOME_NINO);
+        LocalDate anyDate = LocalDate.now();
+        try {
+            service.getIncomeRecord(anyIdentity, anyDate, anyDate);
+        } catch (EarningsServiceNoUniqueMatchException ignored) {
+            // Exception not of interest to this test.
+        }
+
+        then(mockRequestData).should().updateComponentTrace(notFoundException);
+    }
+
+    @Test
+    public void getIncomeRecord_otherClientErrorException_updateComponentTrace() {
+        reset(mockRequestData);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(COMPONENT_TRACE_HEADER, "some-component");
+        headers.add(COMPONENT_TRACE_HEADER, "some-other-component");
+
+        HttpStatusCodeException httpException = new HttpClientErrorException(BAD_REQUEST, "any status text", headers, null, null);
+        given(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
+            .willThrow(httpException);
+
+        Identity anyIdentity = new Identity(SOME_FIRST_NAME, SOME_LAST_NAME, SOME_DOB, SOME_NINO);
+        LocalDate anyDate = LocalDate.now();
+        try {
+            service.getIncomeRecord(anyIdentity, anyDate, anyDate);
+        } catch (HttpClientErrorException ignored) {
+            // Exception not of interest to this test.
+        }
+
+        ArgumentCaptor<HttpStatusCodeException> argumentCaptor = ArgumentCaptor.forClass(HttpStatusCodeException.class);
+        then(mockRequestData).should().updateComponentTrace(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue()).isEqualTo(httpException);
     }
 
     private IncomeRecord anyIncomeRecord() {
