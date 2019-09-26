@@ -106,6 +106,8 @@ pipeline:
     image: plugins/git
     commands:
       - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+      - cd kube-pttg-ip-api # TODO OJR EE-6825 Remove once the proxy change is on master
+      - git checkout EE-6825-remove-nginx-error # TODO OJR EE-6825 Remove once the proxy change is on master
     when:
       event: [push, tag, deployment]
 
@@ -156,3 +158,20 @@ pipeline:
     when:
       event: deployment
       environment: pr
+
+  run-smoke-tests-non-prod:
+      image: quay.io/ukhomeofficedigital/kd:v1.14.0
+      secrets:
+          - pttg_ip_dev
+      environment:
+          - KUBE_NAMESPACE=pttg-ip-${DRONE_DEPLOY_TO}
+          - ENVIRONMENT=${DRONE_DEPLOY_TO}
+      commands:
+          - kubectl config set-cluster nonprod --insecure-skip-tls-verify=true --server=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+          - kubectl config set-context ips-$${ENVIRONMENT} --cluster=nonprod --namespace=$${KUBE_NAMESPACE}
+          - kubectl config use-context ips-$${ENVIRONMENT}
+          - SMOKE_TEST_POD=$(kubectl --token="$${PTTG_IP_DEV}" get pods | grep pttg-ip-smoke-tests | head -n 1 | cut -d ' ' -f 1)
+          - kubectl --token="$${PTTG_IP_DEV}" exec "$${SMOKE_TEST_POD}" -- curl --fail -X POST 'http://localhost:8080/smoketests'
+      when:
+          event: deployment # TODO OJR EE-6825 - set for testing, should be deployment
+          environment: [dev, test, feat1, feat2, feat3, preprod]
