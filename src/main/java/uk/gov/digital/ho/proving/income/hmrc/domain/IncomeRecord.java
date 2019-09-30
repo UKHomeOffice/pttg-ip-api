@@ -3,6 +3,7 @@ package uk.gov.digital.ho.proving.income.hmrc.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
@@ -15,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 @Getter
 @Accessors(fluent = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode
 public class IncomeRecord {
 
     @JsonProperty(value = "paye", required = true)
