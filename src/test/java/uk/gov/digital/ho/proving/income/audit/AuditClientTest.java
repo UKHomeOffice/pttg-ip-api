@@ -24,6 +24,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
@@ -104,10 +106,11 @@ public class AuditClientTest {
         endpointProperties.setHistoryByCorrelationIdEndpoint(SOME_HISTORY_BY_CORRELATION_ID_ENDPOINT);
 
         auditClient = new AuditClient(Clock.fixed(Instant.parse("2017-08-29T08:00:00Z"), ZoneId.of("UTC")),
-            mockRestTemplate,
-            mockRequestData,
-            endpointProperties,
-            mockObjectMapper);
+                                      mockRestTemplate,
+                                      mockRequestData,
+                                      endpointProperties,
+                                      mockObjectMapper,
+                                      simpleRetryTemplate());
 
         Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
         rootLogger.setLevel(Level.INFO);
@@ -618,5 +621,11 @@ public class AuditClientTest {
         return IntStream.range(0, quantity)
             .mapToObj(count -> new AuditRecord(Integer.valueOf(count).toString(), LocalDateTime.now(), "any_email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, detail, "any_nino"))
             .collect(Collectors.toList());
+    }
+
+    private RetryTemplate simpleRetryTemplate() {
+        RetryTemplate retryTemplate = new RetryTemplate();
+        retryTemplate.setRetryPolicy(new SimpleRetryPolicy(1));
+        return retryTemplate;
     }
 }

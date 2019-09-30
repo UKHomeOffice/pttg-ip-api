@@ -3,13 +3,13 @@ package uk.gov.digital.ho.proving.income.audit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -47,13 +47,15 @@ public class AuditClient {
     private final String auditArchiveEndpoint;
     private final RequestData requestData;
     private final ObjectMapper mapper;
+    private final RetryTemplate retryTemplate;
     private final int historyPageSize;
 
     AuditClient(Clock clock,
                 RestTemplate restTemplate,
                 RequestData requestData,
                 AuditClientEndpointProperties endpointProperties,
-                ObjectMapper mapper) {
+                ObjectMapper mapper,
+                @Qualifier("auditRetryTemplate") RetryTemplate retryTemplate) {
         this.clock = clock;
         this.restTemplate = restTemplate;
         this.requestData = requestData;
@@ -64,27 +66,27 @@ public class AuditClient {
         this.auditArchiveEndpoint = endpointProperties.getArchiveEndpoint();
         this.historyPageSize = endpointProperties.getArchiveHistoryPageSize();
         this.mapper = mapper;
+        this.retryTemplate = retryTemplate;
     }
 
-    @Retryable(
-        value = {RestClientException.class},
-        maxAttemptsExpression = "#{${audit.service.retry.attempts}}",
-        backoff = @Backoff(delayExpression = "#{${audit.service.retry.delay}}"))
     public void add(AuditEventType eventType, UUID eventId, Map<String, Object> auditDetail) {
+        retryTemplate.execute(context -> {
+            log.info("POST data for {} to audit service", eventId, value(EVENT, INCOME_PROVING_AUDIT_REQUEST));
 
-        log.info("POST data for {} to audit service", eventId, value(EVENT, INCOME_PROVING_AUDIT_REQUEST));
-
-        try {
-            AuditableData auditableData = generateAuditableData(eventType, eventId, auditDetail);
-            dispatchAuditableData(auditableData);
-            log.info("data POSTed to audit service", value(EVENT, INCOME_PROVING_AUDIT_SUCCESS));
-        } catch (JsonProcessingException e) {
-            log.error("Failed to create json representation of audit data", value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
-        }
+            ResponseEntity<Void> response = null;
+            try {
+                AuditableData auditableData = generateAuditableData(eventType, eventId, auditDetail);
+                response = dispatchAuditableData(auditableData);
+                log.info("data POSTed to audit service", value(EVENT, INCOME_PROVING_AUDIT_SUCCESS));
+            } catch (JsonProcessingException e) {
+                log.error("Failed to create json representation of audit data", value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
+            }
+            return response;
+        });
     }
 
-    private void dispatchAuditableData(AuditableData auditableData) {
-        restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
+    private ResponseEntity<Void> dispatchAuditableData(AuditableData auditableData) {
+        return restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
     }
 
     List<AuditRecord> getAuditHistory(LocalDate toDate, List<AuditEventType> eventTypes) {
@@ -195,11 +197,6 @@ public class AuditClient {
         HttpEntity<Void> entity = new HttpEntity<>(generateRestHeaders());
         ResponseEntity<List<ArchivedResult>> response = restTemplate.exchange(uri, GET, entity, new ParameterizedTypeReference<List<ArchivedResult>>() {});
         return response.getBody();
-    }
-
-    @Recover
-    void addRetryFailureRecovery(RestClientException e, AuditEventType eventType) {
-        log.error("Failed to audit {} after retries - {}", eventType, e.getMessage(), value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
     }
 
     private AuditableData generateAuditableData(AuditEventType eventType, UUID eventId, Map<String, Object> auditDetail) throws JsonProcessingException {
