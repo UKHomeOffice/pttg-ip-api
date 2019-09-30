@@ -45,6 +45,7 @@ import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -116,6 +117,13 @@ public class AuditClientTest {
         rootLogger.setLevel(Level.INFO);
         rootLogger.addAppender(mockAppender);
     }
+
+    private RetryTemplate simpleRetryTemplate() {
+        RetryTemplate retryTemplate = new RetryTemplate();
+        retryTemplate.setRetryPolicy(new SimpleRetryPolicy(1));
+        return retryTemplate;
+    }
+
 
     @Test
     public void shouldUseCollaborators() {
@@ -586,6 +594,26 @@ public class AuditClientTest {
         assertThat(actualAuditRecords).isEqualTo(expectedAuditRecords);
     }
 
+    @Test
+    public void add_anyInput_shouldUseRetryTemplate() {
+        Clock anyClock = Clock.fixed(Instant.parse("2017-08-29T08:00:00Z"), ZoneId.of("UTC"));
+        AuditClientEndpointProperties anyEndpointProperties = new AuditClientEndpointProperties();
+
+        RetryTemplate mockRetryTemplate = mock(RetryTemplate.class);
+        AuditClient client = new AuditClient(anyClock,
+                                             mockRestTemplate,
+                                             mockRequestData,
+                                             anyEndpointProperties,
+                                             mockObjectMapper,
+                                             mockRetryTemplate);
+
+        AuditEventType anyEventType = INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
+        java.util.UUID anyUuid = UUID;
+        client.add(anyEventType, anyUuid, null);
+
+        then(mockRetryTemplate).should().execute(any(), any(), any());
+    }
+
     private void assertHeaders(HttpHeaders headers) {
         assertThat(headers.get("Authorization").get(0)).isEqualTo("some basic auth header value");
         assertThat(headers.get("Content-Type").get(0)).isEqualTo(APPLICATION_JSON_VALUE);
@@ -621,11 +649,5 @@ public class AuditClientTest {
         return IntStream.range(0, quantity)
             .mapToObj(count -> new AuditRecord(Integer.valueOf(count).toString(), LocalDateTime.now(), "any_email", INCOME_PROVING_FINANCIAL_STATUS_REQUEST, detail, "any_nino"))
             .collect(Collectors.toList());
-    }
-
-    private RetryTemplate simpleRetryTemplate() {
-        RetryTemplate retryTemplate = new RetryTemplate();
-        retryTemplate.setRetryPolicy(new SimpleRetryPolicy(1));
-        return retryTemplate;
     }
 }

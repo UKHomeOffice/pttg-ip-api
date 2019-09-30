@@ -37,7 +37,6 @@ import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
-import java.util.List;
 
 import static ch.qos.logback.classic.Level.ERROR;
 import static ch.qos.logback.classic.Level.INFO;
@@ -275,7 +274,7 @@ public class HmrcClientTest {
     }
 
     @Test
-    public void getIncomeRecord_anyInput_shouldUseRetryTemplate() throws Exception {
+    public void getIncomeRecord_anyInput_shouldUseRetryTemplate() {
         RetryTemplate mockRetryTemplate = mock(RetryTemplate.class);
         HmrcClient client = new HmrcClient(mockRestTemplate, "http://income-service/income", mockRequestData, mockServiceResponseLogger, mockRetryTemplate);
 
