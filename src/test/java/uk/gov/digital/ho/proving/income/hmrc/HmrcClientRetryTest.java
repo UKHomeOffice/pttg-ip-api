@@ -73,7 +73,7 @@ public class HmrcClientRetryTest {
                        .andRespond(withStatus(BAD_REQUEST));
 
         assertThatThrownBy(() -> hmrcClient.getIncomeRecord(ANY_IDENTITY, ANY_DATE, ANY_DATE))
-            .hasCauseExactlyInstanceOf(HttpClientErrorException.class);
+            .isInstanceOf(HttpClientErrorException.class);
         hmrcMockService.verify();
     }
 
