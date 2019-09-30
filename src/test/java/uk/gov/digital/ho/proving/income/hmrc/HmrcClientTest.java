@@ -118,6 +118,10 @@ public class HmrcClientTest {
         rootLogger.addAppender(mockAppender);
     }
 
+    /*
+    * It is difficult to use a mock of the RetryTemplate because then we'd need to stub all its internal workings. Instead
+    * we just use a RetryTemplate that is configrured never to retry.
+    * */
     private RetryTemplate simpleRetryTemplate() {
         RetryTemplate retryTemplate = new RetryTemplate();
         retryTemplate.setRetryPolicy(new SimpleRetryPolicy(1));
