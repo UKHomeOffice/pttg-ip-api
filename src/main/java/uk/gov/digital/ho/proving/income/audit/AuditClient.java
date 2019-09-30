@@ -73,20 +73,19 @@ public class AuditClient {
         retryTemplate.execute(context -> {
             log.info("POST data for {} to audit service", eventId, value(EVENT, INCOME_PROVING_AUDIT_REQUEST));
 
-            ResponseEntity<Void> response = null;
             try {
                 AuditableData auditableData = generateAuditableData(eventType, eventId, auditDetail);
-                response = dispatchAuditableData(auditableData);
+                dispatchAuditableData(auditableData);
                 log.info("data POSTed to audit service", value(EVENT, INCOME_PROVING_AUDIT_SUCCESS));
             } catch (JsonProcessingException e) {
                 log.error("Failed to create json representation of audit data", value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
             }
-            return response;
+            return null; // retry lambda requires a return value although we don't actually use it
         });
     }
 
-    private ResponseEntity<Void> dispatchAuditableData(AuditableData auditableData) {
-        return restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
+    private void dispatchAuditableData(AuditableData auditableData) {
+        restTemplate.exchange(auditEndpoint, POST, toEntity(auditableData), Void.class);
     }
 
     List<AuditRecord> getAuditHistory(LocalDate toDate, List<AuditEventType> eventTypes) {
