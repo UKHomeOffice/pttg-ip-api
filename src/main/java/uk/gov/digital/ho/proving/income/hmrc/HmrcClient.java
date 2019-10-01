@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
@@ -49,11 +50,18 @@ public class HmrcClient {
     }
 
     public IncomeRecord getIncomeRecord(Identity identity, LocalDate fromDate, LocalDate toDate) {
-        return retryTemplate.execute(context -> {
-            try {
+        try {
+            return retryTemplate.execute(context -> fetchIncomeRecord(identity, fromDate, toDate));
+        } catch (HttpServerErrorException e) {
+            log.error("Failed to retrieve HMRC data after retries - {}", e.getMessage(), value(EVENT, HMRC_ERROR_REPSONSE));
+            throw (e);
+        }
+    }
 
+    private IncomeRecord fetchIncomeRecord(Identity identity, LocalDate fromDate, LocalDate toDate) {
+        try {
             log.info("About to call HMRC Service at {}", hmrcServiceEndpoint,
-                value(EVENT, HMRC_REQUEST_SENT));
+                     value(EVENT, HMRC_REQUEST_SENT));
 
             ResponseEntity<IncomeRecord> responseEntity = restTemplate.exchange(
                 hmrcServiceEndpoint,
@@ -65,7 +73,7 @@ public class HmrcClient {
             serviceResponseLogger.record(identity, responseEntity.getBody());
 
             log.info("Received {} incomes and {} employments", responseEntity.getBody().paye().size(),
-                responseEntity.getBody().employments().size(), value(EVENT, HMRC_RESPONSE_SUCCESS));
+                     responseEntity.getBody().employments().size(), value(EVENT, HMRC_RESPONSE_SUCCESS));
 
             return responseEntity.getBody();
 
@@ -77,8 +85,7 @@ public class HmrcClient {
             }
             log.error("HMRC Service failed", e, value(EVENT, HMRC_ERROR_REPSONSE));
             throw e;
-            }
-        });
+        }
     }
 
     private boolean isNotFound(HttpStatusCodeException e) {

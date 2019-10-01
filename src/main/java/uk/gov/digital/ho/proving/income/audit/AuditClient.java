@@ -69,18 +69,24 @@ public class AuditClient {
     }
 
     public void add(AuditEventType eventType, UUID eventId, Map<String, Object> auditDetail) {
-        retryTemplate.execute(context -> {
-            log.info("POST data for {} to audit service", eventId, value(EVENT, INCOME_PROVING_AUDIT_REQUEST));
+        try {
+            retryTemplate.execute(context -> addAudit(eventType, eventId, auditDetail));
+        } catch (RestClientException e) {
+            log.error("Failed to audit {} after retries - {}", eventType, e.getMessage(), value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
+        }
+    }
 
-            try {
-                AuditableData auditableData = generateAuditableData(eventType, eventId, auditDetail);
-                dispatchAuditableData(auditableData);
-                log.info("data POSTed to audit service", value(EVENT, INCOME_PROVING_AUDIT_SUCCESS));
-            } catch (JsonProcessingException e) {
-                log.error("Failed to create json representation of audit data", value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
-            }
-            return null; // retry lambda requires a return value although we don't actually use it
-        });
+    private Object addAudit(AuditEventType eventType, UUID eventId, Map<String, Object> auditDetail) {
+        log.info("POST data for {} to audit service", eventId, value(EVENT, INCOME_PROVING_AUDIT_REQUEST));
+
+        try {
+            AuditableData auditableData = generateAuditableData(eventType, eventId, auditDetail);
+            dispatchAuditableData(auditableData);
+            log.info("data POSTed to audit service", value(EVENT, INCOME_PROVING_AUDIT_SUCCESS));
+        } catch (JsonProcessingException e) {
+            log.error("Failed to create json representation of audit data", value(EVENT, INCOME_PROVING_AUDIT_FAILURE));
+        }
+        return null; // retry lambda requires a return value although we don't actually use it
     }
 
     private void dispatchAuditableData(AuditableData auditableData) {

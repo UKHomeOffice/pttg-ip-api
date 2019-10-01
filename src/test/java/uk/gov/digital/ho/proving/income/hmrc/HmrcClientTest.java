@@ -37,6 +37,7 @@ import uk.gov.digital.ho.proving.income.hmrc.domain.IncomeRecord;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.List;
 
 import static ch.qos.logback.classic.Level.ERROR;
 import static ch.qos.logback.classic.Level.INFO;
@@ -350,6 +351,28 @@ public class HmrcClientTest {
         assertThat(argumentCaptor.getValue()).isEqualTo(httpException);
     }
 
+    @Test
+    public void getIncomeRecord_retriesExhausted_log() {
+        HttpStatusCodeException httpException = new HttpServerErrorException(INTERNAL_SERVER_ERROR, "any status text", new HttpHeaders(), null, null);
+        given(mockRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), ArgumentMatchers.<Class<IncomeRecord>>any()))
+            .willThrow(httpException);
+
+        Identity anyIdentity = new Identity(SOME_FIRST_NAME, SOME_LAST_NAME, SOME_DOB, SOME_NINO);
+        LocalDate anyDate = LocalDate.now();
+        try {
+            service.getIncomeRecord(anyIdentity, anyDate, anyDate);
+        } catch (HttpServerErrorException ignored) {
+            // Exception not of interest to this test.
+        }
+
+        ArgumentCaptor<LoggingEvent> logCaptor = ArgumentCaptor.forClass(LoggingEvent.class);
+        then(mockAppender).should(atLeastOnce()).doAppend(logCaptor.capture());
+
+        LoggingEvent errorLog = getLogStartingWith(logCaptor.getAllValues(), "Failed to retrieve HMRC data");
+        assertThat(errorLog.getLevel()).isEqualTo(ERROR);
+        assertThat(errorLog.getArgumentArray()).contains(new ObjectAppendingMarker(EVENT, HMRC_ERROR_REPSONSE));
+    }
+
     private IncomeRecord anyIncomeRecord() {
         return new IncomeRecord(emptyList(), emptyList(), emptyList(), aIndividual());
     }
@@ -363,4 +386,10 @@ public class HmrcClientTest {
         }));
     }
 
+    private LoggingEvent getLogStartingWith(List<LoggingEvent> loggingEvents, String messageStart) {
+        return loggingEvents.stream()
+                            .filter(loggingEvent -> loggingEvent.getFormattedMessage().startsWith(messageStart))
+                            .findFirst()
+                            .orElseThrow(AssertionError::new);
+    }
 }
