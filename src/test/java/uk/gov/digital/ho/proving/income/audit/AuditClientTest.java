@@ -23,7 +23,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.proving.income.api.RequestData;
@@ -43,6 +47,8 @@ import static ch.qos.logback.classic.Level.INFO;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -81,6 +87,9 @@ public class AuditClientTest {
 
     private static final List<AuditEventType> ANY_EVENT_TYPES = asList(INCOME_PROVING_FINANCIAL_STATUS_REQUEST, INCOME_PROVING_FINANCIAL_STATUS_RESPONSE);
     private static final LocalDate ANY_DATE = LocalDate.now();
+    private static final Clock ANY_CLOCK = Clock.fixed(Instant.parse("2017-08-29T08:00:00Z"), ZoneId.of("UTC"));
+    private static final AuditClientEndpointProperties ANY_ENDPOINT_PROPERTIES = new AuditClientEndpointProperties();
+    private static final AuditEventType ANY_EVENT_TYPE = INCOME_PROVING_FINANCIAL_STATUS_REQUEST;
 
     @BeforeClass
     public static void beforeAllTests() {
@@ -104,15 +113,27 @@ public class AuditClientTest {
         endpointProperties.setHistoryByCorrelationIdEndpoint(SOME_HISTORY_BY_CORRELATION_ID_ENDPOINT);
 
         auditClient = new AuditClient(Clock.fixed(Instant.parse("2017-08-29T08:00:00Z"), ZoneId.of("UTC")),
-            mockRestTemplate,
-            mockRequestData,
-            endpointProperties,
-            mockObjectMapper);
+                                      mockRestTemplate,
+                                      mockRequestData,
+                                      endpointProperties,
+                                      mockObjectMapper,
+                                      simpleRetryTemplate());
 
         Logger rootLogger = (Logger) LoggerFactory.getLogger(AuditClient.class);
-        rootLogger.setLevel(Level.INFO);
+        rootLogger.setLevel(INFO);
         rootLogger.addAppender(mockAppender);
     }
+
+    /*
+     * It is difficult to use a mock of the RetryTemplate because then we'd need to stub all its internal workings. Instead
+     * we just use a RetryTemplate that is configrured never to retry.
+     * */
+    private RetryTemplate simpleRetryTemplate() {
+        RetryTemplate retryTemplate = new RetryTemplate();
+        retryTemplate.setRetryPolicy(new SimpleRetryPolicy(1));
+        return retryTemplate;
+    }
+
 
     @Test
     public void shouldUseCollaborators() {
@@ -581,6 +602,42 @@ public class AuditClientTest {
 
         List<AuditRecord> actualAuditRecords = auditClient.getHistoryByCorrelationId("any correlation ID", ANY_EVENT_TYPES);
         assertThat(actualAuditRecords).isEqualTo(expectedAuditRecords);
+    }
+
+    @Test
+    public void add_anyInput_shouldUseRetryTemplate() {
+        RetryTemplate mockRetryTemplate = mock(RetryTemplate.class);
+        AuditClient client = new AuditClient(ANY_CLOCK,
+                                             mockRestTemplate,
+                                             mockRequestData,
+                                             ANY_ENDPOINT_PROPERTIES,
+                                             mockObjectMapper,
+                                             mockRetryTemplate);
+
+        client.add(ANY_EVENT_TYPE, UUID, null);
+
+        then(mockRetryTemplate).should().execute(any(), any(), any());
+    }
+
+    @Test
+    public void add_retriesExhausted_log() {
+        given(mockRestTemplate.exchange(eq(SOME_ENDPOINT), eq(POST), any(HttpEntity.class), eq(Void.class))).willThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+
+        auditClient.add(ANY_EVENT_TYPE, UUID, null);
+
+        ArgumentCaptor<LoggingEvent> logCaptor = ArgumentCaptor.forClass(LoggingEvent.class);
+        then(mockAppender).should(atLeastOnce()).doAppend(logCaptor.capture());
+
+        LoggingEvent errorLog = getLogStartingWith(logCaptor.getAllValues(), "Failed to audit");
+        assertThat(errorLog.getLevel()).isEqualTo(ERROR);
+        assertThat(errorLog.getArgumentArray()).contains(new ObjectAppendingMarker(EVENT, INCOME_PROVING_AUDIT_FAILURE));
+    }
+
+    private LoggingEvent getLogStartingWith(List<LoggingEvent> loggingEvents, String messageStart) {
+        return loggingEvents.stream()
+                            .filter(loggingEvent -> loggingEvent.getFormattedMessage().startsWith(messageStart))
+                            .findFirst()
+                            .orElseThrow(AssertionError::new);
     }
 
     private void assertHeaders(HttpHeaders headers) {
