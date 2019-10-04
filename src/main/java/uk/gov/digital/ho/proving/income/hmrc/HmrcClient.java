@@ -59,7 +59,7 @@ public class HmrcClient {
                 value(EVENT, HMRC_REQUEST_SENT));
 
             ResponseEntity<IncomeRecord> responseEntity = restTemplate.exchange(
-                hmrcServiceEndpoint,
+                "",
                 POST,
                 createEntity(identity, fromDate, toDate),
                 IncomeRecord.class);
