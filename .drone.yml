@@ -105,7 +105,7 @@ pipeline:
   clone-kube-project:
     image: plugins/git
     commands:
-      - git clone -b EE-32216 https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+      - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
     when:
       event: [push, tag, deployment]
 
