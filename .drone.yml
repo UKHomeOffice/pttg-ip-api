@@ -105,7 +105,7 @@ pipeline:
   clone-kube-project:
     image: plugins/git
     commands:
-      - git clone https://github.com/UKHomeOffice/kube-pttg-ip-api.git
+      - git clone -b EE-32216 https://github.com/UKHomeOffice/kube-pttg-ip-api.git
     when:
       event: [push, tag, deployment]
 
@@ -139,7 +139,7 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: [dev, test, feat1, feat2, feat3, preprod]
+      environment: [dev, test, preprod]
 
   deploy-to-prod:
     image: quay.io/ukhomeofficedigital/kd:v1.14.0
@@ -172,4 +172,4 @@ pipeline:
           - kubectl --token="$${PTTG_IP_DEV}" exec "$${SMOKE_TEST_POD}" -- curl --fail -X POST 'http://localhost:8080/smoketests'
       when:
           event: deployment
-          environment: [dev, test, feat1, feat2, feat3, preprod]
+          environment: [dev, test, preprod]
