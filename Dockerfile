@@ -7,6 +7,8 @@ ENV NAME pttg-ip-api
 
 ENV JAR_PATH build/libs
 
+ARG VERSION
+
 RUN yum update -y glibc && \
     yum update -y nss && \
     yum update -y bind-license
