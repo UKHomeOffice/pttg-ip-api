@@ -2,7 +2,7 @@
 
 NAME=${NAME:-pttg-ip-api}
 
-certfiles=$(awk '/-----BEGIN CERTIFICATE-----/{filename="acpca"NR; print filename}; {print >filename}' /certs/acp-root.crt)
+certfiles=$(awk '/-----BEGIN CERTIFICATE-----/{filename="acpca"NR; print filename}; {print >filename}' /certs/ca.crt)
 
 for file in ${certfiles}
 do
