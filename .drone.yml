@@ -170,6 +170,7 @@ steps:
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
+  - env
   - cd kube-pttg-ip-api
   - ./deploy.sh
   environment:
