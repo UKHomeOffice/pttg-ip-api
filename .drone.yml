@@ -150,9 +150,6 @@ steps:
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
-  - echo 'vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv'
-  - env
-  - echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
   - cd kube-pttg-ip-api
   - ./deploy.sh
   environment:
@@ -163,8 +160,8 @@ steps:
       from_secret: pttg_ip_dev
     VERSION: build-${DRONE_BUILD_NUMBER}
   when:
-#    branch:
-#    - master
+    branch:
+    - master
     event:
     - push
     - tag
