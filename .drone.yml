@@ -148,7 +148,7 @@ steps:
 
 - name: deploy-to-dev-from-build-number
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  image: quay.io/ukhomeofficedigital/kd:v1.17.0
   commands:
   - cd kube-pttg-ip-api
   - ./deploy.sh
@@ -168,7 +168,7 @@ steps:
 
 - name: deployment-to-non-prod
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  image: quay.io/ukhomeofficedigital/kd:v1.17.0
   commands:
   - cd kube-pttg-ip-api
   - ./deploy.sh
@@ -189,7 +189,7 @@ steps:
 
 - name: deploy-to-prod
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  image: quay.io/ukhomeofficedigital/kd:v1.17.0
   commands:
   - cd kube-pttg-ip-api
   - ./deploy.sh
@@ -208,7 +208,7 @@ steps:
 
 - name: run-smoke-tests-non-prod
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  image: quay.io/ukhomeofficedigital/kd:v1.17.0
   commands:
   - kubectl config set-cluster nonprod --insecure-skip-tls-verify=true --server=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
   - kubectl config set-context ips-$${ENVIRONMENT} --cluster=nonprod --namespace=$${KUBE_NAMESPACE}
