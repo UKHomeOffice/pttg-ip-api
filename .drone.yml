@@ -86,8 +86,8 @@ steps:
   - docker push quay.io/ukhomeofficedigital/pttg-ip-api:latest
   - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
   - docker push quay.io/ukhomeofficedigital/pttg-ip-api:build-$${DRONE_BUILD_NUMBER}
-  - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./tagSemver)
-  - docker push quay.io/ukhomeofficedigital/pttg-ip-api:$(cat ./tagSemver)
+  - docker tag pttg-ip-api quay.io/ukhomeofficedigital/pttg-ip-api:0.1.6
+  - docker push quay.io/ukhomeofficedigital/pttg-ip-api:0.1.6
   environment:
     DOCKER_USERNAME: ukhomeofficedigital+pttg
     DOCKER_PASSWORD:
