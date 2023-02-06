@@ -19,21 +19,21 @@ steps:
     - push
     - pull_request
 
-- name: update-semver
-  pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/docker-openjdk8-git:v1.5.0
-  commands:
-  - sh /root/git-utilities/set-up-github-user.sh "$${GITHUB_SSH_KEY}"
-  - ./gradlew release -Prelease.useAutomaticVersion=true -x runBuildTasks -s -i
-  - git describe --abbrev=0 --tags > ./tagSemver
-  environment:
-    GITHUB_SSH_KEY:
-      from_secret: github_ssh_key
-  when:
-    branch:
-    - master
-    event:
-    - push
+#- name: update-semver
+#  pull: if-not-exists
+#  image: quay.io/ukhomeofficedigital/docker-openjdk8-git:v1.5.0
+#  commands:
+#  - sh /root/git-utilities/set-up-github-user.sh "$${GITHUB_SSH_KEY}"
+#  - ./gradlew release -Prelease.useAutomaticVersion=true -x runBuildTasks -s -i
+#  - git describe --abbrev=0 --tags > ./tagSemver
+#  environment:
+#    GITHUB_SSH_KEY:
+#      from_secret: github_ssh_key
+#  when:
+#    branch:
+#    - master
+#    event:
+#    - push
 
 - name: build-docker-image
   pull: if-not-exists
